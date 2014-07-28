@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Window size="1000,600" caption="0,0,0,36" roundcorner="4,4" >
+	<VerticalLayout inset="4,0,4,4" bkimage="file='winbk.bmp' corner='4,48,4,4' mask='#FFFF00FF'" >
+		<HorizontalLayout height="32" inset="2,2,0,0">
+			<Label text="游戏登录" width="80" />
+			<Control />
+			<Button name="closebtn" width="42" maxheight="18" tooltip="点击这里直接退出游戏" normalimage="file='frame_btn_close_normal.bmp' mask='#FFFF00FF'" hotimage="file='frame_btn_close_hot.bmp' mask='#FFFF00FF'" pushedimage="file='frame_btn_close_down.bmp' mask='#FFFF00FF'"/>
+		</HorizontalLayout>
+		<Container>
+			<Button name="closebtn2" float="true" pos="240, 200, 282, 218" normalimage="file='frame_btn_close_normal.bmp' mask='#FFFF00FF'" hotimage="file='frame_btn_close_hot.bmp' mask='#FFFF00FF'" pushedimage="file='frame_btn_close_down.bmp' mask='#FFFF00FF'"/>
+			<ActiveX name="flash" clsid="{D27CDB6E-AE6D-11CF-96B8-444553540000}" mouse="false"/>
+		</Container>
+    </VerticalLayout>
+</Window>

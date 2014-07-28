@@ -1,0 +1,10 @@
+我们通过以下方式提供发布信息及提供支持:
+官网:							www.duilib.com（暂停使用）
+论坛:							bbs.duilib.com（暂停使用）
+官方QQ群:							153787916(1群),79145400(2群)，1507570(3群) 
+google code项目托管地址:		http://code.google.com/p/duilib/
+svn:							http://duilib.googlecode.com/svn/trunk/   最新版代码由此签出
+新浪微博:						http://weibo.com/duilib
+腾讯微博:						http://t.qq.com/duilib
+
+如需商业服务请联系wangchyz@gmail.com

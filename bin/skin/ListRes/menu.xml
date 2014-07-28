@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window bktrans="true" size="120,82">
+ <Font name="宋体" size="13" bold="false"/>
+ <Font name="宋体" size="12"/>
+<VerticalLayout bkimage="file='menu_bk.png' corner='40,8,8,8'" hole="false">
+	<List header="hidden" inset="8,8,8,8" itemhotimage="file='menu_hot_bk.png' corner='2,2,2,2'" itemdisabledbkcolor="#FF0000FF">
+		<ListContainerElement name="menu_Open" height="22" inset="40,0,0,0">
+			<Label text="打开" mouse="false"/>
+		</ListContainerElement>
+		<ListContainerElement name="menu_Mark" height="22" inset="40,0,0,0">
+			<Label text="标注" mouse="false"/>
+		</ListContainerElement>
+		<ListContainerElement name="menu_Delete" height="22" inset="40,0,0,0">
+			<Label text="删除" mouse="false"/>
+		</ListContainerElement>
+	</List>
+</VerticalLayout>
+</Window>

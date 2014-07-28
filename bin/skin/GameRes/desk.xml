@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Window>
+	<Container width="182" height="152" inset="2,2,2,2" bkimage="file='table.png' source='0,0,64,64' dest='59,36,123,100'">
+		<Button float="true" normalimage="user.png" pos="92,6,132,46" />
+		<Button float="true" normalimage="user.png" pos="22,80,62,120" />
+		<Button float="true" normalimage="user.png" pos="120,64,160,104" />
+		<Label float="true" textcolor="#FFDDDDDD" align="center" mouse="false" pos="70,132,116,150" />
+		<Label float="true" text="上面这人名字" textcolor="#FF558CC4" pos="0,6,182,26" mouse="false" />
+		<Label float="true" text="左边这人名字" textcolor="#FF558CC4" pos="0,60,182,80" mouse="false" />
+		<Label float="true" text="右边这人名字" textcolor="#FF558CC4" align="right" pos="0,100,182,120" mouse="false"/>
+	</Container>
+</Window>

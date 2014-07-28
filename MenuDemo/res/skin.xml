@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window caption="0,0,0,36" roundcorner="5,5" size="600,450" sizebox="6,6,6,6" mininfo="80,60">
+  <Font name="微软雅黑" size="12" bold="false" default="true" />
+  <Font name="微软雅黑" size="12" bold="true"/>  
+  <Default name="Combo" value="normalimage=&quot;res='118' restype='png' source='0,0,100,22' corner='2,2,20,2'&quot; hotimage=&quot;res='118' restype='png' source='0,22,100,44' corner='2,2,22,2'&quot; pushedimage=&quot;res='118' restype='png' source='0,44,100,66' corner='2,2,22,2'&quot;" />
+  <Default name="VScrollBar" value="button1normalimage=&quot;res='119' restype='png' source='0,0,16,16'&quot; button1hotimage=&quot;res='119' restype='png' source='16,0,32,16,16'&quot; button1pushedimage=&quot;res='119' restype='png' source='32,0,48,16'&quot; button2normalimage=&quot;res='119' restype='png' source='0,32,16,48'&quot; button2hotimage=&quot;res='119' restype='png' source='16,32,32,48'&quot; button2pushedimage=&quot;res='119' restype='png' source='32,32,48,48'&quot; thumbnormalimage=&quot;res='119' restype='png' source='0,48,16,64' corner='0,2,0,2'&quot; thumbhotimage=&quot;res='119' restype='png' source='16,48,32,64' corner='0,2,0,2'&quot; thumbpushedimage=&quot;res='119' restype='png' source='32,48,48,64' corner='0,2,0,2'&quot; bknormalimage=&quot;res='119' restype='png' source='0,16,16,32'&quot;" />
+  <VerticalLayout bkcolor="#FFFFFFFF" bordersize="2" bordercolor="#FF0934DA">
+
+    <HorizontalLayout name="header" height="36" bkcolor="#FF4775CC">
+      <HorizontalLayout>
+        <Control width="10"/>
+        <Label name="apptitle" text="Menu Test" font="1" textcolor="#FFFFFFFF" />
+      </HorizontalLayout>
+      <HorizontalLayout height="25" width="96">
+        <Button name="minbtn" tooltip="最小化" height="18" width="26" normalimage="res='103' restype='png'" hotimage="res='104' restype='png'" pushedimage="res='105' restype='png'"/>
+        <Button name="maxbtn" tooltip="最大化" height="18" width="25" normalimage="res='106' restype='png'" hotimage="res='107' restype='png'" pushedimage="res='108' restype='png'"/>
+        <Button name="restorebtn" visible="false" tooltip="恢复" height="18" width="25" normalimage="res='109' restype='png'" hotimage="res='110' restype='png'" pushedimage="res='111' restype='png'"/>
+        <Button name="closebtn" tooltip="关闭" height="18" width="43" normalimage="res='112' restype='png'" hotimage="res='113' restype='png'" pushedimage="res='114' restype='png'"/>
+      </HorizontalLayout>
+    </HorizontalLayout>
+
+    <VerticalLayout name="body" padding="2,0,2,2">
+      <HorizontalLayout padding="10,10,10,10">
+        <Button name="btn_menu" text="菜单测试" width="120" height="30" normalimage="res='115' restype='png'" hotimage="res='116' restype='png'" pushedimage="res='117' restype='png'"/>
+      </HorizontalLayout>
+    </VerticalLayout>
+
+  </VerticalLayout>
+</Window>

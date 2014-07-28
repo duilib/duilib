@@ -1,0 +1,201 @@
+tooltip问题
+1.tooltip会自动跟踪鼠标
+2.tooltip不会自动隐藏
+
+下面是patch代码
+
+//put this class to uibase.h
+
+typedef void (*pfnTimerTick)(LPARAM);
+
+class CTimerWnd : private CWindowWnd
+{
+public:
+	CTimerWnd(){
+		m_TimerStarted = FALSE;
+		m_TimerTick = NULL;
+		m_lParam = 0;
+	}
+
+	~CTimerWnd(){
+		KillTimer();
+	}
+
+	virtual LPCWSTR GetWindowClassName() const{
+		return L"TimerWnd";
+	}
+
+	bool SetTimer(UINT interval, pfnTimerTick fnTimerTick, LPARAM lParam){
+		
+		if(EnsureHandle())
+		{
+			if (m_TimerStarted)
+			{
+				KillTimer();
+				m_TimerStarted = FALSE;
+			}
+
+			if (::SetTimer(GetHWND(), 0, interval, NULL))
+			{
+				m_TimerStarted = TRUE;
+			}
+
+			m_TimerTick = fnTimerTick;
+			m_lParam = lParam;
+		}
+		return m_TimerStarted;
+	}
+	
+	void KillTimer(){
+		if (m_TimerStarted)
+		{
+			::KillTimer(GetHWND(), 0);
+			m_TimerStarted = FALSE;
+			m_TimerTick = NULL;
+			m_lParam = 0;
+		}
+	}
+	virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam){
+		if ( uMsg == WM_TIMER)
+		{
+			if (m_TimerStarted && m_TimerTick)
+			{
+				m_TimerTick(m_lParam);
+			}
+			return 0;
+		}
+		else{
+			return __super::HandleMessage(uMsg, wParam, lParam);
+		}
+	}
+protected:
+	bool HandleCreated(){
+		return GetHWND() != NULL;
+	}
+	void CreateNativateWindow(){
+		if (!HandleCreated())
+		{
+			Create(HWND_MESSAGE, L"", 0, 0, 0, 0, 0, 0, NULL);
+		}
+	}
+	bool EnsureHandle(){
+		if (!HandleCreated())
+		{
+			CreateNativateWindow();
+		}
+		return HandleCreated();
+	}
+private:
+	pfnTimerTick	m_TimerTick;
+	LPARAM			m_lParam;
+	BOOL			m_TimerStarted;
+};
+
+
+//patch for uimanager.h
+
+增加成员变量
+CTimerWnd m_ToolTimerWnd;
+
+增加成员函数
+void HideTooltip();
+
+//patch for uimanager.cpp
+
+//定时器回调函数，全局
+void TimerTickProc(LPARAM lParam)
+{
+	CPaintManagerUI* pPM = (CPaintManagerUI*)lParam;
+	if (pPM)
+	{
+		pPM->HideTooltip();
+	}
+}
+
+//成员函数
+void CPaintManagerUI::HideTooltip()
+{
+	if (m_hwndTooltip != NULL)
+	{
+		::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, FALSE, (LPARAM)&m_ToolTip);
+		m_ToolTimerWnd.KillTimer();
+	}
+}
+
+
+消息处理
+case WM_MOUSEHOVER:
+
+//删除这个标记，这会导致tooltip窗口跟踪鼠标
+//m_bMouseTracking = false;
+if( !sToolTip.IsEmpty() )
+{
+	//在设置tooltip信息后，设置定时器5秒后关闭该tooltip窗口
+	m_ToolTimerWnd.SetTimer(5000, TimerTickProc, (LPARAM)this);
+}
+break;
+
+case WM_MOUSELEAVE:
+			{
+			//停止定时器
+				m_ToolTimerWnd.KillTimer();
+			
+			break;
+			
+
+		case WM_MOUSEMOVE:
+		{
+				CControlUI* pNewHover = FindControl(pt);
+				//检查控件是否可以得到鼠标消息，比如Combo的成员，就需要过滤掉
+				if( pNewHover != NULL && pNewHover->GetManager() != this ) 
+					break;
+
+				TEventUI event = { 0 };
+				event.ptMouse = pt;
+				event.dwTimestamp = ::GetTickCount();
+				if( pNewHover != m_pEventHover && m_pEventHover != NULL ) 
+				{
+					//鼠标移到另一个控件上面，需要将先前的控件发送mouseleave消息，然后将tooltip窗口隐藏
+					event.Type = UIEVENT_MOUSELEAVE;
+					event.pSender = m_pEventHover;
+					m_pEventHover->Event(event);
+					m_pEventHover = NULL;
+					if( m_hwndTooltip != NULL )
+						::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, FALSE, (LPARAM) &m_ToolTip);
+
+				//因为tooltip需要wm_mousehover消息
+					m_bMouseTracking = false;
+				}
+				
+					if( pNewHover != m_pEventHover && pNewHover != NULL ) 
+				{
+					event.Type = UIEVENT_MOUSEENTER;
+					event.pSender = pNewHover;
+					pNewHover->Event(event);
+					m_pEventHover = pNewHover;
+				}
+				
+				if( m_pEventClick != NULL ) {
+					event.Type = UIEVENT_MOUSEMOVE;
+					event.pSender = m_pEventClick;
+					m_pEventClick->Event(event);
+				}
+				else if( pNewHover != NULL ) {
+					event.Type = UIEVENT_MOUSEMOVE;
+					event.pSender = pNewHover;
+					pNewHover->Event(event);
+				}
+
+				// Start tracking this entire window again...
+				if( !m_bMouseTracking && !m_IsDoDragDroping) {
+					TRACKMOUSEEVENT tme = { 0 };
+					tme.cbSize = sizeof(TRACKMOUSEEVENT);
+					tme.dwFlags = TME_HOVER | TME_LEAVE;
+					tme.hwndTrack = m_hWndPaint;
+					tme.dwHoverTime = m_hwndTooltip == NULL ? 400UL : (DWORD) ::SendMessage(m_hwndTooltip, TTM_GETDELAYTIME, TTDT_INITIAL, 0L);
+					_TrackMouseEvent(&tme);
+					m_bMouseTracking = true;
+				}
+		}
+		break;
+		

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Window size="800,600" sizebox="4,4,6,6" caption="0,0,0,90" mininfo="800,570" roundcorner="5,5" showdirty="false" >
+	<Font name="微软雅黑" size="18" bold="false" />
+	<Font name="幼圆" size="14" default="true" />
+	<Default name="VScrollBar" value="button1normalimage=&quot;file='scrollbar.bmp' source='0,90,16,106' mask='#FFFF00FF'&quot; button1hotimage=&quot;file='scrollbar.bmp' source='18,90,34,106' mask='#FFFF00FF'&quot; button1pushedimage=&quot;file='scrollbar.bmp' source='36,90,52,106' mask='#FFFF00FF'&quot; button1disabledimage=&quot;file='scrollbar.bmp' source='54,90,70,106' mask='#FFFF00FF'&quot; button2normalimage=&quot;file='scrollbar.bmp' source='0,108,16,124' mask='#FFFF00FF'&quot; button2hotimage=&quot;file='scrollbar.bmp' source='18,108,34,124' mask='#FFFF00FF'&quot; button2pushedimage=&quot;file='scrollbar.bmp' source='36,108,52,124' mask='#FFFF00FF'&quot; button2disabledimage=&quot;file='scrollbar.bmp' source='54,108,70,124' mask='#FFFF00FF'&quot; thumbnormalimage=&quot;file='scrollbar.bmp' source='0,126,16,142' corner='2,2,2,2' mask='#FFFF00FF'&quot; thumbhotimage=&quot;file='scrollbar.bmp' source='18,126,34,142' corner='2,2,2,2' mask='#FFFF00FF'&quot; thumbpushedimage=&quot;file='scrollbar.bmp' source='36,126,52,142' corner='2,2,2,2' mask='#FFFF00FF'&quot; thumbdisabledimage=&quot;file='scrollbar.bmp' source='54,126,70,142' corner='2,2,2,2' mask='#FFFF00FF'&quot; railnormalimage=&quot;file='scrollbar.bmp' source='0,144,16,160' corner='2,2,2,2' mask='#FFFF00FF'&quot; railhotimage=&quot;file='scrollbar.bmp' source='18,144,34,160' corner='2,2,2,2' mask='#FFFF00FF'&quot; railpushedimage=&quot;file='scrollbar.bmp' source='36,144,52,160' corner='2,2,2,2' mask='#FFFF00FF'&quot; raildisabledimage=&quot;file='scrollbar.bmp' source='54,144,70,160' corner='2,2,2,2' mask='#FFFF00FF'&quot; bknormalimage=&quot;file='scrollbar.bmp' source='0,162,16,178' corner='2,2,2,2' mask='#FFFF00FF'&quot; bkhotimage=&quot;file='scrollbar.bmp' source='18,162,34,178' corner='2,2,2,2' mask='#FFFF00FF'&quot; bkpushedimage=&quot;file='scrollbar.bmp' source='36,162,52,178' corner='2,2,2,2' mask='#FFFF00FF'&quot; bkdisabledimage=&quot;file='scrollbar.bmp' source='54,162,70,178' corner='2,2,2,2' mask='#FFFF00FF'&quot; " />
+	<Default name="HScrollBar" value="button1normalimage=&quot;file='scrollbar.bmp' source='0,0,16,16' mask='#FFFF00FF'&quot; button1hotimage=&quot;file='scrollbar.bmp' source='18,0,34,16' mask='#FFFF00FF'&quot; button1pushedimage=&quot;file='scrollbar.bmp' source='36,0,52,16' mask='#FFFF00FF'&quot; button1disabledimage=&quot;file='scrollbar.bmp' source='54,0,70,16' mask='#FFFF00FF'&quot; button2normalimage=&quot;file='scrollbar.bmp' source='0,18,16,34' mask='#FFFF00FF'&quot; button2hotimage=&quot;file='scrollbar.bmp' source='18,18,34,34' mask='#FFFF00FF'&quot; button2pushedimage=&quot;file='scrollbar.bmp' source='36,18,52,34' mask='#FFFF00FF'&quot; button2disabledimage=&quot;file='scrollbar.bmp' source='54,18,70,34' mask='#FFFF00FF'&quot; thumbnormalimage=&quot;file='scrollbar.bmp' source='0,36,16,52' corner='2,2,2,2' mask='#FFFF00FF'&quot; thumbhotimage=&quot;file='scrollbar.bmp' source='18,36,34,52' corner='2,2,2,2' mask='#FFFF00FF'&quot; thumbpushedimage=&quot;file='scrollbar.bmp' source='36,36,52,52' corner='2,2,2,2' mask='#FFFF00FF'&quot; thumbdisabledimage=&quot;file='scrollbar.bmp' source='54,36,70,52' corner='2,2,2,2' mask='#FFFF00FF'&quot; railnormalimage=&quot;file='scrollbar.bmp' source='0,54,16,70' corner='2,2,2,2' mask='#FFFF00FF'&quot; railhotimage=&quot;file='scrollbar.bmp' source='18,54,34,70' corner='2,2,2,2' mask='#FFFF00FF'&quot; railpushedimage=&quot;file='scrollbar.bmp' source='36,54,52,70' corner='2,2,2,2' mask='#FFFF00FF'&quot; raildisabledimage=&quot;file='scrollbar.bmp' source='54,54,70,70' corner='2,2,2,2' mask='#FFFF00FF'&quot; bknormalimage=&quot;file='scrollbar.bmp' source='0,72,16,88' corner='2,2,2,2' mask='#FFFF00FF'&quot; bkhotimage=&quot;file='scrollbar.bmp' source='18,72,34,88' corner='2,2,2,2' mask='#FFFF00FF'&quot; bkpushedimage=&quot;file='scrollbar.bmp' source='36,72,52,88' corner='2,2,2,2' mask='#FFFF00FF'&quot; bkdisabledimage=&quot;file='scrollbar.bmp' source='54,72,70,88' corner='2,2,2,2' mask='#FFFF00FF'&quot; " />
+	<Default name="Button" value="normalimage=&quot;file='button_nor.bmp' fade='200'&quot; hotimage=&quot;file='button_over.bmp' fade='200'&quot; pushedimage=&quot;file='button_down.bmp' fade='200'&quot; " />	
+	<Container>
+    	<VerticalLayout inset="4,0,4,4" bkcolor="#FF60B1FE" bordercolor="#FF1B4876" bordersize="1" borderround="5,5">
+    		<Control height="1" bkcolor="#FF1B4876" />
+    		<Control height="2" bkcolor="#FFD1EDFF" />
+    		<HorizontalLayout height="90" bkcolor="#FF8DD3FF" bkcolor2="#FF60B1FE">
+    			<VerticalLayout width="200">
+    				<Text text="{a}{f 2}XXX游戏中心{/f}{/a}" showhtml="true" />
+    			</VerticalLayout>
+    			<HorizontalLayout childpadding="20" inset="10,16,10,10" >
+    				<?ActiveX name="ad" clsid="{8856F961-340A-11D0-A96B-00C04FD705A2}" /?>
+    				<Control />
+    				<Option text="游戏大厅" width="64" group="menubar" selected="true"/>
+    				<Option text="游戏商城" width="64" group="menubar" />
+    				<Option text="会员中心" width="64" group="menubar" />
+    				<Option text="客服论坛" width="64" group="menubar" />
+    			</HorizontalLayout>
+    			<HorizontalLayout width="94" >
+    				<Button name="minbtn" maxwidth="26" maxheight="18" normalimage="file='frame_btn_min.bmp' source='0,0,26,18' mask='#FFFF00FF'" hotimage="file='frame_btn_min.bmp' source='26,0,52,18' mask='#FFFF00FF'" pushedimage="file='frame_btn_min.bmp' source='52,0,78,18' mask='#FFFF00FF'"/>
+    				<Button name="maxbtn" visible="false" maxwidth="26" maxheight="18" normalimage="file='frame_btn_max.bmp' source='0,0,26,18' mask='#FFFF00FF'" hotimage="file='frame_btn_max.bmp' source='26,0,52,18' mask='#FFFF00FF'" pushedimage="file='frame_btn_max.bmp' source='52,0,78,18' mask='#FFFF00FF'"/>
+    				<Button name="restorebtn" maxwidth="26" maxheight="18" normalimage="file='frame_btn_max.bmp' source='104,0,130,18' mask='#FFFF00FF'" hotimage="file='frame_btn_max.bmp' source='130,0,156,18' mask='#FFFF00FF'" pushedimage="file='frame_btn_max.bmp' source='156,0,182,18' mask='#FFFF00FF'" />
+    				<Button name="closebtn" maxwidth="42" maxheight="18" normalimage="file='frame_btn_close_normal.bmp' mask='#FFFF00FF'" hotimage="file='frame_btn_close_hot.bmp' mask='#FFFF00FF'" pushedimage="file='frame_btn_close_down.bmp' mask='#FFFF00FF'"/>
+    			</HorizontalLayout>
+    		</HorizontalLayout>
+    		<HorizontalLayout height="32" inset="20,4,0,1" childpadding="0" bkimage="tab_back.bmp" >
+    			<Option name="hallswitch" showhtml="true" text="{i gamezone.png}游戏大厅" width="160" selected="true" group="swithbar" align="center" normalimage="file='tab_normal.bmp' corner='2,2,2,2'" selectedimage="file='tab_select.bmp' corner='2,2,2,2'" hotimage="file='tab_hot.bmp' corner='2,2,2,2'" hottextcolor="#CC1010"/>
+				<HorizontalLayout name="roomswitchpanel" width="160" visible="false">
+					<Option name="roomswitch" showhtml="true" group="swithbar" align="center" normalimage="file='tab_normal.bmp' corner='2,2,2,2'" selectedimage="file='tab_select.bmp' corner='2,2,2,2'" hotimage="file='tab_hot.bmp' corner='2,2,2,2'" hottextcolor="#CC1010"/>
+					<Button name="roomclosebtn" float="true" pos="-14,2,-2,14" normalimage="file='tab_close.png' source='0,0,12,12'" hotimage="file='tab_close.png' source='12,0,24,12'" pushedimage="file='tab_close.png' source='24,0,36,12'"/>
+				</HorizontalLayout>
+    			<Label padding="40,2,2,2" text="{i gameicons.png 18 0}这里是一条系统消息" showhtml="true" />
+    			<Button name="fontswitch" float="true" pos="-82,4,-2,28" text="切换字体"/>
+    		</HorizontalLayout>
+    		<Control height="2" />
+    		<TabLayout name="switch">
+    			<HorizontalLayout>
+    				<HorizontalLayout width="300" minwidth="200" maxwidth="520" inset="0,0,3,0" sepwidth="6" sepimm="true" bkcolor="#FF60B1FE">
+    					<GameList name="gamelist" bkcolor="#FFF6F9FF" inset="1,1,1,1" bordercolor="#FF1B4876" bordersize="1" header="hidden" itemhotimage="file='tree_hot.bmp' corner='2,1,2,1' " itemselectedimage="file='tree_select.bmp' corner='2,1,2,1'" itemlinecolor="#FFE4EAF2" itemshowhtml="true" vscrollbar="true" hscrollbar="true" vscrollbarstyle="width=&quot;6&quot; showbutton1=&quot;false&quot; showbutton2=&quot;false&quot;">
+    					</GameList>
+    				</HorizontalLayout>
+    				<ActiveX name="ie" clsid="{8856F961-340A-11D0-A96B-00C04FD705A2}" delaycreate="false"/>
+    			</HorizontalLayout>
+    			<HorizontalLayout>
+    				<VerticalLayout>
+    					<HorizontalLayout height="28" bkcolor="#FFFFE272" bkcolor2="#FFF3B544" bordercolor="#FF1B4876" bordersize="1" childpadding="4" inset="4,2,2,2" >
+    						<Label text="斗地主>浙江电信一区>测试房间1" />
+    						<Button width="100" text="快速加入" />
+    						<Button width="60" text="查找" />
+    						<Button width="60" text="设置" />
+    						<Button name="leaveBtn" width="60" text="退出" />
+    					</HorizontalLayout>
+    					<DeskList name="destlist" bkcolor="#FF103668" vscrollbar="true" />
+    				</VerticalLayout>	
+    				<HorizontalLayout width="300" minwidth="200" maxwidth="600" inset="4,0,0,0" sepwidth="-4" bkcolor="#FF60B1FE">
+    					<VerticalLayout >
+    						<List name="userlist" height="260" bkcolor="#FFE0F0FE" inset="1,0,1,0" bordercolor="#FF1B4876" bordersize="1" itemshowhtml="true" itemalign="center" itemhotimage="file='tree_hot.bmp' corner='2,1,2,1'" itemselectedimage="file='tree_select.bmp' corner='2,1,2,1'" itemshowhtml="true" vscrollbar="true" hscrollbar="true" headerbkimage="headerctrl_normal.bmp" >
+								<ListHeader />
+								<ListHeaderItem text="" width="20" enabled="false" dragable="false" normalimage="headerctrl_normal.bmp" hotimage="headerctrl_hot.bmp" pushedimage="headerctrl_down.bmp" sepimage="Headerctrl_Sperator.bmp" />
+								<ListHeaderItem text="" width="20" enabled="false" dragable="false" normalimage="headerctrl_normal.bmp" hotimage="headerctrl_hot.bmp" pushedimage="headerctrl_down.bmp" sepimage="Headerctrl_Sperator.bmp" />
+    							<ListHeaderItem text="昵称" width="120" normalimage="headerctrl_normal.bmp" hotimage="headerctrl_hot.bmp" pushedimage="headerctrl_down.bmp" sepimage="Headerctrl_Sperator.bmp" />
+    							<ListHeaderItem text="游戏等级" width="60" normalimage="headerctrl_normal.bmp" hotimage="headerctrl_hot.bmp" pushedimage="headerctrl_down.bmp" sepimage="Headerctrl_Sperator.bmp" />
+    							<ListHeaderItem text="胜率" width="60" normalimage="headerctrl_normal.bmp" hotimage="headerctrl_hot.bmp" pushedimage="headerctrl_down.bmp" sepimage="Headerctrl_Sperator.bmp" />
+    							<ListHeaderItem text="断线率" width="60" normalimage="headerctrl_normal.bmp" hotimage="headerctrl_hot.bmp" pushedimage="headerctrl_down.bmp" sepimage="Headerctrl_Sperator.bmp" />
+    							<ListHeaderItem text="总局数" width="60" normalimage="headerctrl_normal.bmp" hotimage="headerctrl_hot.bmp" pushedimage="headerctrl_down.bmp" sepimage="Headerctrl_Sperator.bmp" />
+    						</List>    						<Control height="4" />
+    						<Text name="sysmsg" height="90" text="系统公告栏" showhtml="true" bkcolor="#FFFFE8B1" />
+    						<Control height="4" />
+							<RichEdit name="chatmsglist" inset="4,2,4,2" bkcolor="#FFFFE8B1" bkcolor2="#FFF2F5FA" bkcolor3="#FFFFE8B1" multiline="true" vscrollbar="true" autovscroll="true" enabled="true" rich="true" readonly="true" />
+    						<Control height="4" />
+    						<HorizontalLayout height="36" inset="2,2,2,2" bkcolor="#FF92DAFD" bkcolor2="#FF74BDF2">
+    						    <Container>
+    							    <Combo name="chatCombo" normalimage="file='Combo_nor.bmp' corner='2,2,20,2'" hotimage="file='Combo_over.bmp' corner='2,2,20,2'" pushedimage="file='Combo_over.bmp' corner='2,2,20,2'" textpadding="1,1,1,1" >
+    								    <ListLabelElement text="快点出，我等的花儿已谢了" />
+    								    <ListLabelElement text="打牌要露脸，做人要厚道" />
+    								    <ListLabelElement text="吹气球，吹个大气球" />
+    							    </Combo>
+    							    <HorizontalLayout inset="1,1,1,1" mouse="false">
+    							        <Edit name="chatEdit" />
+    							        <Control width="20" mouse="false"/>
+    							    </HorizontalLayout>
+    							</Container>
+    							<Button name="sendbtn" text="发送" width="60" normalimage="file='button_nor.bmp' corner='4,4,4,4' fade='200'" hotimage="file='button_over.bmp' corner='4,4,4,4' fade='200'" pushedimage="file='button_down.bmp' corner='4,4,4,4' fade='200'"/>
+    						</HorizontalLayout>
+    						<Control height="2" bkcolor="#FF1A80D3" />
+    					</VerticalLayout>
+    				</HorizontalLayout>
+    			</HorizontalLayout>
+    		</TabLayout>
+        </VerticalLayout>
+        
+    	<VerticalLayout name="fadeEffect" visible="false" bkcolor="#20000000">
+    	    <Control />
+    	    <HorizontalLayout height="80" inset="0,10,0,0" >
+    	        <Control />
+    	        <VerticalLayout width="180" inset="6,6,6,6" bkimage="file='winbk.bmp' corner='4,48,4,4' mask='#FFFF00FF'">
+    	            <Label text="请选择你的操作" height="24" />
+    	            <HorizontalLayout inset="0,10,0,0" >
+    	                <Control />
+    	                <Button name="quitbtn" width="60" text="退出游戏" textcolor="#FFFF0000"/>
+				        <Control width="10"/>
+    	                <Button name="returnhallbtn" width="60" text="返回大厅" textcolor="#FFFF0000"/>
+    	                <Control />
+    	            </HorizontalLayout>
+    	        </VerticalLayout>
+    	        <Control />
+    	    </HorizontalLayout>
+    	    <Control />
+    	</VerticalLayout>
+    	        
+    </Container>
+</Window>

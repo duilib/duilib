@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window sizebox="4,4,6,6" caption="0,0,0,30" mininfo="450,300" roundcorner="3,3,3,3">
+	<Font name="Arial" size="12" bold="false" default="true" />
+    <Font name="Arial" size="12" bold="true" underline="true" defaultbold="true" />
+    <Default name="VScrollBar" value="button1normalimage=&quot;file='scrollbar.bmp' source='0,90,16,106' mask='#FFFF00FF'&quot; button1hotimage=&quot;file='scrollbar.bmp' source='18,90,34,106' mask='#FFFF00FF'&quot; button1pushedimage=&quot;file='scrollbar.bmp' source='36,90,52,106' mask='#FFFF00FF'&quot; button1disabledimage=&quot;file='scrollbar.bmp' source='54,90,70,106' mask='#FFFF00FF'&quot; button2normalimage=&quot;file='scrollbar.bmp' source='0,108,16,124' mask='#FFFF00FF'&quot; button2hotimage=&quot;file='scrollbar.bmp' source='18,108,34,124' mask='#FFFF00FF'&quot; button2pushedimage=&quot;file='scrollbar.bmp' source='36,108,52,124' mask='#FFFF00FF'&quot; button2disabledimage=&quot;file='scrollbar.bmp' source='54,108,70,124' mask='#FFFF00FF'&quot; thumbnormalimage=&quot;file='scrollbar.bmp' source='0,126,16,142' corner='2,2,2,2' mask='#FFFF00FF'&quot; thumbhotimage=&quot;file='scrollbar.bmp' source='18,126,34,142' corner='2,2,2,2' mask='#FFFF00FF'&quot; thumbpushedimage=&quot;file='scrollbar.bmp' source='36,126,52,142' corner='2,2,2,2' mask='#FFFF00FF'&quot; thumbdisabledimage=&quot;file='scrollbar.bmp' source='54,126,70,142' corner='2,2,2,2' mask='#FFFF00FF'&quot; railnormalimage=&quot;file='scrollbar.bmp' source='0,144,16,160' corner='2,2,2,2' mask='#FFFF00FF'&quot; railhotimage=&quot;file='scrollbar.bmp' source='18,144,34,160' corner='2,2,2,2' mask='#FFFF00FF'&quot; railpushedimage=&quot;file='scrollbar.bmp' source='36,144,52,160' corner='2,2,2,2' mask='#FFFF00FF'&quot; raildisabledimage=&quot;file='scrollbar.bmp' source='54,144,70,160' corner='2,2,2,2' mask='#FFFF00FF'&quot; bknormalimage=&quot;file='scrollbar.bmp' source='0,162,16,178' corner='2,2,2,2' mask='#FFFF00FF'&quot; bkhotimage=&quot;file='scrollbar.bmp' source='18,162,34,178' corner='2,2,2,2' mask='#FFFF00FF'&quot; bkpushedimage=&quot;file='scrollbar.bmp' source='36,162,52,178' corner='2,2,2,2' mask='#FFFF00FF'&quot; bkdisabledimage=&quot;file='scrollbar.bmp' source='54,162,70,178' corner='2,2,2,2' mask='#FFFF00FF'&quot; " />
+	<Default name="HScrollBar" value="button1normalimage=&quot;file='scrollbar.bmp' source='0,0,16,16' mask='#FFFF00FF'&quot; button1hotimage=&quot;file='scrollbar.bmp' source='18,0,34,16' mask='#FFFF00FF'&quot; button1pushedimage=&quot;file='scrollbar.bmp' source='36,0,52,16' mask='#FFFF00FF'&quot; button1disabledimage=&quot;file='scrollbar.bmp' source='54,0,70,16' mask='#FFFF00FF'&quot; button2normalimage=&quot;file='scrollbar.bmp' source='0,18,16,34' mask='#FFFF00FF'&quot; button2hotimage=&quot;file='scrollbar.bmp' source='18,18,34,34' mask='#FFFF00FF'&quot; button2pushedimage=&quot;file='scrollbar.bmp' source='36,18,52,34' mask='#FFFF00FF'&quot; button2disabledimage=&quot;file='scrollbar.bmp' source='54,18,70,34' mask='#FFFF00FF'&quot; thumbnormalimage=&quot;file='scrollbar.bmp' source='0,36,16,52' corner='2,2,2,2' mask='#FFFF00FF'&quot; thumbhotimage=&quot;file='scrollbar.bmp' source='18,36,34,52' corner='2,2,2,2' mask='#FFFF00FF'&quot; thumbpushedimage=&quot;file='scrollbar.bmp' source='36,36,52,52' corner='2,2,2,2' mask='#FFFF00FF'&quot; thumbdisabledimage=&quot;file='scrollbar.bmp' source='54,36,70,52' corner='2,2,2,2' mask='#FFFF00FF'&quot; railnormalimage=&quot;file='scrollbar.bmp' source='0,54,16,70' corner='2,2,2,2' mask='#FFFF00FF'&quot; railhotimage=&quot;file='scrollbar.bmp' source='18,54,34,70' corner='2,2,2,2' mask='#FFFF00FF'&quot; railpushedimage=&quot;file='scrollbar.bmp' source='36,54,52,70' corner='2,2,2,2' mask='#FFFF00FF'&quot; raildisabledimage=&quot;file='scrollbar.bmp' source='54,54,70,70' corner='2,2,2,2' mask='#FFFF00FF'&quot; bknormalimage=&quot;file='scrollbar.bmp' source='0,72,16,88' corner='2,2,2,2' mask='#FFFF00FF'&quot; bkhotimage=&quot;file='scrollbar.bmp' source='18,72,34,88' corner='2,2,2,2' mask='#FFFF00FF'&quot; bkpushedimage=&quot;file='scrollbar.bmp' source='36,72,52,88' corner='2,2,2,2' mask='#FFFF00FF'&quot; bkdisabledimage=&quot;file='scrollbar.bmp' source='54,72,70,88' corner='2,2,2,2' mask='#FFFF00FF'&quot; " />
+	
+	<VerticalLayout name="" text="" tooltip="" float="false" bordersize="0" bkcolor="#00000000" bkcolor2="#00000000" bordercolor="#006B93B2" inset="5,0,5,1" bkimage="file='main.png' corner='13,85,12,34'">
+		<HorizontalLayout name="" text="" tooltip="" float="false" bordersize="1" height="24" bkcolor="#006B93B2">
+			<Button name="" text="" tooltip="" float="false" bordersize="0" width="16" height="16" maxheight="16" maxwidth="16" normalimage="file='logo.png' dest='3,3,18,18'"  />
+			<Container name="" text="" tooltip="" float="false" bordersize="1" height="21" bkcolor="#00757676">
+				<Label name="" text="  QQDownload Demo" tooltip="" float="false" bordersize="1" bkcolor="#00B9D1EF" textcolor="#FFFFFFFF" disabledtextcolor="#FFA7A6AA"  />
+			</Container>
+			<Button name="maxbtn" text="" tooltip="" float="false" bordersize="1" width="27" height="20" bkcolor="#00B9D1EF" bkcolor2="#00757676" maxheight="20" maxwidth="27" normalimage="file='common.bmp' source='0,0,27,20'" hotimage="file='common.bmp' source='27,0,54,20'" pushedimage="file='common.bmp' source='54,0,81,20'"  />
+			<Button name="restorebtn" text="" tooltip="" float="false" bordersize="0" width="26" height="20" bkcolor="#FFB9D1EF" bkcolor2="#FF757676" bordercolor="#FF000000" maxheight="20" maxwidth="26" normalimage="file='common.bmp' source='0,20,26,40'" hotimage="file='common.bmp' source='26,20,52,40'" pushedimage="file='common.bmp' source='52,20,78,40'"  />
+			<Button name="minbtn" text="" tooltip="" float="false" bordersize="0" width="26" height="19" bkcolor="#FFB9D1EF" bkcolor2="#FF757676" bordercolor="#FF000000" maxheight="20" maxwidth="26" normalimage="file='common.bmp' source='0,40,28,60'" hotimage="file='common.bmp' source='27,40,55,60'" pushedimage="file='common.bmp' source='54,40,81,60'"  />
+			<Button name="closebtn" text="" tooltip="" float="false" bordersize="0" width="41" height="21" bkcolor="#FFB9D1EF" bkcolor2="#FF757676" bordercolor="#FF000000" maxheight="20" maxwidth="41" normalimage="file='common.bmp' source='0,60,41,80'" hotimage="file='common.bmp' source='41,60,82,80'" pushedimage="file='common.bmp' source='82,60,123,80'"  />
+		</HorizontalLayout>
+		<HorizontalLayout name="" text="" tooltip="" float="false" bordersize="0" height="28" bkcolor="#006B93B2">
+			<Edit name="" text="Demo from mbstudio.cn / meineson" tooltip="" float="false" bordersize="4" height="28" bkcolor="#FFFFFFFF" bordercolor="#FF164976" maxheight="28" bkimage="file='Search.bmp' corner='3,1,3,1'" />
+			<Button name="" text="" tooltip="" float="false" bordersize="0" width="120" height="45" bordercolor="#FF000000" maxheight="28" maxwidth="28" normalimage="file='zoom.bmp' source='30,0,60,28'" hotimage="file='zoom.bmp' source='60,0,90,28'" pushedimage="file='zoom.bmp' source='90,0,120,28'"/>
+			<Button name="" textcolor="#FFFFFFFF" text="资源库" tooltip="" float="false" bordersize="0" width="90" height="30" bkimage="file='ico.png' dest='0,6,18,24'" bkcolor2="#00757676" bordercolor="#FF000000" maxheight="28" maxwidth="150" hotimage="file='resrc_btn.bmp' source='0,28,79,56'" pushedimage="file='resrc_btn.bmp' source='0,56,79,84'" />
+		</HorizontalLayout>
+		<HorizontalLayout name="" text="" tooltip="" float="false" bkcolor="#006B93B2" height="30">
+			<Option name="down_list" text="下载列表" width="120" group="true" align="center" selected="true" normalimage="file='TabButton.png' source='0,90,120,120' corner='2,2,2,2'" hotimage="file='TabButton.png' source='0,120,120,150' corner='2,2,2,2'" selectedimage="file='TabButton.png' source='0,60,120,90' corner='2,2,2,2'"/>
+			<Option name="down_his" text="历史记录" width="120" group="true" align="center" normalimage="file='TabButton.png' source='0,90,120,120' corner='2,2,2,2'" hotimage="file='TabButton.png' source='0,120,120,150' corner='2,2,2,2'" selectedimage="file='TabButton.png' source='0,60,120,90' corner='2,2,2,2'"/>
+			<Container name="" text="" tooltip="" float="false" bordersize="1" height="21" bkcolor="#00757676"/>
+			<Button name="" text="" tooltip="" float="false" bordersize="0" width="120" height="45" bordercolor="#FF000000" maxheight="14" maxwidth="30" normalimage="file='taskdetail_ico.png' dest='0,5,14,19'"/>
+			<Button name="" text="" tooltip="" float="false" bordersize="0" width="120" height="45" bordercolor="#FF000000" maxheight="14" maxwidth="30" normalimage="file='garbage_ico.png' dest='0,5,14,19'"/>
+			<Button name="" text="" tooltip="" float="false" bordersize="0" width="120" height="45" bordercolor="#FF000000" maxheight="14" maxwidth="30" normalimage="file='color_ico.png' dest='0,5,14,19'"/>
+		</HorizontalLayout>
+		<TabLayout name="tab_main" text="" tooltip="" float="false" bordersize="1" bkcolor="#FF757676">
+			<List virtualwnd="page1" name="down_list_tab" text="" vscrollbar="true" hscrollbar="true" tooltip="" float="false" bordersize="1" bkcolor="#FFE0F0FE" bordercolor="#FF1B4876" itemselectedbkcolor="#FFC1E3FF" itemhotbkcolor="#FFE9F5FF" header="hidden" inset="3,3,3,3" bkimage="file='downlist_bk.png' ytiled='true'">
+				<ListContainerElement height="45">
+					<HorizontalLayout name="" text="" tooltip="" float="false" bkcolor="#006B93B2" childpadding="10" inset="3,5,3,5">
+						<Button name="down_ico" text="" tooltip="" float="false" bordersize="0" width="32" maxheight="26" bkcolor2="#FF757676" bordercolor="#FF000000" bkimage="downlist_app.png" normalimage="file='downlist_ok.png' dest='20,14,32,26'"  hotimage="file='downlist_pause.png' dest='15,9,32,26'"/>
+						<VerticalLayout>
+							<Label name="down_name" text="Download_0098_44.exe" textcolor="#FFAAAAAA" showhtml="true"></Label>
+							<Progress name="down_progress" float="false" foreimage="file='progress_fore.png'" min="0" max="100" value="100" maxheight="7" maxwidth="200"/>
+						</VerticalLayout>
+						<VerticalLayout width="80">
+							<Label name="down_size" align="right" text="2.04M " textcolor="#FFAAAAAA" showhtml="true"></Label>
+							<HorizontalLayout>
+								<Label text="<b>打开</b>" textcolor="#FFAAAAAA" showhtml="true"></Label>
+								<Label text="<b>文件夹</b>" textcolor="#FFAAAAAA" showhtml="true"></Label>
+							</HorizontalLayout>
+						</VerticalLayout>
+					</HorizontalLayout>
+				</ListContainerElement>
+				<ListContainerElement height="45">
+					<HorizontalLayout name="" text="" tooltip="" float="false" bkcolor="#006B93B2" childpadding="10" inset="3,5,3,5">
+						<Button name="down_ico" text="" tooltip="" float="false" bordersize="0" width="32" maxheight="26" bkcolor2="#FF757676" bordercolor="#FF000000" bkimage="downlist_app.png" normalimage="file='downlist_run.png' dest='20,14,32,26'"  hotimage="file='downlist_pause.png' dest='15,9,32,26'"/>
+						<VerticalLayout>
+							<Label name="down_name"  text="mbstudio.cn_test_stphone.exe" textcolor="#FFAAAAAA" showhtml="true"></Label>
+							<Progress name="down_progress" float="false" foreimage="file='progress_fore.png'" min="0" max="100" value="50" maxheight="7" maxwidth="200"/>
+						</VerticalLayout>
+						<VerticalLayout width="80">
+							<Label align="right" text="" textcolor="#FFAAAAAA" showhtml="true"></Label>
+							<Label text="1.03M/12.33M" textcolor="#FFAAAAAA" showhtml="true"></Label>
+						</VerticalLayout>
+					</HorizontalLayout>
+				</ListContainerElement>
+				<ListContainerElement height="45">
+					<HorizontalLayout name="" text="" tooltip="" float="false" bkcolor="#006B93B2" childpadding="10" inset="3,5,3,5">
+						<Button name="down_ico" text="" tooltip="" float="false" bordersize="0" width="32" maxheight="26" bkcolor2="#FF757676" bordercolor="#FF000000" bkimage="downlist_app.png" normalimage="file='downlist_pause.png' dest='20,14,32,26'"/>
+						<VerticalLayout>
+							<Label text="stphone_v1.5b_build110211.exe" textcolor="#FFAAAAAA" showhtml="true"></Label>
+							<Progress float="false" foreimage="file='progress_fore.png'" min="0" max="100" value="20" maxheight="7" maxwidth="200"/>
+						</VerticalLayout>
+						<VerticalLayout width="80">
+							<Label align="right" text="" textcolor="#FFAAAAAA" showhtml="true"></Label>
+							<Label text="37.4K/4.06M" textcolor="#FFAAAAAA" showhtml="true"></Label>
+						</VerticalLayout>
+					</HorizontalLayout>
+				</ListContainerElement>
+				<ListContainerElement height="45">
+					<HorizontalLayout name="" text="" tooltip="" float="false" bkcolor="#006B93B2" childpadding="10" inset="3,5,3,5">
+						<Button name="down_ico" text="" tooltip="" float="false" bordersize="0" width="32" maxheight="26" bkcolor2="#FF757676" bordercolor="#FF000000" bkimage="downlist_app.png" normalimage="file='downlist_run.png' dest='20,14,32,26'"  hotimage="file='downlist_pause.png' dest='15,9,32,26'"/>
+						<VerticalLayout>
+							<Label name="down_name"  text="mbstudio.cn_test_stphone.exe" textcolor="#FFAAAAAA" showhtml="true"></Label>
+							<Progress name="down_progress" float="false" foreimage="file='progress_fore.png'" min="0" max="100" value="50" maxheight="7" maxwidth="200"/>
+						</VerticalLayout>
+						<VerticalLayout width="80">
+							<Label align="right" text="" textcolor="#FFAAAAAA" showhtml="true"></Label>
+							<Label text="1.03M/12.33M" textcolor="#FFAAAAAA" showhtml="true"></Label>
+						</VerticalLayout>
+					</HorizontalLayout>
+				</ListContainerElement>
+				<ListContainerElement height="45">
+					<HorizontalLayout name="" text="" tooltip="" float="false" bkcolor="#006B93B2" childpadding="10" inset="3,5,3,5">
+						<Button name="down_ico" text="" tooltip="" float="false" bordersize="0" width="32" maxheight="26" bkcolor2="#FF757676" bordercolor="#FF000000" bkimage="downlist_app.png" normalimage="file='downlist_run.png' dest='20,14,32,26'"  hotimage="file='downlist_pause.png' dest='15,9,32,26'"/>
+						<VerticalLayout>
+							<Label name="down_name"  text="mbstudio.cn_test_stphone.exe" textcolor="#FFAAAAAA" showhtml="true"></Label>
+							<Progress name="down_progress" float="false" foreimage="file='progress_fore.png'" min="0" max="100" value="50" maxheight="7" maxwidth="200"/>
+						</VerticalLayout>
+						<VerticalLayout width="80">
+							<Label align="right" text="" textcolor="#FFAAAAAA" showhtml="true"></Label>
+							<Label text="1.03M/12.33M" textcolor="#FFAAAAAA" showhtml="true"></Label>
+						</VerticalLayout>
+					</HorizontalLayout>
+				</ListContainerElement>
+			</List>
+			<HorizontalLayout  virtualwnd="page2" name="" text="" tooltip="" float="false" bkcolor="#006B93B2" childpadding="10" inset="3,5,3,5">
+				<Button name="" text="" tooltip="" float="false" bordersize="0" width="32" maxheight="26" bkcolor2="#FF757676" bordercolor="#FF000000" bkimage="downlist_app.png" normalimage="file='downlist_pause.png' dest='20,14,32,26'" />
+				<VerticalLayout>
+					<Label text="stphone_v1.5b_build110211.exe" textcolor="#FFAAAAAA" showhtml="true"></Label>
+					<Progress float="false" foreimage="file='progress_fore.png'" min="0" max="100" value="20" maxheight="7" maxwidth="200"/>
+				</VerticalLayout>
+				<VerticalLayout width="80">
+					<Label align="right" text="" textcolor="#FFAAAAAA" showhtml="true"></Label>
+					<Label text="37.4K/4.06M" textcolor="#FFAAAAAA" showhtml="true"></Label>
+				</VerticalLayout>
+			</HorizontalLayout>
+		</TabLayout>
+		<HorizontalLayout name="" text="" tooltip="" float="false" bordersize="0" height="26" bkimage="file='toolbar\bk.bmp'" bkcolor="#00757676" inset="1,1,1,1" childpadding="0">
+			<Button name="down_new" text="新建" tooltip="" float="false" bordersize="0" width="68" maxheight="22" bkcolor2="#FF757676" bordercolor="#FF000000" bkimage="file='toolbar\toolbutton.bmp' source='0,0,68,22' corner='0,3,0,3" normalimage="file='toolbar\new.png' dest='3,4,17,18'"  />
+			<Button name="" text="" tooltip="" float="false" bordersize="0" width="30" maxheight="22" bkcolor2="#FF757676" bordercolor="#FF000000" normalimage="file='toolbar\start.png' dest='3,4,17,18'"  />
+			<Button name="" text="" tooltip="" float="false" bordersize="0" width="30" maxheight="22" bkcolor2="#FF757676" bordercolor="#FF000000" normalimage="file='toolbar\pause2.png' dest='3,4,17,18'"  />
+			<Button name="down_del" text="" tooltip="" float="false" bordersize="0" width="30" maxheight="22" bkcolor2="#FF757676" bordercolor="#FF000000" normalimage="file='toolbar\del.png' dest='3,4,17,18'"  />
+			<Button name="" text="" tooltip="" float="false" bordersize="0" width="30" maxheight="22" bkcolor2="#FF757676" bordercolor="#FF000000"  bkimage="file='toolbar\toolbutton.bmp' source='110,0,140,22' corner='0,3,0,3" normalimage="file='toolbar\ofenuse.png' dest='3,5,16,18'"  />
+			<Button name="" text="设置" tooltip="" float="false" bordersize="0" width="70" maxheight="22" bkcolor2="#FF757676" bordercolor="#FF000000" normalimage="file='toolbar\setting.png' dest='3,4,18,19'"  />
+			<Container height="22"/>
+			<Button name="" text="" tooltip="" float="false" bordersize="0" width="76" maxheight="24" bkcolor2="#FF757676" bordercolor="#FF000000" normalimage="file='toolbar\offline_down.png' source='0,0,76,24'"/>
+		</HorizontalLayout>
+		<HorizontalLayout name="" text="" tooltip="" float="false" bordersize="0" height="26" bkcolor="#00000000"/>
+	</VerticalLayout>
+</Window>
