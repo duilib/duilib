@@ -27,7 +27,7 @@ BEGIN_MESSAGE_MAP(CPropertiesWnd, CDockablePane)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// CPropertiesWnd ÏûÏ¢´¦Àí³ÌÐò
+// CPropertiesWnd æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 int CPropertiesWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
@@ -164,7 +164,7 @@ void CPropertiesWnd::SetUIValue(CMFCPropertyGridProperty* pProp,int nTag)
 			if(strNewVal.IsEmpty() || pManager->FindControl(strNewVal))
 			{
 				if(!strNewVal.IsEmpty())
-					MessageBox(strNewVal + _T(" Ãû³ÆÒÑ±»ÆäËû¿Ø¼þÊ¹ÓÃ£¡"));
+					MessageBox(strNewVal + _T(" åç§°å·²è¢«å…¶ä»–æŽ§ä»¶ä½¿ç”¨ï¼"));
 				pProp->SetValue((_variant_t)pControl->GetName());
 				return;
 			}
@@ -210,6 +210,10 @@ void CPropertiesWnd::SetUIValue(CMFCPropertyGridProperty* pProp,int nTag)
 			{
 				strNewVal=_T("0");
 				pProp->SetValue((_variant_t)(LONG)0);
+			}
+			else if (alpha<=255) 
+			{
+				pProp->SetValue((_variant_t)(LONG)alpha);
 			}
 			else
 			{
