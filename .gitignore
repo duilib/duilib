@@ -6,10 +6,9 @@
 # *~
 *.user
 .DS_Store
+Build/
 UnicodeRelease/
 UnicodeDebug/
-Release/
-Debug/
 Lib/
 /Utils
 /Lib
@@ -19,3 +18,5 @@ Lib/
 *.aps
 *.ncb
 *.sdf
+*.opensdf
+Sln/ipch/

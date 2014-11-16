@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<Resouces component="main" >
+	<Layouts>
+		<File name="MainWnd" path="main#layout\MainWnd.xml" />
+		<File name="rightPanel" path="main#layout\content.xml" />
+	</Layouts>
+	<Fonts>
+		<File path="main#res\font.xml" />
+	</Fonts>
+	<Languages>
+		<File langid="2052" path="main#i18n\zh_cn.xml" />
+		<File langid="1028" path="main#i18n\zh_tw.xml" />
+		<File langid="en" path="main#i18n\en.xml" />
+	</Languages>
+	
+	<Template>
+		<File name="" path="" />
+		<!-- 没想好 -->
+	</Template>
+</Resouces>

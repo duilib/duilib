@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<Window size="850,600" caption="0,0,0,100">
+    <Container width="850" height="600" bkimage="images\bj.jpg">
+		<Control name="aaa" />
+		<Container name="bbb" />
+    </Container>
+</Window>

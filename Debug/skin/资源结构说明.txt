@@ -1,0 +1,24 @@
+res.xml 		作为全局的资源表，描述需要载入的布局和多国语xml
+├─I18N			多国语xml文件
+├─layout		布局描述
+└─res			引用的资源文件，图片，字体等
+    └─image		二级目录用于合理存放资源文件，建议不要超过3级
+
+<Resouces name="main" >
+	<LayoutFiles>
+		<File type="Window" name="MainWnd" path="res\MainWnd.xml" />
+		<File type="View" name="rightPanel" path="res\content.xml" />
+	</LayoutFiles>
+	
+	<LanguageFiles>
+		<File path="language\zh_cn.xml" />
+		<File path="language\zh_tw.xml" />
+	</Language>
+	
+	<FontFiles>
+	</FontFiles>
+	
+	<Template>
+		<!-- 没想好 -->
+	</Template>
+</Resouces>

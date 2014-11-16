@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- $Id -->
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+    <noInheritable />
+    <assemblyIdentity type="win32" name="Microsoft.DTfW.DHL" version="6.11.1.404" processorArchitecture="x86" />
+    <file name="dbghelp.dll" />
+</assembly>
