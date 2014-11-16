@@ -51,8 +51,9 @@ public:
 	virtual void SetInvalidateRect(RECT& rect);
 	virtual RECT GetInvalidateRect();
 
-public:
-	// 绘图引擎应该干的事情：画文字，画图片，画线，画区域
+public:	// 绘图引擎应该干的事情：画文字，画图片，画线，画区域
+	// 填充颜色
+	virtual void DrawColor(LPCRECT rcSrc,DWORD dwColor);
 
 	virtual void DrawImage(ImageObject* pImageObj, int nAlpha, int x, int y, int nIndex = 0, bool bHole =false);
 	virtual void DrawImage9Gird(ImageObject* pImageObj,LPCRECT lp9Gird, int nAlpha, int x, int y, int nIndex = 0, bool bHole =false);
@@ -62,7 +63,7 @@ public:
 	void DrawText();
 	void DrawLine();
 	void DrawRect();
-private:
+protected:
 	CMemDC *m_pMemDC;
 	CDuiRect m_rcInvalidate;
 };

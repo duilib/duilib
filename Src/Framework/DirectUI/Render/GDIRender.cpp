@@ -42,3 +42,15 @@ void CGDIRender::DrawImage(ImageObject* pImageObj, RECT& rcSrc, RECT& rcDest, in
 {
 	
 }
+
+void CGDIRender::DrawColor(LPCRECT rcSrc,DWORD dwColor)
+{
+	if( dwColor <= 0x00FFFFFF )
+		return;
+	if( dwColor >= 0xFF000000 )
+	{
+		
+		::SetBkColor(m_pMemDC->GetSafeHdc(), RGB(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor)));
+		::ExtTextOut(m_pMemDC->GetSafeHdc(), 0, 0, ETO_OPAQUE, rcSrc, NULL, 0, NULL);
+	}
+}

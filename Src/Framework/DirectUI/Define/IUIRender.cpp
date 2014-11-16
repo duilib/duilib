@@ -59,6 +59,11 @@ void IUIRender::DrawImage9Gird(ImageObject* pImageObj,LPCRECT lp9Gird, int nAlph
 
 }
 
+void IUIRender::DrawColor(LPCRECT rcSrc,DWORD dwColor)
+{
+
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 CRenderClip::~CRenderClip()

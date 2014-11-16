@@ -16,6 +16,7 @@ CControlUI::CControlUI(void)
 	, m_bIsSetPos(false)
 	, m_nTooltipWidth(300)
 	, m_uState(UISTATE_Normal)
+	, m_dwBackColor(0xFF000000)
 {
 }
 
@@ -713,6 +714,17 @@ void CControlUI::Render(IUIRender* pRender,LPCRECT pRcPaint)
 	// 在1.X版中，对应CControlUI::DoPaint，该函数按顺序调用5个虚函数，分别是
 	// PaintBkColor、PaintBkImage、PaintStatusImage、PaintText、PaintBorder
 	// 所有控件重写这5个函数实现绘图
+
+	// 刷新区与控件叠加区域
+	CDuiRect rcPaint;
+	if( !rcPaint.IntersectRect(pRcPaint, &m_rcItem) )
+		return;
+
+	// 有叠加部分，重绘
+	if (m_dwBackColor != 0xFF000000)
+	{
+		pRender->DrawColor(&rcPaint,m_dwBackColor);
+	}
 }
 
 void CControlUI::SetState(UISTATE nState)

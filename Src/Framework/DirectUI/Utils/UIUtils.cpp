@@ -189,6 +189,11 @@ CDuiPoint CDuiRect::CenterPoint( void )
 	return CDuiPoint((left+right)/2, (top+bottom)/2);
 }
 
+bool CDuiRect::IntersectRect(LPCRECT lpRect1,LPCRECT lpRect2)
+{
+	return ::IntersectRect(this,lpRect1,lpRect2) == 0 ? false : true ;
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////
 //
@@ -925,7 +930,7 @@ COLORREF CDuiCodeOperation::StringToColor(const LPCTSTR lpszColorStringstr)
 	int nSegs=0;
 	if(str2[0] == L'#')
 	{
-		nSegs=swscanf(str2.c_str(),L"#%02x%02x%02x%02x",&r,&g,&b,&a);
+		nSegs=swscanf(str2.c_str(),L"#%02x%02x%02x%02x",&a,&r,&g,&b);
 	}
 
 	return RGB(r,g,b)|(a<<24);

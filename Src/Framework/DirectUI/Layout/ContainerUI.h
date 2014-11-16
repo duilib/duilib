@@ -37,14 +37,18 @@ public:
 	virtual LPCTSTR GetClass() const;
 	virtual LPVOID GetInterface(LPCTSTR lpszClass);
 
-	virtual void SetManager(CWindowUI* pManager, CControlUI* pParent);
-
 	//////////////////////////////////////////////////////////////////////////
 	// CControlUI
+	virtual void SetManager(CWindowUI* pManager, CControlUI* pParent);
+	virtual void Render(IUIRender* pRender,LPCRECT pRcPaint);
+	virtual void SetRect(LPCRECT rc);
+
+protected:
+	virtual void SetFloatPos(int iIndex);
 
 private:
 	CStdPtrArray m_items;
-	RECT m_rcInset;
+	CDuiRect m_rcInset;
 	int m_iChildPadding;
 	bool m_bAutoDestroy;
 	bool m_bDelayedDestroy;

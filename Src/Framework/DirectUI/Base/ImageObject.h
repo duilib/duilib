@@ -6,6 +6,7 @@
 // 创建人		: 	daviyang35@QQ.com
 // 创建时间	:	2014-11-09 15:30:54
 // 说明			:	绘图资源包装对象	
+绘图资源，多个对象可能引用同一个图片对象
 /////////////////////////////////////////////////////////////*/
 #pragma once
 
@@ -30,7 +31,6 @@ private:
 	int m_nHeight;
 	int m_nAlpha;
 	int m_nFrame;
-	int m_arrayState[5];
 	CDuiRect m_rc9Grid;	// 九宫格
 	CDuiString m_strFilePath;
 	CDuiString m_strKey;

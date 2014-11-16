@@ -93,6 +93,7 @@ public:
 	void Empty();
 	bool IsNull() const;
 	bool PtInRect(POINT pt);
+	bool IntersectRect(LPCRECT lpRect1,LPCRECT lpRect2);
 	void Join(const RECT& rc);
 	void ResetOffset();
 	void Normalize();

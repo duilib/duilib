@@ -131,10 +131,10 @@ protected:
 	CDuiSize m_cxyMax;
 	UISTATE m_uState;
 	DWORD m_dwBackColor;
-	CDuiString m_sBkImage;
 
-	ImageObject	m_arrayImage[UISTATE_Control];
-	CDuiString		m_arrayText[UISTATE_Control];
+	CDuiString m_sBkImage;
+	ImageObject *m_pImageBackground;
+	CDuiString m_strText;
 
 public:
 	// Manager

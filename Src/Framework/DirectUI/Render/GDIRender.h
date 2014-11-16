@@ -21,6 +21,8 @@ public:
 	virtual void DrawImage(ImageObject* pImageObj, int nAlpha, RECT& rect, int nIndex = 0, bool bHole =false);
 	virtual void DrawImage(ImageObject* pImageObj, RECT& rcSrc, RECT& rcDest, int nIndex = 0);
 
+	virtual void DrawColor(LPCRECT rcSrc,DWORD dwColor);
+
 };
 
 #endif // GDIRender_h__
