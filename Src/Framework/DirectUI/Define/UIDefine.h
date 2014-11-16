@@ -58,8 +58,8 @@
 class CControlUI;
 class IUIRender;
 class CObjectUI;
-class CImageObject;
-class CFontObject;
+class ImageObject;
+class FontObject;
 class TemplateObject;
 
 #define UI_DECLARE_DYNCREATE() \
@@ -73,11 +73,12 @@ class TemplateObject;
 	CUIEngine::GetInstance()->RegisterControl(ControlName, &ClassName::CreateObject)\
 
 typedef CControlUI* (_cdecl *PROCCONTROLCREATE)();
+typedef std::vector<CDuiString> VecString;
 typedef std::map<CDuiString,CDuiString> StringMap;
 typedef StringMap AttributeMap;
 typedef std::map<CDuiString,TemplateObject*> TemplateMap;
-typedef std::map<CDuiString,CImageObject*>	ImagePoolMap;
-typedef std::vector<CFontObject*>		FontPoolVector;
+typedef std::map<CDuiString,ImageObject*>	ImagePoolMap;
+typedef std::vector<FontObject*>		FontPoolVector;
 
 static DWORD WM_DIRECTUI_MESSAGE	= ::RegisterWindowMessage(_T("WM_DIRECTUI_MESSAGE"));
 

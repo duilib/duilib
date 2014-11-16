@@ -9,11 +9,11 @@
 /////////////////////////////////////////////////////////////*/
 #pragma once
 
-class DIRECTUI_API CFontObject
+class DIRECTUI_API FontObject
 {
 public:
-	CFontObject(void);
-	~CFontObject(void);
+	FontObject(void);
+	~FontObject(void);
 
 private:
 	HFONT m_hFont;

@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "UIUtils.h"
 #include <algorithm>
+#include <xfunctional>
+#include <locale>
 
 /////////////////////////////////////////////////////////////////////////////////////
 //
@@ -790,6 +792,53 @@ void CDuiStringOperation::lower(CDuiString &str)
 void CDuiStringOperation::upper(CDuiString &str)
 {
 	std::transform(str.begin(), str.end(), str.begin(), toupper); 
+}
+
+bool CDuiStringOperation::parseAttributeString(LPCTSTR lpszAttributeString,StringMap& attributeMap)
+{
+	VecString vec;
+	splite(lpszAttributeString,_T(" "),vec);
+	size_t count = vec.size();
+	if ( count == 0 )
+		return false;
+	
+	for ( size_t i = 0 ;i < count ; ++i)
+	{
+		VecString attribute;
+		splite(vec[i].c_str(),_T("="),attribute);
+		if ( attribute.size() == 2 )
+		{
+			attributeMap[attribute[0]] =  attribute[1];
+			trim(attributeMap[attribute[0]]);
+		}
+	}
+
+	return true;
+}
+
+void CDuiStringOperation::splite(LPCTSTR lpszContent,LPCTSTR lpszDelim,VecString& vec)
+{
+	CDuiString s(lpszContent);
+	CDuiString delim(lpszDelim);
+
+	size_t last = 0;
+	size_t index=s.find_first_of(delim,last);
+	while (index!=std::string::npos)
+	{
+		vec.push_back(s.substr(last,index-last));
+		last=index+1;
+		index=s.find_first_of(delim,last);
+	}
+	if (index-last>0)
+	{
+		vec.push_back(s.substr(last,index-last));
+	}
+}
+
+void CDuiStringOperation::trim(CDuiString&content)
+{
+	content.erase(0, content.find_first_not_of(_T("' \n\r\t")));  
+	content.erase(content.find_last_not_of(_T("' \n\r\t")) + 1); 
 }
 
 //////////////////////////////////////////////////////////////////////////

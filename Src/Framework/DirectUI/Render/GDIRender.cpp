@@ -11,7 +11,7 @@ CGDIRender::~CGDIRender(void)
 {
 }
 
-void CGDIRender::DrawImage(CImageObject* pImageObj, int nAlpha, int x, int y, int nIndex /*= 0*/, bool bHole /*=false*/)
+void CGDIRender::DrawImage(ImageObject* pImageObj, int nAlpha, int x, int y, int nIndex /*= 0*/, bool bHole /*=false*/)
 {
 	HDC hDC = GetPaintDC();
 
@@ -33,12 +33,12 @@ void CGDIRender::DrawImage(CImageObject* pImageObj, int nAlpha, int x, int y, in
 	::DeleteObject(hPen);
 }
 
-void CGDIRender::DrawImage(CImageObject* pImageObj, int nAlpha, RECT& rect, int nIndex /*= 0*/, bool bHole /*=false*/)
+void CGDIRender::DrawImage(ImageObject* pImageObj, int nAlpha, RECT& rect, int nIndex /*= 0*/, bool bHole /*=false*/)
 {
 	
 }
 
-void CGDIRender::DrawImage(CImageObject* pImageObj, RECT& rcSrc, RECT& rcDest, int nIndex /*= 0*/)
+void CGDIRender::DrawImage(ImageObject* pImageObj, RECT& rcSrc, RECT& rcDest, int nIndex /*= 0*/)
 {
 	
 }

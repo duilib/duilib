@@ -11,8 +11,8 @@
 #include "Utils/UIUtils.h"
 
 class CRenderClip;
-class CImageObject;
-class CFontObject;
+class ImageObject;
+class FontObject;
 
 class DIRECTUI_API CMemDC
 {
@@ -54,10 +54,10 @@ public:
 public:
 	// 绘图引擎应该干的事情：画文字，画图片，画线，画区域
 
-	virtual void DrawImage(CImageObject* pImageObj, int nAlpha, int x, int y, int nIndex = 0, bool bHole =false);
-	virtual void DrawImage9Gird(CImageObject* pImageObj,LPCRECT lp9Gird, int nAlpha, int x, int y, int nIndex = 0, bool bHole =false);
-	virtual void DrawImage(CImageObject* pImageObj, int nAlpha, RECT& rect, int nIndex = 0, bool bHole =false);
-	virtual void DrawImage(CImageObject* pImageObj, RECT& rcSrc,  RECT& rcDest, int nIndex = 0);
+	virtual void DrawImage(ImageObject* pImageObj, int nAlpha, int x, int y, int nIndex = 0, bool bHole =false);
+	virtual void DrawImage9Gird(ImageObject* pImageObj,LPCRECT lp9Gird, int nAlpha, int x, int y, int nIndex = 0, bool bHole =false);
+	virtual void DrawImage(ImageObject* pImageObj, int nAlpha, RECT& rect, int nIndex = 0, bool bHole =false);
+	virtual void DrawImage(ImageObject* pImageObj, RECT& rcSrc,  RECT& rcDest, int nIndex = 0);
 
 	void DrawText();
 	void DrawLine();

@@ -2,11 +2,11 @@
 #include "FontObject.h"
 
 
-CFontObject::CFontObject(void)
+FontObject::FontObject(void)
 {
 }
 
 
-CFontObject::~CFontObject(void)
+FontObject::~FontObject(void)
 {
 }

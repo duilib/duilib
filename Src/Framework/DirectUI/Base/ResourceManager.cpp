@@ -159,13 +159,13 @@ void CResourceManager::parseLayouts(TiXmlElement * pLayouts, LPCTSTR lpszCompone
 
 			pcstrAttributeVaule = pElement->Attribute("name");
 			if ( pcstrAttributeVaule != NULL)
-				strName = CDuiCharsetConvert::MbcsToUnicode(pcstrAttributeVaule);
+				strName = CDuiCharsetConvert::UTF8ToUnicode(pcstrAttributeVaule);
 			else
 				break;
 
 			pcstrAttributeVaule = pElement->Attribute("path");
 			if ( pcstrAttributeVaule != NULL)
-				strPath = CDuiCharsetConvert::MbcsToUnicode(pcstrAttributeVaule);
+				strPath = CDuiCharsetConvert::UTF8ToUnicode(pcstrAttributeVaule);
 			else
 				break;
 
@@ -256,8 +256,8 @@ TemplateObject* CResourceManager::XmlToTemplate(TiXmlElement *pElement,TemplateO
 	{
 		
 		pChildTemplateObj->SetAttribute(
-			CDuiCharsetConvert::MbcsToUnicode(pAttribute->Name()).c_str(),
-			CDuiCharsetConvert::MbcsToUnicode(pAttribute->Value()).c_str()
+			CDuiCharsetConvert::UTF8ToUnicode(pAttribute->Name()).c_str(),
+			CDuiCharsetConvert::UTF8ToUnicode(pAttribute->Value()).c_str()
 			);
 		//::OutputDebugStringA(pAttribute->Name());
 		//::OutputDebugStringA(pAttribute->Value());

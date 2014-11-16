@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <Window size="850,600" caption="0,0,0,100">
     <Container width="850" height="600" bkimage="images\bj.jpg">
-		<Control name="aaa" />
-		<Container name="bbb" />
+		<!-- <Control bk.image="" bk.color="#FF00FF00" /> -->
+		<!-- <Label  /> -->
+		<Control name="btnClose" image="file='main#res\MainClose.png' 中文='中文内容English' direction='v/h' count='3' imgseq='0,1,2'" />
+		<!-- <Button name="btnMin" />
+		<CheckBox name="chkChoseMe" />
+		<Radio />
+		<View name="rightPanel" /> -->
     </Container>
 </Window>

@@ -52,7 +52,16 @@ void CControlUI::SendNotify(DWORD dwType, WPARAM wParam /*= 0*/, LPARAM lParam /
 
 void CControlUI::SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue)
 {
-	if( _tcscmp(lpszName, _T("pos")) == 0 ) 
+	if ( _tcscmp(lpszName, _T("image")) == 0 )
+	{
+		StringMap attributeMap;
+		CDuiStringOperation::parseAttributeString(lpszValue,attributeMap);
+		if ( attributeMap.size() > 0)
+		{
+
+		}
+	}
+	else if( _tcscmp(lpszName, _T("pos")) == 0 ) 
 	{
 		RECT rcPos = { 0 };
 		CDuiCodeOperation::StringToRect(lpszValue,&rcPos);

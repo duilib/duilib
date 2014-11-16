@@ -33,9 +33,9 @@ public:
 
 	CControlUI *CreateControlFromTemplate(TemplateObject *pTemplate,CWindowUI* pManager,CControlUI* pParent=NULL);
 
-	void AddFont(CFontObject *pFont);
-	CImageObject* GetImage(LPCTSTR lpszImagePath,bool bCached = true );
-	CFontObject*	GetFont(LPCTSTR lpszFontName);
+	void AddFont(FontObject *pFont);
+	ImageObject* GetImage(LPCTSTR lpszImagePath,bool bCached = true );
+	FontObject*	GetFont(LPCTSTR lpszFontName);
 
 private:
 	bool GetAbsolutePath(CDuiString& strFullPath,LPCTSTR lpszComponent,LPCTSTR lpszRelativePath);

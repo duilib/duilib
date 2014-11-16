@@ -277,6 +277,12 @@ public:
 	static int replace(CDuiString& content,LPCTSTR lpszOld,LPCTSTR lpszNew,bool bIsLoop = true);
 	static void lower(CDuiString &str);
 	static void upper(CDuiString &str);
+	static void trim(CDuiString&content);
+
+	static void splite(LPCTSTR lpszContent,LPCTSTR lpszDelim,VecString& vec);
+
+	// 返回真，说明是Map
+	static bool parseAttributeString(LPCTSTR lpszAttributeString,StringMap& attributeMap);
 };
 
 //////////////////////////////////////////////////////////////////////////

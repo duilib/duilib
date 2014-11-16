@@ -10,7 +10,6 @@
 	<Languages>
 		<File langid="2052" path="main#i18n\zh_cn.xml" />
 		<File langid="1028" path="main#i18n\zh_tw.xml" />
-		<File langid="en" path="main#i18n\en.xml" />
 	</Languages>
 	
 	<Template>

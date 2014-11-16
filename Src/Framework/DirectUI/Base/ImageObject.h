@@ -9,11 +9,11 @@
 /////////////////////////////////////////////////////////////*/
 #pragma once
 
-class DIRECTUI_API CImageObject
+class DIRECTUI_API ImageObject
 {
 public:
-	CImageObject(void);
-	~CImageObject(void);
+	ImageObject(void);
+	~ImageObject(void);
 
 	void SetImagePath(LPCTSTR lpszImagePath);
 	LPCTSTR GetImagePath(void);
@@ -22,7 +22,7 @@ public:
 	int GetHeight();
 
 public:
-	CImageObject* Get();
+	ImageObject* Get();
 	void Release();
 
 private:

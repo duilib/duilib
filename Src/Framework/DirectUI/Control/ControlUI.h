@@ -132,6 +132,10 @@ protected:
 	UISTATE m_uState;
 	DWORD m_dwBackColor;
 	CDuiString m_sBkImage;
+
+	ImageObject	m_arrayImage[UISTATE_Control];
+	CDuiString		m_arrayText[UISTATE_Control];
+
 public:
 	// Manager
 	virtual void SetManager(CWindowUI* pManager, CControlUI* pParent);

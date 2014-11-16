@@ -34,17 +34,17 @@ RECT IUIRender::GetInvalidateRect()
 	return m_rcInvalidate;
 }
 
-void IUIRender::DrawImage(CImageObject* pImageObj, int nAlpha, int x, int y, int nIndex /*= 0*/, bool bHole /*=false*/)
+void IUIRender::DrawImage(ImageObject* pImageObj, int nAlpha, int x, int y, int nIndex /*= 0*/, bool bHole /*=false*/)
 {
 
 }
 
-void IUIRender::DrawImage(CImageObject* pImageObj, int nAlpha, RECT& rect, int nIndex /*= 0*/, bool bHole /*=false*/)
+void IUIRender::DrawImage(ImageObject* pImageObj, int nAlpha, RECT& rect, int nIndex /*= 0*/, bool bHole /*=false*/)
 {
 
 }
 
-void IUIRender::DrawImage(CImageObject* pImageObj, RECT& rcSrc, RECT& rcDest, int nIndex /*= 0*/)
+void IUIRender::DrawImage(ImageObject* pImageObj, RECT& rcSrc, RECT& rcDest, int nIndex /*= 0*/)
 {
 
 }
@@ -54,7 +54,7 @@ IUIRender::~IUIRender()
 	m_pMemDC = NULL;
 }
 
-void IUIRender::DrawImage9Gird(CImageObject* pImageObj,LPCRECT lp9Gird, int nAlpha, int x, int y, int nIndex /*= 0*/, bool bHole /*=false*/)
+void IUIRender::DrawImage9Gird(ImageObject* pImageObj,LPCRECT lp9Gird, int nAlpha, int x, int y, int nIndex /*= 0*/, bool bHole /*=false*/)
 {
 
 }

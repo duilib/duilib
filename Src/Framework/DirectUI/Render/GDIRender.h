@@ -17,9 +17,9 @@ public:
 	CGDIRender(void);
 	virtual ~CGDIRender(void);
 
-	virtual void DrawImage(CImageObject* pImageObj, int nAlpha, int x, int y, int nIndex = 0, bool bHole =false);
-	virtual void DrawImage(CImageObject* pImageObj, int nAlpha, RECT& rect, int nIndex = 0, bool bHole =false);
-	virtual void DrawImage(CImageObject* pImageObj, RECT& rcSrc, RECT& rcDest, int nIndex = 0);
+	virtual void DrawImage(ImageObject* pImageObj, int nAlpha, int x, int y, int nIndex = 0, bool bHole =false);
+	virtual void DrawImage(ImageObject* pImageObj, int nAlpha, RECT& rect, int nIndex = 0, bool bHole =false);
+	virtual void DrawImage(ImageObject* pImageObj, RECT& rcSrc, RECT& rcDest, int nIndex = 0);
 
 };
 
