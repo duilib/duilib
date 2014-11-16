@@ -76,15 +76,24 @@ class DIRECTUI_API ITextRender
 class DIRECTUI_API CRenderClip
 {
 public:
+	CRenderClip();
 	~CRenderClip();
 	RECT rcItem;
 	HDC hDC;
 	HRGN hRgn;
 	HRGN hOldRgn;
 
+	// 创建一个剪切区域，将绘图限制在rc区域内
 	static void GenerateClip(HDC hDC, RECT rc, CRenderClip& clip);
+
+	// 创建一个圆角剪切区域，将绘图限制在rc区域内
+	// width、height 横/纵向圆角弧度
 	static void GenerateRoundClip(HDC hDC, RECT rc, RECT rcItem, int width, int height, CRenderClip& clip);
+
+	// 使用活跃区域作为绘图区
 	static void UseOldClipBegin(HDC hDC, CRenderClip& clip);
+
+	// 恢复控件完整活跃区
 	static void UseOldClipEnd(HDC hDC, CRenderClip& clip);
 };
 

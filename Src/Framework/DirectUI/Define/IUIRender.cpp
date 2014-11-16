@@ -66,6 +66,14 @@ void IUIRender::DrawColor(LPCRECT rcSrc,DWORD dwColor)
 
 //////////////////////////////////////////////////////////////////////////
 
+CRenderClip::CRenderClip()
+	: hDC(NULL)
+	, hRgn(NULL)
+	, hOldRgn(NULL)
+{
+	ZeroMemory(&rcItem,sizeof(RECT));
+}
+
 CRenderClip::~CRenderClip()
 {
 	ASSERT(::GetObjectType(hDC)==OBJ_DC || ::GetObjectType(hDC)==OBJ_MEMDC);
