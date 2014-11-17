@@ -56,6 +56,10 @@
 #ifndef GetAValue
 #define GetAValue(rgb)      (LOBYTE((rgb)>>24))
 #endif // !GetAValue
+#ifndef GetWindowOwner
+#define     GetWindowOwner(hwnd)    GetWindow(hwnd, GW_OWNER)
+#endif // !GetWindowOwner
+
 
 class CControlUI;
 class IUIRender;

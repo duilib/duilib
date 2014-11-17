@@ -87,21 +87,9 @@ bool CButtonUI::EventHandler(TEventUI& event)
 	}
 	if( event.dwType == UIEVENT_LBUTTONDOWN || event.dwType == UIEVENT_LDBLCLICK )
 	{
-		if( ::PtInRect(&m_rcItem, event.ptMouse) && IsEnabled() )
+		if( m_rcItem.PtInRect(event.ptMouse) && IsEnabled() )
 		{
 			m_uState |= UISTATE_Pushed | UISTATE_Captured;
-			Invalidate();
-		}
-		return true;
-	}
-	if( event.dwType == UIEVENT_MOUSEMOVE )
-	{
-		if( (m_uState & UISTATE_Captured) != 0 )
-		{
-			if( ::PtInRect(&m_rcItem, event.ptMouse) )
-				m_uState |= UISTATE_Pushed;
-			else
-				m_uState &= ~UISTATE_Pushed;
 			Invalidate();
 		}
 		return true;
@@ -110,7 +98,7 @@ bool CButtonUI::EventHandler(TEventUI& event)
 	{
 		if( (m_uState & UISTATE_Captured) != 0 )
 		{
-			if( ::PtInRect(&m_rcItem, event.ptMouse) )
+			if( m_rcItem.PtInRect(event.ptMouse) )
 				Activate();
 			m_uState &= ~(UISTATE_Pushed | UISTATE_Captured);
 			Invalidate();
@@ -134,9 +122,22 @@ bool CButtonUI::EventHandler(TEventUI& event)
 		}
 		// return;
 	}
+	if( event.dwType == UIEVENT_MOUSEMOVE )
+	{
+		if( (m_uState & UISTATE_Captured) != 0 )
+		{
+			if( m_rcItem.PtInRect( event.ptMouse) )
+				m_uState |= UISTATE_Pushed;
+			else
+				m_uState &= ~UISTATE_Pushed;
+			Invalidate();
+		}
+		return true;
+	}
 	if( event.dwType == UIEVENT_MOUSELEAVE )
 	{
-		if( IsEnabled() ) {
+		if( IsEnabled() )
+		{
 			m_uState &= ~UISTATE_Hover;
 			Invalidate();
 		}

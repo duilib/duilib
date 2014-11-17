@@ -112,7 +112,7 @@ private:
 	bool m_bIsModal;
 	bool m_bIsMaximized;
 	bool m_bIsMinimized;
-	RECT m_rcRestore;
+	CDuiRect m_rcRestore;
 
 	CDuiString m_strWindowTitle;
 
@@ -124,7 +124,7 @@ private:
 	IUIRender *m_pRenderEngine;
 
 	// Tooltip
-	HWND m_hwndTooltip;
+	HWND m_hWndTooltip;
 	TOOLINFO m_ToolTip;
 
 	// Events

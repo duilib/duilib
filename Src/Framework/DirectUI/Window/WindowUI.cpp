@@ -5,6 +5,8 @@
 #include "Base/TemplateObject.h"
 #include "Define/UIDefine.h"
 
+#pragma comment(lib,"comctl32.lib")
+
 CWindowUI::CWindowUI(void)
 	: m_bIsModal(false)
 	, m_bIsMaximized(false)
@@ -14,11 +16,15 @@ CWindowUI::CWindowUI(void)
 	, m_pEventClick(NULL)
 	, m_pFocus(NULL)
 	, m_pEventKey(NULL)
-	, m_hwndTooltip(NULL)
+	, m_pEventHover(NULL)
+	, m_hWndTooltip(NULL)
 	, m_uTimerID(0x1000)
+	, m_hInstance(NULL)
+	, m_bMouseTracking(false)
 {
 	m_ptLastMousePos.x = 0;
 	m_ptLastMousePos.y = 0;
+	ZeroMemory(&m_ToolTip,sizeof(TOOLINFO));
 }
 
 
@@ -425,6 +431,7 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 		{
 			if( m_pFocus != NULL )
 			{
+				// 焦点控件不为空，则发送事件消息给他
 				TEventUI event;
 				event.dwType = UIEVENT_WINDOWSIZE;
 				event.pSender = m_pFocus;
@@ -433,13 +440,35 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 				event.lParam = lParam;
 				m_pFocus->EventHandler(event);
 			}
+			// 标记根控件需要刷新
 			// 为什么只添加标记，而不直接计算新坐标呢？
 			if( m_pRootControl != NULL )
 				m_pRootControl->NeedUpdate();
 		}
 		break;
+		// WM_LBUTTONDOWN
+		// WM_LBUTTONUP
+		// WM_LBUTTONDBLCLK
+		// WM_RBUTTONDOWN
+		// WM_RBUTTONUP
+		// WM_RBUTTONDBLCLK
+		// 
+		// 以上消息都使用鼠标指针坐标查找对应的控件，没有或者不属于当前窗口的跳过
+		// xBUTTONDOWN中
+		//		1.设置控件为窗口m_pEventClick成员
+		//		2.设置控件为焦点
+		//		3.设置当前窗口为鼠标捕获
+		//		4.给控件发送 xBUTTONDOWN 事件
+		// xBUTTONUP中
+		//		1.释放鼠标捕获
+		//		2.给控件发送 xBUTTONUP 事件
+		//		3.设置窗口m_pEventClick为空
+		// xBUTTONDBLCLK 消息处理与 BUTTONDOWN 类似
+		//		唯一区别是发送给控件的是 xDBLCLICK 事件
 	case WM_LBUTTONDOWN:
 		{
+			bHandled = true;
+
 			// We alway set focus back to our app (this helps
 			// when Win32 child windows are placed on the dialog
 			// and we need to remove them on focus change).
@@ -467,6 +496,8 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 		break;
 	case WM_LBUTTONUP:
 		{
+			bHandled = true;
+
 			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 			m_ptLastMousePos = pt;
 			if( m_pEventClick == NULL )
@@ -486,6 +517,8 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 		break;
 	case WM_LBUTTONDBLCLK:
 		{
+			bHandled = true;
+
 			::SetFocus(m_hWnd);
 			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 			m_ptLastMousePos = pt;
@@ -507,6 +540,8 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 		break;
 	case WM_RBUTTONDOWN:
 		{
+			bHandled = true;
+
 			::SetFocus(m_hWnd);
 			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 			m_ptLastMousePos = pt;
@@ -531,6 +566,8 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 		break;
 	case WM_RBUTTONUP:
 		{
+			bHandled = true;
+
 			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 			m_ptLastMousePos = pt;
 			if( m_pEventClick == NULL )
@@ -550,6 +587,8 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 		break;
 	case WM_RBUTTONDBLCLK:
 		{
+			bHandled = true;
+
 			::SetFocus(m_hWnd);
 			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 			m_ptLastMousePos = pt;
@@ -571,6 +610,8 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 		break;
 	case WM_CONTEXTMENU:
 		{
+			bHandled = true;
+
 			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 			::ScreenToClient(m_hWnd, &pt);
 			m_ptLastMousePos = pt;
@@ -588,15 +629,88 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 			m_pEventClick = NULL;
 		}
 		break;
+	case WM_MOUSEMOVE:
+		{
+			bHandled = true;
+
+			// 已经注册了鼠标跟踪则跳过
+			if( !m_bMouseTracking )
+			{
+				TRACKMOUSEEVENT tme = { 0 };
+				tme.cbSize = sizeof(TRACKMOUSEEVENT);
+				tme.dwFlags = TME_HOVER | TME_LEAVE;
+				tme.hwndTrack = m_hWnd;
+				tme.dwHoverTime = m_hWndTooltip == NULL ? 400UL : (DWORD) ::SendMessage(m_hWndTooltip, TTM_GETDELAYTIME, TTDT_INITIAL, 0L);
+				_TrackMouseEvent(&tme);
+				// 标记已注册鼠标跟踪
+				m_bMouseTracking = true;
+			}
+
+			// 查找当前鼠标指针所在控件，并更新最后鼠标指针坐标
+			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+			m_ptLastMousePos = pt;
+			CControlUI* pNewHover = FindControl(pt);
+
+			// 鼠标指针没有对应的控件，返回
+			if( pNewHover != NULL && pNewHover->GetManager() != this )
+				break;
+
+			TEventUI event;
+			event.ptMouse = pt;
+			event.dwTimestamp = ::GetTickCount();
+
+			// 本次鼠标指针悬停控件与上一次不同，且上次悬停控件不为空
+			// 发送MouseLeave事件给上一次的悬停控件
+			if( pNewHover != m_pEventHover && m_pEventHover != NULL )
+			{
+				event.dwType = UIEVENT_MOUSELEAVE;
+				event.pSender = m_pEventHover;
+				m_pEventHover->EventHandler(event);
+				m_pEventHover = NULL;
+				if( m_hWndTooltip != NULL )
+					::SendMessage(m_hWndTooltip, TTM_TRACKACTIVATE, FALSE, (LPARAM) &m_ToolTip);
+			}
+
+			// 本次鼠标指针悬停控件与上一次不同，且本次悬停控件不为空
+			// 发送MouseEnter事件给本次的悬停控件
+			// 更新最后悬停控件
+			if( pNewHover != m_pEventHover && pNewHover != NULL )
+			{
+				event.dwType = UIEVENT_MOUSEENTER;
+				event.pSender = pNewHover;
+				pNewHover->EventHandler(event);
+				m_pEventHover = pNewHover;
+			}
+
+			// 发送MouseMove事件
+			if( m_pEventClick != NULL )
+			{
+				event.dwType = UIEVENT_MOUSEMOVE;
+				event.pSender = m_pEventClick;
+				m_pEventClick->EventHandler(event);
+			}
+			else if( pNewHover != NULL )
+			{
+				event.dwType = UIEVENT_MOUSEMOVE;
+				event.pSender = pNewHover;
+				pNewHover->EventHandler(event);
+			}
+		}
+		break;
 	case WM_MOUSEHOVER:
 		{
 			bHandled = true;
 
+			// 鼠标悬停消息触发，关闭跟踪标志
 			m_bMouseTracking = false;
+
+			// 查找当前鼠标指针所在控件，没有则返回
 			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 			CControlUI* pHover = FindControl(pt);
-			if( pHover == NULL ) break;
-			// Generate mouse hover event
+			if( pHover == NULL )
+				break;
+			
+			// 向最后悬停控件发送MouseHover事件
 			if( m_pEventHover != NULL )
 			{
 				TEventUI event;
@@ -606,10 +720,13 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 				event.dwTimestamp = ::GetTickCount();
 				m_pEventHover->EventHandler(event);
 			}
-			// Create tooltip information
+
+			// 读取当前悬停控件Tooltip字符串，没有则返回
 			CDuiString sToolTip = pHover->GetToolTip();
 			if( sToolTip.empty() ) 
 				return true;
+
+			// 显示当前悬停控件Tooltip
 			::ZeroMemory(&m_ToolTip, sizeof(TOOLINFO));
 			m_ToolTip.cbSize = sizeof(TOOLINFO);
 			m_ToolTip.uFlags = TTF_IDISHWND;
@@ -618,27 +735,48 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 			m_ToolTip.hinst = m_hInstance;
 			m_ToolTip.lpszText = const_cast<LPTSTR>( sToolTip.c_str() );
 			m_ToolTip.rect = pHover->GetRect();
-			if( m_hwndTooltip == NULL )
+			if( m_hWndTooltip == NULL )
 			{
-				m_hwndTooltip = ::CreateWindowEx(0, TOOLTIPS_CLASS, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, 
+				m_hWndTooltip = ::CreateWindowEx(0, TOOLTIPS_CLASS, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, 
 					CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, m_hWnd, NULL, m_hInstance, NULL);
-				::SendMessage(m_hwndTooltip, TTM_ADDTOOL, 0, (LPARAM) &m_ToolTip);
+				::SendMessage(m_hWndTooltip, TTM_ADDTOOL, 0, (LPARAM) &m_ToolTip);
 			}
-			::SendMessage( m_hwndTooltip,TTM_SETMAXTIPWIDTH,0, pHover->GetToolTipWidth());
-			::SendMessage(m_hwndTooltip, TTM_SETTOOLINFO, 0, (LPARAM) &m_ToolTip);
-			::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, TRUE, (LPARAM) &m_ToolTip);
+			::SendMessage( m_hWndTooltip,TTM_SETMAXTIPWIDTH,0, pHover->GetToolTipWidth());
+			::SendMessage(m_hWndTooltip, TTM_SETTOOLINFO, 0, (LPARAM) &m_ToolTip);
+			::SendMessage(m_hWndTooltip, TTM_TRACKACTIVATE, TRUE, (LPARAM) &m_ToolTip);
+		}
+		break;
+	case WM_MOUSELEAVE:
+		{
+			bHandled = true;
+
+			// 鼠标悬停消息触发，关闭跟踪标志
+			m_bMouseTracking = false;
+
+			if( m_hWndTooltip != NULL )
+				::SendMessage(m_hWndTooltip, TTM_TRACKACTIVATE, FALSE, (LPARAM) &m_ToolTip);
+			if( m_bMouseTracking )
+				::SendMessage(m_hWnd, WM_MOUSEMOVE, 0, (LPARAM) -1);
 		}
 		break;
 	case WM_MOUSEWHEEL:
 		{
+			bHandled = true;
+
+			// 将鼠标指针坐标转换为客户区坐标
+			// 基于坐标查找对应控件
 			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 			::ScreenToClient(m_hWnd, &pt);
 			m_ptLastMousePos = pt;
 			CControlUI* pControl = FindControl(pt);
+
+			// 没有对应控件，或者不属于当前窗口则跳过
 			if( pControl == NULL )
 				break;
 			if( pControl->GetManager() != this )
 				break;
+
+			// 计算滚动方向，发送ScrollWheel事件
 			int zDelta = (int) (short) HIWORD(wParam);
 			TEventUI event;
 			event.dwType = UIEVENT_SCROLLWHEEL;
@@ -683,8 +821,10 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 		break;
 	case WM_SETCURSOR:
 		{
-			if( LOWORD(lParam) != HTCLIENT ) break;
-			if( m_bMouseCapture ) return true;
+			if( LOWORD(lParam) != HTCLIENT )
+				break;
+			if( m_bMouseCapture )
+				return true;
 
 			POINT pt = { 0 };
 			::GetCursorPos(&pt);
@@ -702,6 +842,53 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 			event.wKeyState = MapKeyState();
 			event.dwTimestamp = ::GetTickCount();
 			pControl->EventHandler(event);
+		}
+		break;
+	case WM_TIMER:
+		{
+			int nCount = m_arrayTimers.GetSize();
+			for( int i = 0; i < nCount; i++ )
+			{
+				const TimerInfo* pTimer = static_cast<TimerInfo*>(m_arrayTimers[i]);
+				if( pTimer->hWnd == m_hWnd&& pTimer->uWinTimer == LOWORD(wParam) && pTimer->bKilled == false)
+				{
+					TEventUI event;
+					event.dwType = UIEVENT_TIMER;
+					event.pSender = pTimer->pSender;
+					event.wParam = pTimer->nLocalID;
+					event.dwTimestamp = ::GetTickCount();
+					pTimer->pSender->EventHandler(event);
+					break;
+				}
+			}
+		}
+		break;
+	case WM_CLOSE:
+		{
+			// Make sure all matching "closing" events are sent
+			TEventUI event ;
+			event.ptMouse = m_ptLastMousePos;
+			event.dwTimestamp = ::GetTickCount();
+			if( m_pEventHover != NULL )
+			{
+				event.dwType = UIEVENT_MOUSELEAVE;
+				event.pSender = m_pEventHover;
+				m_pEventHover->EventHandler(event);
+			}
+			if( m_pEventClick != NULL )
+			{
+				event.dwType = UIEVENT_LBUTTONUP;
+				event.pSender = m_pEventClick;
+				m_pEventClick->EventHandler(event);
+			}
+
+			SetFocus(NULL);
+
+			// Hmmph, the usual Windows tricks to avoid
+			// focus loss...
+			HWND hwndParent = GetWindowOwner(m_hWnd);
+			if( hwndParent != NULL )
+				::SetFocus(hwndParent);
 		}
 		break;
 	//case WM_NOTIFY:
