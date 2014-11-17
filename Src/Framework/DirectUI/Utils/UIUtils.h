@@ -299,6 +299,8 @@ class DIRECTUI_API CDuiCodeOperation
 public:
 	static ULONG HexStringToULong(LPCTSTR lpszValue, int nSize = -1);
 	static COLORREF HexStringToColor(const LPCTSTR lpszValue);
+
+	// 将#ARGB格式颜色转换为DWORD值
 	static COLORREF StringToColor(const LPCTSTR lpszColorString);
 
 	static void StringToRect(LPCTSTR lpszRectStr,LONG *l1,LONG *l2,LONG *l3,LONG *l4);

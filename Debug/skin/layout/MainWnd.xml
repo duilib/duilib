@@ -4,7 +4,7 @@
 		<Control pos="0,0,200,200" bkcolor="#FF0000ff" bkimage="file='main#res\MainClose.png' corner='5,5,5,5'" />
 		<Control pos="200,200,500,550" bkcolor="#FFff0000" bkimage="file='main#res\MainClose.png' corner='5,5,5,5'" />
 		<!-- <Label  /> -->
-		<!-- <Control name="btnClose" widthimage="file='main#res\MainClose.png' direction='v/h' count='3' imgseq='0,1,2'" /> -->
+		<Button pos="400,200,320,300" bkcolor="#FFFFFF00" name="btnClose" image="file='main#res\MainClose.png' direction='v/h' count='3' imgseq='0,1,2'" />
 		<!-- <Button name="btnMin" />
 		<CheckBox name="chkChoseMe" />
 		<Radio />

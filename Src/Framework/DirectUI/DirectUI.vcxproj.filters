@@ -106,6 +106,9 @@
     <ClInclude Include="Base\UIEngine.h">
       <Filter>Base</Filter>
     </ClInclude>
+    <ClInclude Include="Control\ButtonUI.h">
+      <Filter>Control</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -173,6 +176,9 @@
     </ClCompile>
     <ClCompile Include="Base\UIEngine.cpp">
       <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Control\ButtonUI.cpp">
+      <Filter>Control</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

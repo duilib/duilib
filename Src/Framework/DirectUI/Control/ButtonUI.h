@@ -1,25 +1,24 @@
-#ifndef ScrollBarUI_h__
-#define ScrollBarUI_h__
+#ifndef ButtonUI_h__
+#define ButtonUI_h__
 /*/////////////////////////////////////////////////////////////
 //
-// 文件名称	:	ScrollBarUI.h
+// 文件名称	:	ButtonUI.h
 // 创建人		: 	daviyang35@QQ.com
-// 创建时间	:	2014-11-14 9:20:00
-// 说明			:	滚动条
+// 创建时间	:	2014-11-16 23:46:28
+// 说明			:	Button
 /////////////////////////////////////////////////////////////*/
 #pragma once
 
-class DIRECTUI_API CScrollBarUI
+class CButtonUI
 	: public CControlUI
 {
 public:
-	CScrollBarUI(void);
-	virtual ~CScrollBarUI(void);
+	CButtonUI(void);
+	virtual ~CButtonUI(void);
 	UI_DECLARE_DYNCREATE();
 
 	virtual LPCTSTR GetClass() const;
 	virtual LPVOID GetInterface(LPCTSTR lpszClass);
-
 };
 
-#endif // ScrollBarUI_h__
+#endif // ButtonUI_h__

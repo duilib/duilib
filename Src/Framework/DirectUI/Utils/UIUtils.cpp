@@ -909,7 +909,8 @@ COLORREF CDuiCodeOperation::HexStringToColor(LPCWSTR lpszValue)
 			HexStringToULong(lpszValue + 4, 2),
 			HexStringToULong(lpszValue + 6, 2)
 			)| (HexStringToULong(lpszValue , 2)<<24);
-	}else
+	}
+	else
 	{
 		return RGB(
 			HexStringToULong(lpszValue, 2),

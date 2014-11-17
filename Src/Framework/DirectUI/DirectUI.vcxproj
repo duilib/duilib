@@ -98,6 +98,7 @@
     <ClInclude Include="Base\ResourceManager.h" />
     <ClInclude Include="Base\TemplateObject.h" />
     <ClInclude Include="Base\WindowWnd.h" />
+    <ClInclude Include="Control\ButtonUI.h" />
     <ClInclude Include="Control\ControlUI.h" />
     <ClInclude Include="Control\ScrollBarUI.h" />
     <ClInclude Include="Define\IUIRender.h" />
@@ -125,6 +126,7 @@
     <ClCompile Include="Base\ResourceManager.cpp" />
     <ClCompile Include="Base\TemplateObject.cpp" />
     <ClCompile Include="Base\WindowWnd.cpp" />
+    <ClCompile Include="Control\ButtonUI.cpp" />
     <ClCompile Include="Control\ControlUI.cpp" />
     <ClCompile Include="Control\ScrollBarUI.cpp" />
     <ClCompile Include="Define\IUIRender.cpp" />
