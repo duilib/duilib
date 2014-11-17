@@ -356,3 +356,98 @@ void CContainerUI::SetFloatPos(int iIndex)
 	//}
 	pControl->SetRect(&rcCtrl);
 }
+
+CControlUI* CContainerUI::FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags)
+{
+	// 查找子控件
+
+	// 查找条件包含显示，激活状态，如果当前布局控件处于隐藏，禁用状态都不响应
+	if( (uFlags & UIFIND_VISIBLE) != 0 && !IsVisible() )
+		return NULL;
+	if( (uFlags & UIFIND_ENABLED) != 0 && !IsEnabled() )
+		return NULL;
+
+	// 查找条件包含坐标命中
+	if( (uFlags & UIFIND_HITTEST) != 0 )
+	{
+		// 命中点不在布局控件区域内，返回
+		if( !m_rcItem.PtInRect(*(static_cast<LPPOINT>(pData))) )
+			return NULL;
+
+		// 布局内子控件如果禁用了鼠标事件，则跳过
+		if( !m_bMouseChildEnabled )
+		{
+			CControlUI* pResult = NULL;
+			if( m_pVerticalScrollBar != NULL )
+				pResult = m_pVerticalScrollBar->FindControl(Proc, pData, uFlags);
+			if( pResult == NULL && m_pHorizontalScrollBar != NULL )
+				pResult = m_pHorizontalScrollBar->FindControl(Proc, pData, uFlags);
+			if( pResult == NULL )
+				pResult = CControlUI::FindControl(Proc, pData, uFlags);
+			return pResult;
+		}
+	}
+
+	CControlUI* pResult = NULL;
+	if( m_pVerticalScrollBar != NULL )
+		pResult = m_pVerticalScrollBar->FindControl(Proc, pData, uFlags);
+	if( pResult == NULL && m_pHorizontalScrollBar != NULL )
+		pResult = m_pHorizontalScrollBar->FindControl(Proc, pData, uFlags);
+	if( pResult != NULL )
+		return pResult;
+
+	if( (uFlags & UIFIND_ME_FIRST) != 0 )
+	{
+		CControlUI* pControl = CControlUI::FindControl(Proc, pData, uFlags);
+		if( pControl != NULL )
+			return pControl;
+	}
+
+	// 计算布局控件内容区矩形坐标
+	CDuiRect rc = m_rcItem;
+	rc.left += m_rcInset.left;
+	rc.top += m_rcInset.top;
+	rc.right -= m_rcInset.right;
+	rc.bottom -= m_rcInset.bottom;
+
+	// 如果滚动条处于显示状态，减掉相应的宽高度
+	if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() )
+		rc.right -= m_pVerticalScrollBar->GetFixedWidth();
+	if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() )
+		rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
+
+
+	if( (uFlags & UIFIND_TOP_FIRST) != 0 )
+	{
+		for( int it = m_items.GetSize() - 1; it >= 0; it-- )
+		{
+			CControlUI* pControl = static_cast<CControlUI*>(m_items[it])->FindControl(Proc, pData, uFlags);
+			if( pControl != NULL )
+			{
+				
+				if( (uFlags & UIFIND_HITTEST) != 0 && !pControl->IsFloat() && !rc.PtInRect(*(static_cast<LPPOINT>(pData))) )
+					continue;
+				else 
+					return pControl;
+			}            
+		}
+	}
+	else
+	{
+		for( int it = 0; it < m_items.GetSize(); it++ )
+		{
+			CControlUI* pControl = static_cast<CControlUI*>(m_items[it])->FindControl(Proc, pData, uFlags);
+			if( pControl != NULL )
+			{
+				if( (uFlags & UIFIND_HITTEST) != 0 && !pControl->IsFloat() && !rc.PtInRect(*(static_cast<LPPOINT>(pData))) )
+					continue;
+				else 
+					return pControl;
+			} 
+		}
+	}
+
+	if( pResult == NULL && (uFlags & UIFIND_ME_FIRST) == 0 )
+		pResult = CControlUI::FindControl(Proc, pData, uFlags);
+	return pResult;
+}

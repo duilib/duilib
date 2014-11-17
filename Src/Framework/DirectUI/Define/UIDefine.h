@@ -53,7 +53,9 @@
 #ifndef GET_Y_LPARAM
 #define GET_Y_LPARAM(lp)                        ((int)(short)HIWORD(lp))
 #endif // !GET_Y_LPARAM
-
+#ifndef GetAValue
+#define GetAValue(rgb)      (LOBYTE((rgb)>>24))
+#endif // !GetAValue
 
 class CControlUI;
 class IUIRender;

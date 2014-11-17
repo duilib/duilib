@@ -727,12 +727,12 @@ void CControlUI::Render(IUIRender* pRender,LPCRECT pRcPaint)
 	}
 }
 
-void CControlUI::SetState(UISTATE nState)
+void CControlUI::SetState(DWORD nState)
 {
 	m_uState = nState;
 }
 
-UISTATE CControlUI::GetState(void)
+DWORD CControlUI::GetState(void)
 {
 	return m_uState;
 }

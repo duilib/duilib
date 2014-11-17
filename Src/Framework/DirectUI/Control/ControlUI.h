@@ -105,8 +105,8 @@ public:
 	virtual void SetContextMenuUsed(bool bMenuUsed);
 
 	// ¿Ø¼þ×´Ì¬
-	virtual void SetState(UISTATE nState);
-	virtual UISTATE GetState(void);
+	virtual void SetState(DWORD nState);
+	virtual DWORD GetState(void);
 
 	virtual bool Activate();
 
@@ -129,7 +129,7 @@ protected:
 	CDuiSize m_cxyFixed;
 	CDuiSize m_cxyMin;
 	CDuiSize m_cxyMax;
-	UISTATE m_uState;
+	DWORD m_uState;
 	DWORD m_dwBackColor;
 
 	CDuiString m_sBkImage;

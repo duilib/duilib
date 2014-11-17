@@ -19,6 +19,16 @@ public:
 
 	virtual LPCTSTR GetClass() const;
 	virtual LPVOID GetInterface(LPCTSTR lpszClass);
+	UINT GetControlFlags() const;
+
+	bool Activate();
+	void SetEnabled(bool bEnable = true);
+
+	virtual bool EventHandler(TEventUI& event);
+	virtual void Render(IUIRender* pRender,LPCRECT pRcPaint);
+
+	virtual void SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue);
+
 };
 
 #endif // ButtonUI_h__
