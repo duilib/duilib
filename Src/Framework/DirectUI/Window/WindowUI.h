@@ -43,6 +43,13 @@ public:
 	bool IsMaximized();
 	bool IsMinimized();
 
+	SIZE GetInitSize();
+	void SetInitSize(int cx, int cy);
+	RECT GetSizeBox();
+	void SetSizeBox(RECT& rcSizeBox);
+	RECT GetCaptionRect();
+	void SetCaptionRect(RECT& rcCaption);
+
 	CControlUI* GetFocus() const;
 	void SetFocus(CControlUI* pControl);
 	void SetFocusNeeded(CControlUI* pControl);
@@ -113,6 +120,17 @@ private:
 	bool m_bIsMaximized;
 	bool m_bIsMinimized;
 	CDuiRect m_rcRestore;
+
+	CDuiSize m_szRoundCorner;		
+	SIZE m_szMinWindow;				// 窗口最小
+	SIZE m_szMaxWindow;				// 窗口最大
+	CDuiSize m_szInitWindowSize;	// 初始化窗口大小
+	CDuiRect m_rcSizeBox;				// 可调整边框边距
+	CDuiRect m_rcCaption;				// 响应标题栏拖动
+
+	bool m_bShowUpdateRect;
+	BYTE m_nAlpha;
+	bool m_bLayedWindow;
 
 	CDuiString m_strWindowTitle;
 

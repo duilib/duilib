@@ -21,9 +21,10 @@ CWindowUI::CWindowUI(void)
 	, m_uTimerID(0x1000)
 	, m_hInstance(NULL)
 	, m_bMouseTracking(false)
+	, m_bLayedWindow(false)
 {
-	m_ptLastMousePos.x = 0;
-	m_ptLastMousePos.y = 0;
+	m_ptLastMousePos.x = -1;
+	m_ptLastMousePos.y = -1;
 	ZeroMemory(&m_ToolTip,sizeof(TOOLINFO));
 }
 
@@ -45,8 +46,80 @@ CWindowUI::~CWindowUI(void)
 	RemoveAllTimers();
 }
 
+SIZE CWindowUI::GetInitSize()
+{
+	return m_szInitWindowSize;
+}
+
+void CWindowUI::SetInitSize(int cx, int cy)
+{
+	m_szInitWindowSize.cx = cx;
+	m_szInitWindowSize.cy = cy;
+	if( m_pRootControl == NULL && m_hWnd != NULL )
+	{
+		::SetWindowPos(m_hWnd, NULL, 0, 0, cx, cy, SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
+	}
+}
+
+RECT CWindowUI::GetSizeBox()
+{
+	return m_rcSizeBox;
+}
+
+void CWindowUI::SetSizeBox(RECT& rcSizeBox)
+{
+	m_rcSizeBox = rcSizeBox;
+}
+
+RECT CWindowUI::GetCaptionRect()
+{
+	return m_rcCaption;
+}
+
+void CWindowUI::SetCaptionRect(RECT& rcCaption)
+{
+	m_rcCaption = rcCaption;
+}
+
 void CWindowUI::SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue)
 {
+	if( _tcscmp(lpszName, _T("size")) == 0 )
+	{
+		CDuiCodeOperation::StringToSize(lpszValue,&m_szInitWindowSize);
+		this->SetInitSize(m_szInitWindowSize.cx,m_szInitWindowSize.cy);
+	} 
+	else if( _tcscmp(lpszName, _T("sizebox")) == 0 )
+	{
+		CDuiCodeOperation::StringToRect(lpszValue,&m_rcSizeBox);
+	}
+	else if( _tcscmp(lpszName, _T("caption")) == 0 )
+	{
+		CDuiCodeOperation::StringToRect(lpszValue,&m_rcCaption);
+	}
+	else if( _tcscmp(lpszName, _T("roundcorner")) == 0 )
+	{
+		CDuiCodeOperation::StringToSize(lpszValue,&m_szRoundCorner);
+	} 
+	else if( _tcscmp(lpszName, _T("mininfo")) == 0 )
+	{
+		CDuiCodeOperation::StringToSize(lpszValue,&m_szMinWindow);
+	}
+	else if( _tcscmp(lpszName, _T("maxinfo")) == 0 )
+	{
+		CDuiCodeOperation::StringToSize(lpszValue,&m_szMaxWindow);
+	}
+	else if( _tcscmp(lpszName, _T("showdirty")) == 0 )
+	{
+		m_bShowUpdateRect = _tcscmp(lpszValue, _T("true")) == 0;
+	} 
+	else if( _tcscmp(lpszName, _T("alpha")) == 0 )
+	{
+		m_nAlpha = _ttoi(lpszValue);
+	} 
+	else if( _tcscmp(lpszName, _T("bktrans")) == 0 )
+	{
+		m_bLayedWindow = _tcscmp(lpszValue, _T("true")) == 0;
+	}
 }
 
 CControlUI * CWindowUI::GetRoot() const
@@ -67,10 +140,10 @@ CControlUI* CWindowUI::FindControl(POINT pt) const
 	return m_pRootControl->FindControl(__FindControlFromPoint, &pt, UIFIND_VISIBLE | UIFIND_HITTEST | UIFIND_TOP_FIRST);
 }
 
-CControlUI* CWindowUI::FindControl(LPCTSTR pstrName) const
+CControlUI* CWindowUI::FindControl(LPCTSTR lpszName) const
 {
 	ASSERT(m_pRootControl);
-	return static_cast<CControlUI*>(m_mapNameHash.Find(pstrName));
+	return static_cast<CControlUI*>(m_mapNameHash.Find(lpszName));
 }
 
 void CWindowUI::ShowWindow(int nCmdShow /*= SW_SHOW*/)
@@ -142,10 +215,10 @@ LRESULT CWindowUI::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	if ( ::IsWindow(m_hWnd))
 	{
 		bool bHandled = false;
-		this->MessageHandler(uMsg,wParam,lParam,bHandled);
+		LRESULT lRes= this->MessageHandler(uMsg,wParam,lParam,bHandled);
 		if ( bHandled == true)
 		{
-			return S_OK;
+			return lRes;
 		}
 		else
 		{
@@ -305,11 +378,11 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 		break;
 	case WM_NCACTIVATE:
 		{
-			bHandled = true;
-			if( !::IsIconic(*this) )
+			if( ::IsIconic(*this) )
+				bHandled = false;
+			else
 				bHandled = true;
-
-			return (wParam == 0) ? S_FALSE : S_OK;
+			return (wParam == 0) ? TRUE : FALSE;
 		}
 		break;
 	case WM_GETMINMAXINFO:
@@ -332,8 +405,63 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 			lpMMI->ptMaxTrackSize.y =rcWork.GetHeight();
 
 			// TODO 使用窗口属性控制最小窗口尺寸
-			lpMMI->ptMinTrackSize.x = 0;
-			lpMMI->ptMinTrackSize.y = 0;
+			lpMMI->ptMinTrackSize.x = m_szMinWindow.cx;
+			lpMMI->ptMinTrackSize.y = m_szMinWindow.cy;
+		}
+		break;
+	case WM_NCHITTEST:
+		{
+			bHandled = true;
+
+			POINT pt;
+			pt.x = GET_X_LPARAM(lParam); pt.y = GET_Y_LPARAM(lParam);
+			::ScreenToClient(*this, &pt);
+
+			RECT rcClient;
+			::GetClientRect(*this, &rcClient);
+
+			if( !::IsZoomed(*this) )
+			{
+				RECT rcSizeBox = m_rcSizeBox;
+				if( pt.y < rcClient.top + rcSizeBox.top )
+				{
+					if( pt.x < rcClient.left + rcSizeBox.left )
+						return HTTOPLEFT;
+					if( pt.x > rcClient.right - rcSizeBox.right )
+						return HTTOPRIGHT;
+					return HTTOP;
+				}
+				else if( pt.y > rcClient.bottom - rcSizeBox.bottom )
+				{
+					if( pt.x < rcClient.left + rcSizeBox.left )
+						return HTBOTTOMLEFT;
+					if( pt.x > rcClient.right - rcSizeBox.right )
+						return HTBOTTOMRIGHT;
+					return HTBOTTOM;
+				}
+
+				if( pt.x < rcClient.left + rcSizeBox.left )
+					return HTLEFT;
+				if( pt.x > rcClient.right - rcSizeBox.right )
+					return HTRIGHT;
+			}
+
+			RECT rcCaption = m_rcCaption;
+			if( pt.x >= rcClient.left + rcCaption.left
+				&& pt.x < rcClient.right - rcCaption.right
+				&& pt.y >= rcCaption.top
+				&& pt.y < rcCaption.bottom )
+			{
+					CControlUI* pControl = static_cast<CControlUI*>(FindControl(pt));
+					if( pControl
+						&& _tcsicmp(pControl->GetClass(), _T("ButtonUI")) != 0
+						&& _tcsicmp(pControl->GetClass(), _T("OptionUI")) != 0
+						&&_tcsicmp(pControl->GetClass(), _T("TextUI")) != 0
+						&&_tcsicmp(pControl->GetClass(), _T("EditUI")) != 0 )
+						return HTCAPTION;
+			}
+
+			return HTCLIENT;
 		}
 		break;
 	case WM_ERASEBKGND:
@@ -347,6 +475,38 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 			// ???
 			lResult = S_FALSE;
 			bHandled = true;
+		}
+		break;
+	case WM_PRINTCLIENT:
+		{
+			bHandled = true;
+
+			RECT rcClient;
+			::GetClientRect(m_hWnd, &rcClient);
+			HDC hDC = (HDC) wParam;
+			int save = ::SaveDC(hDC);
+			m_pRenderEngine->SetDevice(hDC);
+			m_pRootControl->Render(m_pRenderEngine,&rcClient);
+			// Check for traversing children. The crux is that WM_PRINT will assume
+			// that the DC is positioned at frame coordinates and will paint the child
+			// control at the wrong position. We'll simulate the entire thing instead.
+			if( (lParam & PRF_CHILDREN) != 0 )
+			{
+				HWND hWndChild = ::GetWindow(m_hWnd, GW_CHILD);
+				while( hWndChild != NULL )
+				{
+					RECT rcPos = { 0 };
+					::GetWindowRect(hWndChild, &rcPos);
+					::MapWindowPoints(HWND_DESKTOP, m_hWnd, reinterpret_cast<LPPOINT>(&rcPos), 2);
+					::SetWindowOrgEx(hDC, -rcPos.left, -rcPos.top, NULL);
+					// NOTE: We use WM_PRINT here rather than the expected WM_PRINTCLIENT
+					//       since the latter will not print the nonclient correctly for
+					//       EDIT controls.
+					::SendMessage(hWndChild, WM_PRINT, wParam, lParam | PRF_NONCLIENT);
+					hWndChild = ::GetWindow(hWndChild, GW_HWNDNEXT);
+				}
+			}
+			::RestoreDC(hDC, save);
 		}
 		break;
 	case WM_PAINT:
@@ -418,17 +578,41 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 			PAINTSTRUCT ps = {0};
 			HDC hDC = ::BeginPaint(m_hWnd,&ps);
 			{
+				m_pRenderEngine->SetDevice(&m_OffscreenDC);
 				m_pRenderEngine->SetInvalidateRect(ps.rcPaint);
 				m_pRootControl->Render(m_pRenderEngine,&ps.rcPaint);
 				m_pRenderEngine->DrawImage(NULL,0,0,0);
 			}
-			::BitBlt(ps.hdc, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right - ps.rcPaint.left,
-				ps.rcPaint.bottom - ps.rcPaint.top, m_OffscreenDC.GetSafeHdc(), ps.rcPaint.left, ps.rcPaint.top, SRCCOPY);
+
+			if ( !m_bLayedWindow )
+			{
+				::BitBlt(ps.hdc, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right - ps.rcPaint.left,
+					ps.rcPaint.bottom - ps.rcPaint.top, m_OffscreenDC.GetSafeHdc(), ps.rcPaint.left, ps.rcPaint.top, SRCCOPY);
+			}
+			else
+			{
+
+			}
+
 			::EndPaint(m_hWnd,&ps	);
 		}
 		break;
 	case WM_SIZE:
 		{
+			bHandled = true;
+
+#if defined(WIN32) && !defined(UNDER_CE)
+			if( !::IsIconic(*this) && (m_szRoundCorner.cx != 0 || m_szRoundCorner.cy != 0) ) {
+				CDuiRect rcWnd;
+				::GetClientRect(*this, &rcWnd);
+				rcWnd.Offset(-rcWnd.left, -rcWnd.top);
+				rcWnd.right++; rcWnd.bottom++;
+				HRGN hRgn = ::CreateRoundRectRgn(rcWnd.left, rcWnd.top, rcWnd.right, rcWnd.bottom, m_szRoundCorner.cx, m_szRoundCorner.cy);
+				::SetWindowRgn(*this, hRgn, TRUE);
+				::DeleteObject(hRgn);
+			}
+#endif
+
 			if( m_pFocus != NULL )
 			{
 				// 焦点控件不为空，则发送事件消息给他
@@ -819,6 +1003,19 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 			m_pEventKey = NULL;
 		}
 		break;
+	case WM_CHAR:
+		{
+			if( m_pFocus == NULL )
+				break;
+			TEventUI event;
+			event.dwType = UIEVENT_CHAR;
+			event.chKey = (TCHAR)wParam;
+			event.ptMouse = m_ptLastMousePos;
+			event.wKeyState = MapKeyState();
+			event.dwTimestamp = ::GetTickCount();
+			m_pFocus->EventHandler(event);
+		}
+		break;
 	case WM_SETCURSOR:
 		{
 			if( LOWORD(lParam) != HTCLIENT )
@@ -923,7 +1120,7 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 	default:
 		{
 			LRESULT lRes = ReflectNotifications(uMsg,wParam,lParam,bHandled);
-			if ( bHandled )
+			if ( bHandled == true)
 				return lRes;
 		}
 		break;
@@ -1060,7 +1257,7 @@ LPCTSTR CWindowUI::GetWindowClassName() const
 
 UINT CWindowUI::GetClassStyle() const
 {
-	return CS_DBLCLKS;
+	return CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW;
 }
 
 bool CWindowUI::TranslateAccelerator(MSG *pMsg)

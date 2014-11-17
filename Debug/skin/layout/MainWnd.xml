@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<Window size="850,600" caption="0,0,0,100">
+<Window size="850,600" caption="0,0,0,100" roundcorner="5,5" >
     <Container width="850" height="600" bkcolor="#FF00FF00" bkimage="images\bj.jpg">
 		<Control pos="0,0,200,200" bkcolor="#FF0000ff" bkimage="file='main#res\MainClose.png' corner='5,5,5,5'" />
 		<Control pos="200,200,500,550" bkcolor="#FFff0000" bkimage="file='main#res\MainClose.png' corner='5,5,5,5'" />

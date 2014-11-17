@@ -3,16 +3,28 @@
 
 IUIRender::IUIRender()
 	: m_pMemDC(NULL)
+	, m_hDC(NULL)
 {
 }
 
 void IUIRender::SetDevice(CMemDC *memDC)
 {
 	m_pMemDC = memDC;
+	m_hDC = NULL;
+}
+
+void IUIRender::SetDevice(HDC hDc)
+{
+	m_hDC = hDc;
+	m_pMemDC = NULL;
 }
 
 HDC IUIRender::GetPaintDC()
 {
+	if ( m_hDC != NULL && m_pMemDC == NULL)
+	{
+		return m_hDC;
+	}
 	if ( m_pMemDC )
 	{
 		if ( m_pMemDC->IsValid() )

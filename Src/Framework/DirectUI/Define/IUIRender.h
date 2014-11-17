@@ -46,6 +46,7 @@ public:
 
 public:
 	virtual void SetDevice(CMemDC *memDC);
+	virtual void SetDevice(HDC hDc);
 	virtual HDC GetPaintDC();
 
 	virtual void SetInvalidateRect(RECT& rect);
@@ -64,6 +65,7 @@ public:	// 绘图引擎应该干的事情：画文字，画图片，画线，画区域
 	void DrawLine();
 	void DrawRect();
 protected:
+	HDC m_hDC;
 	CMemDC *m_pMemDC;
 	CDuiRect m_rcInvalidate;
 };
