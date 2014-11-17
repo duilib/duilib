@@ -20,12 +20,12 @@ public:
 	static void ReleaseInstance();
 
 public:
-	virtual void SetLanguage(LPCTSTR lpszLanguage);
+	virtual void SetLanguage(LANGID wLangID);
 	virtual void InitResouceDir(LPCTSTR lpszPath,bool bIsDefault = false);
 
 	virtual void FreeResource(LPCTSTR lpszComponentName);
 
-	LPCTSTR GetLanguage();
+	LANGID GetLanguage();
 	LPCTSTR GetResouceDir(LPCTSTR lpszModuleName = NULL);
 
 	TemplateObject* GetWindowTemplate(LPCTSTR lpszWindowTemplateName);
@@ -37,6 +37,8 @@ public:
 	ImageObject* GetImage(LPCTSTR lpszImagePath,bool bCached = true );
 	FontObject*	GetFont(LPCTSTR lpszFontName);
 
+	LPCTSTR GetI18N(LPCTSTR lpszName);
+
 private:
 	bool GetAbsolutePath(CDuiString& strFullPath,LPCTSTR lpszComponent,LPCTSTR lpszRelativePath);
 
@@ -47,24 +49,24 @@ private:
 	TemplateObject* parseXmlFile(LPCTSTR lpszFilePath);
 	TemplateObject* XmlToTemplate(TiXmlElement *pElement,TemplateObject* pParent);
 
+	void LoadI18NString(LPCTSTR lpszFilePath);
 private:
 	// 对Resource.xml的缓存
 	StringMap m_mapComponent;		// 组件资源路径
 	TemplateMap m_mapLayouts;		// 布局，包含：窗口，视图
 	TemplateMap m_mapLanguages;	// 多国语
 	// TODO 暂不支持 TemplateMap m_mapTemplates;	// 可复用样式
-
+	
 private:
 	LANGID m_DefaultLangID;
 	CDuiString m_strDefaultResourcePath;
-	CDuiString m_strDefaultLanguage;
 	CDuiString m_strDefaultFont;
 	// 已加载资源的缓存
 	//CStdStringPtrMap m_mapImagePool;
 	//CStdStringPtrMap m_mapFontPool;
-	ImagePoolMap m_mapImagePool;	// 已加载的图片资源缓存
+	ImagePoolMap m_mapImageCached;	// 已加载的图片资源缓存
 	FontPoolVector m_vecFontPool;		// 已加载的字体样式缓存
-	StringMap		m_mapI18NPool;		// 多国语字符串缓存
+	StringMap		m_mapI18NCached;		// 多国语字符串缓存
 
 private:
 	CResourceManager(void);

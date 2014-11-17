@@ -306,6 +306,12 @@ public:
 	static void StringToRect(LPCTSTR lpszRectStr,LONG *l1,LONG *l2,LONG *l3,LONG *l4);
 	static void StringToRect(LPCTSTR lpszRectStr,LPRECT pRect);
 	static void StringToSize(LPCTSTR lpszSizeStr,LPSIZE pSize);
+
+	static int MbcsStrToInt(LPCSTR lpszNumber);
+	static int UnicodeStrToInt(LPCWSTR lpszNumber);
+
+	static int StringToInt(LPCTSTR lpszNumber);
+	static __int64 StringToInt64(LPCTSTR lpszNumber);
 }; 
 
 #endif // UIUtils_h__

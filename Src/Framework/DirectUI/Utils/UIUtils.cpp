@@ -961,3 +961,24 @@ void CDuiCodeOperation::StringToSize(LPCTSTR lpszSizeStr,LPSIZE pSize)
 	pSize->cx = _tcstol(lpszSizeStr, &pstr, 10);	ASSERT(pstr);    
 	pSize->cy = _tcstol(pstr + 1, &pstr, 10);			 ASSERT(pstr);     
 }
+
+int CDuiCodeOperation::StringToInt(LPCTSTR lpszNumber)
+{
+	
+	return _ttoi(lpszNumber);
+}
+
+__int64 CDuiCodeOperation::StringToInt64(LPCTSTR lpszNumber)
+{
+	return _ttoi64(lpszNumber);
+}
+
+int CDuiCodeOperation::MbcsStrToInt(LPCSTR lpszNumber)
+{
+	return atoi(lpszNumber);
+}
+
+int CDuiCodeOperation::UnicodeStrToInt(LPCWSTR lpszNumber)
+{
+	return _wtoi(lpszNumber);
+}

@@ -10,8 +10,8 @@ CResourceManager * CResourceManager::m_pInstace = NULL;
 CUIEngine* CResourceManager::m_pEngine = NULL;  
 
 CResourceManager::CResourceManager(void)
-	: m_DefaultLangID(MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT))
 {
+	m_DefaultLangID = GetUserDefaultUILanguage();
 }
 
 
@@ -46,15 +46,9 @@ void CResourceManager::ReleaseInstance()
 	}
 }
 
-void CResourceManager::SetLanguage(LPCTSTR lpszLanguage)
+LANGID CResourceManager::GetLanguage()
 {
-	m_strDefaultLanguage = lpszLanguage;
-	// TODO 可能需要发送一个语言变更通知
-}
-
-LPCTSTR CResourceManager::GetLanguage()
-{
-	return m_strDefaultLanguage.c_str();
+	return m_DefaultLangID;
 }
 
 void CResourceManager::InitResouceDir(LPCTSTR lpszPath,bool bIsDefault /*= false*/)
@@ -189,12 +183,59 @@ void CResourceManager::parseLayouts(TiXmlElement * pLayouts, LPCTSTR lpszCompone
 
 void CResourceManager::parseFonts(TiXmlElement * pLayouts, LPCTSTR lpszComponentName)
 {
+	TiXmlElement *pElement = pLayouts->FirstChildElement("File");
+	do 
+	{
+		if ( pElement == NULL)
+			break;
 
+
+
+		pElement = pElement->NextSiblingElement();
+	} while (pElement != NULL);
 }
 
 void CResourceManager::parseLanguages(TiXmlElement * pLayouts, LPCTSTR lpszComponentName)
 {
+	TiXmlElement *pElement = pLayouts->FirstChildElement("File");
+	do 
+	{
+		if ( pElement == NULL)
+			break;
 
+		do 
+		{
+			LANGID wLangID = 0;
+			CDuiString strPath;
+
+			LPCSTR pcstrAttributeVaule = NULL;
+
+			pcstrAttributeVaule = pElement->Attribute("langid");
+			if ( pcstrAttributeVaule != NULL)
+				wLangID = CDuiCodeOperation::MbcsStrToInt(pcstrAttributeVaule);
+			else
+				break;
+
+			if ( wLangID != m_DefaultLangID)
+				break;
+
+			pcstrAttributeVaule = pElement->Attribute("path");
+			if ( pcstrAttributeVaule != NULL)
+				strPath = CDuiCharsetConvert::UTF8ToUnicode(pcstrAttributeVaule);
+			else
+				break;
+
+			CDuiString strAbsolutePath;
+			GetAbsolutePath(strAbsolutePath,lpszComponentName,strPath.c_str());
+			if ( ::PathFileExists(strAbsolutePath.c_str()))
+			{
+				this->LoadI18NString(strAbsolutePath.c_str());
+			}
+
+		} while (false);
+
+		pElement = pElement->NextSiblingElement();
+	} while (pElement != NULL);
 }
 
 CControlUI * CResourceManager::CreateControlFromTemplate(TemplateObject *pTemplate,CWindowUI* pManager,CControlUI* pParent/*=NULL*/)
@@ -282,5 +323,53 @@ TemplateObject* CResourceManager::XmlToTemplate(TiXmlElement *pElement,TemplateO
 	}
 
 	return NULL;
+}
+
+LPCTSTR CResourceManager::GetI18N(LPCTSTR lpszName)
+{
+	StringMap::iterator iter = m_mapI18NCached.find(lpszName);
+	if ( iter != m_mapI18NCached.end())
+	{
+		return iter->second.c_str();
+	}
+
+	return NULL;
+}
+
+void CResourceManager::SetLanguage(LANGID wLangID)
+{
+	m_DefaultLangID = wLangID;
+}
+
+void CResourceManager::LoadI18NString(LPCTSTR lpszFilePath)
+{
+	TiXmlDocument doc;
+	if ( !doc.LoadFile(CDuiCharsetConvert::UnicodeToMbcs(lpszFilePath).c_str(),TIXML_ENCODING_UTF8))
+	{
+		return;
+	}
+
+	TiXmlElement *pRootElement = doc.RootElement();
+	TiXmlElement *pStringElemet = pRootElement->FirstChildElement("String");
+
+	do 
+	{
+		if ( pStringElemet == NULL)
+			break;
+
+		LPCSTR pName = pStringElemet->Attribute("name");
+		if ( pName != NULL)
+		{
+			CDuiString strName = CDuiCharsetConvert::UTF8ToUnicode(pName);
+
+			LPCSTR pVaule = pStringElemet->Value();
+			if ( pVaule != NULL)
+			{
+				m_mapI18NCached[strName] = CDuiCharsetConvert::UTF8ToUnicode(pVaule);
+			}
+		}
+
+		pStringElemet = pStringElemet->NextSiblingElement();
+	} while (pStringElemet != NULL);
 }
 
