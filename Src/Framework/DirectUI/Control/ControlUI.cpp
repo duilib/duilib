@@ -232,12 +232,12 @@ bool CControlUI::EventHandler(TEventUI& event)
 //	}
 //}
 
-RECT CControlUI::GetRect()
+RECT CControlUI::GetPosition()
 {
 	return m_rcItem;
 }
 
-void CControlUI::SetRect(LPCRECT rc)
+void CControlUI::SetPosition(LPCRECT rc)
 {
 	CDuiRect rect(rc);
 
@@ -266,7 +266,7 @@ void CControlUI::SetRect(LPCRECT rc)
 		CControlUI* pParent = GetParent();
 		if( pParent != NULL )
 		{
-			RECT rcParentPos = pParent->GetRect();
+			RECT rcParentPos = pParent->GetPosition();
 
 			if( m_cXY.cx >= 0 ) 
 				m_cXY.cx = m_rcItem.left - rcParentPos.left;
@@ -292,7 +292,7 @@ void CControlUI::SetRect(LPCRECT rc)
 	while( pParent = pParent->GetParent() )
 	{
 		rcTemp = invalidateRc;
-		rcParent = pParent->GetRect();
+		rcParent = pParent->GetPosition();
 		if( !::IntersectRect(&invalidateRc, &rcTemp, &rcParent) ) 
 		{
 			return;
@@ -372,7 +372,7 @@ void CControlUI::Invalidate()
 	while( pParent = pParent->GetParent() )
 	{
 		rcTemp = invalidateRect;
-		rcParent = pParent->GetRect();
+		rcParent = pParent->GetPosition();
 		if( !::IntersectRect(&invalidateRect, &rcTemp, &rcParent) ) 
 		{
 			return;

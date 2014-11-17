@@ -538,14 +538,14 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 				{
 					if( m_pRootControl->IsUpdateNeeded() )
 					{
-						m_pRootControl->SetRect(&rcClient);
+						m_pRootControl->SetPosition(&rcClient);
 					}
 					else
 					{
 						CControlUI* pControl = NULL;
 						while( pControl = m_pRootControl->FindControl(__FindControlFromUpdate, NULL, UIFIND_VISIBLE | UIFIND_ME_FIRST) )
 						{
-							pControl->SetRect( &pControl->GetRect() );
+							pControl->SetPosition( &pControl->GetPosition() );
 						}
 					}
 
@@ -918,7 +918,7 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 			m_ToolTip.uId = (UINT_PTR) m_hWnd;
 			m_ToolTip.hinst = m_hInstance;
 			m_ToolTip.lpszText = const_cast<LPTSTR>( sToolTip.c_str() );
-			m_ToolTip.rect = pHover->GetRect();
+			m_ToolTip.rect = pHover->GetPosition();
 			if( m_hWndTooltip == NULL )
 			{
 				m_hWndTooltip = ::CreateWindowEx(0, TOOLTIPS_CLASS, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, 
@@ -1354,7 +1354,7 @@ bool CWindowUI::IsCaptured()
 CControlUI* CALLBACK CWindowUI::__FindControlFromPoint(CControlUI* pThis, LPVOID pData)
 {
 	LPPOINT pPoint = static_cast<LPPOINT>(pData);
-	return ::PtInRect(&pThis->GetRect(), *pPoint) ? pThis : NULL;
+	return ::PtInRect(&pThis->GetPosition(), *pPoint) ? pThis : NULL;
 }
 
 void CWindowUI::NeedUpdate()

@@ -42,7 +42,7 @@ public:
 	virtual void SetManager(CWindowUI* pManager, CControlUI* pParent);
 	CControlUI* FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags);
 	virtual void Render(IUIRender* pRender,LPCRECT pRcPaint);
-	virtual void SetRect(LPCRECT rc);
+	virtual void SetPosition(LPCRECT rc);
 
 protected:
 	virtual void SetFloatPos(int iIndex);

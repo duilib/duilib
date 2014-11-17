@@ -206,14 +206,14 @@ void CContainerUI::Render(IUIRender* pRender,LPCRECT pRcPaint)
 				CControlUI* pControl = static_cast<CControlUI*>(m_items[it]);
 				if( !pControl->IsVisible() )
 					continue;
-				if( !rcTemp.IntersectRect( pRcPaint, &pControl->GetRect()) )
+				if( !rcTemp.IntersectRect( pRcPaint, &pControl->GetPosition()) )
 					continue;
 
 				// 子控件是浮动布局
 				if( pControl ->IsFloat() )
 				{
 					// 检查浮动控件是否超出了布局控件区域
-					if( !rcTemp.IntersectRect(&m_rcItem, &pControl->GetRect()) )
+					if( !rcTemp.IntersectRect(&m_rcItem, &pControl->GetPosition()) )
 						continue;
 					pControl->Render(pRender, pRcPaint);
 				}
@@ -230,14 +230,14 @@ void CContainerUI::Render(IUIRender* pRender,LPCRECT pRcPaint)
 				CControlUI* pControl = static_cast<CControlUI*>(m_items[it]);
 				if( !pControl->IsVisible() )
 					continue;
-				if( !rcTemp.IntersectRect(pRcPaint, &pControl->GetRect()) )
+				if( !rcTemp.IntersectRect(pRcPaint, &pControl->GetPosition()) )
 					continue;
 
 				// 子控件是浮动布局
 				if( pControl ->IsFloat() )
 				{
 					// 检查浮动控件是否超出了布局控件区域
-					if( !rcTemp.IntersectRect(&m_rcItem, &pControl->GetRect()) )
+					if( !rcTemp.IntersectRect(&m_rcItem, &pControl->GetPosition()) )
 						continue;
 
 					// 限制空间在重叠区域内刷新
@@ -248,7 +248,7 @@ void CContainerUI::Render(IUIRender* pRender,LPCRECT pRcPaint)
 				else
 				{
 					// 不是浮动控件，最大不大于父窗口，控件区域与刷新区重叠就绘图
-					if( !rcTemp.IntersectRect( &rcContent, &pControl->GetRect()) )
+					if( !rcTemp.IntersectRect( &rcContent, &pControl->GetPosition()) )
 						continue;
 					pControl->Render(pRender, pRcPaint);
 				}
@@ -259,7 +259,7 @@ void CContainerUI::Render(IUIRender* pRender,LPCRECT pRcPaint)
 	// 最后画滚动条
 	if( m_pVerticalScrollBar != NULL && m_pVerticalScrollBar->IsVisible() )
 	{
-		if( rcTemp.IntersectRect( pRcPaint, &m_pVerticalScrollBar->GetRect()) )
+		if( rcTemp.IntersectRect( pRcPaint, &m_pVerticalScrollBar->GetPosition()) )
 		{
 			m_pVerticalScrollBar->Render(pRender, pRcPaint);
 		}
@@ -267,16 +267,16 @@ void CContainerUI::Render(IUIRender* pRender,LPCRECT pRcPaint)
 
 	if( m_pHorizontalScrollBar != NULL && m_pHorizontalScrollBar->IsVisible() )
 	{
-		if( rcTemp.IntersectRect( pRcPaint, &m_pHorizontalScrollBar->GetRect()) )
+		if( rcTemp.IntersectRect( pRcPaint, &m_pHorizontalScrollBar->GetPosition()) )
 		{
 			m_pHorizontalScrollBar->Render(pRender, pRcPaint);
 		}
 	}
 }
 
-void CContainerUI::SetRect(LPCRECT rc)
+void CContainerUI::SetPosition(LPCRECT rc)
 {
-	CControlUI::SetRect(rc);
+	CControlUI::SetPosition(rc);
 	if( m_items.IsEmpty() )
 		return;
 
@@ -298,7 +298,7 @@ void CContainerUI::SetRect(LPCRECT rc)
 		}
 		else
 		{
-			pControl->SetRect(&rcTemp); // 所有非float子控件放大到整个客户区
+			pControl->SetPosition(&rcTemp); // 所有非float子控件放大到整个客户区
 		}
 	}
 }
@@ -354,7 +354,7 @@ void CContainerUI::SetFloatPos(int iIndex)
 	//	}
 	//	pControl->SetRelativeParentSize(szParent);
 	//}
-	pControl->SetRect(&rcCtrl);
+	pControl->SetPosition(&rcCtrl);
 }
 
 CControlUI* CContainerUI::FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags)

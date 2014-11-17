@@ -64,8 +64,8 @@ private:
 
 public:
 	// 控件坐标相关
-	virtual RECT GetRect();						// GetPos
-	virtual void SetRect(LPCRECT rc);		// SetPos
+	virtual RECT GetPosition();						// GetPos
+	virtual void SetPosition(LPCRECT rc);		// SetPos
 	virtual RECT GetInterRect();					// 用于HostWindow
 	void SetInset(LPRECT rc);
 	RECT GetInset();
