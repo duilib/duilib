@@ -67,7 +67,7 @@ public:
 
 	bool SetNextTabControl(bool bForward = true);
 
-	// Contorl Event Filter
+	// 窗口控件消息通知接口
 	void AddNotify(INotifyUI *pNotify);
 	void RemoveNotify(INotifyUI *pNotify);
 
@@ -158,6 +158,12 @@ private:
 	UINT m_uTimerID;
 
 	CStdStringPtrMap m_mapNameHash;
+
+#ifdef _DEBUG
+	void TestUICrossThread();
+	DWORD m_dwRunningThread;
+#endif // _DEBUG
+
 
 private:
 	static CControlUI* CALLBACK __FindControlFromNameHash(CControlUI* pThis, LPVOID pData);

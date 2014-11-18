@@ -207,6 +207,9 @@ bool CWindowUI::IsMinimized()
 
 HWND CWindowUI::CreateDuiWindow(HWND hwndParent, LPCTSTR lpszWindowName,DWORD dwStyle /*=0*/, DWORD dwExStyle /*=0*/)
 {
+#ifdef _DEBUG
+	m_dwRunningThread = ::GetCurrentThreadId();
+#endif // _DEBUG
 	return CWindowWnd::Create(hwndParent,lpszWindowName,dwStyle,dwExStyle);
 }
 
@@ -1292,11 +1295,47 @@ bool CWindowUI::PreMessageHandler(const LPMSG pMsg, LRESULT& lRes)
 
 bool CWindowUI::SetNextTabControl(bool bForward /*= true*/)
 {
+	// If we're in the process of restructuring the layout we can delay the
+	// focus calulation until the next repaint.
+	if( m_bUpdateNeeded && bForward )
+	{
+		m_bFocusNeeded = true;
+		::InvalidateRect(m_hWnd, NULL, FALSE);
+		return true;
+	}
+
+	// Find next/previous tabbable control
+	FindTabInfo info1 = { 0 };
+	info1.pFocus = m_pFocus;
+	info1.bForward = bForward;
+	CControlUI* pControl = m_pRootControl->FindControl(__FindControlFromTab, &info1, UIFIND_VISIBLE | UIFIND_ENABLED | UIFIND_ME_FIRST);
+	if( pControl == NULL )
+	{
+		if( bForward )
+		{
+			// Wrap around
+			FindTabInfo info2 = { 0 };
+			info2.pFocus = bForward ? NULL : info1.pLast;
+			info2.bForward = bForward;
+			pControl = m_pRootControl->FindControl(__FindControlFromTab, &info2, UIFIND_VISIBLE | UIFIND_ENABLED | UIFIND_ME_FIRST);
+		}
+		else
+		{
+			pControl = info1.pLast;
+		}
+	}
+	if( pControl != NULL )
+		SetFocus(pControl);
+	m_bFocusNeeded = false;
 	return true;
 }
 
 void CWindowUI::SendNotify(TNotifyUI *pMsg, bool bAsync /*= false*/)
 {
+#ifdef _DEBUG
+	TestUICrossThread();
+#endif // _DEBUG
+
 	pMsg->ptMouse = m_ptLastMousePos;
 	pMsg->dwTimestamp = ::GetTickCount();
 	if( !bAsync )
@@ -1431,6 +1470,10 @@ void CWindowUI::SetFocusNeeded(CControlUI* pControl)
 
 void CWindowUI::Invalidate(RECT& rcItem)
 {
+#ifdef _DEBUG
+	TestUICrossThread();
+#endif // _DEBUG
+
 	::InvalidateRect(m_hWnd, &rcItem, FALSE);
 }
 
@@ -1605,3 +1648,13 @@ bool CWindowUI::InitControls(CControlUI* pControl, CControlUI* pParent /*= NULL*
 	pControl->FindControl(__FindControlFromNameHash, this, UIFIND_ALL);
 	return true;
 }
+#ifdef _DEBUG
+void CWindowUI::TestUICrossThread()
+{
+	// 警告：你在跨线程操作UI对象！
+	// 轻则运行效果看运气（正确的说是看CPU心情）
+	// 重则各种野指针漫天飞舞
+	// 如果你选择注释掉下面这行代码，崩溃不要怪Duilib不给力，这是能力和水平问题
+	ASSERT(m_dwRunningThread ==::GetCurrentThreadId());
+}
+#endif

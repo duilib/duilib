@@ -76,7 +76,10 @@ class TemplateObject;
 { return new ClassName; }\
 
 #define UI_REGISTER_DYNCREATE(ControlName, ClassName)\
-	CUIEngine::GetInstance()->RegisterControl(ControlName, &ClassName::CreateObject)\
+	CUIEngine::GetInstance()->RegisterControl(ControlName, &ClassName::CreateObject)
+
+#define UI_UNREGISTER_DYNCREATE(ControlName)\
+	CUIEngine::GetInstance()->UnregisterControl(ControlName)
 
 typedef CControlUI* (_cdecl *PROCCONTROLCREATE)();
 typedef std::vector<CDuiString> VecString;
@@ -129,9 +132,9 @@ typedef struct _stTImageInfo
 
 typedef struct _stFindTabInfo
 {
-	CControlUI* pFocus;
-	CControlUI* pLast;
-	bool bForward;
+	CControlUI* pFocus;	// 当前焦点控件
+	CControlUI* pLast;		
+	bool bForward;			// true 下一个控件，false 上一个控件
 	bool bNextIsIt;
 } FindTabInfo;
 

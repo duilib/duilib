@@ -54,13 +54,15 @@ void CUIEngine::Init()
 	UI_REGISTER_DYNCREATE(_T("Container"),CContainerUI);
 	UI_REGISTER_DYNCREATE(_T("ScrollBar"),CScrollBarUI);
 	UI_REGISTER_DYNCREATE(_T("Button"),CButtonUI);
-
 }
 
 void CUIEngine::Uninit()
 {
 	m_pResourceManager = NULL;
 	CResourceManager::ReleaseInstance();
+
+	m_ControlCreateMap.clear();
+	m_arrayDirectUI.Empty();
 
 	if ( m_bInitedCOM )
 	{
@@ -193,6 +195,15 @@ CControlUI* CUIEngine::CreateControl(LPCTSTR lpszType)
 	return NULL;
 }
 
+void CUIEngine::UnregisterControl(LPCTSTR lpszType)
+{
+	ProcControlCreateMap::iterator iter = m_ControlCreateMap.find(lpszType);
+	if ( iter != m_ControlCreateMap.end())
+	{
+		m_ControlCreateMap.erase(iter);
+	}
+}
+
 void CUIEngine::SkinWindow(CWindowUI* pWindow)
 {
 	m_arrayDirectUI.Add(pWindow);
@@ -206,5 +217,35 @@ void CUIEngine::UnSkinWindow(CWindowUI* pWindow)
 CResourceManager* CUIEngine::GetResourceManager()
 {
 	return m_pResourceManager;
+}
+
+CWindowUI* CUIEngine::GetWindow(HWND hWnd)
+{
+	int count = m_arrayDirectUI.GetSize();
+	for (int i = 0; i < count; ++i)
+	{
+		CWindowUI* pWindow = static_cast<CWindowUI*>(m_arrayDirectUI.GetAt(i));
+		HWND hWindow = pWindow->GetHWND();
+		if ( ::IsWindow(hWindow) && hWnd == hWindow)
+		{
+			return pWindow;
+		}
+	}
+	return NULL;
+}
+
+CWindowUI* CUIEngine::GetWindow(LPCTSTR lpszName)
+{
+	int count = m_arrayDirectUI.GetSize();
+	for (int i = 0; i < count; ++i)
+	{
+		CWindowUI* pWindow = static_cast<CWindowUI*>(m_arrayDirectUI.GetAt(i));
+		if ( ::IsWindow(pWindow->GetHWND()) )
+		{
+			if ( _tcscmp(pWindow->GetName(),lpszName) == 0)
+				return pWindow;
+		}
+	}
+	return NULL;
 }
 

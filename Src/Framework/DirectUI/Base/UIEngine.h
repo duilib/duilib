@@ -39,13 +39,19 @@ public:
 	bool TranslateMessage(const LPMSG pMsg);
 	bool PumpMessage();
 
+	// 注册/反注册自绘窗口
 	void SkinWindow(CWindowUI* pWindow);
 	void UnSkinWindow(CWindowUI* pWindow);
-	void UnSkinWindow(HWND hWnd);
+
+	// 根据窗口句柄查找自绘窗口
+	CWindowUI* GetWindow(HWND hWnd);
+	// 根据窗口名称查找自绘窗口
+	CWindowUI* GetWindow(LPCTSTR lpszName);
 
 public:
 	virtual void RegisterControl(LPCTSTR lpszType, PROCCONTROLCREATE pFn_ControlCreate);
 	CControlUI* CreateControl(LPCTSTR lpszType);
+	void UnregisterControl(LPCTSTR lpszType);
 
 private:
 	CUIEngine(void);
