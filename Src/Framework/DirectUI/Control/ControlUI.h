@@ -123,7 +123,7 @@ public:
 	LPCTSTR GetBkImage();
 	virtual void SetBkImage(LPCTSTR pStrImage);
 protected:
-	CDuiRect m_rcItem;			// 控件绘制区域
+	CDuiRect m_rcControl;	// 控件绘制区域
 	CDuiRect m_rcInset;		// 内部内容区
 	CDuiRect m_rcPadding;	// 边距
 	CDuiSize m_cXY;

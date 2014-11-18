@@ -20,6 +20,7 @@ CWindowUI::CWindowUI(void)
 	, m_hInstance(NULL)
 	, m_bMouseTracking(false)
 	, m_bLayedWindow(false)
+	, m_hPaintDC(NULL)
 {
 	m_ptLastMousePos.x = -1;
 	m_ptLastMousePos.y = -1;
@@ -397,6 +398,7 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 			::SetWindowPos(*this, NULL, rcClient.left, rcClient.top, rcClient.right - rcClient.left, \
 				rcClient.bottom - rcClient.top, SWP_FRAMECHANGED);
 
+			m_hPaintDC = ::GetDC(m_hWnd);
 			CUIEngine *pUIEngine = CUIEngine::GetInstance();
 			pUIEngine->SkinWindow(this);
 			m_hInstance = pUIEngine->GetInstanceHandler();
@@ -431,6 +433,8 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 		break;
 	case WM_DESTROY:
 		{
+			::ReleaseDC(m_hWnd,m_hPaintDC);
+			m_hPaintDC = NULL;
 			CUIEngine::GetInstance()->UnSkinWindow(this);
 			if ( m_pRenderEngine != NULL)
 			{
@@ -631,7 +635,7 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 				m_bUpdateNeeded = false;
 				CDuiRect rcClient ;
 				::GetClientRect(m_hWnd, &rcClient);
-				if( !::IsRectEmpty(&rcClient) )
+				if( !rcClient.IsRectEmpty() )
 				{
 					if( m_pRootControl->IsUpdateNeeded() )
 					{
@@ -649,7 +653,7 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 					if ( rcClient.GetWidth() != m_OffscreenDC.GetWidth()
 						|| rcClient.GetHeight() != m_OffscreenDC.GetHeight() )
 					{   // 窗口大小改变，重建画布
-						m_OffscreenDC.Create(::GetDC(m_hWnd),rcClient.GetWidth(),rcClient.GetHeight());
+						m_OffscreenDC.Create(m_hPaintDC,rcClient.GetWidth(),rcClient.GetHeight());
 					}
 				}
 
@@ -674,6 +678,7 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 
 			PAINTSTRUCT ps = {0};
 			HDC hDC = ::BeginPaint(m_hWnd,&ps);
+			int iSaveDC = ::SaveDC(m_OffscreenDC.GetSafeHdc());
 			{
 				m_pRenderEngine->SetDevice(&m_OffscreenDC);
 				m_pRenderEngine->SetInvalidateRect(ps.rcPaint);
@@ -690,8 +695,15 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 			{
 
 			}
-
+			::RestoreDC(m_OffscreenDC.GetSafeHdc(),iSaveDC);
 			::EndPaint(m_hWnd,&ps	);
+
+			// If any of the painting requested a resize again, we'll need
+			// to invalidate the entire window once more.
+			if( m_bUpdateNeeded )
+			{
+				::InvalidateRect(m_hWnd, NULL, FALSE);
+			}
 		}
 		break;
 	case WM_SIZE:

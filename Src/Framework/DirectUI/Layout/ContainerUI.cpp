@@ -171,7 +171,7 @@ void CContainerUI::Render(IUIRender* pRender,LPCRECT pRcPaint)
 {
 	CDuiRect rcTemp;
 	// 刷新区域是否与控件区域重叠
-	if ( !rcTemp.IntersectRect(pRcPaint, &m_rcItem))
+	if ( !rcTemp.IntersectRect(pRcPaint, &m_rcControl))
 		return;
 
 	// 重叠区创建限制矩形
@@ -184,7 +184,7 @@ void CContainerUI::Render(IUIRender* pRender,LPCRECT pRcPaint)
 	{   // 存在子控件，需要递归检查绘图
 		
 		// 从控件区域中减掉内边框
-		CDuiRect rcContent = m_rcItem;
+		CDuiRect rcContent = m_rcControl;
 		rcContent.left += m_rcInset.left;
 		rcContent.top += m_rcInset.top;
 		rcContent.right -= m_rcInset.right;
@@ -213,7 +213,7 @@ void CContainerUI::Render(IUIRender* pRender,LPCRECT pRcPaint)
 				if( pControl ->IsFloat() )
 				{
 					// 检查浮动控件是否超出了布局控件区域
-					if( !rcTemp.IntersectRect(&m_rcItem, &pControl->GetPosition()) )
+					if( !rcTemp.IntersectRect(&m_rcControl, &pControl->GetPosition()) )
 						continue;
 					pControl->Render(pRender, pRcPaint);
 				}
@@ -237,7 +237,7 @@ void CContainerUI::Render(IUIRender* pRender,LPCRECT pRcPaint)
 				if( pControl ->IsFloat() )
 				{
 					// 检查浮动控件是否超出了布局控件区域
-					if( !rcTemp.IntersectRect(&m_rcItem, &pControl->GetPosition()) )
+					if( !rcTemp.IntersectRect(&m_rcControl, &pControl->GetPosition()) )
 						continue;
 
 					// 限制空间在重叠区域内刷新
@@ -321,23 +321,23 @@ void CContainerUI::SetFloatPos(int iIndex)
 	RECT rcCtrl = { 0 };
 	if( szXY.cx >= 0 )
 	{
-		rcCtrl.left = m_rcItem.left + szXY.cx;
-		rcCtrl.right = m_rcItem.left + szXY.cx + sz.cx;
+		rcCtrl.left = m_rcControl.left + szXY.cx;
+		rcCtrl.right = m_rcControl.left + szXY.cx + sz.cx;
 	}
 	else
 	{
-		rcCtrl.left = m_rcItem.right + szXY.cx - sz.cx;
-		rcCtrl.right = m_rcItem.right + szXY.cx;
+		rcCtrl.left = m_rcControl.right + szXY.cx - sz.cx;
+		rcCtrl.right = m_rcControl.right + szXY.cx;
 	}
 	if( szXY.cy >= 0 )
 	{
-		rcCtrl.top = m_rcItem.top + szXY.cy;
-		rcCtrl.bottom = m_rcItem.top + szXY.cy + sz.cy;
+		rcCtrl.top = m_rcControl.top + szXY.cy;
+		rcCtrl.bottom = m_rcControl.top + szXY.cy + sz.cy;
 	}
 	else
 	{
-		rcCtrl.top = m_rcItem.bottom + szXY.cy - sz.cy;
-		rcCtrl.bottom = m_rcItem.bottom + szXY.cy;
+		rcCtrl.top = m_rcControl.bottom + szXY.cy - sz.cy;
+		rcCtrl.bottom = m_rcControl.bottom + szXY.cy;
 	}
 	//if( pControl->IsRelativePos() )
 	//{
@@ -371,7 +371,7 @@ CControlUI* CContainerUI::FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT u
 	if( (uFlags & UIFIND_HITTEST) != 0 )
 	{
 		// 命中点不在布局控件区域内，返回
-		if( !m_rcItem.PtInRect(*(static_cast<LPPOINT>(pData))) )
+		if( !m_rcControl.PtInRect(*(static_cast<LPPOINT>(pData))) )
 			return NULL;
 
 		// 布局内子控件如果禁用了鼠标事件，则跳过
@@ -404,7 +404,7 @@ CControlUI* CContainerUI::FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT u
 	}
 
 	// 计算布局控件内容区矩形坐标
-	CDuiRect rc = m_rcItem;
+	CDuiRect rc = m_rcControl;
 	rc.left += m_rcInset.left;
 	rc.top += m_rcInset.top;
 	rc.right -= m_rcInset.right;

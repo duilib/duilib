@@ -171,7 +171,7 @@ CControlUI* CControlUI::FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFl
 		return NULL;
 	if( (uFlags & UIFIND_ENABLED) != 0 && !IsEnabled() )
 		return NULL;
-	if( (uFlags & UIFIND_HITTEST) != 0 && (!m_bIsMouseEnabled || !::PtInRect(&m_rcItem, * static_cast<LPPOINT>(pData))) )
+	if( (uFlags & UIFIND_HITTEST) != 0 && (!m_bIsMouseEnabled || !m_rcControl.PtInRect(* static_cast<LPPOINT>(pData)) ) )
 		return NULL;
 	return Proc(this, pData);
 }
@@ -234,7 +234,7 @@ bool CControlUI::EventHandler(TEventUI& event)
 
 RECT CControlUI::GetPosition()
 {
-	return m_rcItem;
+	return m_rcControl;
 }
 
 void CControlUI::SetPosition(LPCRECT rc)
@@ -246,11 +246,11 @@ void CControlUI::SetPosition(LPCRECT rc)
 	if( rect.bottom < rect.top )
 		rect.bottom = rect.top;
 
-	CDuiRect invalidateRc = m_rcItem;
-	if( ::IsRectEmpty(&invalidateRc) )
+	CDuiRect invalidateRc = m_rcControl;
+	if( invalidateRc.IsRectEmpty() )
 		invalidateRc = rc;
 
-	m_rcItem = rc;
+	m_rcControl = rc;
 	if( m_pManager == NULL )
 		return;
 
@@ -269,22 +269,22 @@ void CControlUI::SetPosition(LPCRECT rc)
 			RECT rcParentPos = pParent->GetPosition();
 
 			if( m_cXY.cx >= 0 ) 
-				m_cXY.cx = m_rcItem.left - rcParentPos.left;
+				m_cXY.cx = m_rcControl.left - rcParentPos.left;
 			else 
-				m_cXY.cx = m_rcItem.right - rcParentPos.right;
+				m_cXY.cx = m_rcControl.right - rcParentPos.right;
 
 			if( m_cXY.cy >= 0 ) 
-				m_cXY.cy = m_rcItem.top - rcParentPos.top;
+				m_cXY.cy = m_rcControl.top - rcParentPos.top;
 			else 
-				m_cXY.cy = m_rcItem.bottom - rcParentPos.bottom;
+				m_cXY.cy = m_rcControl.bottom - rcParentPos.bottom;
 
-			m_cxyFixed.cx = m_rcItem.right - m_rcItem.left;
-			m_cxyFixed.cy = m_rcItem.bottom - m_rcItem.top;
+			m_cxyFixed.cx = m_rcControl.right - m_rcControl.left;
+			m_cxyFixed.cy = m_rcControl.bottom - m_rcControl.top;
 		}
 	}
 
 	m_bIsUpdateNeeded = false;
-	invalidateRc.Join(m_rcItem);
+	invalidateRc.Join(m_rcControl);
 
 	CControlUI* pParent = this;
 	RECT rcTemp;
@@ -364,7 +364,7 @@ void CControlUI::Invalidate()
 	if( !IsVisible() )
 		return;
 
-	RECT invalidateRect = m_rcItem;
+	RECT invalidateRect = m_rcControl;
 
 	CControlUI* pParent = this;
 	RECT rcTemp;
@@ -508,22 +508,22 @@ void CControlUI::SetToolTipWidth(int nWidth)
 
 int CControlUI::GetWidth() const
 {
-	return m_rcItem.GetWidth();
+	return m_rcControl.GetWidth();
 }
 
 int CControlUI::GetHeight() const
 {
-	return m_rcItem.GetHeight();
+	return m_rcControl.GetHeight();
 }
 
 int CControlUI::GetX() const
 {
-	 return m_rcItem.left;
+	 return m_rcControl.left;
 }
 
 int CControlUI::GetY() const
 {
-	 return m_rcItem.top;
+	 return m_rcControl.top;
 }
 
 RECT CControlUI::GetPadding() const
@@ -717,19 +717,19 @@ void CControlUI::Render(IUIRender* pRender,LPCRECT pRcPaint)
 
 	// 刷新区与控件叠加区域
 	CDuiRect rcPaint;
-	if( !rcPaint.IntersectRect(pRcPaint, &m_rcItem) )
+	if( !rcPaint.IntersectRect(pRcPaint, &m_rcControl) )
 		return;
 
 	// 有叠加部分，重绘
 	if (m_dwBackColor != 0xFF000000)
 	{
-		pRender->DrawColor(&rcPaint,m_dwBackColor);
+		pRender->DrawColor(&m_rcControl,m_dwBackColor);
 		CDuiRect rcBorder;
 		rcBorder.left = 1;
 		rcBorder.right = 1;
 		rcBorder.top = 1;
 		rcBorder.bottom = 1;
-		pRender->DrawRectangleBorder(&rcPaint,&rcBorder,0xFF0000FF);
+		pRender->DrawRectangleBorder(&m_rcControl,&rcBorder,0xFF0000FF);
 	}
 }
 

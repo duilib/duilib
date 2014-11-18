@@ -137,6 +137,7 @@ private:
 	bool m_bFirstLayout;
 	bool m_bUpdateNeeded;
 	bool m_bFocusNeeded;
+	HDC m_hPaintDC;
 	CMemDC m_OffscreenDC;
 	IUIRender *m_pRenderEngine;
 

@@ -51,7 +51,7 @@ void CButtonUI::SetEnabled(bool bEnable /*= true*/)
 void CButtonUI::Render(IUIRender* pRender,LPCRECT pRcPaint)
 {
 	CDuiRect rcPaint;
-	rcPaint.IntersectRect(&m_rcItem,pRcPaint);
+	rcPaint.IntersectRect(&m_rcControl,pRcPaint);
 	CControlUI::Render(pRender,&rcPaint);
 }
 
@@ -87,7 +87,7 @@ bool CButtonUI::EventHandler(TEventUI& event)
 	}
 	if( event.dwType == UIEVENT_LBUTTONDOWN || event.dwType == UIEVENT_LDBLCLICK )
 	{
-		if( m_rcItem.PtInRect(event.ptMouse) && IsEnabled() )
+		if( m_rcControl.PtInRect(event.ptMouse) && IsEnabled() )
 		{
 			ModifyState(UISTATE_Pushed | UISTATE_Captured);
 			Invalidate();
@@ -98,7 +98,7 @@ bool CButtonUI::EventHandler(TEventUI& event)
 	{
 		if( (m_dwState & UISTATE_Captured) != 0 )
 		{
-			if( m_rcItem.PtInRect(event.ptMouse) )
+			if( m_rcControl.PtInRect(event.ptMouse) )
 				Activate();
 			m_dwState &= ~(UISTATE_Pushed | UISTATE_Captured);
 			Invalidate();
@@ -126,7 +126,7 @@ bool CButtonUI::EventHandler(TEventUI& event)
 	{
 		if( (m_dwState & UISTATE_Captured) != 0 )
 		{
-			if( m_rcItem.PtInRect( event.ptMouse) )
+			if( m_rcControl.PtInRect( event.ptMouse) )
 				m_dwState |= UISTATE_Pushed;
 			else
 				m_dwState &= ~UISTATE_Pushed;

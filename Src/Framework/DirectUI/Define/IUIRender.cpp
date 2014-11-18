@@ -165,7 +165,7 @@ CMemDC::CMemDC()
 
 CMemDC::~CMemDC()
 {
-
+	Clear();
 }
 
 void CMemDC::Create(HDC hDC,int cx,int cy)
