@@ -17,12 +17,19 @@ public:
 	CGDIRender(void);
 	virtual ~CGDIRender(void);
 
-	virtual void DrawImage(ImageObject* pImageObj, int nAlpha, int x, int y, int nIndex = 0, bool bHole =false);
-	virtual void DrawImage(ImageObject* pImageObj, int nAlpha, RECT& rect, int nIndex = 0, bool bHole =false);
-	virtual void DrawImage(ImageObject* pImageObj, RECT& rcSrc, RECT& rcDest, int nIndex = 0);
-
+	// Ìî³äÑÕÉ«
 	virtual void DrawColor(LPCRECT rcSrc,DWORD dwColor);
+	// ½¥±äÉ«
+	virtual void DrawGradient(LPCRECT rcSrc,DWORD dwStart,DWORD dwEnd,bool bVertical);
+	// Ô²½Ç¾ØÐÎ±ß¿ò
+	virtual void DrawRoundRectBorder(LPCRECT rcSrc, INT nCornerWidth, INT nCornerHeight, INT nBorderWidth, DWORD dwColor);
+	// ¾ØÐÎ±ß¿ò
+	virtual void DrawRectangleBorder(LPCRECT rcSrc,LPCRECT rcBorder,DWORD dwColor);
+	// ÎÄ×Ö
+	virtual void DrawText(LPCRECT rcSrc,LPCTSTR lpszTextString);
 
+private:
+	VOID GradientFill(LPCRECT rcSrc, DWORD dwStart, DWORD dwEnd, bool bVertical);
 };
 
 #endif // GDIRender_h__

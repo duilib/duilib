@@ -76,6 +76,26 @@ void IUIRender::DrawColor(LPCRECT rcSrc,DWORD dwColor)
 
 }
 
+void IUIRender::DrawGradient(LPCRECT rcSrc,DWORD dwStart,DWORD dwEnd,bool bVertical)
+{
+
+}
+
+void IUIRender::DrawRoundRectBorder(LPCRECT rcSrc, INT nCornerWidth, INT nCornerHeight, INT nBorderWidth, DWORD dwColor)
+{
+
+}
+
+void IUIRender::DrawRectangleBorder(LPCRECT rcSrc,LPCRECT rcBorder,DWORD dwColor)
+{
+
+}
+
+void IUIRender::DrawText(LPCRECT rcSrc,LPCTSTR lpszTextString)
+{
+
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 CRenderClip::CRenderClip()

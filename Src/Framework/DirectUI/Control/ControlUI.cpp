@@ -724,6 +724,12 @@ void CControlUI::Render(IUIRender* pRender,LPCRECT pRcPaint)
 	if (m_dwBackColor != 0xFF000000)
 	{
 		pRender->DrawColor(&rcPaint,m_dwBackColor);
+		CDuiRect rcBorder;
+		rcBorder.left = 1;
+		rcBorder.right = 1;
+		rcBorder.top = 1;
+		rcBorder.bottom = 1;
+		pRender->DrawRectangleBorder(&rcPaint,&rcBorder,0xFF0000FF);
 	}
 }
 

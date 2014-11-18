@@ -194,6 +194,11 @@ bool CDuiRect::IntersectRect(LPCRECT lpRect1,LPCRECT lpRect2)
 	return ::IntersectRect(this,lpRect1,lpRect2) == 0 ? false : true ;
 }
 
+bool CDuiRect::IsRectEmpty()
+{
+	return ::IsRectEmpty(this) == 0 ? false : true ;
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////
 //

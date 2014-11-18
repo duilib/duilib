@@ -27,8 +27,8 @@ public:
 	BOOL IsValid();
 	HDC GetSafeHdc();
 	HBITMAP GetHBitmap();
-	int GetWidth();;
-	int GetHeight();;
+	int GetWidth();
+	int GetHeight();
 
 private:
 	HDC m_hMemDC;
@@ -53,17 +53,23 @@ public:
 	virtual RECT GetInvalidateRect();
 
 public:	// 绘图引擎应该干的事情：画文字，画图片，画线，画区域
+
 	// 填充颜色
 	virtual void DrawColor(LPCRECT rcSrc,DWORD dwColor);
+	// 渐变色
+	virtual void DrawGradient(LPCRECT rcSrc,DWORD dwStart,DWORD dwEnd,bool bVertical);
+	// 圆角矩形边框
+	virtual void DrawRoundRectBorder(LPCRECT rcSrc, INT nCornerWidth, INT nCornerHeight, INT nBorderWidth, DWORD dwColor);
+	// 矩形边框
+	virtual void DrawRectangleBorder(LPCRECT rcSrc,LPCRECT rcBorder,DWORD dwColor);
+	// 文字
+	virtual void DrawText(LPCRECT rcSrc,LPCTSTR lpszTextString);
 
 	virtual void DrawImage(ImageObject* pImageObj, int nAlpha, int x, int y, int nIndex = 0, bool bHole =false);
 	virtual void DrawImage9Gird(ImageObject* pImageObj,LPCRECT lp9Gird, int nAlpha, int x, int y, int nIndex = 0, bool bHole =false);
 	virtual void DrawImage(ImageObject* pImageObj, int nAlpha, RECT& rect, int nIndex = 0, bool bHole =false);
 	virtual void DrawImage(ImageObject* pImageObj, RECT& rcSrc,  RECT& rcDest, int nIndex = 0);
 
-	void DrawText();
-	void DrawLine();
-	void DrawRect();
 protected:
 	HDC m_hDC;
 	CMemDC *m_pMemDC;
