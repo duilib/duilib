@@ -9,8 +9,6 @@
 
 CWindowUI::CWindowUI(void)
 	: m_bIsModal(false)
-	, m_bIsMaximized(false)
-	, m_bIsMinimized(false)
 	, m_pRenderEngine(NULL)
 	, m_pRootControl(NULL)
 	, m_pEventClick(NULL)
@@ -131,7 +129,29 @@ CControlUI * CWindowUI::GetItem(LPCTSTR lpszItemPath) const
 {
 	// Split lpszItemPath with dot
 	// 使用 . 拆分lpszItemPath，按顺序查找
-	return NULL;
+	VecString itemPath;
+	CDuiStringOperation::splite(lpszItemPath,_T("."),itemPath);
+	size_t nCount = itemPath.size();
+	if ( nCount == 0 )
+		return NULL;
+	
+	CControlUI* pControl = this->FindControl(itemPath[0].c_str());
+	if ( nCount == 1 || pControl == NULL)
+		return pControl;
+
+	IContainerUI *pContainer =static_cast<IContainerUI*>(pControl->GetInterface(_T("IContainer")));
+	for ( size_t i =1 ;i<nCount ; ++i)
+	{
+			pControl = pContainer->FindSubControl(itemPath[i].c_str());
+			if ( pControl == NULL)
+				break;
+
+			pContainer =static_cast<IContainerUI*>(pControl->GetInterface(_T("IContainer")));
+			if ( pContainer == NULL )
+				return NULL;
+	}
+
+	return pControl;
 }
 
 CControlUI* CWindowUI::FindControl(POINT pt) const
@@ -146,6 +166,14 @@ CControlUI* CWindowUI::FindControl(LPCTSTR lpszName) const
 	return static_cast<CControlUI*>(m_mapNameHash.Find(lpszName));
 }
 
+CControlUI* CWindowUI::FindSubControlByName(CControlUI* pParent, LPCTSTR pstrName) const
+{
+	if( pParent == NULL )
+		pParent = m_pRootControl;
+	ASSERT(pParent);
+	return pParent->FindControl(__FindControlFromName, (LPVOID)pstrName, UIFIND_ALL);
+}
+
 void CWindowUI::ShowWindow(int nCmdShow /*= SW_SHOW*/)
 {
 	if ( ::IsWindow(m_hWnd))
@@ -156,12 +184,54 @@ void CWindowUI::ShowWindow(int nCmdShow /*= SW_SHOW*/)
 
 void CWindowUI::CloseWindow(UINT nRet /*= IDOK*/)
 {
-
+	if ( ::IsWindow(m_hWnd))
+	{
+		::PostMessage(m_hWnd,WM_CLOSE,nRet,0);
+	}
 }
 
 UINT CWindowUI::ShowModal()
 {
+	if ( !::IsWindow(m_hWnd))
+		return -1;
+
 	m_bIsModal = true;
+
+	CUIEngine *pUIEngine = CUIEngine::GetInstance();
+	HWND hWndOwner = ::GetWindow(m_hWnd,GW_OWNER);
+	CWindowUI* pParentWindow = pUIEngine->GetWindow(hWndOwner);
+	if ( pParentWindow && pParentWindow->m_bMouseCapture )
+	{
+		if ( ::GetCapture() == pParentWindow->m_hWnd )
+			::ReleaseCapture();
+		pParentWindow->m_bMouseCapture  = false;
+	}
+	::ShowWindow(m_hWnd,SW_SHOWNORMAL);
+	::EnableWindow(hWndOwner,FALSE);
+
+	MSG msg = { 0 };
+	while( ::GetMessage(&msg, NULL, 0, 0) )
+	{
+		if ( msg.hwnd == m_hWnd && msg.message == WM_CLOSE )
+		{
+			::EnableWindow(hWndOwner,TRUE);
+			::SetFocus(hWndOwner);
+			m_bIsModal = false;
+			return msg.wParam;
+		}
+
+		if( !pUIEngine->TranslateMessage(&msg) )
+		{
+			::TranslateMessage(&msg);
+			::DispatchMessage(&msg);
+		}
+	}
+
+	m_bIsModal = false;
+	::EnableWindow(hWndOwner,TRUE);
+	::SetFocus(hWndOwner);
+	if ( msg.message == WM_QUIT)
+		::PostQuitMessage(msg.wParam);
 
 	return 0;
 }
@@ -173,6 +243,11 @@ void CWindowUI::EndModal(UINT nRet /*= IDOK*/)
 		// 警告，不应该用这个函数关闭窗口
 		return;
 	}
+
+	if ( ::IsWindow(m_hWnd) )
+	{
+		::PostMessage(m_hWnd,WM_CLOSE,nRet,0);
+	}
 }
 
 bool CWindowUI::IsModal()
@@ -182,27 +257,36 @@ bool CWindowUI::IsModal()
 
 void CWindowUI::MaximizeWindow()
 {
-
+	if ( ::IsWindow(m_hWnd))
+	{
+		::PostMessage(m_hWnd,WM_SYSCOMMAND,SC_MAXIMIZE,0);
+	}
 }
 
 void CWindowUI::MinimizeWindow()
 {
-
+	if ( ::IsWindow(m_hWnd))
+	{
+		::PostMessage(m_hWnd,WM_SYSCOMMAND,SC_MINIMIZE,0);
+	}
 }
 
 void CWindowUI::RestoreWindow()
 {
-
+	if ( ::IsWindow(m_hWnd))
+	{
+		::PostMessage(m_hWnd,WM_SYSCOMMAND,SC_RESTORE,0);
+	}
 }
 
 bool CWindowUI::IsMaximized()
 {
-	return m_bIsMaximized;
+	return ::IsZoomed(m_hWnd) == 0;
 }
 
 bool CWindowUI::IsMinimized()
 {
-	return m_bIsMinimized;
+	return ::IsIconic(m_hWnd) == 0 ;
 }
 
 HWND CWindowUI::CreateDuiWindow(HWND hwndParent, LPCTSTR lpszWindowName,DWORD dwStyle /*=0*/, DWORD dwExStyle /*=0*/)
@@ -381,7 +465,7 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 		break;
 	case WM_NCACTIVATE:
 		{
-			if( ::IsIconic(*this) )
+			if( ::IsIconic(m_hWnd) )
 				bHandled = false;
 			else
 				bHandled = true;
@@ -1363,7 +1447,7 @@ void CWindowUI::SendNotify(TNotifyUI *pMsg, bool bAsync /*= false*/)
 	}
 }
 
-void CWindowUI::SendNotify(CControlUI* pControl, DWORD dwType, WPARAM wParam /*= 0*/, LPARAM lParam /*= 0*/, bool bAsync /*= false*/)
+void CWindowUI::SendNotify(CControlUI* pControl, UINOTIFY dwType, WPARAM wParam /*= 0*/, LPARAM lParam /*= 0*/, bool bAsync /*= false*/)
 {
 	TNotifyUI Msg;
 	Msg.pSender = pControl;
@@ -1657,4 +1741,14 @@ void CWindowUI::TestUICrossThread()
 	// 如果你选择注释掉下面这行代码，崩溃不要怪Duilib不给力，这是能力和水平问题
 	ASSERT(m_dwRunningThread ==::GetCurrentThreadId());
 }
+
+CControlUI* CALLBACK CWindowUI::__FindControlFromName(CControlUI* pThis, LPVOID pData)
+{
+	LPCTSTR pstrName = static_cast<LPCTSTR>(pData);
+	const CDuiString sName = pThis->GetName();
+	if( sName.empty() )
+		return NULL;
+	return (_tcsicmp(sName.c_str(), pstrName) == 0) ? pThis : NULL;
+}
+
 #endif

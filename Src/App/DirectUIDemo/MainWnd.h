@@ -11,6 +11,7 @@
 
 class CMainWnd
 	: public CWindowUI
+	, public INotifyUI
 {
 public:
 	CMainWnd(void);
@@ -19,6 +20,8 @@ public:
 	void Init();
 
 	virtual void OnFinalMessage(HWND hWnd);
+
+	virtual void Notify(TNotifyUI *pMsg);
 
 };
 

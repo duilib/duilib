@@ -43,7 +43,7 @@ CControlUI* CControlUI::GetParent()
 	return m_pParent;
 }
 
-void CControlUI::SendNotify(DWORD dwType, WPARAM wParam /*= 0*/, LPARAM lParam /*= 0*/, bool bAsync /*= false*/)
+void CControlUI::SendNotify(UINOTIFY dwType, WPARAM wParam /*= 0*/, LPARAM lParam /*= 0*/, bool bAsync /*= false*/)
 {
 	if ( m_pManager )
 	{

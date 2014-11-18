@@ -163,7 +163,7 @@ public:
 	void KillTimer(UINT nTimer);
 
 public:
-	void	SendNotify(DWORD dwType, WPARAM wParam = 0, LPARAM lParam = 0, bool bAsync = false);
+	void	SendNotify(UINOTIFY dwType, WPARAM wParam = 0, LPARAM lParam = 0, bool bAsync = false);
 
 
 private:

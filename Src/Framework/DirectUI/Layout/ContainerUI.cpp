@@ -451,3 +451,10 @@ CControlUI* CContainerUI::FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT u
 		pResult = CControlUI::FindControl(Proc, pData, uFlags);
 	return pResult;
 }
+
+CControlUI* CContainerUI::FindSubControl(LPCTSTR pstrSubControlName)
+{
+	CControlUI* pSubControl=NULL;
+	pSubControl=static_cast<CControlUI*>(m_pManager->FindSubControlByName(this,pstrSubControlName));
+	return pSubControl;
+}

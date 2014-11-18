@@ -180,10 +180,11 @@ typedef struct _stTEventUI
 	}
 } TEventUI;
 
+typedef enum _enUINOTIFY UINOTIFY;
 // Structure for notifications to the outside world
 typedef struct _stTNotifyUI 
 {
-	DWORD dwType;
+	UINOTIFY dwType;
 	CControlUI* pSender;
 	DWORD dwTimestamp;	// 时间戳
 	POINT ptMouse;
@@ -232,6 +233,7 @@ public:
 	virtual bool Remove(CControlUI* pControl) = 0;
 	virtual bool RemoveAt(int iIndex)  = 0;
 	virtual void RemoveAll() = 0;
+	virtual CControlUI* FindSubControl(LPCTSTR pstrSubControlName) =0;
 };
 
 // INotify接口使用的Type

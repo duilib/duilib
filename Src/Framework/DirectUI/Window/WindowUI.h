@@ -26,6 +26,7 @@ public:
 
 	CControlUI* FindControl(POINT pt) const;
 	CControlUI* FindControl(LPCTSTR pstrName) const;
+	CControlUI* FindSubControlByName(CControlUI* pParent, LPCTSTR pstrName) const;
 
 	HWND CreateDuiWindow(HWND hwndParent, LPCTSTR lpszWindowName,DWORD dwStyle =0, DWORD dwExStyle =0);
 
@@ -72,7 +73,7 @@ public:
 	void RemoveNotify(INotifyUI *pNotify);
 
 	void SendNotify(TNotifyUI *pMsg, bool bAsync = false);
-	void SendNotify(CControlUI* pControl, DWORD dwType, WPARAM wParam = 0, LPARAM lParam = 0, bool bAsync = false);
+	void SendNotify(CControlUI* pControl, UINOTIFY dwType, WPARAM wParam = 0, LPARAM lParam = 0, bool bAsync = false);
 
 	bool InitControls(CControlUI* pControl, CControlUI* pParent = NULL);
 	void AddDelayedCleanup(CControlUI* pControl);
@@ -117,8 +118,6 @@ private:
 	CControlUI *m_pEventKey;
 
 	bool m_bIsModal;
-	bool m_bIsMaximized;
-	bool m_bIsMinimized;
 	CDuiRect m_rcRestore;
 
 	CDuiSize m_szRoundCorner;		

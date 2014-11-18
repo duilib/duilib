@@ -41,6 +41,7 @@ public:
 	// CControlUI
 	virtual void SetManager(CWindowUI* pManager, CControlUI* pParent);
 	CControlUI* FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags);
+	virtual CControlUI* FindSubControl(LPCTSTR pstrSubControlName);
 	virtual void Render(IUIRender* pRender,LPCRECT pRcPaint);
 	virtual void SetPosition(LPCRECT rc);
 
