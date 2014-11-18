@@ -15,7 +15,7 @@ CControlUI::CControlUI(void)
 	, m_bIsFloat(true)					// 推荐使用浮动布局
 	, m_bIsSetPos(false)
 	, m_nTooltipWidth(300)
-	, m_uState(UISTATE_Normal)
+	, m_dwState(UISTATE_Normal)
 	, m_dwBackColor(0xFF000000)
 {
 }
@@ -727,14 +727,24 @@ void CControlUI::Render(IUIRender* pRender,LPCRECT pRcPaint)
 	}
 }
 
-void CControlUI::SetState(DWORD nState)
+DWORD CControlUI::ModifyState(DWORD dwStateAdd /*= 0*/,DWORD dwStateRemove /*= 0*/)
 {
-	m_uState = nState;
+	DWORD dwOldState = m_dwState;
+
+	m_dwState |= dwStateAdd;
+	m_dwState &= ~dwStateRemove;
+
+	return dwOldState;
 }
 
 DWORD CControlUI::GetState(void)
 {
-	return m_uState;
+	return m_dwState;
+}
+
+bool CControlUI::CheckState(DWORD dwState)
+{
+	return (m_dwState & UISTATE_Captured) != 0;
 }
 
 bool CControlUI::Activate()
@@ -746,22 +756,22 @@ bool CControlUI::Activate()
 	return true;
 }
 
-void CControlUI::SetTextForState(LPCTSTR lpszText,UISTATE nState)
+void CControlUI::SetTextForState(LPCTSTR lpszText,DWORD dwState)
 {
 
 }
 
-LPCTSTR CControlUI::GetTextForState(UISTATE nState)
+LPCTSTR CControlUI::GetTextForState(DWORD dwState)
 {
 	return NULL;
 }
 
-void CControlUI::SetImageForState(LPCTSTR lpszImage,UISTATE nState)
+void CControlUI::SetImageForState(LPCTSTR lpszImage,DWORD dwState)
 {
 
 }
 
-LPCTSTR CControlUI::GetImageForState(UISTATE nState)
+LPCTSTR CControlUI::GetImageForState(DWORD dwState)
 {
 	return NULL;
 }

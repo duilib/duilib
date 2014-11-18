@@ -105,16 +105,17 @@ public:
 	virtual void SetContextMenuUsed(bool bMenuUsed);
 
 	// ¿Ø¼þ×´Ì¬
-	virtual void SetState(DWORD nState);
+	virtual DWORD ModifyState(DWORD dwStateAdd = 0,DWORD dwStateRemove = 0);
 	virtual DWORD GetState(void);
+	virtual bool CheckState(DWORD dwState);
 
 	virtual bool Activate();
 
-	virtual void SetTextForState(LPCTSTR lpszText,UISTATE nState);
-	virtual LPCTSTR GetTextForState(UISTATE nState);
+	virtual void SetTextForState(LPCTSTR lpszText,DWORD dwState);
+	virtual LPCTSTR GetTextForState(DWORD nState);
 
-	virtual void SetImageForState(LPCTSTR lpszImage,UISTATE nState);
-	virtual LPCTSTR GetImageForState(UISTATE nState);
+	virtual void SetImageForState(LPCTSTR lpszImage,DWORD dwState);
+	virtual LPCTSTR GetImageForState(DWORD dwState);
 
 	// 
 	DWORD GetBkColor() const;
@@ -129,7 +130,7 @@ protected:
 	CDuiSize m_cxyFixed;
 	CDuiSize m_cxyMin;
 	CDuiSize m_cxyMax;
-	DWORD m_uState;
+	DWORD m_dwState;
 	DWORD m_dwBackColor;
 
 	CDuiString m_sBkImage;

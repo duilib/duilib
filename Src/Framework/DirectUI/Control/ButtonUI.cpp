@@ -44,7 +44,7 @@ void CButtonUI::SetEnabled(bool bEnable /*= true*/)
 	CControlUI::SetEnabled(bEnable);
 	if( !IsEnabled() )
 	{
-		m_uState = UISTATE_Normal;
+		m_dwState = UISTATE_Normal;
 	}
 }
 
@@ -89,18 +89,18 @@ bool CButtonUI::EventHandler(TEventUI& event)
 	{
 		if( m_rcItem.PtInRect(event.ptMouse) && IsEnabled() )
 		{
-			m_uState |= UISTATE_Pushed | UISTATE_Captured;
+			ModifyState(UISTATE_Pushed | UISTATE_Captured);
 			Invalidate();
 		}
 		return true;
 	}
 	if( event.dwType == UIEVENT_LBUTTONUP )
 	{
-		if( (m_uState & UISTATE_Captured) != 0 )
+		if( (m_dwState & UISTATE_Captured) != 0 )
 		{
 			if( m_rcItem.PtInRect(event.ptMouse) )
 				Activate();
-			m_uState &= ~(UISTATE_Pushed | UISTATE_Captured);
+			m_dwState &= ~(UISTATE_Pushed | UISTATE_Captured);
 			Invalidate();
 		}
 		return true;
@@ -117,19 +117,19 @@ bool CButtonUI::EventHandler(TEventUI& event)
 	{
 		if( IsEnabled() )
 		{
-			m_uState |= UISTATE_Hover;
+			m_dwState |= UISTATE_Hover;
 			Invalidate();
 		}
 		// return;
 	}
 	if( event.dwType == UIEVENT_MOUSEMOVE )
 	{
-		if( (m_uState & UISTATE_Captured) != 0 )
+		if( (m_dwState & UISTATE_Captured) != 0 )
 		{
 			if( m_rcItem.PtInRect( event.ptMouse) )
-				m_uState |= UISTATE_Pushed;
+				m_dwState |= UISTATE_Pushed;
 			else
-				m_uState &= ~UISTATE_Pushed;
+				m_dwState &= ~UISTATE_Pushed;
 			Invalidate();
 		}
 		return true;
@@ -138,7 +138,7 @@ bool CButtonUI::EventHandler(TEventUI& event)
 	{
 		if( IsEnabled() )
 		{
-			m_uState &= ~UISTATE_Hover;
+			m_dwState &= ~UISTATE_Hover;
 			Invalidate();
 		}
 		// return;

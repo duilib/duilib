@@ -374,31 +374,17 @@ typedef enum _UIEVENT
 #define UISTRETCH_SIZE_X     0x00000010
 #define UISTRETCH_SIZE_Y     0x00000020
 
+#define UISTATE_ALL 0x80000000
+
 // Flags used for controlling the paint
-typedef enum _enUISTATE
-{
-	// 普通控件
-	UISTATE_Normal =0,		// Normal
-	UISTATE_Hover,				// Hover
-	UISTATE_Pushed,				// Pushed
-	UISTATE_Focused,			// Focused
-	UISTATE_Selected,			// Selected
-	UISTATE_Disabled,			// Disabled
-	UISTATE_Control = UISTATE_Disabled,
-
-	// Check&Radio 选中时
-	//UISTATE_CheckNormal,
-	//UISTATE_CheckHover,
-	//UISTATE_CheckPushed,
-	//UISTATE_CheckFocused,
-	//UISTATE_CheckDisabled,
-	//UISTATE_CheckRadio = UISTATE_CheckDisabled,
-	UISTATE_Checked,			// 选中标志位
-
-	UISTATE_ReadOnly,
-	UISTATE_Captured,
-
-	UISTATE_ALL,					// 特殊状态，表示设置属性到所有状态
-}UISTATE;
+#define UISTATE_Normal		0x00000000		// Normal
+#define UISTATE_Hover			0x00000001		// Hover
+#define UISTATE_Pushed		0x00000002		// Pushed
+#define UISTATE_Focused		0x00000004		// Focused
+#define UISTATE_Selected		0x00000008		// Selected
+#define UISTATE_Disabled		0x00000010		// Disabled
+#define UISTATE_Checked		0x00000020		// CheckBox RadioButton Selected Flag
+#define UISTATE_ReadOnly		0x00000040
+#define UISTATE_Captured		0x00000080
 
 #endif // UIDefine_h__
