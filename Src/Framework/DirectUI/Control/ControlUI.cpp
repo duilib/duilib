@@ -744,7 +744,7 @@ DWORD CControlUI::GetState(void)
 
 bool CControlUI::CheckState(DWORD dwState)
 {
-	return (m_dwState & UISTATE_Captured) != 0;
+	return (m_dwState & dwState) != 0;
 }
 
 bool CControlUI::Activate()
