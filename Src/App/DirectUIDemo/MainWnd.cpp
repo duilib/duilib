@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "MainWnd.h"
-
+#include "MessageDlg.h"
 
 CMainWnd::CMainWnd(void)
 {
@@ -34,7 +34,10 @@ void CMainWnd::Notify(TNotifyUI *pMsg)
 		CDuiString strControlName = pMsg->pSender->GetName();
 		if ( CDuiStringOperation::compareNoCase(strControlName.c_str(),_T("btnClose")) ==0 )
 		{
-			this->CloseWindow();
+			CMessageDlg dlg;
+			dlg.Init(m_hWnd);
+			dlg.ShowModal();
+			//this->CloseWindow();
 			return;
 		}
 	}

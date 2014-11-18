@@ -170,21 +170,26 @@ UINT CWindowWnd::ShowModal()
     ::ShowWindow(m_hWnd, SW_SHOWNORMAL);
     ::EnableWindow(hWndParent, FALSE);
     MSG msg = { 0 };
-    while( ::IsWindow(m_hWnd) && ::GetMessage(&msg, NULL, 0, 0) ) {
-        if( msg.message == WM_CLOSE && msg.hwnd == m_hWnd ) {
+    while( ::IsWindow(m_hWnd) && ::GetMessage(&msg, NULL, 0, 0) )
+	{
+        if( msg.message == WM_CLOSE && msg.hwnd == m_hWnd )
+		{
             nRet = msg.wParam;
             ::EnableWindow(hWndParent, TRUE);
             ::SetFocus(hWndParent);
         }
-        if( !CPaintManagerUI::TranslateMessage(&msg) ) {
+        if( !CPaintManagerUI::TranslateMessage(&msg) )
+		{
             ::TranslateMessage(&msg);
             ::DispatchMessage(&msg);
         }
-        if( msg.message == WM_QUIT ) break;
+        if( msg.message == WM_QUIT )
+			break;
     }
     ::EnableWindow(hWndParent, TRUE);
     ::SetFocus(hWndParent);
-    if( msg.message == WM_QUIT ) ::PostQuitMessage(msg.wParam);
+    if( msg.message == WM_QUIT )
+		::PostQuitMessage(msg.wParam);
     return nRet;
 }
 

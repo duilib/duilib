@@ -196,28 +196,34 @@ UINT CWindowUI::ShowModal()
 		return -1;
 
 	m_bIsModal = true;
-
 	CUIEngine *pUIEngine = CUIEngine::GetInstance();
+
+	// 获取父窗口句柄，并在自绘窗口队列中查找
 	HWND hWndOwner = ::GetWindow(m_hWnd,GW_OWNER);
 	CWindowUI* pParentWindow = pUIEngine->GetWindow(hWndOwner);
 	if ( pParentWindow && pParentWindow->m_bMouseCapture )
-	{
+	{   // 父窗口也是自绘窗口，关闭父窗口响应鼠标消息
 		if ( ::GetCapture() == pParentWindow->m_hWnd )
 			::ReleaseCapture();
 		pParentWindow->m_bMouseCapture  = false;
 	}
 	::ShowWindow(m_hWnd,SW_SHOWNORMAL);
-	::EnableWindow(hWndOwner,FALSE);
+	::EnableWindow(hWndOwner,FALSE);		// 禁用父窗口鼠标键盘输入
 
+	UINT nRet = 0;
 	MSG msg = { 0 };
-	while( ::GetMessage(&msg, NULL, 0, 0) )
+	do 
 	{
+		if ( !::IsWindow(m_hWnd))
+			break;
+		if ( ! ::GetMessage(&msg, NULL, 0, 0) )
+			break;
+
 		if ( msg.hwnd == m_hWnd && msg.message == WM_CLOSE )
 		{
-			::EnableWindow(hWndOwner,TRUE);
+			::EnableWindow(hWndOwner,TRUE);		// 恢复父窗口所有消息输入
 			::SetFocus(hWndOwner);
-			m_bIsModal = false;
-			return msg.wParam;
+			nRet = msg.wParam;
 		}
 
 		if( !pUIEngine->TranslateMessage(&msg) )
@@ -225,22 +231,25 @@ UINT CWindowUI::ShowModal()
 			::TranslateMessage(&msg);
 			::DispatchMessage(&msg);
 		}
-	}
+	} while (msg.message != WM_QUIT );
 
-	m_bIsModal = false;
 	::EnableWindow(hWndOwner,TRUE);
 	::SetFocus(hWndOwner);
+	::SetCapture(hWndOwner);
+
+	m_bIsModal = false;
 	if ( msg.message == WM_QUIT)
 		::PostQuitMessage(msg.wParam);
 
-	return 0;
+	return nRet;
 }
 
 void CWindowUI::EndModal(UINT nRet /*= IDOK*/)
 {
 	if ( m_bIsModal == false)
 	{
-		// 警告，不应该用这个函数关闭窗口
+		// 警告，非模态窗口不应该用这个函数关闭窗口
+		ASSERT(false);
 		return;
 	}
 
@@ -465,35 +474,19 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 		break;
 	case WM_NCACTIVATE:
 		{
-			if( ::IsIconic(m_hWnd) )
-				bHandled = false;
-			else
-				bHandled = true;
-			return (wParam == 0) ? TRUE : FALSE;
+			bHandled = true;
+			//if( ::IsIconic(m_hWnd) )
+			//	bHandled = true;
+
+			if ( wParam == FALSE )
+				return TRUE;
 		}
 		break;
-	case WM_GETMINMAXINFO:
+	case WM_NCPAINT:
 		{
-			bHandled = true;
-			LPMINMAXINFO lpMMI = (LPMINMAXINFO) lParam;
-
-			MONITORINFO oMonitor = {};
-			oMonitor.cbSize = sizeof(oMonitor);
-			::GetMonitorInfo(::MonitorFromWindow(*this, MONITOR_DEFAULTTONEAREST), &oMonitor);
-			CDuiRect rcWork = oMonitor.rcWork;
-			CDuiRect rcMonitor = oMonitor.rcMonitor;
-			rcWork.Offset(-oMonitor.rcMonitor.left, -oMonitor.rcMonitor.top);
-
-			// 计算最大化时，正确的原点坐标
-			lpMMI->ptMaxPosition.x	= rcWork.left;
-			lpMMI->ptMaxPosition.y	= rcWork.top;
-
-			lpMMI->ptMaxTrackSize.x =rcWork.GetWidth();
-			lpMMI->ptMaxTrackSize.y =rcWork.GetHeight();
-
-			// TODO 使用窗口属性控制最小窗口尺寸
-			lpMMI->ptMinTrackSize.x = m_szMinWindow.cx;
-			lpMMI->ptMinTrackSize.y = m_szMinWindow.cy;
+			// ???
+			//lResult = S_FALSE;
+			bHandled = false;
 		}
 		break;
 	case WM_NCHITTEST:
@@ -551,15 +544,32 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 			return HTCLIENT;
 		}
 		break;
-	case WM_ERASEBKGND:
-		{   // 屏蔽背景擦除，防闪烁
-			lResult = S_FALSE;
+	case WM_GETMINMAXINFO:
+		{
 			bHandled = true;
+			LPMINMAXINFO lpMMI = (LPMINMAXINFO) lParam;
+
+			MONITORINFO oMonitor = {};
+			oMonitor.cbSize = sizeof(oMonitor);
+			::GetMonitorInfo(::MonitorFromWindow(*this, MONITOR_DEFAULTTONEAREST), &oMonitor);
+			CDuiRect rcWork = oMonitor.rcWork;
+			CDuiRect rcMonitor = oMonitor.rcMonitor;
+			rcWork.Offset(-oMonitor.rcMonitor.left, -oMonitor.rcMonitor.top);
+
+			// 计算最大化时，正确的原点坐标
+			lpMMI->ptMaxPosition.x	= rcWork.left;
+			lpMMI->ptMaxPosition.y	= rcWork.top;
+
+			lpMMI->ptMaxTrackSize.x =rcWork.GetWidth();
+			lpMMI->ptMaxTrackSize.y =rcWork.GetHeight();
+
+			// TODO 使用窗口属性控制最小窗口尺寸
+			lpMMI->ptMinTrackSize.x = m_szMinWindow.cx;
+			lpMMI->ptMinTrackSize.y = m_szMinWindow.cy;
 		}
 		break;
-	case WM_NCPAINT:
-		{
-			// ???
+	case WM_ERASEBKGND:
+		{   // 屏蔽背景擦除，防闪烁
 			lResult = S_FALSE;
 			bHandled = true;
 		}

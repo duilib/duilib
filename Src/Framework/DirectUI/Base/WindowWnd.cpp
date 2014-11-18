@@ -148,7 +148,7 @@ void CWindowWnd::Unsubclass()
 void CWindowWnd::CenterWindow()
 {
 	ASSERT(::IsWindow(m_hWnd));
-	ASSERT((GetWindowStyle(m_hWnd)&WS_CHILD)==0);
+	//ASSERT((GetWindowStyle(m_hWnd)&WS_CHILD)==0);
 	RECT rcDlg = { 0 };
 	::GetWindowRect(m_hWnd, &rcDlg);
 	RECT rcArea = { 0 };
