@@ -357,14 +357,14 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 		{
 			bHandled = true;
 
-			// 去掉标题栏
+			// 去掉标题栏，边框
 			this->ModifyStyle(WS_CLIPSIBLINGS | WS_CLIPCHILDREN,WS_CAPTION | WS_THICKFRAME );
 			this->ModifyExStyle(0,WS_EX_WINDOWEDGE);
 
 			// 等同于发送WM_NCCALCSIZE消息
 			RECT rcClient;
-			::GetClientRect(*this, &rcClient);
-			::SetWindowPos(*this, NULL, rcClient.left, rcClient.top, rcClient.right - rcClient.left, \
+			::GetClientRect(m_hWnd, &rcClient);
+			::SetWindowPos(m_hWnd, NULL, rcClient.left, rcClient.top, rcClient.right - rcClient.left, \
 				rcClient.bottom - rcClient.top, SWP_FRAMECHANGED);
 
 			m_hPaintDC = ::GetDC(m_hWnd);
@@ -390,11 +390,6 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 					++iter;
 				}
 
-				//int nCount = pWindowTemplate->GetChildCount();
-				//for (int i=0;i<nCount;++i)
-				//{
-
-				//}
 				TemplateObject* pControl = pWindowTemplate->GetChild(0);
 				m_pRootControl = pResourceManager->CreateControlFromTemplate(pControl,this);
 			}
