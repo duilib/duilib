@@ -6,7 +6,6 @@ CMessageDlg::CMessageDlg(void)
 {
 }
 
-
 CMessageDlg::~CMessageDlg(void)
 {
 }

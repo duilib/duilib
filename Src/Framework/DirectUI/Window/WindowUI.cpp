@@ -8,8 +8,7 @@
 #pragma comment(lib,"comctl32.lib")
 
 CWindowUI::CWindowUI(void)
-	: m_bIsModal(false)
-	, m_pRenderEngine(NULL)
+	: m_pRenderEngine(NULL)
 	, m_pRootControl(NULL)
 	, m_pEventClick(NULL)
 	, m_pFocus(NULL)
@@ -175,28 +174,12 @@ CControlUI* CWindowUI::FindSubControlByName(CControlUI* pParent, LPCTSTR pstrNam
 	return pParent->FindControl(__FindControlFromName, (LPVOID)pstrName, UIFIND_ALL);
 }
 
-void CWindowUI::ShowWindow(int nCmdShow /*= SW_SHOW*/)
-{
-	if ( ::IsWindow(m_hWnd))
-	{
-		::ShowWindow(m_hWnd,nCmdShow);
-	}
-}
-
-void CWindowUI::CloseWindow(UINT nRet /*= IDOK*/)
-{
-	if ( ::IsWindow(m_hWnd))
-	{
-		::PostMessage(m_hWnd,WM_CLOSE,nRet,0);
-	}
-}
-
-UINT CWindowUI::ShowModal()
+UINT CWindowUI::DoModal()
 {
 	if ( !::IsWindow(m_hWnd))
 		return -1;
 
-	m_bIsModal = true;
+	m_bIsDoModal = true;
 	CUIEngine *pUIEngine = CUIEngine::GetInstance();
 
 	// 获取父窗口句柄，并在自绘窗口队列中查找
@@ -238,31 +221,18 @@ UINT CWindowUI::ShowModal()
 	::SetFocus(hWndOwner);
 	::SetCapture(hWndOwner);
 
-	m_bIsModal = false;
 	if ( msg.message == WM_QUIT)
 		::PostQuitMessage(msg.wParam);
+
+	if ( m_bIsDoModal && m_bIsAutoDelete)
+		delete this;
 
 	return nRet;
 }
 
-void CWindowUI::EndModal(UINT nRet /*= IDOK*/)
-{
-	if ( m_bIsModal == false)
-	{
-		// 警告，非模态窗口不应该用这个函数关闭窗口
-		ASSERT(false);
-		return;
-	}
-
-	if ( ::IsWindow(m_hWnd) )
-	{
-		::PostMessage(m_hWnd,WM_CLOSE,nRet,0);
-	}
-}
-
 bool CWindowUI::IsModal()
 {
-	return m_bIsModal;
+	return m_bIsDoModal;
 }
 
 void CWindowUI::MaximizeWindow()
@@ -388,9 +358,8 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 			bHandled = true;
 
 			// 去掉标题栏
-			LONG styleValue = ::GetWindowLong(*this, GWL_STYLE);
-			styleValue &= ~( WS_CAPTION );
-			::SetWindowLong(*this, GWL_STYLE, styleValue | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
+			this->ModifyStyle(WS_CLIPSIBLINGS | WS_CLIPCHILDREN,WS_CAPTION | WS_THICKFRAME );
+			this->ModifyExStyle(0,WS_EX_WINDOWEDGE);
 
 			// 等同于发送WM_NCCALCSIZE消息
 			RECT rcClient;

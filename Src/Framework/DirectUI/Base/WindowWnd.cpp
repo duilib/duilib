@@ -7,6 +7,7 @@ CWindowWnd::CWindowWnd(void)
 	, m_bIsAutoDelete(false)
 	, m_OldWndProc(::DefWindowProc)
 	, m_hWnd(NULL)
+	, m_bIsDoModal(false)
 {
 }
 
@@ -95,7 +96,7 @@ LRESULT CALLBACK CWindowWnd::__WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 
 			// 窗口销毁完成，用户可以安全销毁窗口实例
 			pThis->OnFinalMessage(hWnd);
-			if ( pThis->m_bIsAutoDelete )
+			if ( !pThis->m_bIsDoModal && pThis->m_bIsAutoDelete )
 				delete pThis;
 			return lRes;
 		}
@@ -199,3 +200,125 @@ void CWindowWnd::SetAutoDelete(bool bAutoDelete /*= true*/)
 {
 	m_bIsAutoDelete = bAutoDelete;
 }
+
+void CWindowWnd::ShowWindow(int nCmdShow /*= SW_SHOW*/)
+{
+	ASSERT(::IsWindow(m_hWnd));
+	if ( ::IsWindow(m_hWnd))
+	{
+		::ShowWindow(m_hWnd,nCmdShow);
+	}
+}
+
+void CWindowWnd::CloseWindow(UINT nRet /*= IDOK*/)
+{
+	if (::IsWindow(m_hWnd))
+	{
+		::PostMessage(m_hWnd,WM_CLOSE,nRet,0);
+	}
+}
+
+void CWindowWnd::SetSmallIcon(HICON hSmallIcon)
+{
+	ASSERT(hSmallIcon);
+	::SendMessage(m_hWnd, WM_SETICON, (WPARAM) ICON_SMALL, (LPARAM) hSmallIcon);
+}
+
+void CWindowWnd::SetLargeIcon(HICON hLargeIcon)
+{
+	ASSERT(hLargeIcon);
+	::SendMessage(m_hWnd, WM_SETICON, (WPARAM) ICON_BIG, (LPARAM) hLargeIcon);
+}
+
+UINT CWindowWnd::DoModal()
+{
+	ASSERT(::IsWindow(m_hWnd));
+	UINT nRet = 0;
+	HWND hWndParent = GetWindowOwner(m_hWnd);
+	::ShowWindow(m_hWnd, SW_SHOWNORMAL);
+	::EnableWindow(hWndParent, FALSE);
+	m_bIsDoModal = true;
+	MSG msg = { 0 };
+	do 
+	{
+		if ( !::IsWindow(m_hWnd))
+			break;
+		if ( ! ::GetMessage(&msg, NULL, 0, 0) )
+			break;
+
+		if ( msg.hwnd == m_hWnd && msg.message == WM_CLOSE )
+		{
+			::EnableWindow(hWndParent,TRUE);		// 恢复父窗口所有消息输入
+			::SetFocus(hWndParent);
+			nRet = msg.wParam;
+		}
+
+		if( !::TranslateMessage(&msg) )
+		{
+			::TranslateMessage(&msg);
+			::DispatchMessage(&msg);
+		}
+	} while (msg.message != WM_QUIT );
+
+	::EnableWindow(hWndParent, TRUE);
+	::SetFocus(hWndParent);
+	::SetCapture(hWndParent);
+
+	if( msg.message == WM_QUIT )
+		::PostQuitMessage(msg.wParam);
+
+	if ( m_bIsDoModal && m_bIsAutoDelete)
+		delete this;
+	return nRet;
+}
+
+void CWindowWnd::ResizeClient(int cx /*= -1*/, int cy /*= -1*/)
+{
+	ASSERT(::IsWindow(m_hWnd));
+	RECT rc = { 0 };
+	if( !::GetClientRect(m_hWnd, &rc) ) return;
+	if( cx != -1 ) rc.right = cx;
+	if( cy != -1 ) rc.bottom = cy;
+	if( !::AdjustWindowRectEx(&rc, GetWindowStyle(m_hWnd),
+		(!(GetWindowStyle(m_hWnd) & WS_CHILD) && (::GetMenu(m_hWnd) != NULL)),
+		GetWindowExStyle(m_hWnd)) )
+		return;
+	::SetWindowPos(m_hWnd, NULL, 0, 0, rc.right - rc.left, rc.bottom - rc.top, SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
+}
+
+LONG CWindowWnd::ModifyStyle(DWORD dwStyleAdd,DWORD dwStyleRemove /*= 0*/)
+{
+	LONG dwOldStyle = ::GetWindowLong(m_hWnd, GWL_STYLE);
+	LONG styleValue = dwOldStyle;
+	styleValue &= ~( dwStyleRemove );
+	styleValue |= (dwStyleAdd);
+	LONG lRet = ::SetWindowLong(m_hWnd, GWL_STYLE, styleValue);
+	return dwOldStyle;
+}
+
+LONG CWindowWnd::ModifyExStyle(DWORD dwExStyleAdd,DWORD dwExStyleRemove /*= 0*/)
+{
+	LONG dwOldStyle = ::GetWindowLong(m_hWnd, GWL_EXSTYLE);
+	LONG styleValue = dwOldStyle;
+	styleValue &= ~( dwExStyleRemove );
+	styleValue |= (dwExStyleAdd);
+	LONG lRet = ::SetWindowLong(m_hWnd, GWL_EXSTYLE, styleValue);
+	return dwOldStyle;
+}
+
+void CWindowWnd::EndModal(UINT nRet /*= IDOK*/)
+{
+	if ( m_bIsDoModal == false)
+	{
+		// 警告，非模态窗口不应该用这个函数关闭窗口
+		ASSERT(false);
+		return;
+	}
+
+	if ( ::IsWindow(m_hWnd) )
+	{
+		::PostMessage(m_hWnd,WM_CLOSE,nRet,0);
+	}
+}
+
+

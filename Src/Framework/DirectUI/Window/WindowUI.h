@@ -30,11 +30,7 @@ public:
 
 	HWND CreateDuiWindow(HWND hwndParent, LPCTSTR lpszWindowName,DWORD dwStyle =0, DWORD dwExStyle =0);
 
-	void ShowWindow(int nCmdShow = SW_SHOW);
-	void CloseWindow(UINT nRet = IDOK);
-
-	UINT ShowModal();
-	void EndModal(UINT nRet = IDOK);
+	virtual UINT DoModal();
 	bool IsModal();
 
 	// 最大化、最小化、还原窗口
@@ -117,7 +113,6 @@ private:
 	CControlUI *m_pFocus;
 	CControlUI *m_pEventKey;
 
-	bool m_bIsModal;
 	CDuiRect m_rcRestore;
 
 	CDuiSize m_szRoundCorner;		
