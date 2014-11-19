@@ -120,7 +120,7 @@ TemplateObject* CResourceManager::GetViewTemplate(LPCTSTR lpszViewTemplateName)
 
 void CResourceManager::FreeResource(LPCTSTR lpszComponentName)
 {
-
+	
 }
 
 bool CResourceManager::GetAbsolutePath(CDuiString& strFullPath,LPCTSTR lpszComponent,LPCTSTR lpszRelativePath)
@@ -133,6 +133,29 @@ bool CResourceManager::GetAbsolutePath(CDuiString& strFullPath,LPCTSTR lpszCompo
 		CDuiStringOperation::replace(strFullPath,lpszComponent,(iter->second).c_str());
 		return true;
 	}
+	return false;
+}
+
+bool CResourceManager::GetAbsolutePath(CDuiString& strFullPath,LPCTSTR lpszRelativePath)
+{
+	CDuiString strTemp(lpszRelativePath);
+	if ( strTemp.empty())
+		return false;
+
+	size_t iIndex = strTemp.find(_T('#'));
+	if ( iIndex != strTemp.npos)
+	{
+		CDuiString strComponent = strTemp.substr(0,iIndex);
+		StringMap::iterator iter = m_mapComponent.find(strComponent.c_str());
+		if ( iter != m_mapComponent.end())
+		{
+			strFullPath = lpszRelativePath;
+			CDuiStringOperation::replace(strFullPath,_T("#"),_T("\\"));
+			CDuiStringOperation::replace(strFullPath,strComponent.c_str(),(iter->second).c_str());
+			return true;
+		}
+	}
+	strFullPath = lpszRelativePath;
 	return false;
 }
 
@@ -372,4 +395,16 @@ void CResourceManager::LoadI18NString(LPCTSTR lpszFilePath)
 		pStringElemet = pStringElemet->NextSiblingElement();
 	} while (pStringElemet != NULL);
 }
+
+//ImageObject* CResourceManager::GetImage(LPCTSTR lpszImagePath,bool bCached /*= true */)
+//{
+//	// 返回一个图片对象
+//	// bCached为true，则延迟加载图片，并由管理器负责加载与删除
+//	// 返回的ImageObject实例不用时调用Release，并设置为null
+//	// 警告：不能对返回的对象调用delete
+//	CDuiString strFullPath;
+//	GetAbsolutePath(strFullPath,lpszImagePath);
+//	ImageObject *pNewImage = new ImageObject;
+//	pNewImage->SetImagePath(strFullPath.c_str());
+//}
 

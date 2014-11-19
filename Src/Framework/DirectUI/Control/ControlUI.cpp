@@ -11,12 +11,14 @@ CControlUI::CControlUI(void)
 	, m_bIsEnabled(true)
 	, m_bIsMouseEnabled(true)
 	, m_bIsKeyboardEnabled(true)
-	, m_bIsFocused(true)
+	, m_bIsFocused(false)
 	, m_bIsFloat(true)					// 推荐使用浮动布局
 	, m_bIsSetPos(false)
 	, m_nTooltipWidth(300)
-	, m_dwState(UISTATE_Normal)
+	, m_dwState(0)
 	, m_dwBackColor(0xFF000000)
+	, m_iZOrder(0)
+	, m_pTag(NULL)
 {
 }
 
@@ -736,10 +738,7 @@ void CControlUI::Render(IUIRender* pRender,LPCRECT pRcPaint)
 DWORD CControlUI::ModifyState(DWORD dwStateAdd /*= 0*/,DWORD dwStateRemove /*= 0*/)
 {
 	DWORD dwOldState = m_dwState;
-
-	m_dwState |= dwStateAdd;
-	m_dwState &= ~dwStateRemove;
-
+	this->m_dwState = (this->m_dwState & ~dwStateRemove) | dwStateAdd;
 	return dwOldState;
 }
 
@@ -780,5 +779,30 @@ void CControlUI::SetImageForState(LPCTSTR lpszImage,DWORD dwState)
 LPCTSTR CControlUI::GetImageForState(DWORD dwState)
 {
 	return NULL;
+}
+
+void CControlUI::SetZOrder(int iZOrder)
+{
+	if ( m_iZOrder == iZOrder )
+		return;
+
+	m_iZOrder = iZOrder;
+	if ( IsVisible() )
+		NeedParentUpdate();
+}
+
+int CControlUI::GetZOrder() const
+{
+	return m_iZOrder;
+}
+
+void CControlUI::SetTag(LPVOID pTag)
+{
+	m_pTag = pTag;
+}
+
+LPVOID CControlUI::GetTag() const
+{
+	return m_pTag;
 }
 

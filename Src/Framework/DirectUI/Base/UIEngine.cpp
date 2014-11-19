@@ -50,6 +50,7 @@ void CUIEngine::Init()
 	this->InitCOM();
 	this->InitOLE();
 	m_pResourceManager = CResourceManager::GetInstance();
+	CUIPaint::GetInstance();
 	UI_REGISTER_DYNCREATE(_T("Control"),CControlUI);
 	UI_REGISTER_DYNCREATE(_T("Container"),CContainerUI);
 	UI_REGISTER_DYNCREATE(_T("ScrollBar"),CScrollBarUI);
@@ -58,6 +59,7 @@ void CUIEngine::Init()
 
 void CUIEngine::Uninit()
 {
+	CUIPaint::ReleaseInstance();
 	m_pResourceManager = NULL;
 	CResourceManager::ReleaseInstance();
 

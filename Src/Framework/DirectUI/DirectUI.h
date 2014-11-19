@@ -49,6 +49,7 @@
 
 #include "Base/ImageObject.h"
 #include "Base/FontObject.h"
+#include "Render/UIPaint.h"
 #include "Render/GDIRender.h"
 
 #include "Base/ResourceManager.h"
@@ -61,5 +62,7 @@
 #include "Layout/ContainerUI.h"
 
 #include "Control/ScrollBarUI.h"
+
+#include "Control/ButtonUI.h"
 
 #endif // DirectUI_h__

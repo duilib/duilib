@@ -809,7 +809,7 @@ bool CDuiStringOperation::parseAttributeString(LPCTSTR lpszAttributeString,Strin
 	VecString vec;
 	splite(lpszAttributeString,_T(" "),vec);
 	size_t count = vec.size();
-	if ( count == 0 )
+	if ( count == 1 )
 		return false;
 	
 	for ( size_t i = 0 ;i < count ; ++i)

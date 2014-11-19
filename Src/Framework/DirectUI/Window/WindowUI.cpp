@@ -1724,7 +1724,7 @@ void CWindowUI::TestUICrossThread()
 	// 警告：你在跨线程操作UI对象！
 	// 轻则运行效果看运气（正确的说是看CPU心情）
 	// 重则各种野指针漫天飞舞
-	// 如果你选择注释掉下面这行代码，崩溃不要怪Duilib不给力，这是能力和水平问题
+	// 如果你选择注释掉下面这行代码，崩溃不要怪Duilib不给力，这是基础不过关
 	ASSERT(m_dwRunningThread ==::GetCurrentThreadId());
 }
 

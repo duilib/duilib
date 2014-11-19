@@ -35,10 +35,12 @@ public:
 
 	void AddFont(FontObject *pFont);
 	ImageObject* GetImage(LPCTSTR lpszImagePath,bool bCached = true );
+
 	FontObject*	GetFont(LPCTSTR lpszFontName);
 
 	LPCTSTR GetI18N(LPCTSTR lpszName);
 
+	bool GetAbsolutePath(CDuiString& strFullPath,LPCTSTR lpszRelativePath);
 private:
 	bool GetAbsolutePath(CDuiString& strFullPath,LPCTSTR lpszComponent,LPCTSTR lpszRelativePath);
 
@@ -68,6 +70,7 @@ private:
 	FontPoolVector m_vecFontPool;		// 已加载的字体样式缓存
 	StringMap		m_mapI18NCached;		// 多国语字符串缓存
 
+	CStdStringPtrMap m_ImageDataCached; // 已缓存的图片资源
 private:
 	CResourceManager(void);
 	~CResourceManager(void);

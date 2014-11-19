@@ -9,7 +9,7 @@
 /////////////////////////////////////////////////////////////*/
 #pragma once
 
-class CButtonUI
+class DIRECTUI_API CButtonUI
 	: public CControlUI
 {
 public:
@@ -29,6 +29,29 @@ public:
 
 	virtual void SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue);
 
+public:
+	void SetNormalImage(LPCTSTR lpszImageString);
+
+private:
+	// 属性字符串
+	CDuiString m_strNormalImage;
+	CDuiString m_strHoverImage;
+	CDuiString m_strPushedImage;
+	CDuiString m_strFocusedImage;
+	CDuiString m_strDisabledImage;
+
+	CDuiString m_strForeHoverImage;
+	CDuiString m_strForePushedImage;
+
+	// 解析后的图片对象
+	ImageObject *m_pNormalImage;
+	ImageObject *m_pHoverImage;
+	ImageObject *m_pPushedImage;
+	ImageObject *m_pFocusedImage;
+	ImageObject *m_pDisabledImage;
+
+	ImageObject *m_pForeHoverImage;
+	ImageObject *m_pForePushedImage;
 };
 
 #endif // ButtonUI_h__

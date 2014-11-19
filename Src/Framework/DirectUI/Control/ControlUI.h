@@ -100,6 +100,11 @@ public:
 	//virtual TRelativePosUI GetRelativePos() const;
 	//virtual bool IsRelativePos() const;
 
+	virtual void SetZOrder(int iZOrder);
+	virtual int GetZOrder() const;
+	virtual void SetTag(LPVOID pTag);
+	virtual LPVOID GetTag() const;
+
 	// ²Ëµ¥
 	virtual bool IsContextMenuUsed() const;
 	virtual void SetContextMenuUsed(bool bMenuUsed);
@@ -132,6 +137,8 @@ protected:
 	CDuiSize m_cxyMax;
 	DWORD m_dwState;
 	DWORD m_dwBackColor;
+	int m_iZOrder;
+	LPVOID m_pTag;
 
 	CDuiString m_sBkImage;
 	ImageObject *m_pImageBackground;

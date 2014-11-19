@@ -60,182 +60,6 @@
 #define     GetWindowOwner(hwnd)    GetWindow(hwnd, GW_OWNER)
 #endif // !GetWindowOwner
 
-
-class CControlUI;
-class IUIRender;
-class CObjectUI;
-class ImageObject;
-class FontObject;
-class TemplateObject;
-
-#define UI_DECLARE_DYNCREATE() \
-	static CControlUI* CreateObject()\
-
-#define UI_IMPLEMENT_DYNCREATE(ClassName)\
-	CControlUI* ClassName::CreateObject()\
-{ return new ClassName; }\
-
-#define UI_REGISTER_DYNCREATE(ControlName, ClassName)\
-	CUIEngine::GetInstance()->RegisterControl(ControlName, &ClassName::CreateObject)
-
-#define UI_UNREGISTER_DYNCREATE(ControlName)\
-	CUIEngine::GetInstance()->UnregisterControl(ControlName)
-
-typedef CControlUI* (_cdecl *PROCCONTROLCREATE)();
-typedef std::vector<CDuiString> VecString;
-typedef std::map<CDuiString,CDuiString> StringMap;
-typedef StringMap AttributeMap;
-typedef std::map<CDuiString,TemplateObject*> TemplateMap;
-typedef std::map<CDuiString,ImageObject*>	ImagePoolMap;
-typedef std::vector<FontObject*>		FontPoolVector;
-
-static DWORD WM_DIRECTUI_MESSAGE	= ::RegisterWindowMessage(_T("WM_DIRECTUI_MESSAGE"));
-
-
-static UINT MapKeyState()
-{
-	UINT uState = 0;
-	if( ::GetKeyState(VK_CONTROL) < 0 )
-		uState |= MK_CONTROL;
-	if( ::GetKeyState(VK_RBUTTON) < 0 )
-		uState |= MK_LBUTTON;
-	if( ::GetKeyState(VK_LBUTTON) < 0 )
-		uState |= MK_RBUTTON;
-	if( ::GetKeyState(VK_SHIFT) < 0 )
-		uState |= MK_SHIFT;
-	if( ::GetKeyState(VK_MENU) < 0 )
-		uState |= MK_ALT;
-	return uState;
-}
-
-typedef struct _stTFontInfo
-{
-	HFONT hFont;
-	CDuiString strFaceName;
-	int iSize;
-	bool bBold;
-	bool bUnderline;
-	bool bItalic;
-	TEXTMETRIC tm;
-} TFontInfo;
-
-typedef struct _stTImageInfo
-{
-	HBITMAP hBitmap;
-	int nX;
-	int nY;
-	int delay;
-	bool alphaChannel;
-	CDuiString strResType;
-	DWORD dwMask;
-} TImageInfo;
-
-typedef struct _stFindTabInfo
-{
-	CControlUI* pFocus;	// 当前焦点控件
-	CControlUI* pLast;		
-	bool bForward;			// true 下一个控件，false 上一个控件
-	bool bNextIsIt;
-} FindTabInfo;
-
-typedef struct _stFindShortCut
-{
-	TCHAR ch;
-	bool bPickNext;
-} FindShortCut;
-
-typedef struct _stTimerInfo
-{
-	CControlUI* pSender;
-	UINT nLocalID;
-	HWND hWnd;
-	UINT uWinTimer;
-	bool bKilled;
-} TimerInfo;
-
-// Structure for notifications from the system
-// to the control implementation.
-typedef struct _stTEventUI
-{
-	DWORD dwType;
-	CControlUI* pSender;
-	DWORD dwTimestamp;
-	POINT ptMouse;
-	TCHAR chKey;
-	WORD wKeyState;
-	WPARAM wParam;
-	LPARAM lParam;
-
-	_stTEventUI()
-		: dwType(0)
-		, pSender(NULL)
-		, dwTimestamp(0)
-		, chKey(0)
-		, wKeyState(0)
-		, wParam(0)
-		, lParam(0)
-	{
-		ptMouse.x = 0;
-		ptMouse.y = 0;
-	}
-} TEventUI;
-
-typedef enum _enUINOTIFY UINOTIFY;
-// Structure for notifications to the outside world
-typedef struct _stTNotifyUI 
-{
-	UINOTIFY dwType;
-	CControlUI* pSender;
-	DWORD dwTimestamp;	// 时间戳
-	POINT ptMouse;
-	WPARAM wParam;
-	LPARAM lParam;
-	_stTNotifyUI()
-		: pSender(NULL)
-		, dwTimestamp(0)
-		, wParam(0)
-		, lParam(0)
-	{
-		ptMouse.x = 0;
-		ptMouse.y = 0;
-	}
-} TNotifyUI;
-
-// Listener interface
-class INotifyUI
-{
-public:
-	virtual void Notify(TNotifyUI *pMsg) = 0;
-};
-
-// MessageFilter interface
-class IMessageFilterUI
-{
-public:
-	virtual LRESULT MessageFilter(UINT uMsg, WPARAM wParam, LPARAM lParam, bool& bHandled) = 0;
-};
-
-class ITranslateAccelerator
-{
-public:
-	virtual LRESULT TranslateAccelerator(MSG *pMsg) = 0;
-};
-
-class IContainerUI
-{
-public:
-	virtual CControlUI* GetItemAt(int iIndex) const = 0;
-	virtual int GetItemIndex(CControlUI* pControl) const  = 0;
-	virtual bool SetItemIndex(CControlUI* pControl, int iIndex)  = 0;
-	virtual int GetCount() const = 0;
-	virtual bool Add(CControlUI* pControl) = 0;
-	virtual bool AddAt(CControlUI* pControl, int iIndex)  = 0;
-	virtual bool Remove(CControlUI* pControl) = 0;
-	virtual bool RemoveAt(int iIndex)  = 0;
-	virtual void RemoveAll() = 0;
-	virtual CControlUI* FindSubControl(LPCTSTR pstrSubControlName) =0;
-};
-
 // INotify接口使用的Type
 typedef enum _enUINOTIFY
 {
@@ -355,6 +179,192 @@ typedef enum _UIEVENT
 	UIEVENT__LAST,
 }UIEVENT;
 
+class CControlUI;
+class CButtonUI;
+class IUIRender;
+class CObjectUI;
+class ImageObject;
+class FontObject;
+class TemplateObject;
+typedef struct _stTImageData TImageData;
+
+#define UI_DECLARE_DYNCREATE() \
+	static CControlUI* CreateObject()\
+
+#define UI_IMPLEMENT_DYNCREATE(ClassName)\
+	CControlUI* ClassName::CreateObject()\
+{ return new ClassName; }\
+
+#define UI_REGISTER_DYNCREATE(ControlName, ClassName)\
+	CUIEngine::GetInstance()->RegisterControl(ControlName, &ClassName::CreateObject)
+
+#define UI_UNREGISTER_DYNCREATE(ControlName)\
+	CUIEngine::GetInstance()->UnregisterControl(ControlName)
+
+typedef CControlUI* (_cdecl *PROCCONTROLCREATE)();
+typedef std::vector<CDuiString> VecString;
+typedef std::map<CDuiString,CDuiString> StringMap;
+typedef StringMap AttributeMap;
+typedef std::map<CDuiString,TemplateObject*> TemplateMap;
+typedef std::map<CDuiString,ImageObject*>	ImagePoolMap;
+typedef std::vector<FontObject*>		FontPoolVector;
+
+static DWORD WM_DIRECTUI_MESSAGE	= ::RegisterWindowMessage(_T("WM_DIRECTUI_MESSAGE"));
+
+static CDuiString FindAttrubuteKey(AttributeMap& attributeMap,LPCTSTR lpszkey)
+{
+	AttributeMap::iterator iter = attributeMap.find(lpszkey);
+	if (iter != attributeMap.end())
+	{
+		return iter->second.c_str();
+	}
+
+	return _T("");
+}
+
+static UINT MapKeyState()
+{
+	UINT uState = 0;
+	if( ::GetKeyState(VK_CONTROL) < 0 )
+		uState |= MK_CONTROL;
+	if( ::GetKeyState(VK_RBUTTON) < 0 )
+		uState |= MK_LBUTTON;
+	if( ::GetKeyState(VK_LBUTTON) < 0 )
+		uState |= MK_RBUTTON;
+	if( ::GetKeyState(VK_SHIFT) < 0 )
+		uState |= MK_SHIFT;
+	if( ::GetKeyState(VK_MENU) < 0 )
+		uState |= MK_ALT;
+	return uState;
+}
+
+typedef struct _stTFontInfo
+{
+	HFONT hFont;
+	CDuiString strFaceName;
+	int iSize;
+	bool bBold;
+	bool bUnderline;
+	bool bItalic;
+	TEXTMETRIC tm;
+} TFontInfo;
+
+typedef struct _stTImageData
+{
+	HBITMAP hBitmap;
+	int nX;
+	int nY;
+	int delay;
+	bool alphaChannel;
+	CDuiString strResType;
+	DWORD dwMask;
+} TImageData;
+
+typedef struct _stFindTabInfo
+{
+	CControlUI* pFocus;	// 当前焦点控件
+	CControlUI* pLast;		
+	bool bForward;			// true 下一个控件，false 上一个控件
+	bool bNextIsIt;
+} FindTabInfo;
+
+typedef struct _stFindShortCut
+{
+	TCHAR ch;
+	bool bPickNext;
+} FindShortCut;
+
+typedef struct _stTimerInfo
+{
+	CControlUI* pSender;
+	UINT nLocalID;
+	HWND hWnd;
+	UINT uWinTimer;
+	bool bKilled;
+} TimerInfo;
+
+// Structure for notifications from the system
+// to the control implementation.
+typedef struct _stTEventUI
+{
+	UIEVENT dwType;
+	CControlUI* pSender;
+	DWORD dwTimestamp;
+	POINT ptMouse;
+	TCHAR chKey;
+	WORD wKeyState;
+	WPARAM wParam;
+	LPARAM lParam;
+
+	_stTEventUI()
+		: dwType(UIEVENT__FIRST)
+		, pSender(NULL)
+		, dwTimestamp(0)
+		, chKey(0)
+		, wKeyState(0)
+		, wParam(0)
+		, lParam(0)
+	{
+		ptMouse.x = 0;
+		ptMouse.y = 0;
+	}
+} TEventUI;
+
+// Structure for notifications to the outside world
+typedef struct _stTNotifyUI 
+{
+	UINOTIFY dwType;
+	CControlUI* pSender;
+	DWORD dwTimestamp;	// 时间戳
+	POINT ptMouse;
+	WPARAM wParam;
+	LPARAM lParam;
+	_stTNotifyUI()
+		: pSender(NULL)
+		, dwTimestamp(0)
+		, wParam(0)
+		, lParam(0)
+	{
+		ptMouse.x = 0;
+		ptMouse.y = 0;
+	}
+} TNotifyUI;
+
+// Listener interface
+class INotifyUI
+{
+public:
+	virtual void Notify(TNotifyUI *pMsg) = 0;
+};
+
+// MessageFilter interface
+class IMessageFilterUI
+{
+public:
+	virtual LRESULT MessageFilter(UINT uMsg, WPARAM wParam, LPARAM lParam, bool& bHandled) = 0;
+};
+
+class ITranslateAccelerator
+{
+public:
+	virtual LRESULT TranslateAccelerator(MSG *pMsg) = 0;
+};
+
+class IContainerUI
+{
+public:
+	virtual CControlUI* GetItemAt(int iIndex) const = 0;
+	virtual int GetItemIndex(CControlUI* pControl) const  = 0;
+	virtual bool SetItemIndex(CControlUI* pControl, int iIndex)  = 0;
+	virtual int GetCount() const = 0;
+	virtual bool Add(CControlUI* pControl) = 0;
+	virtual bool AddAt(CControlUI* pControl, int iIndex)  = 0;
+	virtual bool Remove(CControlUI* pControl) = 0;
+	virtual bool RemoveAt(int iIndex)  = 0;
+	virtual void RemoveAll() = 0;
+	virtual CControlUI* FindSubControl(LPCTSTR pstrSubControlName) =0;
+};
+
 // Flags for CControlUI::GetControlFlags()
 #define UIFLAG_TABSTOP       0x00000001
 #define UIFLAG_SETCURSOR     0x00000002
@@ -379,14 +389,14 @@ typedef enum _UIEVENT
 #define UISTATE_ALL 0x80000000
 
 // Flags used for controlling the paint
-#define UISTATE_Normal		0x00000000		// Normal
-#define UISTATE_Hover			0x00000001		// Hover
-#define UISTATE_Pushed		0x00000002		// Pushed
-#define UISTATE_Focused		0x00000004		// Focused
-#define UISTATE_Selected		0x00000008		// Selected
-#define UISTATE_Disabled		0x00000010		// Disabled
-#define UISTATE_Checked		0x00000020		// CheckBox RadioButton Selected Flag
-#define UISTATE_ReadOnly		0x00000040
-#define UISTATE_Captured		0x00000080
+#define UISTATE_Normal		0x00000001		// Normal	1
+#define UISTATE_Hover			0x00000002		// Hover		2
+#define UISTATE_Pushed		0x00000004		// Pushed	4
+#define UISTATE_Focused		0x00000008		// Focused	8
+#define UISTATE_Selected		0x00000010		// Selected	16
+#define UISTATE_Disabled		0x00000020		// Disabled	32 
+#define UISTATE_Checked		0x00000040		// CheckBox RadioButton Selected Flag 64
+#define UISTATE_ReadOnly		0x00000080		// 128
+#define UISTATE_Captured		0x00000100		// 256
 
 #endif // UIDefine_h__

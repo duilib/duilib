@@ -59,6 +59,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)..\Src\3rdParty\Vld\include</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MinimalRebuild>false</MinimalRebuild>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -66,6 +67,9 @@
       <ImportLibrary>$(SolutionDir)..\Lib\$(Configuration)\$(ProjectName).lib</ImportLibrary>
       <AdditionalLibraryDirectories>$(SolutionDir)..\Src\3rdParty\Vld\lib</AdditionalLibraryDirectories>
     </Link>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -106,6 +110,7 @@
     <ClInclude Include="DirectUI.h" />
     <ClInclude Include="Layout\ContainerUI.h" />
     <ClInclude Include="Render\GDIRender.h" />
+    <ClInclude Include="Render\UIPaint.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TinyXml\ticpp.h" />
@@ -140,6 +145,7 @@
     </ClCompile>
     <ClCompile Include="Layout\ContainerUI.cpp" />
     <ClCompile Include="Render\GDIRender.cpp" />
+    <ClCompile Include="Render\UIPaint.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

@@ -109,6 +109,9 @@
     <ClInclude Include="Control\ButtonUI.h">
       <Filter>Control</Filter>
     </ClInclude>
+    <ClInclude Include="Render\UIPaint.h">
+      <Filter>Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -179,6 +182,9 @@
     </ClCompile>
     <ClCompile Include="Control\ButtonUI.cpp">
       <Filter>Control</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\UIPaint.cpp">
+      <Filter>Render</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

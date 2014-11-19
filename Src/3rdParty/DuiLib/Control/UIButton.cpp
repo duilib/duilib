@@ -354,10 +354,14 @@ namespace DuiLib
 
 	void CButtonUI::PaintText(HDC hDC)
 	{
-		if( IsFocused() ) m_uButtonState |= UISTATE_FOCUSED;
-		else m_uButtonState &= ~ UISTATE_FOCUSED;
-		if( !IsEnabled() ) m_uButtonState |= UISTATE_DISABLED;
-		else m_uButtonState &= ~ UISTATE_DISABLED;
+		if( IsFocused() )
+			m_uButtonState |= UISTATE_FOCUSED;
+		else
+			m_uButtonState &= ~ UISTATE_FOCUSED;
+		if( !IsEnabled() )
+			m_uButtonState |= UISTATE_DISABLED;
+		else
+			m_uButtonState &= ~ UISTATE_DISABLED;
 
 		if( m_dwTextColor == 0 ) m_dwTextColor = m_pManager->GetDefaultFontColor();
 		if( m_dwDisabledTextColor == 0 ) m_dwDisabledTextColor = m_pManager->GetDefaultDisabledColor();
@@ -389,21 +393,31 @@ namespace DuiLib
 
 	void CButtonUI::PaintStatusImage(HDC hDC)
 	{
-		if( IsFocused() ) m_uButtonState |= UISTATE_FOCUSED;
-		else m_uButtonState &= ~ UISTATE_FOCUSED;
-		if( !IsEnabled() ) m_uButtonState |= UISTATE_DISABLED;
-		else m_uButtonState &= ~ UISTATE_DISABLED;
+		if( IsFocused() ) 
+			m_uButtonState |= UISTATE_FOCUSED;
+		else
+			m_uButtonState &= ~ UISTATE_FOCUSED;
+		if( !IsEnabled() )
+			m_uButtonState |= UISTATE_DISABLED;
+		else
+			m_uButtonState &= ~ UISTATE_DISABLED;
 
-		if( (m_uButtonState & UISTATE_DISABLED) != 0 ) {
+		if( (m_uButtonState & UISTATE_DISABLED) != 0 )
+		{
 			if( !m_sDisabledImage.IsEmpty() )
 			{
-				if( !DrawImage(hDC, (LPCTSTR)m_sDisabledImage) ) m_sDisabledImage.Empty();
-				else goto Label_ForeImage;
+				if( !DrawImage(hDC, (LPCTSTR)m_sDisabledImage) )
+					m_sDisabledImage.Empty();
+				else
+					goto Label_ForeImage;
 			}
 		}
-		else if( (m_uButtonState & UISTATE_PUSHED) != 0 ) {
-			if( !m_sPushedImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sPushedImage) ){
+		else if( (m_uButtonState & UISTATE_PUSHED) != 0 )
+		{
+			if( !m_sPushedImage.IsEmpty() )
+			{
+				if( !DrawImage(hDC, (LPCTSTR)m_sPushedImage) )
+				{
 					m_sPushedImage.Empty();
 				}
 				if( !m_sPushedForeImage.IsEmpty() )
@@ -415,9 +429,11 @@ namespace DuiLib
 				else goto Label_ForeImage;
 			}
 		}
-		else if( (m_uButtonState & UISTATE_HOT) != 0 ) {
+		else if( (m_uButtonState & UISTATE_HOT) != 0 )
+		{
 			if( !m_sHotImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sHotImage) ){
+				if( !DrawImage(hDC, (LPCTSTR)m_sHotImage) )
+				{
 					m_sHotImage.Empty();
 				}
 				if( !m_sHotForeImage.IsEmpty() ) {
@@ -425,23 +441,29 @@ namespace DuiLib
 						m_sHotForeImage.Empty();
 					return;
 				}
-				else goto Label_ForeImage;
+				else
+					goto Label_ForeImage;
 			}
-			else if(m_dwHotBkColor != 0) {
+			else if(m_dwHotBkColor != 0)
+			{
 				CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwHotBkColor));
 				return;
 			}
 		}
-		else if( (m_uButtonState & UISTATE_FOCUSED) != 0 ) {
-			if( !m_sFocusedImage.IsEmpty() ) {
+		else if( (m_uButtonState & UISTATE_FOCUSED) != 0 )
+		{
+			if( !m_sFocusedImage.IsEmpty() )
+			{
 				if( !DrawImage(hDC, (LPCTSTR)m_sFocusedImage) ) m_sFocusedImage.Empty();
 				else goto Label_ForeImage;
 			}
 		}
 
-		if( !m_sNormalImage.IsEmpty() ) {
+		if( !m_sNormalImage.IsEmpty() )
+		{
 			if( !DrawImage(hDC, (LPCTSTR)m_sNormalImage) ) m_sNormalImage.Empty();
-			else goto Label_ForeImage;
+			else
+				goto Label_ForeImage;
 		}
 
 		if(!m_sForeImage.IsEmpty() )
@@ -450,8 +472,10 @@ namespace DuiLib
 		return;
 
 Label_ForeImage:
-		if(!m_sForeImage.IsEmpty() ) {
-			if( !DrawImage(hDC, (LPCTSTR)m_sForeImage) ) m_sForeImage.Empty();
+		if(!m_sForeImage.IsEmpty() )
+		{
+			if( !DrawImage(hDC, (LPCTSTR)m_sForeImage) )
+				m_sForeImage.Empty();
 		}
 	}
 }

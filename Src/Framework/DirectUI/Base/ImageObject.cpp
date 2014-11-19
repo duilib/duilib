@@ -12,3 +12,18 @@ ImageObject::ImageObject(void)
 ImageObject::~ImageObject(void)
 {
 }
+
+void ImageObject::SetImagePath(LPCTSTR lpszImagePath)
+{
+	m_strFilePath = lpszImagePath;
+}
+
+LPCTSTR ImageObject::GetImagePath(void)
+{
+	return m_strFilePath.c_str();
+}
+
+void ImageObject::Release()
+{
+
+}
