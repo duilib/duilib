@@ -54,6 +54,71 @@ void CControlUI::SendNotify(UINOTIFY dwType, WPARAM wParam /*= 0*/, LPARAM lPara
 
 void CControlUI::SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue)
 {
+	if ( lpszValue[0] == NULL)
+		return;
+
+	VecString vec;
+	CDuiStringOperation::splite(lpszName,_T("."),vec);
+	if ( vec.size() == 2)
+	{
+		// 点分格式，如 normal.backimage
+		// vec[0] 是状态，vec[1] 是属性名
+		LPCTSTR lpszStateName = vec[0].c_str();
+		LPCTSTR lpszPropertyName = vec[1].c_str();
+
+
+		DWORD dwState;
+		// 为dwState赋值
+		if ( _tcsicmp(lpszStateName,_T("normal")) ==0 )
+			dwState = UISTATE_Normal;
+		else if (_tcsicmp(lpszStateName,_T("hover")) ==0)
+			dwState = UISTATE_Hover;
+		else if (_tcsicmp(lpszStateName,_T("pushed")) ==0)
+			dwState = UISTATE_Pushed;
+		else if (_tcsicmp(lpszStateName,_T("focused")) ==0)
+			dwState = UISTATE_Focused;
+		else if (_tcsicmp(lpszStateName,_T("disabled")) ==0)
+			dwState = UISTATE_Disabled;
+
+		UIProperty propType;
+		// 为propType赋值
+		if ( _tcsicmp(lpszPropertyName,_T("bkcolor")) ==0
+			|| _tcsicmp(lpszPropertyName,_T("bkcolor1")) ==0)
+			propType = UIProperty_Back_Color1;
+		else if ( _tcsicmp(lpszPropertyName,_T("bkcolor2")) ==0)
+			propType = UIProperty_Back_Color3;
+		else if ( _tcsicmp(lpszPropertyName,_T("bkcolor3")) ==0)
+			propType = UIProperty_Back_Color3;
+		else if ( _tcsicmp(lpszPropertyName,_T("bkimage")) ==0)
+			propType = UIProperty_Back_Image;
+		else if ( _tcsicmp(lpszPropertyName,_T("foreimage")) ==0)
+			propType = UIProperty_Fore_Image;
+		else if ( _tcsicmp(lpszPropertyName,_T("text")) ==0)
+			propType = UIProperty_Text_String;
+		else if ( _tcsicmp(lpszPropertyName,_T("textfont")) ==0)
+			propType = UIProperty_Text_Font;
+		else if ( _tcsicmp(lpszPropertyName,_T("textcolor")) ==0)
+			propType = UIProperty_Text_Color;
+		else if ( _tcsicmp(lpszPropertyName,_T("bordercolor")) ==0)
+			propType = UIProperty_Border_Color;
+		else if ( _tcsicmp(lpszPropertyName,_T("borderwidth")) ==0)
+			propType = UIProperty_Border_Wdith;
+		else if ( _tcsicmp(lpszPropertyName,_T("borderrect")) ==0)
+			propType = UIProperty_Border_Rect;
+		else if ( _tcsicmp(lpszPropertyName,_T("borderstyle")) ==0)
+			propType = UIProperty_Border_Style;
+
+		SetPropertyForState(lpszValue,propType,dwState);
+		return;
+	}
+	
+	if ( _tcsicmp(lpszName,_T("bkimage")) ==0 )
+		SetPropertyForState(lpszValue,UIProperty_Back_Image);
+	else if (  _tcsicmp(lpszName,_T("foreimage")) ==0 )
+		SetPropertyForState(lpszValue,UIProperty_Fore_Image);
+	else if (  _tcsicmp(lpszName,_T("text")) ==0 )
+		SetPropertyForState(lpszValue,UIProperty_Text_String);
+
 	if ( _tcscmp(lpszName, _T("image")) == 0 )
 	{
 		StringMap attributeMap;
@@ -759,26 +824,38 @@ LPVOID CControlUI::GetTag() const
 
 void CControlUI::SetPropertyForState(LPCTSTR lpszValue,UIProperty propType,DWORD dwState /*= UISTATE_Normal*/)
 {
+	if ( lpszValue[0]==NULL)
+		return;
+
 	size_t iCount = m_property.count(dwState);
-	if ( iCount != 0 )
+
+	do 
 	{
-		// 存在值，检查是否需要替换现有属性
-		UIStatePropertyMap::iterator iter = m_property.find(dwState);
-		for ( size_t i=0;i<iCount;++i,++iter)
+		// 循环检查指定状态的指定属性是否已经存在了
+		if ( iCount != 0 )
 		{
-			if ( iter->second.property == propType )
+			// 存在值，检查是否需要替换现有属性
+			UIStatePropertyMap::iterator iter = m_property.find(dwState);
+			for ( size_t i=0;i<iCount;++i,++iter)
 			{
-				iter->second.strValue = lpszValue;
-				return;
+				if ( iter->second.property == propType )
+				{
+					iter->second.strValue = lpszValue;
+					break;
+				}
 			}
 		}
-	}
 
-	CDuiString strValue(lpszValue);
-	Property prop;
-	prop.property = propType;
-	prop.strValue = lpszValue;
-	m_property.insert(UIStatePropertyMap::value_type(dwState,prop));
+		CDuiString strValue(lpszValue);
+		Property prop;
+		prop.property = propType;
+		prop.strValue = lpszValue;
+		m_property.insert(UIStatePropertyMap::value_type(dwState,prop));
+
+	} while (false);
+	
+	if ( propType ==  UIProperty_Back_Image || propType == UIProperty_Fore_Image )
+		SetImage(lpszValue,propType,dwState);
 }
 
 LPCTSTR CControlUI::GetPropertyForState(UIProperty propType,DWORD dwState /*= UISTATE_Normal*/)
@@ -829,11 +906,25 @@ int CControlUI::GetIntProperty(UIProperty propType,DWORD dwState /*= UISTATE_Nor
 	return CDuiCodeOperation::StringToInt(lpszNum);
 }
 
+LPCTSTR CControlUI::GetTextProperty(UIProperty propType,DWORD dwState /*= UISTATE_Normal*/)
+{
+	LPCTSTR lpszStateText = GetPropertyForState(propType,dwState);
+	if ( lpszStateText == NULL )
+		lpszStateText =  GetPropertyForState(propType,UISTATE_Normal);
+
+	return lpszStateText;
+}
+
 ImageObject* CControlUI::GetImageProperty(UIProperty propType,DWORD dwState /*= UISTATE_Normal*/)
 {
 	if ( propType == UIProperty_Back_Image && dwState == UISTATE_Normal )
 		return m_pImageBackground;
 
 	return NULL;
+}
+
+void CControlUI::SetImage(LPCTSTR lpszImageString,UIProperty propType,DWORD dwState)
+{
+	// 解析字符串，生成ImageObject对象存储
 }
 

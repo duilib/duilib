@@ -123,6 +123,7 @@ public:
 	virtual DWORD GetColorProperty(UIProperty propType,DWORD dwState = UISTATE_Normal);
 	virtual int GetIntProperty(UIProperty propType,DWORD dwState = UISTATE_Normal);
 	virtual ImageObject* GetImageProperty(UIProperty propType,DWORD dwState = UISTATE_Normal);
+	virtual LPCTSTR GetTextProperty(UIProperty propType,DWORD dwState = UISTATE_Normal);
 
 protected:
 	CDuiRect m_rcControl;	// ¿Ø¼þ»æÖÆÇøÓò
@@ -139,6 +140,8 @@ protected:
 	UIStatePropertyMap m_property;
 
 	ImageObject *m_pImageBackground;
+
+	virtual void SetImage(LPCTSTR lpszImageString,UIProperty propType,DWORD dwState);
 public:
 	// Manager
 	virtual void SetManager(CWindowUI* pManager, CControlUI* pParent);
