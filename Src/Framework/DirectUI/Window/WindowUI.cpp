@@ -647,7 +647,6 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 				m_pRenderEngine->SetDevice(&m_OffscreenDC);
 				m_pRenderEngine->SetInvalidateRect(ps.rcPaint);
 				m_pRootControl->Render(m_pRenderEngine,&ps.rcPaint);
-				m_pRenderEngine->DrawImage(NULL,0,0,0);
 			}
 
 			if ( !m_bLayedWindow )
