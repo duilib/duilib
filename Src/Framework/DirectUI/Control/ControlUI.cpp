@@ -18,6 +18,7 @@ CControlUI::CControlUI(void)
 	, m_dwState(UISTATE_Normal)
 	, m_iZOrder(0)
 	, m_pTag(NULL)
+	, m_pImageBackground(NULL)
 {
 }
 
@@ -54,7 +55,7 @@ void CControlUI::SendNotify(UINOTIFY dwType, WPARAM wParam /*= 0*/, LPARAM lPara
 
 void CControlUI::SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue)
 {
-	if ( lpszValue[0] == NULL)
+	if ( lpszValue== NULL || lpszValue[0] == NULL)
 		return;
 
 	VecString vec;
@@ -926,5 +927,13 @@ ImageObject* CControlUI::GetImageProperty(UIProperty propType,DWORD dwState /*= 
 void CControlUI::SetImage(LPCTSTR lpszImageString,UIProperty propType,DWORD dwState)
 {
 	// 解析字符串，生成ImageObject对象存储
+	if ( dwState == UISTATE_Normal && propType == UIProperty_Back_Image)
+	{
+		if ( m_pImageBackground != NULL)
+		{
+			delete m_pImageBackground;
+		}
+		m_pImageBackground = ImageObject::CreateFromString(lpszImageString);
+	}
 }
 

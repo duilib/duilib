@@ -18,10 +18,7 @@ CButtonUI::CButtonUI(void)
 CButtonUI::~CButtonUI(void)
 {
 	if ( m_pNormalImage != NULL)
-	{
-		m_pNormalImage->Release();
 		delete m_pNormalImage;
-	}
 }
 
 LPCTSTR CButtonUI::GetClass() const
@@ -189,7 +186,7 @@ ImageObject *ParseImageString(LPCTSTR lpszImageString)
 		CDuiString strTemp;
 		// file='aaa.jpg' res='' restype='0' dest='0,0,0,0' source='0,0,0,0' corner='0,0,0,0' mask='#FF0000' fade='255' hole='false' xtiled='false' ytiled='false'
 		// file
-		strTemp = FindAttrubuteKey(attributeMap,_T("file"));
+		strTemp = CDuiStringOperation::FindAttrubuteKey(attributeMap,_T("file"));
 		CDuiString strFullPath;
 		CResourceManager::GetInstance()->GetAbsolutePath(strFullPath,strTemp.c_str());
 		pImage->SetImagePath(strFullPath.c_str());
@@ -217,7 +214,7 @@ void CButtonUI::SetNormalImage(LPCTSTR lpszImageString)
 {
 	if ( CDuiStringOperation::compareNoCase(m_strNormalImage.c_str(),lpszImageString) != 0)
 	{
-		m_pNormalImage->Release();
+		delete m_pNormalImage;
 	}
 	m_strNormalImage = lpszImageString;
 	m_pNormalImage = ParseImageString(lpszImageString);

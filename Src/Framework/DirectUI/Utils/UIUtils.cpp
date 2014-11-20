@@ -851,6 +851,17 @@ void CDuiStringOperation::trim(CDuiString&content)
 	content.erase(content.find_last_not_of(_T("' \n\r\t")) + 1); 
 }
 
+LPCTSTR CDuiStringOperation::FindAttrubuteKey(AttributeMap& attributeMap,LPCTSTR lpszkey)
+{
+	AttributeMap::iterator iter = attributeMap.find(lpszkey);
+	if (iter != attributeMap.end())
+	{
+		return iter->second.c_str();
+	}
+
+	return NULL;
+}
+
 //////////////////////////////////////////////////////////////////////////
 // 
 

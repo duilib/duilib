@@ -413,17 +413,6 @@ typedef StringMap AttributeMap;
 
 static DWORD WM_DIRECTUI_MESSAGE	= ::RegisterWindowMessage(_T("WM_DIRECTUI_MESSAGE"));
 
-static CDuiString FindAttrubuteKey(AttributeMap& attributeMap,LPCTSTR lpszkey)
-{
-	AttributeMap::iterator iter = attributeMap.find(lpszkey);
-	if (iter != attributeMap.end())
-	{
-		return iter->second.c_str();
-	}
-
-	return _T("");
-}
-
 static UINT MapKeyState()
 {
 	UINT uState = 0;

@@ -285,6 +285,7 @@ public:
 
 	// 返回真，说明是Map
 	static bool parseAttributeString(LPCTSTR lpszAttributeString,StringMap& attributeMap);
+	static LPCTSTR FindAttrubuteKey(AttributeMap& attributeMap,LPCTSTR lpszkey);
 };
 
 //////////////////////////////////////////////////////////////////////////

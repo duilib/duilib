@@ -17,23 +17,44 @@ public:
 	~ImageObject(void);
 
 	void SetImagePath(LPCTSTR lpszImagePath);
-	LPCTSTR GetImagePath(void);
+	LPCTSTR GetImagePath(void) const;
 
-	int GetWidth();
-	int GetHeight();
+	void SetAlpha(int iAlpha);
+	int GetAlpha(void) const;
+
+	void SetHole(bool bHole);
+	bool GetHole(void) const;
+	void SetXTiled(bool bXTiled);
+	void SetYTiled(bool bYTiled);
+	bool GetXTiled(void) const;
+	bool GetYTiled(void) const;
+
+	void SetMaskColor(DWORD dwMask);
+	DWORD GetMaskColor(void) const;
+
+	void SetDest(RECT &rc);
+	RECT GetDest(void) const;
+
+	void SetSource(RECT &rc);
+	RECT GetSource(void) const;
+
+	void Set9Gird(RECT &rc);
+	RECT Get9Gird(void) const;
 
 public:
-	ImageObject* Get();
-	void Release();
+	static ImageObject* CreateFromString(LPCTSTR lpszString);
 
 private:
-	int m_nWidth;
-	int m_nHeight;
 	int m_nAlpha;
-	int m_nFrame;
+	//int m_nFrame;
+	DWORD m_dwMask;
+	bool m_bHole;
+	bool m_bXTiled;
+	bool m_bYTiled;
+	CDuiRect m_rcDest;
+	CDuiRect m_rcSource;
 	CDuiRect m_rc9Grid;	// ¾Å¹¬¸ñ
 	CDuiString m_strFilePath;
-	CDuiString m_strKey;
 };
 
 #endif // ImageObject_h__
