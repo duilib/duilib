@@ -26,10 +26,14 @@ public:
 	void DrawProgress();
 	void DrawScrollBar();
 
-	void DrawBackColor();
+	void DrawBackColor(IUIRender *pRender,DWORD dwBackColor,DWORD dwBackColor2,DWORD dwBackColor3,LPCRECT pPaint,LPCRECT pOverlap,LPCRECT pControl);
 	void DrawBackImage();
 	void DrawText();
 	void DrawBorder();
+
+private:
+	CDuiRect m_rcOverlapRegion;
+	CDuiRect m_rcControl;
 
 private:
 	CUIPaint(void);

@@ -426,7 +426,8 @@ namespace DuiLib
 						m_sPushedForeImage.Empty();
 					return;
 				}
-				else goto Label_ForeImage;
+				else
+					goto Label_ForeImage;
 			}
 		}
 		else if( (m_uButtonState & UISTATE_HOT) != 0 )

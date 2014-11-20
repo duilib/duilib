@@ -12,7 +12,6 @@ CButtonUI::CButtonUI(void)
 	, m_pForeHoverImage(NULL)
 	, m_pForePushedImage(NULL)
 {
-	ModifyState(UISTATE_Normal);
 }
 
 

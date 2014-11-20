@@ -140,6 +140,8 @@ protected:
 	int m_iZOrder;
 	LPVOID m_pTag;
 
+	CStdStringPtrMap m_property;
+
 	CDuiString m_sBkImage;
 	ImageObject *m_pImageBackground;
 	CDuiString m_strText;

@@ -15,7 +15,7 @@ CControlUI::CControlUI(void)
 	, m_bIsFloat(true)					// 推荐使用浮动布局
 	, m_bIsSetPos(false)
 	, m_nTooltipWidth(300)
-	, m_dwState(0)
+	, m_dwState(UISTATE_Normal)
 	, m_dwBackColor(0xFF000000)
 	, m_iZOrder(0)
 	, m_pTag(NULL)
@@ -180,6 +180,12 @@ CControlUI* CControlUI::FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFl
 
 bool CControlUI::EventHandler(TEventUI& event)
 {   // 处理CWindowUI转发的窗口消息事件
+
+	// 控件默认处于Normal状态，
+	// 收到感兴趣的消息后，给控件增加状态，但不清除Normal状态标记
+	// 新增加的非Normal状态一般会在某个消息中被清除掉，以使控件能恢复到只有Normal状态
+	// 控件绘图处理会按照状态顺序反序绘图，不会因为状态叠加同时画几种状态
+	// 可参考CButtonUI::EventHandler处理
 
 	switch (event.dwType)
 	{

@@ -26,6 +26,8 @@
 #define TODO(desc) message(__FILE__ "(" chSTR2(__LINE__) ") : TODO ==> " #desc)
 #define FIXED(desc) message(__FILE__ "(" chSTR2(__LINE__) ") : FIXED ==> " #desc)
 
+//////////////////////////////////////////////////////////////////////////
+// 宏定义
 #ifndef CDuiString
 #ifdef _UNICODE
 #define CDuiString std::wstring
@@ -59,6 +61,9 @@
 #ifndef GetWindowOwner
 #define     GetWindowOwner(hwnd)    GetWindow(hwnd, GW_OWNER)
 #endif // !GetWindowOwner
+
+//////////////////////////////////////////////////////////////////////////
+// 枚举
 
 // INotify接口使用的Type
 typedef enum _enUINOTIFY
@@ -179,6 +184,23 @@ typedef enum _UIEVENT
 	UIEVENT__LAST,
 }UIEVENT;
 
+typedef enum _enUIProperty
+{
+	UIProperty_BackColor,			// 背景色
+	UIProperty_Back_Color1 = UIProperty_BackColor,
+	UIProperty_Back_Color2,		// 渐变色
+	UIProperty_Back_Color3,		// 渐变色
+	UIProperty_Back_Image,		// 背景图
+	UIProperty_Fore_Image,		// 前景图
+	UIProperty_Text_String,		// 文字
+	UIProperty_Text_Font,			// 文字样式
+	UIProperty_Text_Color,		// 文字颜色
+	UIProperty_Border_Color,	// 边框颜色
+	UIProperty_Border_Rect,		// 边框矩形
+	UIProperty_Border_Wdith,	// 边框宽度
+	UIProperty_Border_Style,		// 边框样式
+}UIProperty;
+
 class CControlUI;
 class CButtonUI;
 class IUIRender;
@@ -186,57 +208,9 @@ class CObjectUI;
 class ImageObject;
 class FontObject;
 class TemplateObject;
-typedef struct _stTImageData TImageData;
 
-#define UI_DECLARE_DYNCREATE() \
-	static CControlUI* CreateObject()\
-
-#define UI_IMPLEMENT_DYNCREATE(ClassName)\
-	CControlUI* ClassName::CreateObject()\
-{ return new ClassName; }\
-
-#define UI_REGISTER_DYNCREATE(ControlName, ClassName)\
-	CUIEngine::GetInstance()->RegisterControl(ControlName, &ClassName::CreateObject)
-
-#define UI_UNREGISTER_DYNCREATE(ControlName)\
-	CUIEngine::GetInstance()->UnregisterControl(ControlName)
-
-typedef CControlUI* (_cdecl *PROCCONTROLCREATE)();
-typedef std::vector<CDuiString> VecString;
-typedef std::map<CDuiString,CDuiString> StringMap;
-typedef StringMap AttributeMap;
-typedef std::map<CDuiString,TemplateObject*> TemplateMap;
-typedef std::map<CDuiString,ImageObject*>	ImagePoolMap;
-typedef std::vector<FontObject*>		FontPoolVector;
-
-static DWORD WM_DIRECTUI_MESSAGE	= ::RegisterWindowMessage(_T("WM_DIRECTUI_MESSAGE"));
-
-static CDuiString FindAttrubuteKey(AttributeMap& attributeMap,LPCTSTR lpszkey)
-{
-	AttributeMap::iterator iter = attributeMap.find(lpszkey);
-	if (iter != attributeMap.end())
-	{
-		return iter->second.c_str();
-	}
-
-	return _T("");
-}
-
-static UINT MapKeyState()
-{
-	UINT uState = 0;
-	if( ::GetKeyState(VK_CONTROL) < 0 )
-		uState |= MK_CONTROL;
-	if( ::GetKeyState(VK_RBUTTON) < 0 )
-		uState |= MK_LBUTTON;
-	if( ::GetKeyState(VK_LBUTTON) < 0 )
-		uState |= MK_RBUTTON;
-	if( ::GetKeyState(VK_SHIFT) < 0 )
-		uState |= MK_SHIFT;
-	if( ::GetKeyState(VK_MENU) < 0 )
-		uState |= MK_ALT;
-	return uState;
-}
+//////////////////////////////////////////////////////////////////////////
+// 结构体
 
 typedef struct _stTFontInfo
 {
@@ -282,6 +256,12 @@ typedef struct _stTimerInfo
 	UINT uWinTimer;
 	bool bKilled;
 } TimerInfo;
+
+typedef struct _stProperty
+{
+	DWORD dwState;
+	CDuiString strValue;
+}Property;
 
 // Structure for notifications from the system
 // to the control implementation.
@@ -330,6 +310,9 @@ typedef struct _stTNotifyUI
 	}
 } TNotifyUI;
 
+//////////////////////////////////////////////////////////////////////////
+// 接口
+
 // Listener interface
 class INotifyUI
 {
@@ -365,6 +348,9 @@ public:
 	virtual CControlUI* FindSubControl(LPCTSTR pstrSubControlName) =0;
 };
 
+//////////////////////////////////////////////////////////////////////////
+// 位标志宏定义
+
 // Flags for CControlUI::GetControlFlags()
 #define UIFLAG_TABSTOP       0x00000001
 #define UIFLAG_SETCURSOR     0x00000002
@@ -398,5 +384,58 @@ public:
 #define UISTATE_Checked		0x00000040		// CheckBox RadioButton Selected Flag 64
 #define UISTATE_ReadOnly		0x00000080		// 128
 #define UISTATE_Captured		0x00000100		// 256
+
+//////////////////////////////////////////////////////////////////////////
+// 辅助
+
+#define UI_DECLARE_DYNCREATE() \
+	static CControlUI* CreateObject()\
+
+#define UI_IMPLEMENT_DYNCREATE(ClassName)\
+	CControlUI* ClassName::CreateObject()\
+{ return new ClassName; }\
+
+#define UI_REGISTER_DYNCREATE(ControlName, ClassName)\
+	CUIEngine::GetInstance()->RegisterControl(ControlName, &ClassName::CreateObject)
+
+#define UI_UNREGISTER_DYNCREATE(ControlName)\
+	CUIEngine::GetInstance()->UnregisterControl(ControlName)
+
+typedef CControlUI* (_cdecl *PROCCONTROLCREATE)();
+typedef std::vector<CDuiString>								VecString;
+typedef std::map<CDuiString,CDuiString>					StringMap;
+typedef StringMap AttributeMap;
+typedef std::map<CDuiString,TemplateObject*>		TemplateMap;
+typedef std::map<CDuiString,ImageObject*>			ImagePoolMap;
+typedef std::vector<FontObject*>								FontPoolVector;
+
+static DWORD WM_DIRECTUI_MESSAGE	= ::RegisterWindowMessage(_T("WM_DIRECTUI_MESSAGE"));
+
+static CDuiString FindAttrubuteKey(AttributeMap& attributeMap,LPCTSTR lpszkey)
+{
+	AttributeMap::iterator iter = attributeMap.find(lpszkey);
+	if (iter != attributeMap.end())
+	{
+		return iter->second.c_str();
+	}
+
+	return _T("");
+}
+
+static UINT MapKeyState()
+{
+	UINT uState = 0;
+	if( ::GetKeyState(VK_CONTROL) < 0 )
+		uState |= MK_CONTROL;
+	if( ::GetKeyState(VK_RBUTTON) < 0 )
+		uState |= MK_LBUTTON;
+	if( ::GetKeyState(VK_LBUTTON) < 0 )
+		uState |= MK_RBUTTON;
+	if( ::GetKeyState(VK_SHIFT) < 0 )
+		uState |= MK_SHIFT;
+	if( ::GetKeyState(VK_MENU) < 0 )
+		uState |= MK_ALT;
+	return uState;
+}
 
 #endif // UIDefine_h__
