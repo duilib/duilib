@@ -129,6 +129,7 @@ public:
 	LPVOID GetAt(int iIndex) const;
 	LPVOID operator[] (int nIndex) const;
 
+	virtual void Sort(int (*sortfunc)(LPVOID p1,LPVOID p2));
 protected:
 	LPVOID* m_ppVoid;
 	int m_nCount;

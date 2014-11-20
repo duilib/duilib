@@ -346,6 +346,23 @@ LPVOID CStdPtrArray::operator[] (int iIndex) const
 	return m_ppVoid[iIndex];
 }
 
+void CStdPtrArray::Sort(int (*sortfunc)(LPVOID p1,LPVOID p2))
+{
+	for(int i=0;i<m_nCount;i++)
+	{
+		if( i < m_nCount - 1)
+		{
+			int iRet = (*sortfunc)(m_ppVoid[i],m_ppVoid[i+1]);
+			if( i > 0 )
+			{
+				void* p =m_ppVoid[i];
+				m_ppVoid[i] = m_ppVoid[i+1];
+				m_ppVoid[i+1] = p;
+			}
+		}
+	}
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////
 //

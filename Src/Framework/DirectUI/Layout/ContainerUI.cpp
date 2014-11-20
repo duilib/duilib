@@ -1,6 +1,17 @@
 #include "stdafx.h"
 #include "ContainerUI.h"
 
+static int ZOrderCompare(LPVOID p1,LPVOID p2)
+{
+	CControlUI* w1 = (CControlUI*)p1;
+	CControlUI* w2 = (CControlUI *)p2;
+	if( w1->GetZOrder() > w2->GetZOrder() )
+		return 1;
+	if( w1->GetZOrder() < w2->GetZOrder() )
+		return -1;
+	return 0;
+}
+
 UI_IMPLEMENT_DYNCREATE(CContainerUI);
 
 CContainerUI::CContainerUI(void)
@@ -13,7 +24,6 @@ CContainerUI::CContainerUI(void)
 	, m_pHorizontalScrollBar(NULL)
 {
 }
-
 
 CContainerUI::~CContainerUI(void)
 {
@@ -416,6 +426,7 @@ CControlUI* CContainerUI::FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT u
 	if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() )
 		rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
 
+	m_items.Sort(ZOrderCompare);
 
 	if( (uFlags & UIFIND_TOP_FIRST) != 0 )
 	{

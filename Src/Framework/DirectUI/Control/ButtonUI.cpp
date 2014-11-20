@@ -171,53 +171,8 @@ bool CButtonUI::EventHandler(TEventUI& event)
 	return CControlUI::EventHandler(event);
 }
 
-ImageObject *ParseImageString(LPCTSTR lpszImageString)
-{
-	ImageObject *pImage = new ImageObject;
-	StringMap attributeMap;
-	if ( !CDuiStringOperation::parseAttributeString(lpszImageString,attributeMap))
-	{
-		CDuiString strFullPath;
-		CResourceManager::GetInstance()->GetAbsolutePath(strFullPath,lpszImageString);
-		pImage->SetImagePath(strFullPath.c_str());
-	}
-	else
-	{
-		CDuiString strTemp;
-		// file='aaa.jpg' res='' restype='0' dest='0,0,0,0' source='0,0,0,0' corner='0,0,0,0' mask='#FF0000' fade='255' hole='false' xtiled='false' ytiled='false'
-		// file
-		strTemp = CDuiStringOperation::FindAttrubuteKey(attributeMap,_T("file"));
-		CDuiString strFullPath;
-		CResourceManager::GetInstance()->GetAbsolutePath(strFullPath,strTemp.c_str());
-		pImage->SetImagePath(strFullPath.c_str());
-		// corner
-		// dest
-		// source
-		// corner
-		// mask
-		// fade
-		// hole
-		// xtiled ytiled
-	}
-	return pImage;
-}
-
 void CButtonUI::SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue)
 {
-	if( _tcscmp(lpszName, _T("normalimage")) == 0 )
-		SetNormalImage(lpszValue);
-	else
-		CControlUI::SetAttribute(lpszName,lpszValue);
+	CControlUI::SetAttribute(lpszName,lpszValue);
 }
-
-void CButtonUI::SetNormalImage(LPCTSTR lpszImageString)
-{
-	if ( CDuiStringOperation::compareNoCase(m_strNormalImage.c_str(),lpszImageString) != 0)
-	{
-		delete m_pNormalImage;
-	}
-	m_strNormalImage = lpszImageString;
-	m_pNormalImage = ParseImageString(lpszImageString);
-}
-
 
