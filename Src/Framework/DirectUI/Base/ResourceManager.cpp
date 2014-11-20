@@ -399,13 +399,27 @@ void CResourceManager::LoadI18NString(LPCTSTR lpszFilePath)
 
 TImageData* CResourceManager::GetImage(LPCTSTR lpszImagePath,DWORD dwMask,bool bCached /*= true */)
 {
-	TImageData* data = static_cast<TImageData*>(m_mapImageHash.Find(lpszImagePath));
-	if( !data )
+	TImageData* pImageData = static_cast<TImageData*>(m_mapImageHash.Find(lpszImagePath));
+	if( !pImageData )
 	{
-		data = LoadImage(lpszImagePath, dwMask);
+		pImageData = LoadImage(lpszImagePath, dwMask);
+		if ( bCached )
+		{
+			if( !m_mapImageHash.Insert(lpszImagePath, pImageData) )
+			{
+				::DeleteObject(pImageData->hBitmap);
+				delete pImageData;
+				pImageData = NULL;
+			}
+		}
 	}
-	++data->nRefCount;
-	return data;
+
+	if ( pImageData != NULL && bCached == true)
+		++pImageData->nRefCount;
+	else
+		pImageData->nRefCount = -1;
+
+	return pImageData;
 }
 
 TImageData* CResourceManager::LoadImage(LPCTSTR lpszFilePath,DWORD dwMask)
@@ -539,12 +553,6 @@ TImageData* CResourceManager::LoadImage(LPCTSTR lpszFilePath,DWORD dwMask)
 	//if( type != NULL )
 	//	data->sResType = type;
 	data->dwMask = dwMask;
-	if( !m_mapImageHash.Insert(lpszFilePath, data) )
-	{
-		::DeleteObject(data->hBitmap);
-		delete data;
-		data = NULL;
-	}
 
 	return data;
 }

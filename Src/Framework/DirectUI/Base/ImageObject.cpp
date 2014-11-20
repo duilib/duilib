@@ -13,7 +13,19 @@ ImageObject::ImageObject(void)
 
 ImageObject::~ImageObject(void)
 {
-	CResourceManager::GetInstance()->FreeImage(m_strFilePath.c_str());
+	if ( m_pImageData == NULL)
+		return;
+
+	if ( m_pImageData->nRefCount == -1 )
+	{
+		if (m_pImageData->hBitmap)
+		{
+			::DeleteObject(m_pImageData->hBitmap) ; 
+		}
+		delete m_pImageData ;
+	}
+	else
+		CResourceManager::GetInstance()->FreeImage(m_strFilePath.c_str());
 }
 
 void ImageObject::SetImagePath(LPCTSTR lpszImagePath)
