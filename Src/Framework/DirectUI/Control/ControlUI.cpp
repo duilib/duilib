@@ -27,6 +27,9 @@ CControlUI::~CControlUI(void)
 {
 	 if( m_pManager != NULL )
 		 m_pManager->ReapObjects(this);
+
+	 if ( m_pImageBackground != NULL)
+		delete m_pImageBackground;
 }
 
 void CControlUI::SetManager(CWindowUI* pManager, CControlUI* pParent)

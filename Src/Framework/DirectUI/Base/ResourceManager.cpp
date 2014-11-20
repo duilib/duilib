@@ -5,7 +5,6 @@
 #include "Base/UIEngine.h"
 #include "Control/ControlUI.h"
 
-
 CResourceManager * CResourceManager::m_pInstace = NULL;
 CUIEngine* CResourceManager::m_pEngine = NULL;  
 
@@ -25,6 +24,8 @@ CResourceManager::~CResourceManager(void)
 		++iter;
 	}
 
+	// 这句话是否执行不影响析构资源清理，跑到这里来的时候已经全都释放了
+	RemoveAllCachedImage();
 }
 
 CResourceManager * CResourceManager::GetInstance()
@@ -396,15 +397,197 @@ void CResourceManager::LoadI18NString(LPCTSTR lpszFilePath)
 	} while (pStringElemet != NULL);
 }
 
-//ImageObject* CResourceManager::GetImage(LPCTSTR lpszImagePath,bool bCached /*= true */)
-//{
-//	// 返回一个图片对象
-//	// bCached为true，则延迟加载图片，并由管理器负责加载与删除
-//	// 返回的ImageObject实例不用时调用Release，并设置为null
-//	// 警告：不能对返回的对象调用delete
-//	CDuiString strFullPath;
-//	GetAbsolutePath(strFullPath,lpszImagePath);
-//	ImageObject *pNewImage = new ImageObject;
-//	pNewImage->SetImagePath(strFullPath.c_str());
-//}
+TImageData* CResourceManager::GetImage(LPCTSTR lpszImagePath,DWORD dwMask,bool bCached /*= true */)
+{
+	TImageData* data = static_cast<TImageData*>(m_mapImageHash.Find(lpszImagePath));
+	if( !data )
+	{
+		data = LoadImage(lpszImagePath, dwMask);
+	}
+	++data->nRefCount;
+	return data;
+}
+
+TImageData* CResourceManager::LoadImage(LPCTSTR lpszFilePath,DWORD dwMask)
+{
+	LPBYTE pData = NULL;
+	DWORD dwSize = 0;
+
+	CDuiString strFullPath;
+	GetAbsolutePath(strFullPath,lpszFilePath);
+
+	do 
+	{
+		HANDLE hFile = ::CreateFile(strFullPath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, \
+			FILE_ATTRIBUTE_NORMAL, NULL);
+		if( hFile == INVALID_HANDLE_VALUE )
+			break;
+		dwSize = ::GetFileSize(hFile, NULL);
+		if( dwSize == 0 )
+			break;
+
+		DWORD dwRead = 0;
+		pData = new BYTE[ dwSize ];
+		::ReadFile( hFile, pData, dwSize, &dwRead, NULL );
+		::CloseHandle( hFile );
+
+		if( dwRead != dwSize )
+		{
+			delete[] pData;
+			pData = NULL;
+			break;
+		}
+
+	} while (0);
+
+	while (!pData)
+	{
+		//读不到图片, 则直接去读取 lpszFilePath 指向的路径
+		HANDLE hFile = ::CreateFile(lpszFilePath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, \
+			FILE_ATTRIBUTE_NORMAL, NULL);
+		if( hFile == INVALID_HANDLE_VALUE )
+			break;
+		dwSize = ::GetFileSize(hFile, NULL);
+		if( dwSize == 0 )
+			break;
+
+		DWORD dwRead = 0;
+		pData = new BYTE[ dwSize ];
+		::ReadFile( hFile, pData, dwSize, &dwRead, NULL );
+		::CloseHandle( hFile );
+
+		if( dwRead != dwSize )
+		{
+			delete[] pData;
+			pData = NULL;
+		}
+		break;
+	}
+	if (!pData)
+	{
+		//::MessageBox(0, _T("读取图片数据失败！"), _T("抓BUG"), MB_OK);
+		return NULL;
+	}
+
+	LPBYTE pImage = NULL;
+	int x,y,n;
+	pImage = stbi_load_from_memory(pData, dwSize, &x, &y, &n, 4);
+	delete[] pData;
+	if( !pImage )
+	{
+		//::MessageBox(0, _T("解析图片失败"), _T("抓BUG"), MB_OK);
+		return NULL;
+	}
+
+	BITMAPINFO bmi;
+	::ZeroMemory(&bmi, sizeof(BITMAPINFO));
+	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bmi.bmiHeader.biWidth = x;
+	bmi.bmiHeader.biHeight = -y;
+	bmi.bmiHeader.biPlanes = 1;
+	bmi.bmiHeader.biBitCount = 32;
+	bmi.bmiHeader.biCompression = BI_RGB;
+	bmi.bmiHeader.biSizeImage = x * y * 4;
+
+	bool bAlphaChannel = false;
+	LPBYTE pDest = NULL;
+	HBITMAP hBitmap = ::CreateDIBSection(NULL, &bmi, DIB_RGB_COLORS, (void**)&pDest, NULL, 0);
+	if( !hBitmap )
+	{
+		//::MessageBox(0, _T("CreateDIBSection失败"), _T("抓BUG"), MB_OK);
+		return NULL;
+	}
+
+	for( int i = 0; i < x * y; i++ ) 
+	{
+		pDest[i*4 + 3] = pImage[i*4 + 3];
+		if( pDest[i*4 + 3] < 255 )
+		{
+			pDest[i*4] = (BYTE)(DWORD(pImage[i*4 + 2])*pImage[i*4 + 3]/255);
+			pDest[i*4 + 1] = (BYTE)(DWORD(pImage[i*4 + 1])*pImage[i*4 + 3]/255);
+			pDest[i*4 + 2] = (BYTE)(DWORD(pImage[i*4])*pImage[i*4 + 3]/255); 
+			bAlphaChannel = true;
+		}
+		else
+		{
+			pDest[i*4] = pImage[i*4 + 2];
+			pDest[i*4 + 1] = pImage[i*4 + 1];
+			pDest[i*4 + 2] = pImage[i*4]; 
+		}
+
+		if( *(DWORD*)(&pDest[i*4]) == dwMask )
+		{
+			pDest[i*4] = (BYTE)0;
+			pDest[i*4 + 1] = (BYTE)0;
+			pDest[i*4 + 2] = (BYTE)0; 
+			pDest[i*4 + 3] = (BYTE)0;
+			bAlphaChannel = true;
+		}
+	}
+
+	stbi_image_free(pImage);
+
+	TImageData* data = new TImageData;
+	data->hBitmap = hBitmap;
+	data->nX = x;
+	data->nY = y;
+	data->delay=0;
+	data->alphaChannel = bAlphaChannel;
+	data->nRefCount = 0;
+	if( !data )
+		return NULL;
+	//if( type != NULL )
+	//	data->sResType = type;
+	data->dwMask = dwMask;
+	if( !m_mapImageHash.Insert(lpszFilePath, data) )
+	{
+		::DeleteObject(data->hBitmap);
+		delete data;
+		data = NULL;
+	}
+
+	return data;
+}
+
+void CResourceManager::FreeImageData(TImageData* pData)
+{
+	if (pData->hBitmap)
+	{
+		::DeleteObject(pData->hBitmap) ; 
+	}
+	delete pData ;
+}
+
+void CResourceManager::FreeImage(LPCTSTR lpszImagePath)
+{
+	TImageData* pData = static_cast<TImageData*>(m_mapImageHash.Find(lpszImagePath));
+	if( pData !=NULL )
+	{
+		--pData->nRefCount;
+		if ( pData->nRefCount == 0)
+		{
+			FreeImageData(pData);
+			m_mapImageHash.Remove(lpszImagePath);
+		}
+	}
+}
+
+void CResourceManager::RemoveAllCachedImage()
+{
+	int iCount = m_mapImageHash.GetSize();
+	if ( iCount == 0)
+		return;
+
+	TImageData* data;
+	for( int i = 0; i< iCount; i++ )
+	{
+		if(LPCTSTR key = m_mapImageHash.GetAt(i)) 
+		{
+			data = static_cast<TImageData*>(m_mapImageHash.Find(key, false));
+			if (data)
+				FreeImageData(data);
+		}
+	}
+	//m_mapImageHash.RemoveAll();
+}
 

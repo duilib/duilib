@@ -27,7 +27,8 @@ public:
 	virtual void DrawRectangleBorder(LPCRECT rcSrc,LPCRECT rcBorder,DWORD dwColor);
 	// ÎÄ×Ö
 	virtual void DrawText(LPCRECT rcSrc,LPCTSTR lpszTextString);
-
+	// »­Í¼Æ¬
+	virtual void DrawImage(ImageObject* pImageObj,LPCRECT rcSrc);
 private:
 	VOID GradientFill(LPCRECT rcSrc, DWORD dwStart, DWORD dwEnd, bool bVertical);
 };

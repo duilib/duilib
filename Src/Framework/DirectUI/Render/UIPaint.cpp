@@ -85,6 +85,12 @@ void CUIPaint::DrawControl(IUIRender *pRender,CControlUI* pControl,LPCRECT rcDst
 		pRender->DrawColor(&rcControl,dwColor);
 	}
 
+	ImageObject* pImage = pControl->GetImageProperty(UIProperty_Back_Image);
+	if ( pImage != NULL )
+	{
+		pRender->DrawImage(pImage,rcDst);
+	}
+
 	if ( pControl->GetIntProperty(UIProperty_Border_Wdith) != 0 )
 	{
 		// ÐèÒª»­±ß¿ò

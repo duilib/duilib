@@ -232,6 +232,7 @@ typedef struct _stTImageData
 	bool alphaChannel;
 	CDuiString strResType;
 	DWORD dwMask;
+	UINT nRefCount;
 } TImageData;
 
 typedef struct _stFindTabInfo

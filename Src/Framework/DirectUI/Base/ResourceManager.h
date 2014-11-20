@@ -33,9 +33,10 @@ public:
 
 	CControlUI *CreateControlFromTemplate(TemplateObject *pTemplate,CWindowUI* pManager,CControlUI* pParent=NULL);
 
-	void AddFont(FontObject *pFont);
-	ImageObject* GetImage(LPCTSTR lpszImagePath,bool bCached = true );
+	TImageData* GetImage(LPCTSTR lpszImagePath,DWORD dwMask,bool bCached = true );
+	void FreeImage(LPCTSTR lpszImagePath);
 
+	void AddFont(FontObject *pFont);
 	FontObject*	GetFont(LPCTSTR lpszFontName);
 
 	LPCTSTR GetI18N(LPCTSTR lpszName);
@@ -52,6 +53,9 @@ private:
 	TemplateObject* XmlToTemplate(TiXmlElement *pElement,TemplateObject* pParent);
 
 	void LoadI18NString(LPCTSTR lpszFilePath);
+	TImageData* LoadImage(LPCTSTR lpszFilePath,DWORD dwMask);
+	void FreeImageData(TImageData* pData);
+	void RemoveAllCachedImage();
 private:
 	// 对Resource.xml的缓存
 	StringMap m_mapComponent;		// 组件资源路径
@@ -71,6 +75,7 @@ private:
 	StringMap		m_mapI18NCached;		// 多国语字符串缓存
 
 	CStdStringPtrMap m_ImageDataCached; // 已缓存的图片资源
+	 CStdStringPtrMap m_mapImageHash;
 private:
 	CResourceManager(void);
 	~CResourceManager(void);

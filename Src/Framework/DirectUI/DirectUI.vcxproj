@@ -119,6 +119,7 @@
     <ClInclude Include="TinyXml\tinystr.h" />
     <ClInclude Include="TinyXml\tinyxml.h" />
     <ClInclude Include="Utils\BufferPtr.h" />
+    <ClInclude Include="Utils\stb_image.h" />
     <ClInclude Include="Utils\UIDelegate.h" />
     <ClInclude Include="Utils\UIUtils.h" />
     <ClInclude Include="Window\WindowUI.h" />
@@ -169,6 +170,9 @@
     <ClCompile Include="TinyXml\tinyxmlparser.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Utils\stb_image.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Utils\UIDelegate.cpp" />
     <ClCompile Include="Utils\UIUtils.cpp" />

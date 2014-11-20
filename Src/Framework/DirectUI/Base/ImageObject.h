@@ -41,10 +41,13 @@ public:
 	void Set9Gird(RECT &rc);
 	RECT Get9Gird(void) const;
 
+	void Init();
+
 public:
 	static ImageObject* CreateFromString(LPCTSTR lpszString);
 
 private:
+	TImageData* m_pImageData;
 	int m_nAlpha;
 	//int m_nFrame;
 	DWORD m_dwMask;

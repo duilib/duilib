@@ -40,6 +40,9 @@
 #include <WinBase.h>
 #include <CommCtrl.h>
 
+// Picture Decoder
+#include "Utils/stb_image.h"
+
 // DirectUI
 
 #include "Define/UIDefine.h"

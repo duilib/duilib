@@ -112,6 +112,9 @@
     <ClInclude Include="Render\UIPaint.h">
       <Filter>Render</Filter>
     </ClInclude>
+    <ClInclude Include="Utils\stb_image.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -185,6 +188,9 @@
     </ClCompile>
     <ClCompile Include="Render\UIPaint.cpp">
       <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\stb_image.c">
+      <Filter>Utils</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

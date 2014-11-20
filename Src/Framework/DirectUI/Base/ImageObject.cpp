@@ -13,6 +13,7 @@ ImageObject::ImageObject(void)
 
 ImageObject::~ImageObject(void)
 {
+	CResourceManager::GetInstance()->FreeImage(m_strFilePath.c_str());
 }
 
 void ImageObject::SetImagePath(LPCTSTR lpszImagePath)
@@ -87,6 +88,7 @@ ImageObject* ImageObject::CreateFromString(LPCTSTR lpszString)
 	if ( lpszVaule != NULL && _tcsicmp(lpszVaule,_T("true")) ==0 )
 		pImageObj->SetYTiled(true);
 
+	pImageObj->Init();
 	return pImageObj;
 }
 
@@ -168,6 +170,11 @@ void ImageObject::Set9Gird(RECT &rc)
 RECT ImageObject::Get9Gird(void) const
 {
 	return m_rc9Grid;
+}
+
+void ImageObject::Init()
+{
+	m_pImageData = CResourceManager::GetInstance()->GetImage(m_strFilePath.c_str(),m_dwMask);
 }
 
 
