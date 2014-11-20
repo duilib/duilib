@@ -47,6 +47,7 @@ ImageObject* ImageObject::CreateFromString(LPCTSTR lpszString)
 	if ( !CDuiStringOperation::parseAttributeString(lpszString,attributeMap))
 	{
 		pImageObj->SetImagePath(lpszString);
+		pImageObj->Init();
 		return pImageObj;
 	}
 
@@ -187,6 +188,34 @@ RECT ImageObject::Get9Gird(void) const
 void ImageObject::Init()
 {
 	m_pImageData = CResourceManager::GetInstance()->GetImage(m_strFilePath.c_str(),m_dwMask);
+}
+
+HBITMAP ImageObject::GetHBitmap()
+{
+	if ( m_pImageData != NULL)
+		return m_pImageData->hBitmap;
+	return NULL;
+}
+
+int ImageObject::GetImageWidth()
+{
+	if ( m_pImageData != NULL)
+		return m_pImageData->nX;
+	return 0;
+}
+
+int ImageObject::GetImageHeight()
+{
+	if ( m_pImageData != NULL)
+		return m_pImageData->nY;
+	return 0;
+}
+
+bool ImageObject::IsAlphaImage()
+{
+	if ( m_pImageData != NULL)
+		return m_pImageData->alphaChannel;
+	return false;
 }
 
 

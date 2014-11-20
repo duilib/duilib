@@ -132,19 +132,54 @@ static BOOL WINAPI AlphaBitBlt(HDC hDC, int nDestX, int nDestY, int dwWidth, int
 							   int nSrcX, int nSrcY, int wSrc, int hSrc, BLENDFUNCTION ftn);
 static COLORREF PixelAlpha(COLORREF clrSrc, double src_darken, COLORREF clrDest, double dest_darken);
 
-void CGDIRender::DrawImage(ImageObject* pImageObj,LPCRECT rcSrc)
+void CGDIRender::DrawImage(ImageObject* pImageObj,LPCRECT pRcControl,LPCRECT pRcPaint)
 {
 	HDC hDC = GetPaintDC();
-	HBITMAP hBitmap = NULL;
-	RECT rc = *rcSrc;
-	RECT rcPaint = pImageObj->GetDest();
-	RECT rcBmpPart =pImageObj->GetSource();
+	HBITMAP hBitmap = pImageObj->GetHBitmap();
 	RECT rcCorners = pImageObj->Get9Gird();
-	bool alphaChannel =false;
+	bool alphaChannel =pImageObj->IsAlphaImage();
 	BYTE uFade =pImageObj->GetAlpha();
 	bool hole = pImageObj->GetHole();
 	bool xtiled = pImageObj->GetXTiled();
 	bool ytiled = pImageObj->GetYTiled();
+
+
+	RECT rc(*pRcControl);
+	RECT rcPaint( *pRcPaint);
+	CDuiRect rcBmpPart =pImageObj->GetSource();
+
+	CDuiRect rcDest(pImageObj->GetDest());
+	if ( !rcDest.IsNull())
+	{
+		rc.left = pRcControl->left + rcDest.left;
+		rc.top = pRcControl->top + rcDest.top;
+		rc.right = pRcControl->right + rcDest.right;
+		rc.bottom = pRcControl->bottom + rcDest.bottom;
+
+		if ( rc.right > pRcControl->right)
+			rc.right = pRcControl->right;
+		if ( rc.bottom > pRcControl->bottom)
+			rc.bottom = pRcControl->bottom;
+	}
+
+	int imageWidht =  pImageObj->GetImageWidth();
+	int imageHeight = pImageObj->GetImageHeight();
+	if ( rcBmpPart.IsNull())
+	{
+		rcBmpPart.right = imageWidht;
+		rcBmpPart.bottom = imageHeight;
+	}
+
+	if ( rcBmpPart.right > imageWidht )
+		rcBmpPart.right = imageWidht;
+	if ( rcBmpPart.bottom > imageHeight)
+		rcBmpPart.bottom = imageHeight;
+
+	CDuiRect rcTemp;
+	if ( !rcTemp.IntersectRect(&rc,pRcControl))
+		return;
+	if ( !rcTemp.IntersectRect(&rc,pRcPaint))
+		return;
 
 	ASSERT(::GetObjectType(hDC)==OBJ_DC || ::GetObjectType(hDC)==OBJ_MEMDC);
 
@@ -160,8 +195,8 @@ void CGDIRender::DrawImage(ImageObject* pImageObj,LPCRECT rcSrc)
 	HBITMAP hOldBitmap = (HBITMAP) ::SelectObject(hCloneDC, hBitmap);
 	::SetStretchBltMode(hDC, HALFTONE);
 
-	RECT rcTemp = {0};
-	RECT rcDest = {0};
+	rcTemp.Empty();
+	rcDest.Empty();
 	if( lpAlphaBlend && (alphaChannel || uFade < 255) )
 	{
 		BLENDFUNCTION bf = { AC_SRC_OVER, 0, uFade, AC_SRC_ALPHA };

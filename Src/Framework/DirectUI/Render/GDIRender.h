@@ -28,7 +28,9 @@ public:
 	// 文字
 	virtual void DrawText(LPCRECT rcSrc,LPCTSTR lpszTextString);
 	// 画图片
-	virtual void DrawImage(ImageObject* pImageObj,LPCRECT rcSrc);
+	// pRcControl	是控件矩形区
+	// pRcPaint		是刷新区
+	virtual void DrawImage(ImageObject* pImageObj,LPCRECT pRcControl,LPCRECT pRcPaint);
 private:
 	VOID GradientFill(LPCRECT rcSrc, DWORD dwStart, DWORD dwEnd, bool bVertical);
 };

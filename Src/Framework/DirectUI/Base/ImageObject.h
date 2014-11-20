@@ -41,6 +41,11 @@ public:
 	void Set9Gird(RECT &rc);
 	RECT Get9Gird(void) const;
 
+	HBITMAP GetHBitmap();
+	int GetImageWidth();
+	int GetImageHeight();
+	bool IsAlphaImage();
+
 	void Init();
 
 public:

@@ -428,7 +428,16 @@ TImageData* CResourceManager::LoadImage(LPCTSTR lpszFilePath,DWORD dwMask)
 	DWORD dwSize = 0;
 
 	CDuiString strFullPath;
-	GetAbsolutePath(strFullPath,lpszFilePath);
+	if ( !GetAbsolutePath(strFullPath,lpszFilePath) ) // 返回false说明没找到 # 分隔符
+	{
+		// 
+		CDuiString strDefaultDir = m_strDefaultResourcePath;
+		strDefaultDir.append(_T("\\"));
+		strDefaultDir.append(lpszFilePath);
+		if ( ::PathFileExists(strDefaultDir.c_str()) )	// 拼接出的字符串不是文件路径
+			strFullPath = strDefaultDir;
+	}
+	
 
 	do 
 	{

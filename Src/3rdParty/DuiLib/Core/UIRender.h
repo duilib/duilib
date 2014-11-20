@@ -38,8 +38,8 @@ public:
 
 	static bool DrawImageString(HDC hDC,		// 绘图目标DC
 		CPaintManagerUI* pManager,
-		const RECT& rcItem,								// DC区域
-		const RECT& rcPaint,								// 
+		const RECT& rcItem,								// 控件区域
+		const RECT& rcPaint,								// 控件与刷新区的重叠部分
 		LPCTSTR pStrImage,								// 绘图格式字符串
 		LPCTSTR pStrModify = NULL);
 

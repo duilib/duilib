@@ -949,11 +949,11 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 
 bool DrawImage(HDC hDC,
 			   CPaintManagerUI* pManager,
-			   const RECT& rc,
-			   const RECT& rcPaint,
+			   const RECT& rc,									// 控件区域
+			   const RECT& rcPaint,							// 控件与刷新区的重叠部分
 			   const CDuiString& sImageName,
 			   const CDuiString& sImageResType,
-			   RECT rcItem,
+			   RECT rcItem,											// 
 			   RECT rcBmpPart,
 			   RECT rcCorner,
 			   DWORD dwMask,
@@ -999,7 +999,9 @@ bool DrawImage(HDC hDC,
 	return true;
 }
 
-bool CRenderEngine::DrawImageString(HDC hDC, CPaintManagerUI* pManager, const RECT& rc, const RECT& rcPaint, 
+bool CRenderEngine::DrawImageString(HDC hDC, CPaintManagerUI* pManager,
+									const RECT& rc,				// 控件区域
+									const RECT& rcPaint,		// 控件与刷新区的重叠部分
                                           LPCTSTR pStrImage, LPCTSTR pStrModify)
 {
 	if ((pManager == NULL) || (hDC == NULL))
@@ -1092,9 +1094,11 @@ bool CRenderEngine::DrawImageString(HDC hDC, CPaintManagerUI* pManager, const RE
                     rcItem.left = rc.left + _tcstol(sValue.GetData(), &pstr, 10);  ASSERT(pstr);    
                     rcItem.top = rc.top + _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);
                     rcItem.right = rc.left + _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);
+					rcItem.bottom = rc.top + _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+
 					if (rcItem.right > rc.right)
 						rcItem.right = rc.right;
-                    rcItem.bottom = rc.top + _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+                
 					if (rcItem.bottom > rc.bottom)
 						rcItem.bottom = rc.bottom;
                 }

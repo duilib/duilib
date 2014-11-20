@@ -61,7 +61,7 @@ void IUIRender::DrawImage(ImageObject* pImageObj, RECT& rcSrc, RECT& rcDest, int
 
 }
 
-void IUIRender::DrawImage(ImageObject* pImageObj,LPCRECT rcSrc)
+void IUIRender::DrawImage(ImageObject* pImageObj,LPCRECT pRcControl,LPCRECT pRcPaint)
 {
 
 }

@@ -172,6 +172,7 @@ protected:
     CDuiString m_sName;
     bool m_bUpdateNeeded;
     bool m_bMenuUsed;
+	// 控件区域
     RECT m_rcItem;
     RECT m_rcPadding;
     SIZE m_cXY;
@@ -206,6 +207,7 @@ protected:
 	int m_nBorderStyle;
 	int m_nTooltipWidth;
     SIZE m_cxyBorderRound;
+	// 刷新区与控件重叠区
     RECT m_rcPaint;
 	RECT m_rcBorderSize;
 };

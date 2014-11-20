@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <Window size="850,600" caption="0,0,0,100" roundcorner="5,5" sizebox="5,5,5,5">
-    <Container width="850" height="600" bkimage="images\bj.jpg">
-		<Control pos="0,0,200,200" bkcolor="#FF0000ff" bkimage="file='main#res\btnClose.png' corner='5,5,5,5'" />
-		<Control pos="200,200,500,550" bkcolor="#FFff0000" normalimage="file='main#res\btnClose.png' corner='5,5,5,5'" bkimage="file='main#res\btnClose.png' corner='5,5,5,5'" />
+    <Container width="850" height="600" bkimage="res\mainbg.png">
+		<Control pos="0,0,200,200" bkimage="file='main#res\btnClose.png' corner='5,5,5,5'" />
+		<Control pos="200,200,500,550" normalimage="file='main#res\btnClose.png' corner='5,5,5,5'" bkimage="file='main#res\btnClose.png' corner='5,5,5,5'" />
 		<!-- <Label  /> -->
-		<Button pos="200,0,320,300" normal.bkimage="" normal.foreimage="" normal.text="你好" normalimage="file='main#res\btnClose.png' corner='5,5,5,5'" bkcolor="#FFFFFF00" name="btnClose" image="file='main#res\btnClose.png' direction='v/h' count='3' imgseq='0,1,2'" />
+		<Button pos="200,0,320,300" normal.bkimage="" normal.foreimage="" normal.text="你好" normalimage="file='main#res\btnClose.png' corner='5,5,5,5'" name="btnClose" image="file='main#res\btnClose.png' direction='v/h' count='3' imgseq='0,1,2'" />
 		<!-- <Button name="btnMin" />
 		<CheckBox name="chkChoseMe" />
 		<Radio />

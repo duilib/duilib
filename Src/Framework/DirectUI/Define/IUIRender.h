@@ -64,8 +64,10 @@ public:	// 绘图引擎应该干的事情：画文字，画图片，画线，画区域
 	virtual void DrawRectangleBorder(LPCRECT rcSrc,LPCRECT rcBorder,DWORD dwColor);
 	// 文字
 	virtual void DrawText(LPCRECT rcSrc,LPCTSTR lpszTextString);
-	// 图片
-	virtual void DrawImage(ImageObject* pImageObj,LPCRECT rcSrc);
+	// 画图片
+	// pRcControl	是控件矩形区
+	// pRcPaint		是刷新区
+	virtual void DrawImage(ImageObject* pImageObj,LPCRECT pRcControl,LPCRECT pRcPaint);
 
 	virtual void DrawImage(ImageObject* pImageObj, int nAlpha, int x, int y, int nIndex = 0, bool bHole =false);
 	virtual void DrawImage9Gird(ImageObject* pImageObj,LPCRECT lp9Gird, int nAlpha, int x, int y, int nIndex = 0, bool bHole =false);

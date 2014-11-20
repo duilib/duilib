@@ -252,7 +252,8 @@ void CControlUI::SetPos(RECT rc)
     if( rc.bottom < rc.top ) rc.bottom = rc.top;
 
     CDuiRect invalidateRc = m_rcItem;
-    if( ::IsRectEmpty(&invalidateRc) ) invalidateRc = rc;
+    if( ::IsRectEmpty(&invalidateRc) )
+		invalidateRc = rc;
 
     m_rcItem = rc;
     if( m_pManager == NULL ) return;
