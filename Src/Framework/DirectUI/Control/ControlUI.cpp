@@ -16,7 +16,6 @@ CControlUI::CControlUI(void)
 	, m_bIsSetPos(false)
 	, m_nTooltipWidth(300)
 	, m_dwState(UISTATE_Normal)
-	, m_dwBackColor(0xFF000000)
 	, m_iZOrder(0)
 	, m_pTag(NULL)
 {
@@ -149,7 +148,7 @@ void CControlUI::SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue)
 		CDuiCodeOperation::StringToSize(lpszValue,&cxyRound);
 		//SetBorderRound(cxyRound);
 	}
-	else if( _tcscmp(lpszName, _T("bkimage")) == 0 ) SetBkImage(lpszValue);
+	//else if( _tcscmp(lpszName, _T("bkimage")) == 0 ) SetBkImage(lpszValue);
 	else if( _tcscmp(lpszName, _T("width")) == 0 ) SetFixedWidth(_ttoi(lpszValue));
 	else if( _tcscmp(lpszName, _T("height")) == 0 ) SetFixedHeight(_ttoi(lpszValue));
 	else if( _tcscmp(lpszName, _T("minwidth")) == 0 ) SetMinWidth(_ttoi(lpszValue));
@@ -668,33 +667,6 @@ void CControlUI::SetMaxHeight(int cy)
 		NeedUpdate();
 }
 
-DWORD CControlUI::GetBkColor() const
-{
-	 return m_dwBackColor;
-}
-
-void CControlUI::SetBkColor(DWORD dwBackColor)
-{
-	if( m_dwBackColor == dwBackColor ) return;
-
-	m_dwBackColor = dwBackColor;
-	Invalidate();
-}
-
-LPCTSTR CControlUI::GetBkImage()
-{
-	return m_sBkImage.c_str();
-}
-
-void CControlUI::SetBkImage(LPCTSTR pStrImage)
-{
-	if( m_sBkImage == pStrImage )
-		return;
-
-	m_sBkImage = pStrImage;
-	Invalidate();
-}
-
 LPCTSTR CControlUI::GetText() const
 {
 	return m_sText.c_str();
@@ -731,16 +703,7 @@ void CControlUI::Render(IUIRender* pRender,LPCRECT pRcPaint)
 		return;
 
 	// 有叠加部分，重绘
-	if (m_dwBackColor != 0xFF000000)
-	{
-		pRender->DrawColor(&m_rcControl,m_dwBackColor);
-		CDuiRect rcBorder;
-		rcBorder.left = 1;
-		rcBorder.right = 1;
-		rcBorder.top = 1;
-		rcBorder.bottom = 1;
-		pRender->DrawRectangleBorder(&m_rcControl,&rcBorder,0xFF0000FF);
-	}
+	CUIPaint::GetInstance()->DrawControl(pRender,this,pRcPaint);
 }
 
 DWORD CControlUI::ModifyState(DWORD dwStateAdd /*= 0*/,DWORD dwStateRemove /*= 0*/)
@@ -767,26 +730,6 @@ bool CControlUI::Activate()
 	if( !IsEnabled() )
 		return false;
 	return true;
-}
-
-void CControlUI::SetTextForState(LPCTSTR lpszText,DWORD dwState)
-{
-
-}
-
-LPCTSTR CControlUI::GetTextForState(DWORD dwState)
-{
-	return NULL;
-}
-
-void CControlUI::SetImageForState(LPCTSTR lpszImage,DWORD dwState)
-{
-
-}
-
-LPCTSTR CControlUI::GetImageForState(DWORD dwState)
-{
-	return NULL;
 }
 
 void CControlUI::SetZOrder(int iZOrder)
@@ -835,7 +778,6 @@ void CControlUI::SetPropertyForState(LPCTSTR lpszValue,UIProperty propType,DWORD
 	Property prop;
 	prop.property = propType;
 	prop.strValue = lpszValue;
-	//std::pair<DWORD,Property>()
 	m_property.insert(UIStatePropertyMap::value_type(dwState,prop));
 }
 
@@ -853,6 +795,44 @@ LPCTSTR CControlUI::GetPropertyForState(UIProperty propType,DWORD dwState /*= UI
 			}
 		}
 	}
+
+	return NULL;
+}
+
+RECT CControlUI::GetRectProperty(UIProperty propType,DWORD dwState /*= UISTATE_Normal*/)
+{
+	CDuiRect rc;
+	LPCTSTR lpszRect = GetPropertyForState(propType,dwState);
+	if ( lpszRect == NULL)
+		return rc;
+
+	CDuiCodeOperation::StringToRect(lpszRect,&rc);
+	return rc;
+}
+
+DWORD CControlUI::GetColorProperty(UIProperty propType,DWORD dwState /*= UISTATE_Normal*/)
+{
+	DWORD dwColor =0;
+	LPCTSTR lpszColor = GetPropertyForState(propType,dwState);
+	if ( lpszColor == 0)
+		return 0;
+
+	return CDuiCodeOperation::StringToColor(lpszColor);
+}
+
+int CControlUI::GetIntProperty(UIProperty propType,DWORD dwState /*= UISTATE_Normal*/)
+{
+	LPCTSTR lpszNum = GetPropertyForState(propType,dwState);
+	if ( lpszNum == 0)
+		return 0;
+
+	return CDuiCodeOperation::StringToInt(lpszNum);
+}
+
+ImageObject* CControlUI::GetImageProperty(UIProperty propType,DWORD dwState /*= UISTATE_Normal*/)
+{
+	if ( propType == UIProperty_Back_Image && dwState == UISTATE_Normal )
+		return m_pImageBackground;
 
 	return NULL;
 }

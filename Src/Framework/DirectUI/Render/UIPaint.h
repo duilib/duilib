@@ -17,7 +17,7 @@ public:
 	static void ReleaseInstance();
 
 public:
-	void DrawControl(IUIRender *pRender,CControlUI* pControl);
+	void DrawControl(IUIRender *pRender,CControlUI* pControl,LPCRECT rcDst);
 	void DrawLabel(IUIRender *pRender,CControlUI *pControl);
 	void DrawButton(IUIRender *pRender,CButtonUI *pButton,LPCRECT rcDst);
 	void DrawRadioButton();
@@ -30,10 +30,6 @@ public:
 	void DrawBackImage();
 	void DrawText();
 	void DrawBorder();
-
-private:
-	CDuiRect m_rcOverlapRegion;
-	CDuiRect m_rcControl;
 
 private:
 	CUIPaint(void);

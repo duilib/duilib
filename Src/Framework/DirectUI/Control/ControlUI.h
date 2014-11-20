@@ -119,17 +119,11 @@ public:
 	virtual void SetPropertyForState(LPCTSTR lpszValue,UIProperty propType,DWORD dwState = UISTATE_Normal);
 	virtual LPCTSTR GetPropertyForState(UIProperty propType,DWORD dwState = UISTATE_Normal);
 
-	virtual void SetTextForState(LPCTSTR lpszText,DWORD dwState);
-	virtual LPCTSTR GetTextForState(DWORD nState);
+	virtual RECT GetRectProperty(UIProperty propType,DWORD dwState = UISTATE_Normal);
+	virtual DWORD GetColorProperty(UIProperty propType,DWORD dwState = UISTATE_Normal);
+	virtual int GetIntProperty(UIProperty propType,DWORD dwState = UISTATE_Normal);
+	virtual ImageObject* GetImageProperty(UIProperty propType,DWORD dwState = UISTATE_Normal);
 
-	virtual void SetImageForState(LPCTSTR lpszImage,DWORD dwState);
-	virtual LPCTSTR GetImageForState(DWORD dwState);
-
-	// 
-	DWORD GetBkColor() const;
-	void SetBkColor(DWORD dwBackColor);
-	LPCTSTR GetBkImage();
-	virtual void SetBkImage(LPCTSTR pStrImage);
 protected:
 	CDuiRect m_rcControl;	// 控件绘制区域
 	CDuiRect m_rcInset;		// 内部内容区
@@ -139,16 +133,12 @@ protected:
 	CDuiSize m_cxyMin;
 	CDuiSize m_cxyMax;
 	DWORD m_dwState;
-	DWORD m_dwBackColor;
 	int m_iZOrder;
 	LPVOID m_pTag;
 
 	UIStatePropertyMap m_property;
 
-	CDuiString m_sBkImage;
 	ImageObject *m_pImageBackground;
-	CDuiString m_strText;
-
 public:
 	// Manager
 	virtual void SetManager(CWindowUI* pManager, CControlUI* pParent);
