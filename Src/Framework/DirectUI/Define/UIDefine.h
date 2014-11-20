@@ -259,7 +259,7 @@ typedef struct _stTimerInfo
 
 typedef struct _stProperty
 {
-	DWORD dwState;
+	UIProperty property;
 	CDuiString strValue;
 }Property;
 
@@ -404,10 +404,12 @@ public:
 typedef CControlUI* (_cdecl *PROCCONTROLCREATE)();
 typedef std::vector<CDuiString>								VecString;
 typedef std::map<CDuiString,CDuiString>					StringMap;
-typedef StringMap AttributeMap;
 typedef std::map<CDuiString,TemplateObject*>		TemplateMap;
 typedef std::map<CDuiString,ImageObject*>			ImagePoolMap;
 typedef std::vector<FontObject*>								FontPoolVector;
+typedef std::multimap<DWORD,Property>				UIStatePropertyMap;
+
+typedef StringMap AttributeMap;
 
 static DWORD WM_DIRECTUI_MESSAGE	= ::RegisterWindowMessage(_T("WM_DIRECTUI_MESSAGE"));
 

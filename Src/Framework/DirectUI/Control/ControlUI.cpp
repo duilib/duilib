@@ -87,15 +87,17 @@ void CControlUI::SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue)
 	}
 	else if( _tcscmp(lpszName, _T("bkcolor")) == 0 || _tcscmp(lpszName, _T("bkcolor1")) == 0 )
 	{
-		DWORD clrColor = 0;
-		clrColor = CDuiCodeOperation::StringToColor(lpszValue);
-		SetBkColor(clrColor);
+		//DWORD clrColor = 0;
+		//clrColor = CDuiCodeOperation::StringToColor(lpszValue);
+		//SetBkColor(clrColor);
+		SetPropertyForState(lpszValue,UIProperty_Back_Color1);
 	}
 	else if( _tcscmp(lpszName, _T("bkcolor2")) == 0 )
 	{
 		DWORD clrColor = 0;
 		clrColor = CDuiCodeOperation::StringToColor(lpszValue);
 		//SetBkColor2(clrColor);
+		SetPropertyForState(lpszValue,UIProperty_Back_Color2);
 	}
 	else if( _tcscmp(lpszName, _T("bkcolor3")) == 0 )
 	{
@@ -810,5 +812,48 @@ void CControlUI::SetTag(LPVOID pTag)
 LPVOID CControlUI::GetTag() const
 {
 	return m_pTag;
+}
+
+void CControlUI::SetPropertyForState(LPCTSTR lpszValue,UIProperty propType,DWORD dwState /*= UISTATE_Normal*/)
+{
+	size_t iCount = m_property.count(dwState);
+	if ( iCount != 0 )
+	{
+		// 存在值，检查是否需要替换现有属性
+		UIStatePropertyMap::iterator iter = m_property.find(dwState);
+		for ( size_t i=0;i<iCount;++i,++iter)
+		{
+			if ( iter->second.property == propType )
+			{
+				iter->second.strValue = lpszValue;
+				return;
+			}
+		}
+	}
+
+	CDuiString strValue(lpszValue);
+	Property prop;
+	prop.property = propType;
+	prop.strValue = lpszValue;
+	//std::pair<DWORD,Property>()
+	m_property.insert(UIStatePropertyMap::value_type(dwState,prop));
+}
+
+LPCTSTR CControlUI::GetPropertyForState(UIProperty propType,DWORD dwState /*= UISTATE_Normal*/)
+{
+	size_t iCount = m_property.count(dwState);
+	if ( iCount != 0 )
+	{
+		UIStatePropertyMap::iterator iter = m_property.find(dwState);
+		for ( size_t i=0;i<iCount;++i,++iter)
+		{
+			if ( iter->second.property == propType )
+			{
+				return iter->second.strValue.c_str();
+			}
+		}
+	}
+
+	return NULL;
 }
 

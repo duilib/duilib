@@ -116,6 +116,9 @@ public:
 
 	virtual bool Activate();
 
+	virtual void SetPropertyForState(LPCTSTR lpszValue,UIProperty propType,DWORD dwState = UISTATE_Normal);
+	virtual LPCTSTR GetPropertyForState(UIProperty propType,DWORD dwState = UISTATE_Normal);
+
 	virtual void SetTextForState(LPCTSTR lpszText,DWORD dwState);
 	virtual LPCTSTR GetTextForState(DWORD nState);
 
@@ -140,7 +143,7 @@ protected:
 	int m_iZOrder;
 	LPVOID m_pTag;
 
-	CStdStringPtrMap m_property;
+	UIStatePropertyMap m_property;
 
 	CDuiString m_sBkImage;
 	ImageObject *m_pImageBackground;
