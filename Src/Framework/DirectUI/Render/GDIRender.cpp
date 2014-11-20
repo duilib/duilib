@@ -1,8 +1,16 @@
 #include "stdafx.h"
 #include "GDIRender.h"
 
+static BOOL WINAPI AlphaBitBlt(HDC hDC, int nDestX, int nDestY, int dwWidth, int dwHeight, HDC hSrcDC,
+							   int nSrcX, int nSrcY, int wSrc, int hSrc, BLENDFUNCTION ftn);
+static COLORREF PixelAlpha(COLORREF clrSrc, double src_darken, COLORREF clrDest, double dest_darken);
+
 CGDIRender::CGDIRender(void)
 {
+	m_lpAlphaBlend = (LPALPHABLEND) ::GetProcAddress(::GetModuleHandle(_T("msimg32.dll")), "AlphaBlend");
+	m_lpGradientFill = (PGradientFill) ::GetProcAddress(::GetModuleHandle(_T("msimg32.dll")), "GradientFill");
+	if( m_lpAlphaBlend == NULL )
+		m_lpAlphaBlend = AlphaBitBlt;
 }
 
 
@@ -22,7 +30,7 @@ void CGDIRender::DrawColor(LPCRECT rcSrc,DWORD dwColor)
 	}
 }
 
-void CGDIRender::DrawGradient(LPCRECT rcSrc,DWORD dwStart,DWORD dwEnd,bool bVertical)
+void CGDIRender::DrawGradient(LPCRECT rcSrc,DWORD dwStart,DWORD dwEnd,bool bVertical,int nStep)
 {
 	CDuiRect rcPaint(rcSrc);
 	if ( rcPaint.IsRectEmpty())
@@ -86,9 +94,16 @@ void CGDIRender::DrawRectangleBorder(LPCRECT rcSrc,LPCRECT rcBorder,DWORD dwColo
 	this->DrawColor(&rcBottom,dwColor);
 }
 
-void CGDIRender::DrawText(LPCRECT rcSrc,LPCTSTR lpszTextString)
+void CGDIRender::DrawText(FontObject* pFontObj,LPCRECT rcSrc,LPCTSTR lpszTextString,DWORD dwTextColor,DWORD dwStyle)
 {
+	ASSERT(::GetObjectType(GetPaintDC())==OBJ_DC || ::GetObjectType(GetPaintDC())==OBJ_MEMDC);
+
+	::SetBkMode(GetPaintDC(), TRANSPARENT);
 	
+	::SetTextColor(GetPaintDC(), RGB(GetBValue(dwTextColor), GetGValue(dwTextColor), GetRValue(dwTextColor)));
+	HFONT hOldFont = (HFONT)::SelectObject(GetPaintDC(), pFontObj->GetFont());
+	::DrawText(GetPaintDC(), lpszTextString, -1, (LPRECT)rcSrc, DT_NOPREFIX | dwStyle);
+	::SelectObject(GetPaintDC(), hOldFont);
 }
 
 VOID CGDIRender::GradientFill(LPCRECT rcSrc, DWORD dwStart, DWORD dwEnd, bool bVertical)
@@ -113,24 +128,18 @@ VOID CGDIRender::GradientFill(LPCRECT rcSrc, DWORD dwStart, DWORD dwEnd, bool bV
 	gRect.UpperLeft  = 0;
 	gRect.LowerRight = 1;
 
-	typedef BOOL (WINAPI *PGradientFill)(HDC, PTRIVERTEX, ULONG, PVOID, ULONG, ULONG);
-	static PGradientFill lpGradientFill = (PGradientFill) ::GetProcAddress(::GetModuleHandle(_T("msimg32.dll")), "GradientFill");
-	if ( lpGradientFill != NULL)
+	if ( m_lpGradientFill != NULL)
 	{
 		if(!bVertical)
 		{
-			lpGradientFill(GetPaintDC(),vert,2,&gRect,1,GRADIENT_FILL_RECT_H);
+			m_lpGradientFill(GetPaintDC(),vert,2,&gRect,1,GRADIENT_FILL_RECT_H);
 		}
 		else
 		{
-			lpGradientFill(GetPaintDC(),vert,2,&gRect,1,GRADIENT_FILL_RECT_V);
+			m_lpGradientFill(GetPaintDC(),vert,2,&gRect,1,GRADIENT_FILL_RECT_V);
 		}	
 	}
 }
-
-static BOOL WINAPI AlphaBitBlt(HDC hDC, int nDestX, int nDestY, int dwWidth, int dwHeight, HDC hSrcDC,
-							   int nSrcX, int nSrcY, int wSrc, int hSrc, BLENDFUNCTION ftn);
-static COLORREF PixelAlpha(COLORREF clrSrc, double src_darken, COLORREF clrDest, double dest_darken);
 
 void CGDIRender::DrawImage(ImageObject* pImageObj,LPCRECT pRcControl,LPCRECT pRcPaint)
 {
@@ -183,11 +192,6 @@ void CGDIRender::DrawImage(ImageObject* pImageObj,LPCRECT pRcControl,LPCRECT pRc
 
 	ASSERT(::GetObjectType(hDC)==OBJ_DC || ::GetObjectType(hDC)==OBJ_MEMDC);
 
-	typedef BOOL (WINAPI *LPALPHABLEND)(HDC, int, int, int, int,HDC, int, int, int, int, BLENDFUNCTION);
-	static LPALPHABLEND lpAlphaBlend = (LPALPHABLEND) ::GetProcAddress(::GetModuleHandle(_T("msimg32.dll")), "AlphaBlend");
-
-	if( lpAlphaBlend == NULL )
-		lpAlphaBlend = AlphaBitBlt;
 	if( hBitmap == NULL )
 		return;
 
@@ -197,7 +201,7 @@ void CGDIRender::DrawImage(ImageObject* pImageObj,LPCRECT pRcControl,LPCRECT pRc
 
 	rcTemp.Empty();
 	rcDest.Empty();
-	if( lpAlphaBlend && (alphaChannel || uFade < 255) )
+	if( m_lpAlphaBlend && (alphaChannel || uFade < 255) )
 	{
 		BLENDFUNCTION bf = { AC_SRC_OVER, 0, uFade, AC_SRC_ALPHA };
 		// middle
@@ -215,7 +219,7 @@ void CGDIRender::DrawImage(ImageObject* pImageObj,LPCRECT pRcControl,LPCRECT pRc
 				{
 					rcDest.right -= rcDest.left;
 					rcDest.bottom -= rcDest.top;
-					lpAlphaBlend(hDC, rcDest.left, rcDest.top, rcDest.right, rcDest.bottom, hCloneDC, \
+					m_lpAlphaBlend(hDC, rcDest.left, rcDest.top, rcDest.right, rcDest.bottom, hCloneDC, \
 						rcBmpPart.left + rcCorners.left, rcBmpPart.top + rcCorners.top, \
 						rcBmpPart.right - rcBmpPart.left - rcCorners.left - rcCorners.right, \
 						rcBmpPart.bottom - rcBmpPart.top - rcCorners.top - rcCorners.bottom, bf);
@@ -246,7 +250,7 @@ void CGDIRender::DrawImage(ImageObject* pImageObj,LPCRECT pRcControl,LPCRECT pRc
 								lDrawWidth -= lDestRight - rcDest.right;
 								lDestRight = rcDest.right;
 							}
-							lpAlphaBlend(hDC, rcDest.left + lWidth * i, rcDest.top + lHeight * j, 
+							m_lpAlphaBlend(hDC, rcDest.left + lWidth * i, rcDest.top + lHeight * j, 
 								lDestRight - lDestLeft, lDestBottom - lDestTop, hCloneDC, 
 								rcBmpPart.left + rcCorners.left, rcBmpPart.top + rcCorners.top, lDrawWidth, lDrawHeight, bf);
 						}
@@ -266,7 +270,7 @@ void CGDIRender::DrawImage(ImageObject* pImageObj,LPCRECT pRcControl,LPCRECT pRc
 							lDrawWidth -= lDestRight - rcDest.right;
 							lDestRight = rcDest.right;
 						}
-						lpAlphaBlend(hDC, lDestLeft, rcDest.top, lDestRight - lDestLeft, rcDest.bottom, 
+						m_lpAlphaBlend(hDC, lDestLeft, rcDest.top, lDestRight - lDestLeft, rcDest.bottom, 
 							hCloneDC, rcBmpPart.left + rcCorners.left, rcBmpPart.top + rcCorners.top, \
 							lDrawWidth, rcBmpPart.bottom - rcBmpPart.top - rcCorners.top - rcCorners.bottom, bf);
 					}
@@ -285,7 +289,7 @@ void CGDIRender::DrawImage(ImageObject* pImageObj,LPCRECT pRcControl,LPCRECT pRc
 							lDrawHeight -= lDestBottom - rcDest.bottom;
 							lDestBottom = rcDest.bottom;
 						}
-						lpAlphaBlend(hDC, rcDest.left, rcDest.top + lHeight * i, rcDest.right, lDestBottom - lDestTop, 
+						m_lpAlphaBlend(hDC, rcDest.left, rcDest.top + lHeight * i, rcDest.right, lDestBottom - lDestTop, 
 							hCloneDC, rcBmpPart.left + rcCorners.left, rcBmpPart.top + rcCorners.top, \
 							rcBmpPart.right - rcBmpPart.left - rcCorners.left - rcCorners.right, lDrawHeight, bf);                    
 					}
@@ -306,7 +310,7 @@ void CGDIRender::DrawImage(ImageObject* pImageObj,LPCRECT pRcControl,LPCRECT pRc
 			{
 				rcDest.right -= rcDest.left;
 				rcDest.bottom -= rcDest.top;
-				lpAlphaBlend(hDC, rcDest.left, rcDest.top, rcDest.right, rcDest.bottom, hCloneDC, \
+				m_lpAlphaBlend(hDC, rcDest.left, rcDest.top, rcDest.right, rcDest.bottom, hCloneDC, \
 					rcBmpPart.left, rcBmpPart.top, rcCorners.left, rcCorners.top, bf);
 			}
 		}
@@ -323,7 +327,7 @@ void CGDIRender::DrawImage(ImageObject* pImageObj,LPCRECT pRcControl,LPCRECT pRc
 			{
 				rcDest.right -= rcDest.left;
 				rcDest.bottom -= rcDest.top;
-				lpAlphaBlend(hDC, rcDest.left, rcDest.top, rcDest.right, rcDest.bottom, hCloneDC, \
+				m_lpAlphaBlend(hDC, rcDest.left, rcDest.top, rcDest.right, rcDest.bottom, hCloneDC, \
 					rcBmpPart.left + rcCorners.left, rcBmpPart.top, rcBmpPart.right - rcBmpPart.left - \
 					rcCorners.left - rcCorners.right, rcCorners.top, bf);
 			}
@@ -341,7 +345,7 @@ void CGDIRender::DrawImage(ImageObject* pImageObj,LPCRECT pRcControl,LPCRECT pRc
 			{
 				rcDest.right -= rcDest.left;
 				rcDest.bottom -= rcDest.top;
-				lpAlphaBlend(hDC, rcDest.left, rcDest.top, rcDest.right, rcDest.bottom, hCloneDC, \
+				m_lpAlphaBlend(hDC, rcDest.left, rcDest.top, rcDest.right, rcDest.bottom, hCloneDC, \
 					rcBmpPart.right - rcCorners.right, rcBmpPart.top, rcCorners.right, rcCorners.top, bf);
 			}
 		}
@@ -358,7 +362,7 @@ void CGDIRender::DrawImage(ImageObject* pImageObj,LPCRECT pRcControl,LPCRECT pRc
 			{
 				rcDest.right -= rcDest.left;
 				rcDest.bottom -= rcDest.top;
-				lpAlphaBlend(hDC, rcDest.left, rcDest.top, rcDest.right, rcDest.bottom, hCloneDC, \
+				m_lpAlphaBlend(hDC, rcDest.left, rcDest.top, rcDest.right, rcDest.bottom, hCloneDC, \
 					rcBmpPart.left, rcBmpPart.top + rcCorners.top, rcCorners.left, rcBmpPart.bottom - \
 					rcBmpPart.top - rcCorners.top - rcCorners.bottom, bf);
 			}
@@ -376,7 +380,7 @@ void CGDIRender::DrawImage(ImageObject* pImageObj,LPCRECT pRcControl,LPCRECT pRc
 			{
 				rcDest.right -= rcDest.left;
 				rcDest.bottom -= rcDest.top;
-				lpAlphaBlend(hDC, rcDest.left, rcDest.top, rcDest.right, rcDest.bottom, hCloneDC, \
+				m_lpAlphaBlend(hDC, rcDest.left, rcDest.top, rcDest.right, rcDest.bottom, hCloneDC, \
 					rcBmpPart.right - rcCorners.right, rcBmpPart.top + rcCorners.top, rcCorners.right, \
 					rcBmpPart.bottom - rcBmpPart.top - rcCorners.top - rcCorners.bottom, bf);
 			}
@@ -394,7 +398,7 @@ void CGDIRender::DrawImage(ImageObject* pImageObj,LPCRECT pRcControl,LPCRECT pRc
 			{
 				rcDest.right -= rcDest.left;
 				rcDest.bottom -= rcDest.top;
-				lpAlphaBlend(hDC, rcDest.left, rcDest.top, rcDest.right, rcDest.bottom, hCloneDC, \
+				m_lpAlphaBlend(hDC, rcDest.left, rcDest.top, rcDest.right, rcDest.bottom, hCloneDC, \
 					rcBmpPart.left, rcBmpPart.bottom - rcCorners.bottom, rcCorners.left, rcCorners.bottom, bf);
 			}
 		}
@@ -411,7 +415,7 @@ void CGDIRender::DrawImage(ImageObject* pImageObj,LPCRECT pRcControl,LPCRECT pRc
 			{
 				rcDest.right -= rcDest.left;
 				rcDest.bottom -= rcDest.top;
-				lpAlphaBlend(hDC, rcDest.left, rcDest.top, rcDest.right, rcDest.bottom, hCloneDC, \
+				m_lpAlphaBlend(hDC, rcDest.left, rcDest.top, rcDest.right, rcDest.bottom, hCloneDC, \
 					rcBmpPart.left + rcCorners.left, rcBmpPart.bottom - rcCorners.bottom, \
 					rcBmpPart.right - rcBmpPart.left - rcCorners.left - rcCorners.right, rcCorners.bottom, bf);
 			}
@@ -429,7 +433,7 @@ void CGDIRender::DrawImage(ImageObject* pImageObj,LPCRECT pRcControl,LPCRECT pRc
 			{
 				rcDest.right -= rcDest.left;
 				rcDest.bottom -= rcDest.top;
-				lpAlphaBlend(hDC, rcDest.left, rcDest.top, rcDest.right, rcDest.bottom, hCloneDC, \
+				m_lpAlphaBlend(hDC, rcDest.left, rcDest.top, rcDest.right, rcDest.bottom, hCloneDC, \
 					rcBmpPart.right - rcCorners.right, rcBmpPart.bottom - rcCorners.bottom, rcCorners.right, \
 					rcCorners.bottom, bf);
 			}

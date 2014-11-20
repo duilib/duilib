@@ -15,14 +15,19 @@ public:
 	FontObject(void);
 	~FontObject(void);
 
-private:
+	HFONT GetFont();
+	LOGFONT& GetLogFont();
+	int GetHeight();
+	void SetFaceName(LPCTSTR lpszFace);
+	void SetFontSize(int nSize);
+	void SetBold(bool bBold);
+	void SetUnderline(bool bUnderline);
+	void SetItalic(bool bItalic);
+	void SetStrikeout(bool bStrikeout);
+
+protected:
+	LOGFONT m_lfFont;
 	HFONT m_hFont;
-	CDuiString sFontName;
-	int iSize;
-	bool bBold;
-	bool bUnderline;
-	bool bItalic;
-	TEXTMETRIC tm;
 };
 
 #endif // FontObject_h__

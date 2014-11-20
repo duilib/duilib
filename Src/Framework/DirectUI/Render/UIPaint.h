@@ -17,14 +17,20 @@ public:
 	static void ReleaseInstance();
 
 public:
-	void DrawControl(IUIRender *pRender,CControlUI* pControl,LPCRECT rcDst);
+	void DrawControl(IUIRender *pRender,CControlUI* pControl,LPCRECT rcUpdate);
 	void DrawLabel(IUIRender *pRender,CControlUI *pControl);
-	void DrawButton(IUIRender *pRender,CButtonUI *pButton,LPCRECT rcDst);
+	void DrawButton(IUIRender *pRender,CButtonUI *pButton,LPCRECT rcUpdate);
 	void DrawRadioButton();
 	void DrawCheckBox();
 	void DrawEdit();
 	void DrawProgress();
 	void DrawScrollBar();
+
+	//void DrawControlBackColor(IUIRender *pRender,CControlUI *pControl,LPCRECT pRcUpdate,LPCRECT pRcOverlop);
+	//void DrawControlBackImage();
+	//void DrawControlStateImage();
+	//void DrawControlText();
+	//void DrawControlBorder();
 
 	void DrawBackColor(IUIRender *pRender,DWORD dwBackColor,DWORD dwBackColor2,DWORD dwBackColor3,LPCRECT pPaint,LPCRECT pOverlap,LPCRECT pControl);
 	void DrawBackImage();

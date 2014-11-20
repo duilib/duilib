@@ -61,7 +61,7 @@ void IUIRender::DrawColor(LPCRECT rcSrc,DWORD dwColor)
 
 }
 
-void IUIRender::DrawGradient(LPCRECT rcSrc,DWORD dwStart,DWORD dwEnd,bool bVertical)
+void IUIRender::DrawGradient(LPCRECT rcSrc,DWORD dwStart,DWORD dwEnd,bool bVertical,int nStep)
 {
 
 }
@@ -76,7 +76,7 @@ void IUIRender::DrawRectangleBorder(LPCRECT rcSrc,LPCRECT rcBorder,DWORD dwColor
 
 }
 
-void IUIRender::DrawText(LPCRECT rcSrc,LPCTSTR lpszTextString)
+void IUIRender::DrawText(FontObject* pFontObj,LPCRECT rcSrc,LPCTSTR lpszTextString,DWORD dwTextColor,DWORD dwStyle)
 {
 
 }

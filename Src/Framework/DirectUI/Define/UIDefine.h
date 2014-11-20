@@ -201,6 +201,16 @@ typedef enum _enUIProperty
 	UIProperty_Border_Style,		// 边框样式
 }UIProperty;
 
+//typedef enum _enFontStyle
+//{
+//	FontStyleRegular		= 0,		// 常规
+//	FontStyleBold			= 1,		// 粗体
+//	FontStyleItalic			= 2,		// 斜体
+//	FontStyleBoldItalic	= 3,		// 粗体&斜体
+//	FontStyleUnderline	= 4,		// 下划线
+//	FontStyleStrikeout	= 8,		// 删除线
+//}FontStyle;
+
 class CControlUI;
 class CButtonUI;
 class IUIRender;
@@ -411,6 +421,9 @@ typedef std::vector<FontObject*>								FontPoolVector;
 typedef std::multimap<DWORD,Property>				UIStatePropertyMap;
 
 typedef StringMap AttributeMap;
+
+typedef BOOL (WINAPI *LPALPHABLEND)(HDC, int, int, int, int,HDC, int, int, int, int, BLENDFUNCTION);
+typedef BOOL (WINAPI *PGradientFill)(HDC, PTRIVERTEX, ULONG, PVOID, ULONG, ULONG);
 
 static DWORD WM_DIRECTUI_MESSAGE	= ::RegisterWindowMessage(_T("WM_DIRECTUI_MESSAGE"));
 
