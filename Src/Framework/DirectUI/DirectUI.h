@@ -66,6 +66,8 @@
 
 #include "Control/ScrollBarUI.h"
 
+#include "Layout/ComponentUI.h"
+
 #include "Control/ButtonUI.h"
 
 #endif // DirectUI_h__

@@ -115,6 +115,9 @@
     <ClInclude Include="Utils\stb_image.h">
       <Filter>Base\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Layout\ComponentUI.h">
+      <Filter>Layout</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -191,6 +194,9 @@
     </ClCompile>
     <ClCompile Include="Utils\stb_image.c">
       <Filter>Base\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Layout\ComponentUI.cpp">
+      <Filter>Layout</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

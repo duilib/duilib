@@ -108,6 +108,7 @@
     <ClInclude Include="Define\IUIRender.h" />
     <ClInclude Include="Define\UIDefine.h" />
     <ClInclude Include="DirectUI.h" />
+    <ClInclude Include="Layout\ComponentUI.h" />
     <ClInclude Include="Layout\ContainerUI.h" />
     <ClInclude Include="Render\GDIRender.h" />
     <ClInclude Include="Render\UIPaint.h" />
@@ -144,6 +145,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Layout\ComponentUI.cpp" />
     <ClCompile Include="Layout\ContainerUI.cpp" />
     <ClCompile Include="Render\GDIRender.cpp" />
     <ClCompile Include="Render\UIPaint.cpp" />

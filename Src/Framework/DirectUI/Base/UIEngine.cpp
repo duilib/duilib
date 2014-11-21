@@ -2,10 +2,6 @@
 #include "UIEngine.h"
 #include "Base/ResourceManager.h"
 
-#include "Control/ControlUI.h"
-#include "Layout/ContainerUI.h"
-#include "Control/ButtonUI.h"
-
 CUIEngine* CUIEngine::m_pUIEngineInstance = NULL;
 
 CUIEngine::CUIEngine(void)
@@ -55,6 +51,8 @@ void CUIEngine::Init()
 	UI_REGISTER_DYNCREATE(_T("Container"),CContainerUI);
 	UI_REGISTER_DYNCREATE(_T("ScrollBar"),CScrollBarUI);
 	UI_REGISTER_DYNCREATE(_T("Button"),CButtonUI);
+	UI_REGISTER_DYNCREATE(_T("Component"),CComponentUI);
+
 }
 
 void CUIEngine::Uninit()
