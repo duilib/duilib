@@ -407,8 +407,8 @@ public:
 	CControlUI* ClassName::CreateObject()\
 { return new ClassName; }\
 
-#define UI_REGISTER_DYNCREATE(ControlName, ClassName)\
-	CUIEngine::GetInstance()->RegisterControl(ControlName, &ClassName::CreateObject)
+#define UI_REGISTER_DYNCREATE(ControlName, ClassName,bIsActive)\
+	CUIEngine::GetInstance()->RegisterControl(ControlName, &ClassName::CreateObject,bIsActive)
 
 #define UI_UNREGISTER_DYNCREATE(ControlName)\
 	CUIEngine::GetInstance()->UnregisterControl(ControlName)

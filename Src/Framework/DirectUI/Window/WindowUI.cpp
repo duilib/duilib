@@ -488,12 +488,12 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 				&& pt.y < rcCaption.bottom )
 			{
 					CControlUI* pControl = static_cast<CControlUI*>(FindControl(pt));
-					if( pControl
-						&& _tcsicmp(pControl->GetClass(), _T("ButtonUI")) != 0
-						&& _tcsicmp(pControl->GetClass(), _T("OptionUI")) != 0
-						&&_tcsicmp(pControl->GetClass(), _T("TextUI")) != 0
-						&&_tcsicmp(pControl->GetClass(), _T("EditUI")) != 0 )
-						return HTCAPTION;
+					if( pControl != NULL )
+					{
+						static CUIEngine * pEngine = CUIEngine::GetInstance();
+						if ( !pEngine->IsActiveControl(pControl->GetClass()))
+							return HTCAPTION;
+					}
 			}
 
 			return HTCLIENT;

@@ -47,11 +47,11 @@ void CUIEngine::Init()
 	this->InitOLE();
 	m_pResourceManager = CResourceManager::GetInstance();
 	CUIPaint::GetInstance();
-	UI_REGISTER_DYNCREATE(_T("Control"),CControlUI);
-	UI_REGISTER_DYNCREATE(_T("Container"),CContainerUI);
-	UI_REGISTER_DYNCREATE(_T("ScrollBar"),CScrollBarUI);
-	UI_REGISTER_DYNCREATE(_T("Button"),CButtonUI);
-	UI_REGISTER_DYNCREATE(_T("Component"),CComponentUI);
+	UI_REGISTER_DYNCREATE(_T("Control"),CControlUI,false);
+	UI_REGISTER_DYNCREATE(_T("Container"),CContainerUI,false);
+	UI_REGISTER_DYNCREATE(_T("ScrollBar"),CScrollBarUI,true);
+	UI_REGISTER_DYNCREATE(_T("Button"),CButtonUI,true);
+	UI_REGISTER_DYNCREATE(_T("Component"),CComponentUI,false);
 
 }
 
@@ -168,7 +168,7 @@ void CUIEngine::InitOLE()
 	}
 }
 
-void CUIEngine::RegisterControl(LPCTSTR lpszType, PROCCONTROLCREATE pFn_ControlCreate)
+void CUIEngine::RegisterControl(LPCTSTR lpszType, PROCCONTROLCREATE pFn_ControlCreate,bool bActive/*=false*/)
 {
 	if ( pFn_ControlCreate == NULL)
 		return ;
@@ -177,6 +177,8 @@ void CUIEngine::RegisterControl(LPCTSTR lpszType, PROCCONTROLCREATE pFn_ControlC
 	if ( iter == m_ControlCreateMap.end() )
 	{
 		m_ControlCreateMap[lpszType] = pFn_ControlCreate;
+		if ( bActive )
+		m_vecActiveControl.push_back(lpszType);
 	}
 	else
 	{
@@ -197,10 +199,26 @@ CControlUI* CUIEngine::CreateControl(LPCTSTR lpszType)
 
 void CUIEngine::UnregisterControl(LPCTSTR lpszType)
 {
-	ProcControlCreateMap::iterator iter = m_ControlCreateMap.find(lpszType);
-	if ( iter != m_ControlCreateMap.end())
 	{
-		m_ControlCreateMap.erase(iter);
+		ProcControlCreateMap::iterator iter = m_ControlCreateMap.find(lpszType);
+		if ( iter != m_ControlCreateMap.end())
+		{
+			m_ControlCreateMap.erase(iter);
+		}
+	}
+
+	{
+		VecString::iterator iter = m_vecActiveControl.begin();
+		VecString::iterator end = m_vecActiveControl.end();
+		while (iter != end)
+		{
+			if ( CDuiStringOperation::compareNoCase(lpszType,iter->c_str()) == 0 )
+			{
+				m_vecActiveControl.erase(iter);
+				break;
+			}
+			++iter;
+		}
 	}
 }
 
@@ -247,5 +265,20 @@ CWindowUI* CUIEngine::GetWindow(LPCTSTR lpszName)
 		}
 	}
 	return NULL;
+}
+
+bool CUIEngine::IsActiveControl(LPCTSTR lpszClass)
+{
+	VecString::iterator iter = m_vecActiveControl.begin();
+	VecString::iterator end = m_vecActiveControl.end();
+	while (iter != end)
+	{
+		if ( CDuiStringOperation::compareNoCase(lpszClass,iter->c_str()) == 0 )
+		{
+			return true;
+		}
+		++iter;
+	}
+	return false;
 }
 
