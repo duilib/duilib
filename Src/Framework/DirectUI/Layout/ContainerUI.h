@@ -39,11 +39,31 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// CControlUI
+	virtual void SetNotifyFilter(INotifyUI* pNotifyFilter);
 	virtual void SetManager(CWindowUI* pManager, CControlUI* pParent);
 	CControlUI* FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags);
 	virtual CControlUI* FindSubControl(LPCTSTR pstrSubControlName);
 	virtual void Render(IUIRender* pRender,LPCRECT pRcPaint);
 	virtual void SetPosition(LPCRECT rc);
+	virtual bool EventHandler(TEventUI& event);
+
+public:
+	virtual SIZE GetScrollPos() const;
+	virtual SIZE GetScrollRange() const;
+	virtual void SetScrollPos(SIZE szPos);
+	virtual void LineUp();
+	virtual void LineDown();
+	virtual void PageUp();
+	virtual void PageDown();
+	virtual void HomeUp();
+	virtual void EndDown();
+	virtual void LineLeft();
+	virtual void LineRight();
+	virtual void PageLeft();
+	virtual void PageRight();
+	virtual void HomeLeft();
+	virtual void EndRight();
+	virtual void EnableScrollBar(bool bEnableVertical = true, bool bEnableHorizontal = false);
 
 protected:
 	virtual void SetFloatPos(int iIndex);

@@ -86,6 +86,12 @@ bool CContainerUI::Add(CControlUI* pControl)
 		NeedUpdate();
 	else 
 		pControl->SetInternVisible(false);
+
+	if ( m_pNotifyFilter != NULL)
+	{
+		pControl->SetNotifyFilter(m_pNotifyFilter);
+	}
+
 	return m_items.Add(pControl);   
 }
 
@@ -468,4 +474,318 @@ CControlUI* CContainerUI::FindSubControl(LPCTSTR pstrSubControlName)
 	CControlUI* pSubControl=NULL;
 	pSubControl=static_cast<CControlUI*>(m_pManager->FindSubControlByName(this,pstrSubControlName));
 	return pSubControl;
+}
+
+bool CContainerUI::EventHandler(TEventUI& event)
+{
+	if( !IsMouseEnabled() && event.dwType > UIEVENT__MOUSEBEGIN && event.dwType < UIEVENT__MOUSEEND )
+	{
+		if( m_pParent != NULL )
+			return m_pParent->EventHandler(event);
+		else
+			return CControlUI::EventHandler(event);
+	}
+
+	if( event.dwType == UIEVENT_SETFOCUS ) 
+	{
+		m_bIsFocused = true;
+		return true;
+	}
+	if( event.dwType == UIEVENT_KILLFOCUS ) 
+	{
+		m_bIsFocused = false;
+		return true;
+	}
+	if( m_pVerticalScrollBar != NULL && m_pVerticalScrollBar->IsVisible() && m_pVerticalScrollBar->IsEnabled() )
+	{
+		if( event.dwType == UIEVENT_KEYDOWN ) 
+		{
+			switch( event.chKey )
+			{
+			case VK_DOWN:
+				LineDown();
+				return true;
+			case VK_UP:
+				LineUp();
+				return true;
+			case VK_NEXT:
+				PageDown();
+				return true;
+			case VK_PRIOR:
+				PageUp();
+				return true;
+			case VK_HOME:
+				HomeUp();
+				return true;
+			case VK_END:
+				EndDown();
+				return true;
+			}
+		}
+		else if( event.dwType == UIEVENT_SCROLLWHEEL )
+		{
+			switch( LOWORD(event.wParam) )
+			{
+			case SB_LINEUP:
+				LineUp();
+				return true;
+			case SB_LINEDOWN:
+				LineDown();
+				return true;
+			}
+		}
+	}
+	else if( m_pHorizontalScrollBar != NULL && m_pHorizontalScrollBar->IsVisible() && m_pHorizontalScrollBar->IsEnabled() )
+	{
+		if( event.dwType == UIEVENT_KEYDOWN ) 
+		{
+			switch( event.chKey ) {
+			case VK_DOWN:
+				LineRight();
+				return true;
+			case VK_UP:
+				LineLeft();
+				return true;
+			case VK_NEXT:
+				PageRight();
+				return true;
+			case VK_PRIOR:
+				PageLeft();
+				return true;
+			case VK_HOME:
+				HomeLeft();
+				return true;
+			case VK_END:
+				EndRight();
+				return true;
+			}
+		}
+		else if( event.dwType == UIEVENT_SCROLLWHEEL )
+		{
+			switch( LOWORD(event.wParam) )
+			{
+			case SB_LINEUP:
+				LineLeft();
+				return true;
+			case SB_LINEDOWN:
+				LineRight();
+				return true;
+			}
+		}
+	}
+	return CControlUI::EventHandler(event);
+}
+
+void CContainerUI::EnableScrollBar(bool bEnableVertical /*= true*/, bool bEnableHorizontal /*= false*/)
+{
+	if( bEnableVertical && !m_pVerticalScrollBar )
+	{
+		m_pVerticalScrollBar = new CScrollBarUI;
+		m_pVerticalScrollBar->SetOwner(this);
+		m_pVerticalScrollBar->SetManager(m_pManager, NULL);
+		if ( m_pManager )
+		{
+			//LPCTSTR pDefaultAttributes = m_pManager->GetDefaultAttributeList(_T("VScrollBar"));
+			//if( pDefaultAttributes )
+			//{
+			//	m_pVerticalScrollBar->ApplyAttributeList(pDefaultAttributes);
+			//}
+		}
+	}
+	else if( !bEnableVertical && m_pVerticalScrollBar )
+	{
+		delete m_pVerticalScrollBar;
+		m_pVerticalScrollBar = NULL;
+	}
+
+	if( bEnableHorizontal && !m_pHorizontalScrollBar )
+	{
+		m_pHorizontalScrollBar = new CScrollBarUI;
+		m_pHorizontalScrollBar->SetHorizontal(true);
+		m_pHorizontalScrollBar->SetOwner(this);
+		m_pHorizontalScrollBar->SetManager(m_pManager, NULL);
+#pragma TODO(实现滚动条的皮肤初始化)
+		/*if ( m_pManager )
+		{
+			LPCTSTR pDefaultAttributes = m_pManager->GetDefaultAttributeList(_T("HScrollBar"));
+			if( pDefaultAttributes ) {
+				m_pHorizontalScrollBar->ApplyAttributeList(pDefaultAttributes);
+			}
+		}*/
+	}
+	else if( !bEnableHorizontal && m_pHorizontalScrollBar )
+	{
+		delete m_pHorizontalScrollBar;
+		m_pHorizontalScrollBar = NULL;
+	}
+
+	NeedUpdate();
+}
+
+SIZE CContainerUI::GetScrollPos() const
+{
+	SIZE sz = {0, 0};
+	if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() )
+		sz.cy = m_pVerticalScrollBar->GetScrollPos();
+	if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() )
+		sz.cx = m_pHorizontalScrollBar->GetScrollPos();
+	return sz;
+}
+
+SIZE CContainerUI::GetScrollRange() const
+{
+	SIZE sz = {0, 0};
+	if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() )
+		sz.cy = m_pVerticalScrollBar->GetScrollRange();
+	if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() )
+		sz.cx = m_pHorizontalScrollBar->GetScrollRange();
+	return sz;
+}
+
+void CContainerUI::SetScrollPos(SIZE szPos)
+{
+	int cx = 0;
+	int cy = 0;
+	if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) {
+		int iLastScrollPos = m_pVerticalScrollBar->GetScrollPos();
+		m_pVerticalScrollBar->SetScrollPos(szPos.cy);
+		cy = m_pVerticalScrollBar->GetScrollPos() - iLastScrollPos;
+	}
+
+	if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) {
+		int iLastScrollPos = m_pHorizontalScrollBar->GetScrollPos();
+		m_pHorizontalScrollBar->SetScrollPos(szPos.cx);
+		cx = m_pHorizontalScrollBar->GetScrollPos() - iLastScrollPos;
+	}
+
+	if( cx == 0 && cy == 0 ) return;
+
+	RECT rcPos;
+	for( int it2 = 0; it2 < m_items.GetSize(); it2++ ) {
+		CControlUI* pControl = static_cast<CControlUI*>(m_items[it2]);
+		if( !pControl->IsVisible() ) continue;
+		if( pControl->IsFloat() ) continue;
+
+		rcPos = pControl->GetPosition();
+		rcPos.left -= cx;
+		rcPos.right -= cx;
+		rcPos.top -= cy;
+		rcPos.bottom -= cy;
+		pControl->SetPosition(&rcPos);
+	}
+
+	Invalidate();
+}
+
+void CContainerUI::LineUp()
+{
+	int cyLine = 8;
+#pragma TODO(可能需要后续处理)
+	//if( m_pManager )
+	//	cyLine = m_pManager->GetDefaultFontInfo()->tm.tmHeight + 8;
+
+	SIZE sz = GetScrollPos();
+	sz.cy -= cyLine;
+	SetScrollPos(sz);
+}
+
+void CContainerUI::LineDown()
+{
+	int cyLine = 8;
+	//if( m_pManager )
+	//	cyLine = m_pManager->GetDefaultFontInfo()->tm.tmHeight + 8;
+
+	SIZE sz = GetScrollPos();
+	sz.cy += cyLine;
+	SetScrollPos(sz);
+}
+
+void CContainerUI::PageUp()
+{
+	SIZE sz = GetScrollPos();
+	int iOffset = m_rcControl.bottom - m_rcControl.top - m_rcInset.top - m_rcInset.bottom;
+	if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() )
+		iOffset -= m_pHorizontalScrollBar->GetFixedHeight();
+	sz.cy -= iOffset;
+	SetScrollPos(sz);
+}
+
+void CContainerUI::PageDown()
+{
+	SIZE sz = GetScrollPos();
+	int iOffset = m_rcControl.bottom - m_rcControl.top - m_rcInset.top - m_rcInset.bottom;
+	if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() )
+		iOffset -= m_pHorizontalScrollBar->GetFixedHeight();
+	sz.cy += iOffset;
+	SetScrollPos(sz);
+}
+
+void CContainerUI::HomeUp()
+{
+	SIZE sz = GetScrollPos();
+	sz.cy = 0;
+	SetScrollPos(sz);
+}
+
+void CContainerUI::EndDown()
+{
+	SIZE sz = GetScrollPos();
+	sz.cy = GetScrollRange().cy;
+	SetScrollPos(sz);
+}
+
+void CContainerUI::LineLeft()
+{
+	SIZE sz = GetScrollPos();
+	sz.cx -= 8;
+	SetScrollPos(sz);
+}
+
+void CContainerUI::LineRight()
+{
+	SIZE sz = GetScrollPos();
+	sz.cx += 8;
+	SetScrollPos(sz);
+}
+
+void CContainerUI::PageLeft()
+{
+	SIZE sz = GetScrollPos();
+	int iOffset = m_rcControl.right - m_rcControl.left - m_rcInset.left - m_rcInset.right;
+	if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() )
+		iOffset -= m_pVerticalScrollBar->GetFixedWidth();
+	sz.cx -= iOffset;
+	SetScrollPos(sz);
+}
+
+void CContainerUI::PageRight()
+{
+	SIZE sz = GetScrollPos();
+	int iOffset = m_rcControl.right - m_rcControl.left - m_rcInset.left - m_rcInset.right;
+	if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) iOffset -= m_pVerticalScrollBar->GetFixedWidth();
+	sz.cx += iOffset;
+	SetScrollPos(sz);
+}
+
+void CContainerUI::HomeLeft()
+{
+	SIZE sz = GetScrollPos();
+	sz.cx = 0;
+	SetScrollPos(sz);
+}
+
+void CContainerUI::EndRight()
+{
+	SIZE sz = GetScrollPos();
+	sz.cx = GetScrollRange().cx;
+	SetScrollPos(sz);
+}
+
+void CContainerUI::SetNotifyFilter(INotifyUI* pNotifyFilter)
+{
+	m_pNotifyFilter = pNotifyFilter;
+	for( int it = 0; it < m_items.GetSize(); it++ )
+	{
+		static_cast<CControlUI*>(m_items[it])->SetNotifyFilter(pNotifyFilter);
+	}
 }

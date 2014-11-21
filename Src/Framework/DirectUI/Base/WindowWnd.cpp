@@ -57,7 +57,7 @@ UINT CWindowWnd::GetClassStyle() const
 	return NULL;
 }
 
-LRESULT CWindowWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CWindowWnd::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	return ::CallWindowProc(m_OldWndProc,m_hWnd,uMsg,wParam,lParam);
 }
@@ -107,7 +107,7 @@ LRESULT CALLBACK CWindowWnd::__WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 		// 窗口消息发送到窗口实例中继续处理
 		// CWindowWnd::HandleMessage 为虚函数
 		// CWindowUI::HandleMessage重写实现了消息处理
-		return pThis->HandleMessage(uMsg, wParam, lParam);
+		return pThis->WindowProc(uMsg, wParam, lParam);
 	} 
 	else
 	{

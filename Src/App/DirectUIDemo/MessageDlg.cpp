@@ -19,9 +19,9 @@ void CMessageDlg::Init(HWND hWndParent)
 	this->AddNotify(this);
 }
 
-void CMessageDlg::Notify(TNotifyUI *pMsg)
+bool CMessageDlg::Notify(TNotifyUI *pMsg)
 {
-
+	return false;
 }
 
 void CMessageDlg::OnFinalMessage(HWND hWnd)

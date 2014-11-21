@@ -18,7 +18,7 @@ public:
 
 	void Init(HWND hWndParent);
 	virtual void OnFinalMessage(HWND hWnd);
-	virtual void Notify(TNotifyUI *pMsg);
+	virtual bool Notify(TNotifyUI *pMsg);
 };
 
 #endif // MessageDlg_h__

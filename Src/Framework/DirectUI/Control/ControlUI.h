@@ -114,6 +114,9 @@ public:
 	virtual DWORD GetState(void);
 	virtual bool CheckState(DWORD dwState);
 
+	virtual void SetNotifyFilter(INotifyUI* pNotifyFilter);
+	virtual INotifyUI* GetNotifyFilter(void) const;
+
 	virtual bool Activate();
 
 	virtual void SetPropertyForState(LPCTSTR lpszValue,UIProperty propType,DWORD dwState = UISTATE_Normal);
@@ -151,12 +154,12 @@ public:
 protected:
 	CControlUI* m_pParent;              //父容器
 	CWindowUI* m_pManager;              //所属窗口
+	INotifyUI *m_pNotifyFilter;
 
 public:
 	// Control
 	virtual CControlUI* FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags);
 	virtual bool EventHandler(TEventUI& event);		// 处理CWindowUI转发的消息事件
-	//virtual void Invoke(TEventUI& event);						// 控件自身业务逻辑处理
 	virtual void Render(IUIRender* pRender,LPCRECT pRcPaint);		// 控件基于内部状态绘图
 	virtual void SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue);
 
@@ -173,7 +176,7 @@ public:
 
 private:
 	CEventSource m_OnEvent;
-	CEventSource OnNotify;
+	//CEventSource OnNotify;	// 新的过滤机制取代之，废弃
 };
 
 #endif // ControlUI_h__

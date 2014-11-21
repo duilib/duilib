@@ -277,7 +277,7 @@ HWND CWindowUI::CreateDuiWindow(HWND hwndParent, LPCTSTR lpszWindowName,DWORD dw
 	return CWindowWnd::Create(hwndParent,lpszWindowName,dwStyle,dwExStyle);
 }
 
-LRESULT CWindowUI::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CWindowUI::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	if ( ::IsWindow(m_hWnd))
 	{
@@ -289,7 +289,7 @@ LRESULT CWindowUI::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		else
 		{
-			return CWindowWnd::HandleMessage(uMsg,wParam,lParam);
+			return CWindowWnd::WindowProc(uMsg,wParam,lParam);
 		}
 	}
 
@@ -305,20 +305,7 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 	{
 		// Pop出一个内部事件
 		m_arrayAsyncNotify.Remove(0);
-
-		// 投递到控件注册的监听回调中处理
-		if( pMsg->pSender != NULL )
-		{
-			if( pMsg->pSender->OnNotify )
-				pMsg->pSender->OnNotify(pMsg);
-		}
-
-		// 投递到已注册的窗口全局事件监听回调中
-		int nCount = m_arrayNotifyFilters.GetSize();
-		for( int j = 0; j < nCount; j++ )
-		{  
-			static_cast<INotifyUI*>(m_arrayNotifyFilters[j])->Notify(pMsg);
-		}
+		SendNotifyEvent(pMsg);
 		delete pMsg;
 	}
 
@@ -358,7 +345,7 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 			bHandled = true;
 
 			// 去掉标题栏，边框
-			this->ModifyStyle(WS_CLIPSIBLINGS | WS_CLIPCHILDREN,WS_CAPTION | WS_THICKFRAME );
+			this->ModifyStyle(WS_CLIPSIBLINGS | WS_CLIPCHILDREN,WS_CAPTION);
 			this->ModifyExStyle(0,WS_EX_WINDOWEDGE);
 
 			// 等同于发送WM_NCCALCSIZE消息
@@ -1408,19 +1395,11 @@ void CWindowUI::SendNotify(TNotifyUI *pMsg, bool bAsync /*= false*/)
 	pMsg->ptMouse = m_ptLastMousePos;
 	pMsg->dwTimestamp = ::GetTickCount();
 	if( !bAsync )
-	{   // send sync message immediately
-		if( pMsg->pSender != NULL )
-		{   // Send to control
-			if( pMsg->pSender->OnNotify )
-				pMsg->pSender->OnNotify(pMsg);
-		}
-		for( int i = 0; i < m_arrayNotifyFilters.GetSize(); i++ )
-		{   // Send to all listeners
-			static_cast<INotifyUI*>(m_arrayNotifyFilters[i])->Notify(pMsg);
-		}
+	{   // 同步事件，立刻发送
+		SendNotifyEvent(pMsg);
 	}
 	else
-	{   // add async message to queue
+	{   // 异步事件，加入队列
 		TNotifyUI *pMsg = new TNotifyUI;
 		pMsg->pSender = pMsg->pSender;
 		pMsg->dwType = pMsg->dwType;
@@ -1734,6 +1713,30 @@ CControlUI* CALLBACK CWindowUI::__FindControlFromName(CControlUI* pThis, LPVOID 
 	if( sName.empty() )
 		return NULL;
 	return (_tcsicmp(sName.c_str(), pstrName) == 0) ? pThis : NULL;
+}
+
+void CWindowUI::SendNotifyEvent(TNotifyUI *pMsg)
+{
+	do 
+	{
+		// 投递到控件注册的监听回调中处理
+		INotifyUI *pNotifyFilter = pMsg->pSender->GetNotifyFilter();
+		if( pNotifyFilter != NULL && pNotifyFilter->Notify(pMsg) )
+		{
+			// 过滤UI事件处理器返回已经处理了
+			// 则不再投递到窗口全局通知接口
+			break;
+		}
+
+		// 投递到窗口全局事件监听回调中
+		int nCount = m_arrayNotifyFilters.GetSize();
+		for( int j = 0; j < nCount; j++ )
+		{  
+			pNotifyFilter = static_cast<INotifyUI*>(m_arrayNotifyFilters[j]);
+			if ( pNotifyFilter->Notify(pMsg) )
+				break;
+		}
+	} while (false);
 }
 
 #endif

@@ -19,6 +19,7 @@ CControlUI::CControlUI(void)
 	, m_iZOrder(0)
 	, m_pTag(NULL)
 	, m_pImageBackground(NULL)
+	, m_pNotifyFilter(NULL)
 {
 }
 
@@ -296,19 +297,9 @@ bool CControlUI::EventHandler(TEventUI& event)
 	{
 		m_pParent->EventHandler(event);
 	}
-
-	//this->Invoke(event);
+	
 	return true;
 }
-
-//void CControlUI::Invoke(TEventUI& event)
-//{// 根据事件处理控件内部状态
-//
-//	if ( m_pParent != NULL )
-//	{
-//		m_pParent->Invoke(event);
-//	}
-//}
 
 RECT CControlUI::GetPosition()
 {
@@ -938,5 +929,15 @@ void CControlUI::SetImage(LPCTSTR lpszImageString,UIProperty propType,DWORD dwSt
 		}
 		m_pImageBackground = ImageObject::CreateFromString(lpszImageString);
 	}
+}
+
+void CControlUI::SetNotifyFilter(INotifyUI* pNotifyFilter)
+{
+	m_pNotifyFilter = pNotifyFilter;
+}
+
+INotifyUI* CControlUI::GetNotifyFilter(void) const
+{
+	return m_pNotifyFilter;
 }
 

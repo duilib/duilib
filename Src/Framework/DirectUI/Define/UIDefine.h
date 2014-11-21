@@ -328,7 +328,8 @@ typedef struct _stTNotifyUI
 class INotifyUI
 {
 public:
-	virtual void Notify(TNotifyUI *pMsg) = 0;
+	// 返回true表明事件已经处理，不再继续投递
+	virtual bool Notify(TNotifyUI *pMsg) = 0;
 };
 
 // MessageFilter interface

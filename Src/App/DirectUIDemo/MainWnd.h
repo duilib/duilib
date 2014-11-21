@@ -21,7 +21,7 @@ public:
 
 	virtual void OnFinalMessage(HWND hWnd);
 
-	virtual void Notify(TNotifyUI *pMsg);
+	virtual bool Notify(TNotifyUI *pMsg);
 
 };
 

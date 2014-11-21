@@ -48,7 +48,7 @@ protected:
 
 	virtual LPCTSTR GetWindowClassName() const;
 	virtual UINT GetClassStyle() const;
-	virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	virtual LRESULT WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	virtual void OnFinalMessage(HWND hWnd);
 
 	static LRESULT CALLBACK __WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

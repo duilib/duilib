@@ -27,7 +27,7 @@ void CMainWnd::Init()
 	this->AddNotify(this);
 }
 
-void CMainWnd::Notify(TNotifyUI *pMsg)
+bool CMainWnd::Notify(TNotifyUI *pMsg)
 {
 	//if ( pMsg->dwType == UINOTIFY_LBTNCLICK )
 	//{
@@ -41,4 +41,5 @@ void CMainWnd::Notify(TNotifyUI *pMsg)
 	//		return;
 	//	}
 	//}
+	return false;
 }

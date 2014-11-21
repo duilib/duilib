@@ -10,9 +10,6 @@
     <Filter Include="Layout">
       <UniqueIdentifier>{7e521e8f-d29d-4c1a-b3e8-d1a8c426d615}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Utils">
-      <UniqueIdentifier>{9bb0433a-aa0d-40a8-a97c-eb49551ba771}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Define">
       <UniqueIdentifier>{4b0d32a1-5a89-4806-a2b6-f88d277f1a70}</UniqueIdentifier>
     </Filter>
@@ -27,6 +24,9 @@
     </Filter>
     <Filter Include="TinyXml">
       <UniqueIdentifier>{157253a3-15c1-4a37-92cb-9c78c3608b1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\Utils">
+      <UniqueIdentifier>{9bb0433a-aa0d-40a8-a97c-eb49551ba771}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -44,10 +44,10 @@
       <Filter>Dll&amp;Header</Filter>
     </ClInclude>
     <ClInclude Include="Utils\UIUtils.h">
-      <Filter>Utils</Filter>
+      <Filter>Base\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Utils\UIDelegate.h">
-      <Filter>Utils</Filter>
+      <Filter>Base\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Base\WindowWnd.h">
       <Filter>Base</Filter>
@@ -89,7 +89,7 @@
       <Filter>Base</Filter>
     </ClInclude>
     <ClInclude Include="Utils\BufferPtr.h">
-      <Filter>Utils</Filter>
+      <Filter>Base\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Layout\ContainerUI.h">
       <Filter>Layout</Filter>
@@ -113,7 +113,7 @@
       <Filter>Render</Filter>
     </ClInclude>
     <ClInclude Include="Utils\stb_image.h">
-      <Filter>Utils</Filter>
+      <Filter>Base\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -124,10 +124,10 @@
       <Filter>Dll&amp;Header</Filter>
     </ClCompile>
     <ClCompile Include="Utils\UIUtils.cpp">
-      <Filter>Utils</Filter>
+      <Filter>Base\Utils</Filter>
     </ClCompile>
     <ClCompile Include="Utils\UIDelegate.cpp">
-      <Filter>Utils</Filter>
+      <Filter>Base\Utils</Filter>
     </ClCompile>
     <ClCompile Include="Base\WindowWnd.cpp">
       <Filter>Base</Filter>
@@ -190,7 +190,7 @@
       <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="Utils\stb_image.c">
-      <Filter>Utils</Filter>
+      <Filter>Base\Utils</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

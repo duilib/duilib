@@ -160,11 +160,11 @@ public:
     virtual void DoPostPaint(HDC hDC, const RECT& rcPaint);
 
 public:
-    CEventSource OnInit;
-    CEventSource OnDestroy;
-    CEventSource OnSize;
-    CEventSource OnEvent;
-    CEventSource OnNotify;
+    CEventSource OnInit;			// 控件创建时
+    CEventSource OnDestroy;	// 控件销毁时
+    CEventSource OnSize;			// 控件重设Size
+    CEventSource OnEvent;		// 控件接收内部消息事件处理回调
+    CEventSource OnNotify;		// 控件触发外部事件处理
 
 protected:
     CPaintManagerUI* m_pManager;

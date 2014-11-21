@@ -5,7 +5,7 @@
 		<File name="rightPanel" path="main#layout\content.xml" />
 	</Layouts>
 	<Fonts>
-		<File path="main#res\font.xml" />
+		<File path="main#layout\font.xml" />
 	</Fonts>
 	<Languages>
 		<File langid="2052" path="main#i18n\zh_cn.xml" />

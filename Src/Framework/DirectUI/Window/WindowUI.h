@@ -86,8 +86,12 @@ public:
 	void RemoveMessageFilter(IMessageFilterUI* pFilter);
 
 public:
+	// 实现自绘窗口的窗口消息处理
 	virtual LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool& bHandled);
-	virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	// 重写的CWindowWnd窗口消息循环
+	virtual LRESULT WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+	virtual void SendNotifyEvent(TNotifyUI *pMsg);
 
 public:
 	// 优先过滤消息
