@@ -218,6 +218,9 @@ class CObjectUI;
 class ImageObject;
 class FontObject;
 class TemplateObject;
+class CScrollBarUI;
+class CButtonUI;
+class CContainerUI;
 
 //////////////////////////////////////////////////////////////////////////
 // ½á¹¹Ìå

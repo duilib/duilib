@@ -160,3 +160,8 @@ void CUIPaint::DrawControl(IUIRender *pRender,CControlUI* pControl,LPCRECT rcUpd
 	
 	}
 }
+
+void CUIPaint::DrawScrollBar(IUIRender *pRender,CScrollBarUI *pButton,LPCRECT rcUpdate)
+{
+
+}

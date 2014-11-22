@@ -490,6 +490,8 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 					CControlUI* pControl = static_cast<CControlUI*>(FindControl(pt));
 					if( pControl != NULL )
 					{
+						// 如果是注册的活动控件，则需要返回HTCLIENT以响应鼠标事件
+						// 如果不是，则返回HTCAPTION处理标题栏拖动
 						static CUIEngine * pEngine = CUIEngine::GetInstance();
 						if ( !pEngine->IsActiveControl(pControl->GetClass()))
 							return HTCAPTION;

@@ -20,6 +20,17 @@ public:
 	virtual ~CContainerUI(void);
 	UI_DECLARE_DYNCREATE();
 
+	virtual RECT GetInset() const;
+	virtual void SetInset(RECT rcInset); // 设置内边距，相当于设置客户区
+	virtual int GetChildPadding() const;
+	virtual void SetChildPadding(int iPadding);
+	virtual bool IsAutoDestroy() const;
+	virtual void SetAutoDestroy(bool bAuto);
+	virtual bool IsDelayedDestroy() const;
+	virtual void SetDelayedDestroy(bool bDelayed);
+	virtual bool IsMouseChildEnabled() const;
+	virtual void SetMouseChildEnabled(bool bEnable = true);
+
 	//////////////////////////////////////////////////////////////////////////
 	// IContainerUI
 	virtual CControlUI* GetItemAt(int iIndex) const;
@@ -46,6 +57,9 @@ public:
 	virtual void Render(IUIRender* pRender,LPCRECT pRcPaint);
 	virtual void SetPosition(LPCRECT rc);
 	virtual bool EventHandler(TEventUI& event);
+	virtual void SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue);
+	virtual void SetVisible(bool bVisible = true);
+	virtual void SetInternVisible(bool bVisible = true);
 
 public:
 	virtual SIZE GetScrollPos() const;
@@ -64,6 +78,8 @@ public:
 	virtual void HomeLeft();
 	virtual void EndRight();
 	virtual void EnableScrollBar(bool bEnableVertical = true, bool bEnableHorizontal = false);
+	virtual CScrollBarUI* GetVerticalScrollBar() const;
+	virtual CScrollBarUI* GetHorizontalScrollBar() const;
 
 protected:
 	virtual void SetFloatPos(int iIndex);

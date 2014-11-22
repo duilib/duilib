@@ -281,7 +281,7 @@ public:
 	static void lower(CDuiString &str);
 	static void upper(CDuiString &str);
 	static void trim(CDuiString&content);
-
+	static CDuiString format(LPCTSTR lpszFormat, ...);
 	static void splite(LPCTSTR lpszContent,LPCTSTR lpszDelim,VecString& vec);
 
 	// 返回真，说明是Map

@@ -789,3 +789,128 @@ void CContainerUI::SetNotifyFilter(INotifyUI* pNotifyFilter)
 		static_cast<CControlUI*>(m_items[it])->SetNotifyFilter(pNotifyFilter);
 	}
 }
+
+void CContainerUI::SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue)
+{
+	if( _tcsicmp(lpszName, _T("inset")) == 0 )
+	{
+		CDuiCodeOperation::StringToRect(lpszValue,&m_rcInset);
+		NeedUpdate();
+	}
+	else if( _tcsicmp(lpszName, _T("mousechild")) == 0 )
+		SetMouseChildEnabled(_tcsicmp(lpszValue, _T("true")) == 0);
+	else if( _tcsicmp(lpszName, _T("vscrollbar")) == 0 )
+	{
+		EnableScrollBar(_tcsicmp(lpszValue, _T("true")) == 0, GetHorizontalScrollBar() != NULL);
+	}
+	else if( _tcsicmp(lpszName, _T("hscrollbar")) == 0 )
+	{
+		EnableScrollBar(GetVerticalScrollBar() != NULL, _tcsicmp(lpszValue, _T("true")) == 0);
+	}
+	else if( _tcsicmp(lpszName, _T("vscrollbarstyle")) == 0 )
+	{
+		EnableScrollBar(true, GetHorizontalScrollBar() != NULL);
+		if( GetVerticalScrollBar() )
+			GetVerticalScrollBar()->SetAttribute(lpszName,lpszValue);
+	}
+	else if( _tcsicmp(lpszName, _T("hscrollbarstyle")) == 0 )
+	{
+		EnableScrollBar(GetVerticalScrollBar() != NULL, true);
+		if( GetHorizontalScrollBar() )
+			GetHorizontalScrollBar()->SetAttribute(lpszName,lpszValue);
+	}
+	else if( _tcsicmp(lpszName, _T("childpadding")) == 0 )
+		SetChildPadding(_ttoi(lpszValue));
+	else
+	CControlUI::SetAttribute(lpszName,lpszValue);
+}
+
+RECT CContainerUI::GetInset() const
+{
+	return m_rcInset;
+}
+
+void CContainerUI::SetInset(RECT rcInset)
+{
+	m_rcInset = rcInset;
+	NeedUpdate();
+}
+
+int CContainerUI::GetChildPadding() const
+{
+	return m_iChildPadding;
+}
+
+void CContainerUI::SetChildPadding(int iPadding)
+{
+	m_iChildPadding = iPadding;
+	NeedUpdate();
+}
+
+bool CContainerUI::IsAutoDestroy() const
+{
+	return m_bAutoDestroy;
+}
+
+void CContainerUI::SetAutoDestroy(bool bAuto)
+{
+	m_bAutoDestroy = bAuto;
+}
+
+bool CContainerUI::IsDelayedDestroy() const
+{
+	return m_bDelayedDestroy;
+}
+
+void CContainerUI::SetDelayedDestroy(bool bDelayed)
+{
+	m_bDelayedDestroy = bDelayed;
+}
+
+bool CContainerUI::IsMouseChildEnabled() const
+{
+	return m_bMouseChildEnabled;
+}
+
+void CContainerUI::SetMouseChildEnabled(bool bEnable /*= true*/)
+{
+	m_bMouseChildEnabled = bEnable;
+}
+
+void CContainerUI::SetVisible(bool bVisible /*= true*/)
+{
+	if( m_bIsVisible == bVisible )
+		return;
+	CControlUI::SetVisible(bVisible);
+	int nCount = m_items.GetSize();
+	for( int it = 0; it < nCount; it++ )
+	{
+		static_cast<CControlUI*>(m_items[it])->SetInternVisible(IsVisible());
+	}
+}
+
+// 逻辑上，Container控件不公开此方法
+// 调用此方法的结果是，内部子控件隐藏，控件本身依然显示，背景等效果存在
+void CContainerUI::SetInternVisible(bool bVisible /*= true*/)
+{
+	CControlUI::SetInternVisible(bVisible);
+	if( m_items.IsEmpty() )
+		return;
+	int nCount = m_items.GetSize();
+	for( int it = 0; it < nCount; it++ )
+	{
+		// 控制子控件显示状态
+		// InternVisible状态应由子控件自己控制
+		static_cast<CControlUI*>(m_items[it])->SetInternVisible(IsVisible());
+	}
+}
+
+CScrollBarUI* CContainerUI::GetVerticalScrollBar() const
+{
+	return m_pVerticalScrollBar;
+}
+
+CScrollBarUI* CContainerUI::GetHorizontalScrollBar() const
+{
+	return m_pHorizontalScrollBar;
+}

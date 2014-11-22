@@ -879,6 +879,20 @@ LPCTSTR CDuiStringOperation::FindAttrubuteKey(AttributeMap& attributeMap,LPCTSTR
 	return NULL;
 }
 
+CDuiString CDuiStringOperation::format(LPCTSTR lpszFormat, ...)
+{
+	CDuiString sFormat = lpszFormat;
+	// Do ordinary printf replacements
+	// NOTE: Documented max-length of wvsprintf() is 1024
+	TCHAR szBuffer[1025] = { 0 };
+	va_list argList;
+	va_start(argList, lpszFormat);
+	int iRet = ::wvsprintf(szBuffer, sFormat.c_str(), argList);
+	va_end(argList);
+	szBuffer[iRet] = _T('\0');
+	return szBuffer;
+}
+
 //////////////////////////////////////////////////////////////////////////
 // 
 

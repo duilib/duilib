@@ -24,7 +24,7 @@ public:
 	void DrawCheckBox();
 	void DrawEdit();
 	void DrawProgress();
-	void DrawScrollBar();
+	void DrawScrollBar(IUIRender *pRender,CScrollBarUI *pButton,LPCRECT rcUpdate);
 
 	//void DrawControlBackColor(IUIRender *pRender,CControlUI *pControl,LPCRECT pRcUpdate,LPCRECT pRcOverlop);
 	//void DrawControlBackImage();

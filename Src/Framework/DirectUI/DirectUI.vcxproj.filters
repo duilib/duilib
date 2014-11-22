@@ -25,7 +25,7 @@
     <Filter Include="TinyXml">
       <UniqueIdentifier>{157253a3-15c1-4a37-92cb-9c78c3608b1b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Base\Utils">
+    <Filter Include="Utils">
       <UniqueIdentifier>{9bb0433a-aa0d-40a8-a97c-eb49551ba771}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -44,10 +44,10 @@
       <Filter>Dll&amp;Header</Filter>
     </ClInclude>
     <ClInclude Include="Utils\UIUtils.h">
-      <Filter>Base\Utils</Filter>
+      <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Utils\UIDelegate.h">
-      <Filter>Base\Utils</Filter>
+      <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Base\WindowWnd.h">
       <Filter>Base</Filter>
@@ -89,7 +89,7 @@
       <Filter>Base</Filter>
     </ClInclude>
     <ClInclude Include="Utils\BufferPtr.h">
-      <Filter>Base\Utils</Filter>
+      <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Layout\ContainerUI.h">
       <Filter>Layout</Filter>
@@ -113,7 +113,7 @@
       <Filter>Render</Filter>
     </ClInclude>
     <ClInclude Include="Utils\stb_image.h">
-      <Filter>Base\Utils</Filter>
+      <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Layout\ComponentUI.h">
       <Filter>Layout</Filter>
@@ -127,10 +127,10 @@
       <Filter>Dll&amp;Header</Filter>
     </ClCompile>
     <ClCompile Include="Utils\UIUtils.cpp">
-      <Filter>Base\Utils</Filter>
+      <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="Utils\UIDelegate.cpp">
-      <Filter>Base\Utils</Filter>
+      <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="Base\WindowWnd.cpp">
       <Filter>Base</Filter>
@@ -193,7 +193,7 @@
       <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="Utils\stb_image.c">
-      <Filter>Base\Utils</Filter>
+      <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="Layout\ComponentUI.cpp">
       <Filter>Layout</Filter>

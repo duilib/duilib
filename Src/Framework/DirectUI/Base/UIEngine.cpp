@@ -47,6 +47,7 @@ void CUIEngine::Init()
 	this->InitOLE();
 	m_pResourceManager = CResourceManager::GetInstance();
 	CUIPaint::GetInstance();
+	// bIsActive为true，控件区域不响应窗口拖动事件
 	UI_REGISTER_DYNCREATE(_T("Control"),CControlUI,false);
 	UI_REGISTER_DYNCREATE(_T("Container"),CContainerUI,false);
 	UI_REGISTER_DYNCREATE(_T("ScrollBar"),CScrollBarUI,true);
