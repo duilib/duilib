@@ -204,6 +204,8 @@ void CButtonUI::SetImage(LPCTSTR lpszImageString,UIProperty propType,DWORD dwSta
 
 		if ( pImageObj != NULL)
 		{
+			if ( *pImageObj != NULL)
+				delete *pImageObj;
 			*pImageObj = ImageObject::CreateFromString(lpszImageString);
 			return;
 		}
@@ -228,6 +230,8 @@ void CButtonUI::SetImage(LPCTSTR lpszImageString,UIProperty propType,DWORD dwSta
 		}
 		if ( pImageObj != NULL)
 		{
+			if ( *pImageObj != NULL)
+				delete *pImageObj;
 			*pImageObj = ImageObject::CreateFromString(lpszImageString);
 			return;
 		}
