@@ -120,8 +120,8 @@ private:
 	CDuiRect m_rcRestore;
 
 	CDuiSize m_szRoundCorner;		
-	SIZE m_szMinWindow;				// 窗口最小
-	SIZE m_szMaxWindow;				// 窗口最大
+	CDuiSize m_szMinWindow;				// 窗口最小
+	CDuiSize m_szMaxWindow;				// 窗口最大
 	CDuiSize m_szInitWindowSize;	// 初始化窗口大小
 	CDuiRect m_rcSizeBox;				// 可调整边框边距
 	CDuiRect m_rcCaption;				// 响应标题栏拖动
@@ -145,7 +145,7 @@ private:
 	TOOLINFO m_ToolTip;
 
 	// Events
-	POINT m_ptLastMousePos;
+	CDuiPoint m_ptLastMousePos;
 	bool m_bMouseTracking;
 	bool m_bMouseCapture;
 	CStdPtrArray m_arrayDelayedCleanup;

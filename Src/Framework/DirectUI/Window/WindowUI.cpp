@@ -15,11 +15,17 @@ CWindowUI::CWindowUI(void)
 	, m_pEventKey(NULL)
 	, m_pEventHover(NULL)
 	, m_hWndTooltip(NULL)
-	, m_uTimerID(0x1000)
 	, m_hInstance(NULL)
-	, m_bMouseTracking(false)
-	, m_bLayedWindow(false)
 	, m_hPaintDC(NULL)
+	, m_uTimerID(0x1000)
+	, m_nAlpha(255)
+	, m_bMouseTracking(false)
+	, m_bMouseCapture(false)
+	, m_bLayedWindow(false)
+	, m_bShowUpdateRect(false)
+	, m_bFirstLayout(true)
+	, m_bUpdateNeeded(false)
+	, m_bFocusNeeded(false)
 {
 	m_ptLastMousePos.x = -1;
 	m_ptLastMousePos.y = -1;
@@ -880,7 +886,7 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 	//case WM_NCMOUSEMOVE:
 	case WM_MOUSEMOVE:
 		{
-			bHandled = true;
+			//bHandled = true;
 
 			// 已经注册了鼠标跟踪则跳过
 			if( !m_bMouseTracking )

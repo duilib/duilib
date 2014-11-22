@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<Window size="1200,800" caption="0,0,0,100" roundcorner="5,5" sizebox="5,5,5,5">
+<Window size="900,600" caption="0,0,0,100" roundcorner="5,5" sizebox="5,5,5,5">
     <Container width="900" height="600" bkimage="file='res\mainbg.png' corner='5,100,5,27'">
 		<Control pos="0,0,50,50" bkcolor="#FF00FF00" text="你好" font="" />
 		<Button pos="200,0,248,20" normal.bkimage="file=&apos;res\btnClose.png&apos; source=&apos;0,0,48,20&apos;" hover.bkimage="file=&apos;res\btnClose.png&apos; source=&apos;48,0,96,20&apos;" pushed.bkimage="file=&apos;res\btnClose.png&apos; source=&apos;96,0,144,20&apos;" text="你好" name="btnClose" image="file='main#res\btnClose.png' direction='v/h' count='3' imgseq='0,1,2'" />
