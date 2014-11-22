@@ -434,7 +434,10 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 			//	bHandled = true;
 
 			if ( wParam == FALSE )
-				return TRUE;
+			{
+				lResult = S_FALSE;
+				//return TRUE;
+			}
 		}
 		break;
 	case WM_NCPAINT:
@@ -572,13 +575,13 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 			// 计算是否需要重绘
 			RECT rcPaint = { 0 };
 			if( !::GetUpdateRect(m_hWnd, &rcPaint, FALSE) )
-				return true;
+				return 0;
 			if( m_pRootControl == NULL )
 			{
 				PAINTSTRUCT ps = { 0 };
 				::BeginPaint(m_hWnd, &ps);
 				::EndPaint(m_hWnd, &ps);
-				return true;
+				return 0;
 			}
 
 			//////////////////////////////////////////////////////////////////////////
@@ -874,6 +877,7 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 			m_pEventClick = NULL;
 		}
 		break;
+	//case WM_NCMOUSEMOVE:
 	case WM_MOUSEMOVE:
 		{
 			bHandled = true;
@@ -969,7 +973,7 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 			// 读取当前悬停控件Tooltip字符串，没有则返回
 			CDuiString sToolTip = pHover->GetToolTip();
 			if( sToolTip.empty() ) 
-				return true;
+				return 0;
 
 			// 显示当前悬停控件Tooltip
 			::ZeroMemory(&m_ToolTip, sizeof(TOOLINFO));
@@ -989,19 +993,22 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 			::SendMessage( m_hWndTooltip,TTM_SETMAXTIPWIDTH,0, pHover->GetToolTipWidth());
 			::SendMessage(m_hWndTooltip, TTM_SETTOOLINFO, 0, (LPARAM) &m_ToolTip);
 			::SendMessage(m_hWndTooltip, TTM_TRACKACTIVATE, TRUE, (LPARAM) &m_ToolTip);
+			return 0;
 		}
 		break;
 	case WM_MOUSELEAVE:
 		{
 			bHandled = true;
 
-			// 鼠标悬停消息触发，关闭跟踪标志
-			m_bMouseTracking = false;
-
 			if( m_hWndTooltip != NULL )
 				::SendMessage(m_hWndTooltip, TTM_TRACKACTIVATE, FALSE, (LPARAM) &m_ToolTip);
+			// 如果鼠标指针处于跟踪状态，强制发送WM_MOUSEMOVE消息
+			// 使控件有机会处理Hover到Leave状态切换
 			if( m_bMouseTracking )
 				::SendMessage(m_hWnd, WM_MOUSEMOVE, 0, (LPARAM) -1);
+
+			// 鼠标悬停消息触发，关闭跟踪标志
+			m_bMouseTracking = false;
 		}
 		break;
 	case WM_MOUSEWHEEL:
@@ -1082,7 +1089,10 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 			if( LOWORD(lParam) != HTCLIENT )
 				break;
 			if( m_bMouseCapture )
-				return true;
+			{
+				bHandled = true;
+				return 0;
+			}
 
 			POINT pt = { 0 };
 			::GetCursorPos(&pt);
@@ -1100,6 +1110,7 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 			event.wKeyState = MapKeyState();
 			event.dwTimestamp = ::GetTickCount();
 			pControl->EventHandler(event);
+			bHandled = true;
 		}
 		break;
 	case WM_TIMER:
