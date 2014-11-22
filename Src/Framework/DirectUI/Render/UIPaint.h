@@ -19,12 +19,12 @@ public:
 public:
 	void DrawControl(IUIRender *pRender,CControlUI* pControl,LPCRECT rcUpdate);
 	void DrawLabel(IUIRender *pRender,CControlUI *pControl);
-	void DrawButton(IUIRender *pRender,CButtonUI *pButton,LPCRECT rcUpdate);
+	void DrawButton(IUIRender *pRender,CButtonUI *pControl,LPCRECT rcUpdate);
 	void DrawRadioButton();
 	void DrawCheckBox();
 	void DrawEdit();
 	void DrawProgress();
-	void DrawScrollBar(IUIRender *pRender,CScrollBarUI *pButton,LPCRECT rcUpdate);
+	void DrawScrollBar(IUIRender *pRender,CScrollBarUI *pControl,LPCRECT rcUpdate);
 
 	//void DrawControlBackColor(IUIRender *pRender,CControlUI *pControl,LPCRECT pRcUpdate,LPCRECT pRcOverlop);
 	//void DrawControlBackImage();

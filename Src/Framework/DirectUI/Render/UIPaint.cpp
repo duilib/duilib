@@ -31,44 +31,55 @@ void CUIPaint::ReleaseInstance()
 	}
 }
 
-void CUIPaint::DrawButton(IUIRender *pRender,CButtonUI *pButton,LPCRECT rcDst)
+void CUIPaint::DrawButton(IUIRender *pRender,CButtonUI *pControl,LPCRECT rcUpdate)
 {
-	DWORD dwTextColor = 0;
-	DWORD dwBackColor = 0;
-	DWORD dwBorderColor = 0;
-	
+	// »­±³¾°É«
+	CDuiRect rcControl(pControl->GetPosition());
+	CDuiRect rcOverlop;
+	rcOverlop.IntersectRect(&rcControl,rcUpdate);
+
+	this->DrawBackColor(pRender,
+		pControl->GetColorProperty(UIProperty_Back_Color1),
+		pControl->GetColorProperty(UIProperty_Back_Color2),
+		pControl->GetColorProperty(UIProperty_Back_Color3),
+		rcUpdate,&rcOverlop,&rcControl);
+
+	// »­±³¾°Í¼Æ¬
+	ImageObject* pImage = NULL;
 	do 
 	{
-		// »­±³¾°Í¼Æ¬
-		if ( pButton->CheckState(UISTATE_Disabled))
+		if ( pControl->CheckState(UISTATE_Disabled))
 		{
 			// ½ûÓÃ×´Ì¬£¬»­½ûÓÃÍ¼Æ¬
-			int i=0;
+			pImage = pControl->GetImageProperty(UIProperty_Back_Image,UISTATE_Disabled);
 			break;
 		}
-		if ( pButton->CheckState( UISTATE_Pushed) )
+		if ( pControl->CheckState( UISTATE_Pushed) )
 		{
 			// ½¹µã×´Ì¬£¬»­½¹µã±³¾°ÔÙ»­½¹µãÇ°¾°
-			int i=0;
+			pImage = pControl->GetImageProperty(UIProperty_Back_Image,UISTATE_Pushed);
 			break;
 		}
-		if ( pButton->CheckState(UISTATE_Focused))
+		if ( pControl->CheckState(UISTATE_Focused))
 		{
-			int i=0;
+			pImage = pControl->GetImageProperty(UIProperty_Back_Image,UISTATE_Focused);
 			break;
 		}
-		if ( pButton->CheckState(UISTATE_Hover))
+		if ( pControl->CheckState(UISTATE_Hover))
 		{
-			int i=0;
+			pImage = pControl->GetImageProperty(UIProperty_Back_Image,UISTATE_Hover);
 			break;
 		}
-		if ( pButton->CheckState(UISTATE_Normal))
+		if ( pControl->CheckState(UISTATE_Normal))
 		{
-			int i=0;
+			pImage = pControl->GetImageProperty(UIProperty_Back_Image,UISTATE_Normal);
 			break;
 		}
-
 	} while (false);
+	if ( pImage != NULL )
+	{
+		pRender->DrawImage(pImage,&rcControl,rcUpdate);
+	}
 }
 
 void CUIPaint::DrawBackColor(IUIRender *pRender,DWORD dwBackColor,DWORD dwBackColor2,DWORD dwBackColor3,LPCRECT pPaint,LPCRECT pOverlap,LPCRECT pControl)

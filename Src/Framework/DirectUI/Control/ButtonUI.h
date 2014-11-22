@@ -28,12 +28,14 @@ public:
 	virtual void Render(IUIRender* pRender,LPCRECT pRcPaint);
 
 	virtual void SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue);
+	virtual void SetImage(LPCTSTR lpszImageString,UIProperty propType,DWORD dwState);
+	virtual ImageObject* GetImageProperty(UIProperty propType,DWORD dwState = UISTATE_Normal);
 
 public:
 
 private:
 	// 解析后的图片对象
-	ImageObject *m_pNormalImage;
+	//ImageObject *m_pNormalImage;
 	ImageObject *m_pHoverImage;
 	ImageObject *m_pPushedImage;
 	ImageObject *m_pFocusedImage;

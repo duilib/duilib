@@ -4,8 +4,7 @@
 UI_IMPLEMENT_DYNCREATE(CButtonUI);
 
 CButtonUI::CButtonUI(void)
-	: m_pNormalImage(NULL)
-	, m_pHoverImage(NULL)
+	: m_pHoverImage(NULL)
 	, m_pPushedImage(NULL)
 	, m_pFocusedImage(NULL)
 	, m_pDisabledImage(NULL)
@@ -17,8 +16,19 @@ CButtonUI::CButtonUI(void)
 
 CButtonUI::~CButtonUI(void)
 {
-	if ( m_pNormalImage != NULL)
-		delete m_pNormalImage;
+	
+	if ( m_pHoverImage != NULL)
+		delete m_pHoverImage;
+	if ( m_pPushedImage != NULL)
+		delete m_pPushedImage;
+	if ( m_pFocusedImage != NULL)
+		delete m_pFocusedImage;
+	if ( m_pDisabledImage != NULL)
+		delete m_pDisabledImage;
+	if ( m_pForeHoverImage != NULL)
+		delete m_pForeHoverImage;
+	if ( m_pForePushedImage != NULL)
+		delete m_pForePushedImage;
 }
 
 LPCTSTR CButtonUI::GetClass() const
@@ -174,5 +184,90 @@ bool CButtonUI::EventHandler(TEventUI& event)
 void CButtonUI::SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue)
 {
 	CControlUI::SetAttribute(lpszName,lpszValue);
+}
+
+void CButtonUI::SetImage(LPCTSTR lpszImageString,UIProperty propType,DWORD dwState)
+{
+	ImageObject **pImageObj = NULL;
+
+	if ( propType == UIProperty_Fore_Image )
+	{
+		switch (dwState)
+		{
+		case UISTATE_Hover:
+			pImageObj = &m_pForeHoverImage;
+			break;
+		case UISTATE_Pushed:
+			pImageObj = &m_pForePushedImage;
+			break;
+		}
+
+		if ( pImageObj != NULL)
+		{
+			*pImageObj = ImageObject::CreateFromString(lpszImageString);
+			return;
+		}
+	}
+
+	if ( propType == UIProperty_Back_Image)
+	{
+		switch (dwState)
+		{
+		case UISTATE_Hover:
+			pImageObj = &m_pHoverImage;
+			break;
+		case UISTATE_Pushed:
+			pImageObj = &m_pPushedImage;
+			break;
+		case UISTATE_Focused:
+			pImageObj = &m_pFocusedImage;
+			break;
+		case UISTATE_Disabled:
+			pImageObj = &m_pDisabledImage;
+			break;
+		}
+		if ( pImageObj != NULL)
+		{
+			*pImageObj = ImageObject::CreateFromString(lpszImageString);
+			return;
+		}
+	}
+
+	CControlUI::SetImage(lpszImageString,propType,dwState);
+}
+
+ImageObject* CButtonUI::GetImageProperty(UIProperty propType,DWORD dwState /*= UISTATE_Normal*/)
+{
+	if ( propType == UIProperty_Fore_Image )
+	{
+		switch (dwState)
+		{
+		case UISTATE_Hover:
+			return m_pForeHoverImage;
+		case UISTATE_Pushed:
+			return m_pForePushedImage;
+			break;
+		}
+	}
+
+	if ( propType == UIProperty_Back_Image)
+	{
+		switch (dwState)
+		{
+		case UISTATE_Hover:
+			return m_pHoverImage;
+			break;
+		case UISTATE_Pushed:
+			return m_pPushedImage;
+			break;
+		case UISTATE_Focused:
+			return m_pFocusedImage;
+			break;
+		case UISTATE_Disabled:
+			return m_pDisabledImage;
+			break;
+		}
+	}
+	return CControlUI::GetImageProperty(propType,dwState);
 }
 

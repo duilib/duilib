@@ -414,10 +414,13 @@ TImageData* CResourceManager::GetImage(LPCTSTR lpszImagePath,DWORD dwMask,bool b
 		}
 	}
 
-	if ( pImageData != NULL && bCached == true)
-		++pImageData->nRefCount;
-	else
-		pImageData->nRefCount = -1;
+	if ( pImageData != NULL )
+	{
+		if ( bCached == true )
+			++pImageData->nRefCount;
+		else
+			pImageData->nRefCount = -1;
+	}
 
 	return pImageData;
 }
