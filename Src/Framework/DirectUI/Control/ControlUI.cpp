@@ -20,6 +20,11 @@ CControlUI::CControlUI(void)
 	, m_pTag(NULL)
 	, m_pImageBackground(NULL)
 	, m_pNotifyFilter(NULL)
+	, m_dwTextColor(0)
+	, m_sFontIndex(L"")
+	, m_sTextStyle(L"noprefix")
+	, m_uTextStyle(DT_NOPREFIX)
+	, m_sText(L"")
 {
 }
 
@@ -227,6 +232,12 @@ void CControlUI::SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue)
 	else if( _tcscmp(lpszName, _T("maxheight")) == 0 ) SetMaxHeight(_ttoi(lpszValue));
 	else if( _tcscmp(lpszName, _T("name")) == 0 ) SetName(lpszValue);
 	else if( _tcscmp(lpszName, _T("text")) == 0 ) SetText(lpszValue);
+	else if (_tcscmp(lpszName, _T("fontindex")) == 0)
+		SetFontIndex(lpszValue);
+	else if (_tcscmp(lpszName, _T("textcolor")) == 0)
+		SetTextColor(CDuiCodeOperation::StringToColor(lpszValue));
+	else if (_tcscmp(lpszName, _T("textstyle")) == 0)
+		SetTextStyle(lpszValue);
 	else if( _tcscmp(lpszName, _T("tooltip")) == 0 ) SetToolTip(lpszValue);
 	//else if( _tcscmp(lpszName, _T("userdata")) == 0 ) SetUserData(lpszValue);
 	else if( _tcscmp(lpszName, _T("enabled")) == 0 ) SetEnabled(_tcscmp(lpszValue, _T("true")) == 0);
@@ -941,3 +952,123 @@ INotifyUI* CControlUI::GetNotifyFilter(void) const
 	return m_pNotifyFilter;
 }
 
+void CControlUI::SetFontIndex(LPCTSTR lpszFontIndex)
+{
+	ASSERT(lpszFontIndex);
+	if (m_sFontIndex == lpszFontIndex)
+	{
+		return;
+	}
+	m_sFontIndex = lpszFontIndex;
+	Invalidate();
+}
+
+LPCTSTR CControlUI::GetFontIndex()
+{
+	return m_sFontIndex.c_str();
+}
+
+void CControlUI::SetTextStyle(LPCTSTR lpszStyle)
+{
+	if (m_sTextStyle == lpszStyle)
+	{
+		return;
+	}
+	// TODO ==> 这里需要有一个更好的方法优化一下
+	m_sTextStyle = lpszStyle;
+	VecString vcStyle;
+	UINT uStyle = DT_NOPREFIX;
+	CDuiStringOperation::splite(lpszStyle, L".", vcStyle);
+	VecString::iterator it = vcStyle.begin();
+	for (; it != vcStyle.end(); it++)
+	{
+		if ((*it) == L"center")
+		{
+			uStyle = uStyle | DT_CENTER;
+		}
+		else if ((*it) == L"bottom")
+		{
+			uStyle = uStyle | DT_BOTTOM; // 必须与singleline组合使用
+		}
+		else if ((*it) == L"top")
+		{
+			uStyle = uStyle | DT_TOP;
+		}
+		else if ((*it) == L"left")
+		{
+			uStyle = uStyle | DT_LEFT;
+		}
+		else if ((*it) == L"right")
+		{
+			uStyle = uStyle | DT_RIGHT;
+		}
+		else if ((*it) == L"vcenter")
+		{
+			uStyle = uStyle | DT_VCENTER; // 必须与singleline组合使用
+		}
+		else if ((*it) == L"calcrect")
+		{
+			uStyle = uStyle | DT_CALCRECT;
+		}
+		else if ((*it) == L"editcontrol")
+		{
+			uStyle = uStyle | DT_EDITCONTROL;
+		}
+		else if ((*it) == L"endellipsis")
+		{
+			uStyle = uStyle | DT_END_ELLIPSIS;
+		}
+		else if ((*it) == L"nofullwidthcharbreak")
+		{
+			uStyle = uStyle | DT_NOFULLWIDTHCHARBREAK;
+		}
+		else if ((*it) == L"pathellipsis")
+		{
+			uStyle = uStyle | DT_PATH_ELLIPSIS;
+		}
+		else if ((*it) == L"singleline")
+		{
+			uStyle = uStyle | DT_SINGLELINE;
+		}
+		else if ((*it) == L"wordbreak")
+		{
+			uStyle = uStyle | DT_WORDBREAK;
+		}
+		else if ((*it) == L"wordellipsis")
+		{
+			uStyle = uStyle | DT_WORD_ELLIPSIS;
+		}
+		else if ((*it) == L"noprefix")
+		{
+			uStyle = uStyle | DT_NOPREFIX;
+		}
+	}
+
+	m_uTextStyle = uStyle;
+	Invalidate();
+}
+
+LPCTSTR CControlUI::GetTextStyle()
+{
+	return m_sTextStyle.c_str();
+}
+
+UINT CControlUI::GetTextStyleByValue()
+{
+	return m_uTextStyle;
+}
+
+void CControlUI::SetTextColor(DWORD dwColor)
+{
+	if (dwColor == m_dwTextColor)
+	{
+		return;
+	}
+	m_dwTextColor = dwColor;
+	Invalidate();
+}
+
+DWORD CControlUI::GetTextColor()
+{
+	return m_dwTextColor;
+}

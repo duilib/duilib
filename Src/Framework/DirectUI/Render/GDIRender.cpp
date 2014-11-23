@@ -102,7 +102,7 @@ void CGDIRender::DrawText(FontObject* pFontObj,LPCRECT rcSrc,LPCTSTR lpszTextStr
 	
 	::SetTextColor(GetPaintDC(), RGB(GetBValue(dwTextColor), GetGValue(dwTextColor), GetRValue(dwTextColor)));
 	HFONT hOldFont = (HFONT)::SelectObject(GetPaintDC(), pFontObj->GetFont());
-	::DrawText(GetPaintDC(), lpszTextString, -1, (LPRECT)rcSrc, DT_NOPREFIX | dwStyle);
+	::DrawText(GetPaintDC(), lpszTextString, -1, (LPRECT)rcSrc, dwStyle);
 	::SelectObject(GetPaintDC(), hOldFont);
 }
 

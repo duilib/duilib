@@ -6,28 +6,26 @@
 // 创建人		: 	daviyang35@gmail.com
 // 创建时间	:	2014-11-09 16:55:32
 // 说明			:	Font Object
+// 修改时间：	2014-11-23 shaoyuan1943@gmail.com
 /////////////////////////////////////////////////////////////*/
 #pragma once
 
-class DIRECTUI_API FontObject
+typedef struct DIRECTUI_API _tsFontObject
 {
-public:
-	FontObject(void);
-	~FontObject(void);
+	_tsFontObject(void);
+
+	CDuiString m_IndexName;	
+	CDuiString m_FaceName;	
+	int m_nSize;	
+	bool m_bBold;	
+	bool m_bItalic;	
+
+	bool m_bUnderline;	
+	bool m_bStrikeout;
 
 	HFONT GetFont();
-	LOGFONT& GetLogFont();
-	int GetHeight();
-	void SetFaceName(LPCTSTR lpszFace);
-	void SetFontSize(int nSize);
-	void SetBold(bool bBold);
-	void SetUnderline(bool bUnderline);
-	void SetItalic(bool bItalic);
-	void SetStrikeout(bool bStrikeout);
-
-protected:
-	LOGFONT m_lfFont;
+private:
 	HFONT m_hFont;
-};
+}FontObject;
 
 #endif // FontObject_h__

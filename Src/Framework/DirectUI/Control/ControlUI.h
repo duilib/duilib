@@ -59,6 +59,12 @@ public:
 	virtual int GetToolTipWidth( void ) const;		// 多行ToolTip单行最长宽度
 private:
 	CDuiString m_sText;
+	CDuiString m_sFontIndex;
+	CDuiString m_sTextStyle;
+	UINT m_uTextStyle;
+	DWORD m_dwTextColor;
+	
+
 	CDuiString m_strToolTip;
 	int m_nTooltipWidth;
 
@@ -73,6 +79,13 @@ public:
 	// 文本相关
 	virtual LPCTSTR GetText() const;
 	virtual void SetText(LPCTSTR pstrText);
+	virtual void SetFontIndex(LPCTSTR lpszFontIndex);
+	virtual LPCTSTR GetFontIndex();
+	virtual void SetTextStyle(LPCTSTR lpszStyle);
+	virtual LPCTSTR GetTextStyle();
+	virtual UINT GetTextStyleByValue();
+	virtual void SetTextColor(DWORD dwColor);
+	virtual DWORD GetTextColor();
 
 	// 位置相关
 	virtual int GetWidth() const;
