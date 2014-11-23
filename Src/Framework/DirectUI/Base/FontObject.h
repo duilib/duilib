@@ -10,9 +10,9 @@
 /////////////////////////////////////////////////////////////*/
 #pragma once
 
-typedef struct DIRECTUI_API _tsFontObject
+typedef struct DIRECTUI_API _stFontObject
 {
-	_tsFontObject(void);
+	_stFontObject(void);
 
 	CDuiString m_IndexName;	
 	CDuiString m_FaceName;	

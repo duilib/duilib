@@ -2,7 +2,7 @@
 #include "FontObject.h"
 
 
-_tsFontObject::_tsFontObject()
+_stFontObject::_stFontObject()
 	:m_nSize(0),
 	m_bBold(false),
 	m_bItalic(false),
@@ -13,7 +13,7 @@ _tsFontObject::_tsFontObject()
 	m_hFont(nullptr)
 {}
 
-HFONT _tsFontObject::GetFont()
+HFONT _stFontObject::GetFont()
 {
 	if (m_FaceName.empty())
 	{
