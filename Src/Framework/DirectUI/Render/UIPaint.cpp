@@ -80,6 +80,18 @@ void CUIPaint::DrawButton(IUIRender *pRender,CButtonUI *pControl,LPCRECT rcUpdat
 	{
 		pRender->DrawImage(pImage,&rcControl,rcUpdate);
 	}
+
+	// 没有文字就不绘图了
+	if (pControl->GetText() == L"")
+	{
+		return;
+	}
+	
+	FontObject* pFontObject = CResourceManager::GetInstance()->GetFont(pControl->GetFontIndex());
+	if (pFontObject)
+	{
+		pRender->DrawText(pFontObject, rcUpdate, pControl->GetText(), pControl->GetTextColor(), pControl->GetTextStyleByValue());
+	}
 }
 
 void CUIPaint::DrawBackColor(IUIRender *pRender,DWORD dwBackColor,DWORD dwBackColor2,DWORD dwBackColor3,LPCRECT pPaint,LPCRECT pOverlap,LPCRECT pControl)

@@ -12,7 +12,7 @@
 
 class CRenderClip;
 class ImageObject;
-class FontObject;
+typedef struct _stFontObject FontObject;
 
 class DIRECTUI_API CMemDC
 {

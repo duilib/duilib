@@ -216,7 +216,7 @@ class CButtonUI;
 class IUIRender;
 class CObjectUI;
 class ImageObject;
-class FontObject;
+typedef struct _stFontObject FontObject;
 class TemplateObject;
 class CScrollBarUI;
 class CButtonUI;

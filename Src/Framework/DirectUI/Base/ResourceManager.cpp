@@ -26,6 +26,7 @@ CResourceManager::~CResourceManager(void)
 
 	// 这句话是否执行不影响析构资源清理，跑到这里来的时候已经全都释放了
 	RemoveAllCachedImage();
+	RemoveAllFont();
 }
 
 CResourceManager * CResourceManager::GetInstance()
@@ -207,13 +208,76 @@ void CResourceManager::parseLayouts(TiXmlElement * pLayouts, LPCTSTR lpszCompone
 
 void CResourceManager::parseFonts(TiXmlElement * pLayouts, LPCTSTR lpszComponentName)
 {
-	TiXmlElement *pElement = pLayouts->FirstChildElement("File");
+	TiXmlElement *pElement = pLayouts->FirstChildElement("Font");
 	do 
 	{
 		if ( pElement == NULL)
 			break;
+		LPCSTR lpcstr = pElement->Attribute("name");
+		CDuiString strName;
+		if (lpcstr)
+		{
+			strName = CDuiCharsetConvert::UTF8ToUnicode(lpcstr);
+			lpcstr = nullptr;
+		}
 
+		lpcstr = pElement->Attribute("face");
+		CDuiString strFace;
+		if (lpcstr)
+		{
+			strFace = CDuiCharsetConvert::UTF8ToUnicode(lpcstr);
+			lpcstr = nullptr;
+		}
 
+		lpcstr = pElement->Attribute("size");
+		int nSize = 0;
+		if (lpcstr)
+		{
+			nSize = CDuiCodeOperation::MbcsStrToInt(lpcstr);
+			lpcstr = nullptr;
+		}
+
+		lpcstr = pElement->Attribute("bold");
+		bool bBold = false;
+		if (lpcstr)
+		{
+			bBold = CDuiCharsetConvert::UTF8ToUnicode(lpcstr) == CDuiString(L"true");
+			lpcstr = nullptr;
+		}
+
+		lpcstr = pElement->Attribute("italic");
+		bool bItalic = false;
+		if (lpcstr)
+		{
+			bItalic = CDuiCharsetConvert::UTF8ToUnicode(lpcstr) == CDuiString(L"true");
+			lpcstr = nullptr;
+		}
+
+		lpcstr = pElement->Attribute("underline");
+		bool bUnderline = false;
+		if (lpcstr)
+		{
+			bUnderline = CDuiCharsetConvert::UTF8ToUnicode(lpcstr) == CDuiString(L"true");
+			lpcstr = nullptr;
+		}
+
+		lpcstr = pElement->Attribute("strikeout");
+		bool bStrikeout = false;
+		if (lpcstr)
+		{
+			bStrikeout = CDuiCharsetConvert::UTF8ToUnicode(lpcstr) == CDuiString(L"true");
+			lpcstr = nullptr;
+		}
+
+		FontObject* pfo = new FontObject;
+		pfo->m_bBold = bBold;
+		pfo->m_bItalic = bItalic;
+		pfo->m_bUnderline = bUnderline;
+		pfo->m_nSize = nSize;
+		pfo->m_bStrikeout = bStrikeout;
+		pfo->m_IndexName = strName;
+		pfo->m_FaceName = strFace;
+		this->m_vecFontPool.push_back(pfo);
 
 		pElement = pElement->NextSiblingElement();
 	} while (pElement != NULL);
@@ -611,3 +675,43 @@ void CResourceManager::RemoveAllCachedImage()
 	//m_mapImageHash.RemoveAll();
 }
 
+FontObject*	CResourceManager::GetFont(LPCTSTR lpszFontName)
+{
+	ASSERT(lpszFontName);
+	if (m_vecFontPool.size() == 0)
+	{
+		FontObject* pFont = new FontObject;
+		m_vecFontPool.push_back(pFont);
+		return pFont;
+	}
+
+	FontPoolVector::iterator it = m_vecFontPool.begin();
+	for (; it != m_vecFontPool.end(); ++it)
+	{
+		if ((*it)->m_IndexName == lpszFontName)
+		{
+			return (*it);
+		}
+	}
+
+	return nullptr;
+}
+
+void CResourceManager::RemoveAllFont()
+{
+	if (m_vecFontPool.size() == 0)
+	{
+		return;
+	}
+
+	FontPoolVector::iterator it = m_vecFontPool.begin();
+	for (; it != m_vecFontPool.end(); it++)
+	{
+		if ((*it))
+		{
+			delete (*it);
+		}
+	}
+
+	m_vecFontPool.swap(FontPoolVector());
+}

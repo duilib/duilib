@@ -38,6 +38,7 @@ public:
 
 	void AddFont(FontObject *pFont);
 	FontObject*	GetFont(LPCTSTR lpszFontName);
+	void RemoveAllFont();
 
 	LPCTSTR GetI18N(LPCTSTR lpszName);
 
