@@ -62,21 +62,17 @@ private:
 	StringMap m_mapComponent;		// 组件资源路径
 	TemplateMap m_mapLayouts;		// 布局，包含：窗口，视图
 	TemplateMap m_mapLanguages;	// 多国语
-	// TODO 暂不支持 TemplateMap m_mapTemplates;	// 可复用样式
+	// TODO 暂不支持 TemplateMap m_mapTemplates; 可复用样式
 	
 private:
 	LANGID m_DefaultLangID;
 	CDuiString m_strDefaultResourcePath;
-	CDuiString m_strDefaultFont;
-	// 已加载资源的缓存
-	//CStdStringPtrMap m_mapImagePool;
-	//CStdStringPtrMap m_mapFontPool;
-	ImagePoolMap m_mapImageCached;	// 已加载的图片资源缓存
+
 	FontPoolVector m_vecFontPool;		// 已加载的字体样式缓存
 	StringMap		m_mapI18NCached;		// 多国语字符串缓存
 
 	CStdStringPtrMap m_ImageDataCached; // 已缓存的图片资源
-	 CStdStringPtrMap m_mapImageHash;
+	CStdStringPtrMap m_mapImageHash;
 private:
 	CResourceManager(void);
 	~CResourceManager(void);

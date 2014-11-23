@@ -388,8 +388,6 @@ TemplateObject* CResourceManager::XmlToTemplate(TiXmlElement *pElement,TemplateO
 			CDuiCharsetConvert::UTF8ToUnicode(pAttribute->Name()).c_str(),
 			CDuiCharsetConvert::UTF8ToUnicode(pAttribute->Value()).c_str()
 			);
-		//::OutputDebugStringA(pAttribute->Name());
-		//::OutputDebugStringA(pAttribute->Value());
 		pAttribute = pAttribute->Next();
 	}
 
@@ -565,7 +563,6 @@ TImageData* CResourceManager::LoadImage(LPCTSTR lpszFilePath,DWORD dwMask)
 	delete[] pData;
 	if( !pImage )
 	{
-		//::MessageBox(0, _T("½âÎöÍ¼Æ¬Ê§°Ü"), _T("×¥BUG"), MB_OK);
 		return NULL;
 	}
 
@@ -584,7 +581,6 @@ TImageData* CResourceManager::LoadImage(LPCTSTR lpszFilePath,DWORD dwMask)
 	HBITMAP hBitmap = ::CreateDIBSection(NULL, &bmi, DIB_RGB_COLORS, (void**)&pDest, NULL, 0);
 	if( !hBitmap )
 	{
-		//::MessageBox(0, _T("CreateDIBSectionÊ§°Ü"), _T("×¥BUG"), MB_OK);
 		return NULL;
 	}
 
@@ -626,8 +622,6 @@ TImageData* CResourceManager::LoadImage(LPCTSTR lpszFilePath,DWORD dwMask)
 	data->nRefCount = 0;
 	if( !data )
 		return NULL;
-	//if( type != NULL )
-	//	data->sResType = type;
 	data->dwMask = dwMask;
 
 	return data;
