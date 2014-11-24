@@ -715,3 +715,15 @@ void CResourceManager::RemoveAllFont()
 
 	m_vecFontPool.swap(FontPoolVector());
 }
+
+LPCTSTR CResourceManager::GetResouceDir(LPCTSTR lpszModuleName /*= NULL*/)
+{
+	if ( lpszModuleName == NULL)
+		return m_strDefaultResourcePath.c_str();
+
+	StringMap::iterator iter = m_mapComponent.find(lpszModuleName);
+	if ( iter != m_mapComponent.end())
+		return iter->second.c_str();
+
+	return NULL;
+}
