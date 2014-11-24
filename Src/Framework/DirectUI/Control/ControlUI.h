@@ -24,7 +24,7 @@ public:
 	virtual LPCTSTR GetClass() const;
 	virtual LPVOID GetInterface(LPCTSTR lpszClass);
 
-	// 一些重要的属性
+	// 基础属性
 	virtual bool IsVisible() const;
 	virtual void SetVisible(bool bVisible = true);
 	virtual void SetInternVisible(bool bVisible = true); // 仅供内部调用，有些UI拥有窗口句柄，需要重写此函数
@@ -39,36 +39,12 @@ public:
 	virtual bool IsFloat() const;
 	virtual void SetFloat(bool bFloat = true);
 
-protected:
-	bool m_bIsVisible;
-	bool m_bIsInternVisible;
-	bool m_bIsEnabled;
-	bool m_bIsMouseEnabled;
-	bool m_bIsKeyboardEnabled ;
-	bool m_bIsFocused;
-	bool m_bIsFloat;
-	bool m_bIsSetPos; // 防止SetPos循环调用
-	bool m_bIsUpdateNeeded;
-	bool m_bIsMenuUsed;
-
-public:
 	// Tooltip
 	virtual LPCTSTR GetToolTip() const;
 	virtual void SetToolTip(LPCTSTR lpszText);
 	virtual void SetToolTipWidth(int nWidth);
-	virtual int GetToolTipWidth( void ) const;		// 多行ToolTip单行最长宽度
-private:
-	CDuiString m_sText;
-	CDuiString m_sFontIndex;
-	CDuiString m_sTextStyle;
-	UINT m_uTextStyle;
-	DWORD m_dwTextColor;
-	
+	virtual int GetToolTipWidth(void) const;		// 多行ToolTip单行最长宽度
 
-	CDuiString m_strToolTip;
-	int m_nTooltipWidth;
-
-public:
 	// 控件坐标相关
 	virtual RECT GetPosition();						// GetPos
 	virtual void SetPosition(LPCRECT rc);		// SetPos
@@ -108,13 +84,10 @@ public:
 	virtual void SetMinHeight(int cy);
 	virtual int GetMaxHeight() const;
 	virtual void SetMaxHeight(int cy);
-	//virtual void SetRelativePos(SIZE szMove,SIZE szZoom);
-	//virtual void SetRelativeParentSize(SIZE sz);
-	//virtual TRelativePosUI GetRelativePos() const;
-	//virtual bool IsRelativePos() const;
-
 	virtual void SetZOrder(int iZOrder);
 	virtual int GetZOrder() const;
+
+	// tag
 	virtual void SetTag(LPVOID pTag);
 	virtual LPVOID GetTag() const;
 
@@ -123,23 +96,70 @@ public:
 	virtual void SetContextMenuUsed(bool bMenuUsed);
 
 	// 控件状态
-	virtual DWORD ModifyState(DWORD dwStateAdd = 0,DWORD dwStateRemove = 0);
+	virtual DWORD ModifyState(DWORD dwStateAdd = 0, DWORD dwStateRemove = 0);
 	virtual DWORD GetState(void);
 	virtual bool CheckState(DWORD dwState);
 
+	// 事件过滤
 	virtual void SetNotifyFilter(INotifyUI* pNotifyFilter);
 	virtual INotifyUI* GetNotifyFilter(void) const;
+	void SendNotify(UINOTIFY dwType, WPARAM wParam = 0, LPARAM lParam = 0, bool bAsync = false);
 
+	// 状态
 	virtual bool Activate();
 
-	virtual void SetPropertyForState(LPCTSTR lpszValue,UIProperty propType,DWORD dwState = UISTATE_Normal);
-	virtual LPCTSTR GetPropertyForState(UIProperty propType,DWORD dwState = UISTATE_Normal);
+	// 绘图状态与属性
+	virtual void SetPropertyForState(LPCTSTR lpszValue, UIProperty propType, DWORD dwState = UISTATE_Normal);
+	virtual LPCTSTR GetPropertyForState(UIProperty propType, DWORD dwState = UISTATE_Normal);
+	virtual RECT GetRectProperty(UIProperty propType, DWORD dwState = UISTATE_Normal);
+	virtual DWORD GetColorProperty(UIProperty propType, DWORD dwState = UISTATE_Normal);
+	virtual int GetIntProperty(UIProperty propType, DWORD dwState = UISTATE_Normal);
+	virtual ImageObject* GetImageProperty(UIProperty propType, DWORD dwState = UISTATE_Normal);
+	virtual LPCTSTR GetTextProperty(UIProperty propType, DWORD dwState = UISTATE_Normal);
 
-	virtual RECT GetRectProperty(UIProperty propType,DWORD dwState = UISTATE_Normal);
-	virtual DWORD GetColorProperty(UIProperty propType,DWORD dwState = UISTATE_Normal);
-	virtual int GetIntProperty(UIProperty propType,DWORD dwState = UISTATE_Normal);
-	virtual ImageObject* GetImageProperty(UIProperty propType,DWORD dwState = UISTATE_Normal);
-	virtual LPCTSTR GetTextProperty(UIProperty propType,DWORD dwState = UISTATE_Normal);
+	// Manager
+	virtual void SetManager(CWindowUI* pManager, CControlUI* pParent);
+	CWindowUI* GetManager();
+	CControlUI* GetParent();
+
+	// Control
+	virtual CControlUI* FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags);
+	virtual bool EventHandler(TEventUI& event);		// 处理CWindowUI转发的消息事件
+	virtual void Render(IUIRender* pRender, LPCRECT pRcPaint);		// 控件基于内部状态绘图
+	virtual void SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue);
+
+	// 刷新
+	void Invalidate();
+	bool IsUpdateNeeded() const;
+	void NeedUpdate();
+	void NeedParentUpdate();
+	void SetTimer(UINT nTimerID, UINT uElapse);
+	void KillTimer(UINT nTimer);
+
+protected:
+	bool m_bIsVisible;
+	bool m_bIsInternVisible;
+	bool m_bIsEnabled;
+	bool m_bIsMouseEnabled;
+	bool m_bIsKeyboardEnabled ;
+	bool m_bIsFocused;
+	bool m_bIsFloat;
+	bool m_bIsSetPos; // 防止SetPos循环调用
+	bool m_bIsUpdateNeeded;
+	bool m_bIsMenuUsed;
+	CEventSource m_OnEvent;
+
+private:
+	//文本相关
+	CDuiString m_sText;
+	CDuiString m_sFontIndex;
+	CDuiString m_sTextStyle;
+	UINT m_uTextStyle;
+	DWORD m_dwTextColor;
+	
+	// tooltip
+	CDuiString m_strToolTip;
+	int m_nTooltipWidth;
 
 protected:
 	CDuiRect m_rcControl;	// 控件绘制区域
@@ -153,43 +173,15 @@ protected:
 	int m_iZOrder;
 	LPVOID m_pTag;
 
+	CControlUI* m_pParent;              //父容器
+	CWindowUI* m_pManager;              //所属窗口
+	INotifyUI *m_pNotifyFilter;
+
 	UIStatePropertyMap m_property;
 
 	ImageObject *m_pImageBackground;
 
 	virtual void SetImage(LPCTSTR lpszImageString,UIProperty propType,DWORD dwState);
-public:
-	// Manager
-	virtual void SetManager(CWindowUI* pManager, CControlUI* pParent);
-	CWindowUI* GetManager();
-	CControlUI* GetParent();
-
-protected:
-	CControlUI* m_pParent;              //父容器
-	CWindowUI* m_pManager;              //所属窗口
-	INotifyUI *m_pNotifyFilter;
-
-public:
-	// Control
-	virtual CControlUI* FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags);
-	virtual bool EventHandler(TEventUI& event);		// 处理CWindowUI转发的消息事件
-	virtual void Render(IUIRender* pRender,LPCRECT pRcPaint);		// 控件基于内部状态绘图
-	virtual void SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue);
-
-	void Invalidate();
-	bool IsUpdateNeeded() const;
-	void NeedUpdate();
-	void NeedParentUpdate();
-	void SetTimer(UINT nTimerID,UINT uElapse);
-	void KillTimer(UINT nTimer);
-
-public:
-	void	SendNotify(UINOTIFY dwType, WPARAM wParam = 0, LPARAM lParam = 0, bool bAsync = false);
-
-
-private:
-	CEventSource m_OnEvent;
-	//CEventSource OnNotify;	// 新的过滤机制取代之，废弃
 };
 
 #endif // ControlUI_h__

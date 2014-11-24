@@ -76,7 +76,6 @@ void CControlUI::SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue)
 		LPCTSTR lpszStateName = vec[0].c_str();
 		LPCTSTR lpszPropertyName = vec[1].c_str();
 
-
 		DWORD dwState;
 		// ÎªdwState¸³Öµ
 		if ( _tcsicmp(lpszStateName,_T("normal")) ==0 )
@@ -103,12 +102,6 @@ void CControlUI::SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue)
 			propType = UIProperty_Back_Image;
 		else if ( _tcsicmp(lpszPropertyName,_T("foreimage")) ==0)
 			propType = UIProperty_Fore_Image;
-		else if ( _tcsicmp(lpszPropertyName,_T("text")) ==0)
-			propType = UIProperty_Text_String;
-		else if ( _tcsicmp(lpszPropertyName,_T("textfont")) ==0)
-			propType = UIProperty_Text_Font;
-		else if ( _tcsicmp(lpszPropertyName,_T("textcolor")) ==0)
-			propType = UIProperty_Text_Color;
 		else if ( _tcsicmp(lpszPropertyName,_T("bordercolor")) ==0)
 			propType = UIProperty_Border_Color;
 		else if ( _tcsicmp(lpszPropertyName,_T("borderwidth")) ==0)
