@@ -87,6 +87,16 @@ public:
 	virtual void SetZOrder(int iZOrder);
 	virtual int GetZOrder() const;
 
+	// 显示属性
+	virtual void SetBorderColor(DWORD dwColor);
+	virtual DWORD GetBorderColor();
+	virtual void SetFocusBorderColor(DWORD dwColor);
+	virtual DWORD GetFocusBorderColor();
+	virtual void SetBorderRound(SIZE cxySize);
+	virtual SIZE GetBorderRound();
+	virtual void SetBorderSize(int nSize);
+	virtual int GetBorderSize();
+
 	// tag
 	virtual void SetTag(LPVOID pTag);
 	virtual LPVOID GetTag() const;
@@ -160,6 +170,12 @@ private:
 	// tooltip
 	CDuiString m_strToolTip;
 	int m_nTooltipWidth;
+
+	// 属性
+	DWORD m_dwBorderColor;
+	DWORD m_dwFocusBorderColor;
+	SIZE m_cxyBorderRound;
+	int m_nBorderSize;
 
 protected:
 	CDuiRect m_rcControl;	// 控件绘制区域

@@ -183,6 +183,50 @@ bool CButtonUI::EventHandler(TEventUI& event)
 
 void CButtonUI::SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue)
 {
+	if (lpszValue == NULL || lpszValue[0] == NULL)
+		return;
+
+	VecString vec;
+	CDuiStringOperation::splite(lpszName, _T("."), vec);
+	if (vec.size() == 2)
+	{
+		LPCTSTR lpszStateName = vec[0].c_str();
+		LPCTSTR lpszPropertyName = vec[1].c_str();
+
+		DWORD dwState;
+		// 为dwState赋值
+		if (_tcsicmp(lpszStateName, _T("normal")) == 0)
+			dwState = UISTATE_Normal;
+		else if (_tcsicmp(lpszStateName, _T("hover")) == 0)
+			dwState = UISTATE_Hover;
+		else if (_tcsicmp(lpszStateName, _T("pushed")) == 0)
+			dwState = UISTATE_Pushed;
+		else if (_tcsicmp(lpszStateName, _T("focused")) == 0)
+			dwState = UISTATE_Focused;
+		else if (_tcsicmp(lpszStateName, _T("disabled")) == 0)
+			dwState = UISTATE_Disabled;
+
+		UIProperty propType;
+		// 为propType赋值
+		if (_tcsicmp(lpszPropertyName, _T("bkcolor1")) == 0)
+			propType = UIProperty_Back_Color1;
+		else if (_tcsicmp(lpszPropertyName, _T("bkcolor2")) == 0)
+			propType = UIProperty_Back_Color2;
+		else if (_tcsicmp(lpszPropertyName, _T("bkcolor3")) == 0)
+			propType = UIProperty_Back_Color3;
+		else if (_tcsicmp(lpszPropertyName, _T("bkimage")) == 0)
+			propType = UIProperty_Back_Image;
+		else if (_tcsicmp(lpszPropertyName, _T("foreimage")) == 0)
+			propType = UIProperty_Fore_Image;
+		else if (_tcsicmp(lpszPropertyName, _T("bordercolor")) == 0)
+			propType = UIProperty_Border_Color;
+		else if (_tcsicmp(lpszPropertyName, _T("borderwidth")) == 0)
+			propType = UIProperty_Border_Wdith;
+		else if (_tcsicmp(lpszPropertyName, _T("borderstyle")) == 0)
+			propType = UIProperty_Border_Style;
+
+		SetPropertyForState(lpszValue, propType, dwState);
+	}
 	CControlUI::SetAttribute(lpszName,lpszValue);
 }
 
