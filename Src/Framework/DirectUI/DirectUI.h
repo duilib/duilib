@@ -66,6 +66,7 @@
 
 #include "Control/ScrollBarUI.h"
 
+#include "Layout/HorizontalLayoutUI.h"
 #include "Layout/ComponentUI.h"
 
 #include "Control/ButtonUI.h"

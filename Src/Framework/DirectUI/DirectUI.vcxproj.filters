@@ -118,6 +118,9 @@
     <ClInclude Include="Layout\ComponentUI.h">
       <Filter>Layout</Filter>
     </ClInclude>
+    <ClInclude Include="Layout\HorizontalLayoutUI.h">
+      <Filter>Layout</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -196,6 +199,9 @@
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="Layout\ComponentUI.cpp">
+      <Filter>Layout</Filter>
+    </ClCompile>
+    <ClCompile Include="Layout\HorizontalLayoutUI.cpp">
       <Filter>Layout</Filter>
     </ClCompile>
   </ItemGroup>
