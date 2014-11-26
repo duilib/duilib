@@ -321,4 +321,14 @@ void CWindowWnd::EndModal(UINT nRet /*= IDOK*/)
 	}
 }
 
+LRESULT CWindowWnd::SendMessage(UINT uMsg, WPARAM wParam /*= 0*/, LPARAM lParam /*= 0L*/)
+{
+	return ::SendMessage(m_hWnd,uMsg,wParam,lParam);
+}
+
+LRESULT CWindowWnd::PostMessage(UINT uMsg, WPARAM wParam /*= 0*/, LPARAM lParam /*= 0L*/)
+{
+	return ::PostMessage(m_hWnd,uMsg,wParam,lParam);
+}
+
 

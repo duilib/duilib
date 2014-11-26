@@ -68,7 +68,7 @@ public:
 	void AddNotify(INotifyUI *pNotify);
 	void RemoveNotify(INotifyUI *pNotify);
 	void SendNotify(TNotifyUI *pMsg, bool bAsync = false);
-	void SendNotify(CControlUI* pControl, UINOTIFY dwType, WPARAM wParam = 0, LPARAM lParam = 0, bool bAsync = false);
+	void SendNotify(CControlUI* pControl, UINOTIFY dwType, WPARAM wParam = 0, LPARAM lParam = 0, bool bAsync = true);
 
 	bool InitControls(CControlUI* pControl, CControlUI* pParent = NULL);
 	void AddDelayedCleanup(CControlUI* pControl);

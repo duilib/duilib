@@ -304,15 +304,29 @@ LRESULT CWindowUI::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool& bHandled)
 {   // 自绘窗口真实处理所有窗口消息
-	
-	// 优先处理异步事件队列
-	TNotifyUI* pMsg = NULL;
-	while( pMsg = static_cast<TNotifyUI*>(m_arrayAsyncNotify.GetAt(0)) )
+
+	if ( uMsg == WM_DIRECTUI_MESSAGE )
 	{
-		// Pop出一个内部事件
-		m_arrayAsyncNotify.Remove(0);
-		SendNotifyEvent(pMsg);
-		delete pMsg;
+		// 优先处理异步事件队列
+		TNotifyUI* pMsg = NULL;
+		while( pMsg = static_cast<TNotifyUI*>(m_arrayAsyncNotify.GetAt(0)) )
+		{
+			// Pop出一个内部事件
+			m_arrayAsyncNotify.Remove(0);
+			SendNotifyEvent(pMsg);
+			delete pMsg;
+		}
+
+		// 延迟控件删除
+		CControlUI* pControl = NULL;
+		while ( pControl = static_cast<CControlUI*>(m_arrayDelayedCleanup.GetAt(0)) )
+		{
+			m_arrayDelayedCleanup.Remove(0);
+			delete pControl;
+		}
+		
+		bHandled = true;
+		return S_OK;
 	}
 
 	LRESULT lResult = S_OK;
@@ -324,16 +338,6 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 		lResult = static_cast<IMessageFilterUI*>(m_arrayPreMessageFilters[i])->MessageFilter(uMsg, wParam, lParam, bHandled);
 		if( bHandled )
 			return lResult;
-	}
-
-	// 延迟控件删除
-	if ( uMsg == WM_DIRECTUI_MESSAGE )
-	{
-		bHandled = true;
-		for( int i = 0; i < m_arrayDelayedCleanup.GetSize(); i++ ) 
-			delete static_cast<CControlUI*>(m_arrayDelayedCleanup[i]);
-		m_arrayDelayedCleanup.Empty();
-		return S_OK;
 	}
 	
 /*
@@ -1419,14 +1423,16 @@ void CWindowUI::SendNotify(TNotifyUI *pMsg, bool bAsync /*= false*/)
 	}
 	else
 	{   // 异步事件，加入队列
-		TNotifyUI *pMsg = new TNotifyUI;
-		pMsg->pSender = pMsg->pSender;
-		pMsg->dwType = pMsg->dwType;
-		pMsg->wParam = pMsg->wParam;
-		pMsg->lParam = pMsg->lParam;
-		pMsg->ptMouse = pMsg->ptMouse;
-		pMsg->dwTimestamp = pMsg->dwTimestamp;
-		m_arrayAsyncNotify.Add(pMsg);
+		TNotifyUI *pAsyncMsg = new TNotifyUI;
+		pAsyncMsg->pSender = pMsg->pSender;
+		pAsyncMsg->dwType = pMsg->dwType;
+		pAsyncMsg->wParam = pMsg->wParam;
+		pAsyncMsg->lParam = pMsg->lParam;
+		pAsyncMsg->ptMouse = pMsg->ptMouse;
+		pAsyncMsg->dwTimestamp = pMsg->dwTimestamp;
+		m_arrayAsyncNotify.Add(pAsyncMsg);
+		// 人工给消息队列增加一条触发异步事件的处理
+		this->PostMessage(WM_DIRECTUI_MESSAGE);
 	}
 }
 
@@ -1703,7 +1709,7 @@ void CWindowUI::AddDelayedCleanup(CControlUI* pControl)
 {
 	pControl->SetManager(this, NULL);
 	m_arrayDelayedCleanup.Add(pControl);
-	::PostMessage(m_hWnd, WM_DIRECTUI_MESSAGE, 0, 0L);
+	this->PostMessage(WM_DIRECTUI_MESSAGE, 0, 0L);
 }
 
 bool CWindowUI::InitControls(CControlUI* pControl, CControlUI* pParent /*= NULL*/)
