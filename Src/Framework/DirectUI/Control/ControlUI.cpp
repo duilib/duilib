@@ -1040,3 +1040,13 @@ int CControlUI::GetBorderSize()
 {
 	return m_nBorderSize;
 }
+
+SIZE CControlUI::EstimateSize(SIZE szAvailable)
+{
+	return m_cxyFixed;
+}
+
+void CControlUI::PostRender(IUIRender* pRender, LPCRECT pRcPaint)
+{
+
+}

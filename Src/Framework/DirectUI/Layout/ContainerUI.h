@@ -83,8 +83,9 @@ public:
 
 protected:
 	virtual void SetFloatPos(int iIndex);
+	virtual void ProcessScrollBar(RECT rc, int cxRequired, int cyRequired);
 
-private:
+protected:
 	CStdPtrArray m_items;
 	CDuiRect m_rcInset;
 	int m_iChildPadding;

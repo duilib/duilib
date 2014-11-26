@@ -70,9 +70,15 @@ public:
 	void SendNotify(TNotifyUI *pMsg, bool bAsync = false);
 	void SendNotify(CControlUI* pControl, UINOTIFY dwType, WPARAM wParam = 0, LPARAM lParam = 0, bool bAsync = true);
 
+	// 子控件管理相关
 	bool InitControls(CControlUI* pControl, CControlUI* pParent = NULL);
 	void AddDelayedCleanup(CControlUI* pControl);
 	void ReapObjects(CControlUI* pControl);
+
+	int GetPostPaintCount() const;
+	bool AddPostPaint(CControlUI* pControl);
+	bool RemovePostPaint(CControlUI* pControl);
+	bool SetPostPaintIndex(CControlUI* pControl, int iIndex);
 
 	// 定时器
 	bool SetTimer(CControlUI* pControl, UINT nTimerID, UINT uElapse);
@@ -140,6 +146,7 @@ private:
 	CStdPtrArray m_arrayNotifyFilters;
 	CStdPtrArray m_arrayPreMessageFilters;
 	CStdPtrArray m_arrayTranslateAccelerators;
+	CStdPtrArray m_arrayPostPaintControls;
 	CStdPtrArray m_arrayTimers;
 	UINT m_uTimerID;
 

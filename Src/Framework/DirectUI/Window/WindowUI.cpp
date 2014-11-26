@@ -649,6 +649,12 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 				m_pRenderEngine->SetDevice(&m_OffscreenDC);
 				m_pRenderEngine->SetInvalidateRect(ps.rcPaint);
 				m_pRootControl->Render(m_pRenderEngine,&ps.rcPaint);
+				int nCount = m_arrayPostPaintControls.GetSize();
+				for( int i = 0; i < nCount; i++ )
+				{
+					CControlUI* pPostPaintControl = static_cast<CControlUI*>(m_arrayPostPaintControls[i]);
+					pPostPaintControl->PostRender(m_pRenderEngine, &ps.rcPaint);
+				}
 			}
 
 			if ( !m_bLayedWindow )
@@ -1762,6 +1768,36 @@ void CWindowUI::SendNotifyEvent(TNotifyUI *pMsg)
 				break;
 		}
 	} while (false);
+}
+
+int CWindowUI::GetPostPaintCount() const
+{
+	return m_arrayPostPaintControls.GetSize();
+}
+
+bool CWindowUI::AddPostPaint(CControlUI* pControl)
+{
+	ASSERT(m_arrayPostPaintControls.Find(pControl) < 0);
+	return m_arrayPostPaintControls.Add(pControl);
+}
+
+bool CWindowUI::RemovePostPaint(CControlUI* pControl)
+{
+	int nCount = m_arrayPostPaintControls.GetSize();
+	for( int i = 0; i < nCount; i++ )
+	{
+		if( static_cast<CControlUI*>(m_arrayPostPaintControls[i]) == pControl )
+		{
+			return m_arrayPostPaintControls.Remove(i);
+		}
+	}
+	return false;
+}
+
+bool CWindowUI::SetPostPaintIndex(CControlUI* pControl, int iIndex)
+{
+	RemovePostPaint(pControl);
+	return m_arrayPostPaintControls.InsertAt(iIndex, pControl);
 }
 
 #endif

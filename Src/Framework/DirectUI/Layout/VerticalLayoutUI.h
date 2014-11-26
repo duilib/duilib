@@ -1,27 +1,28 @@
-#ifndef HorizontalLayoutUI_h__
-#define HorizontalLayoutUI_h__
+#ifndef VerticalLayoutUI_h__
+#define VerticalLayoutUI_h__
 /*/////////////////////////////////////////////////////////////
 //
-// 文件名称	:	HorizontalLayoutUI.h
+// 文件名称	:	VerticalLayoutUI.h
 // 创建人		: 	daviyang35@gmail.com
-// 创建时间	:	2014-11-26 14:39:01
+// 创建时间	:	2014-11-26 15:15:58
 // 说明			:	布局控件
 /////////////////////////////////////////////////////////////*/
 #pragma once
-class DIRECTUI_API CHorizontalLayoutUI
+
+class DIRECTUI_API CVerticalLayoutUI
 	: public CContainerUI
 {
 public:
-	CHorizontalLayoutUI(void);
-	virtual ~CHorizontalLayoutUI(void);
+	CVerticalLayoutUI(void);
+	virtual ~CVerticalLayoutUI(void);
 	UI_DECLARE_DYNCREATE();
 
 	LPCTSTR GetClass() const;
 	LPVOID GetInterface(LPCTSTR pstrName);
 	UINT GetControlFlags() const;
 
-	void SetSepWidth(int iWidth);
-	int GetSepWidth() const;
+	void SetSepHeight(int iHeight);
+	int GetSepHeight() const;
 	void SetSepImmMode(bool bImmediately);
 	bool IsSepImmMode() const;
 
@@ -31,10 +32,10 @@ public:
 	virtual void SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue);
 	RECT GetThumbRect(bool bUseNew = false) const;
 private:
-	int m_iSepWidth;
+	int m_iSepHeight;
 	bool m_bImmMode;
 	CDuiPoint m_ptLastMouse;
 	CDuiRect m_rcNewPos;
 };
 
-#endif // HorizontalLayoutUI_h__
+#endif // VerticalLayoutUI_h__

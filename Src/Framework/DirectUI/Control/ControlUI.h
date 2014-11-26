@@ -51,6 +51,7 @@ public:
 	virtual RECT GetInterRect();					// 用于HostWindow
 	void SetInset(LPRECT rc);
 	RECT GetInset();
+	SIZE EstimateSize(SIZE szAvailable);
 
 	// 文本相关
 	virtual LPCTSTR GetText() const;
@@ -136,6 +137,7 @@ public:
 	virtual CControlUI* FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags);
 	virtual bool EventHandler(TEventUI& event);		// 处理CWindowUI转发的消息事件
 	virtual void Render(IUIRender* pRender, LPCRECT pRcPaint);		// 控件基于内部状态绘图
+	virtual void PostRender(IUIRender* pRender, LPCRECT pRcPaint);		// 控件基于内部状态绘图
 	virtual void SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue);
 
 	// 刷新

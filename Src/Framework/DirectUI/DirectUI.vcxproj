@@ -111,6 +111,7 @@
     <ClInclude Include="Layout\ComponentUI.h" />
     <ClInclude Include="Layout\ContainerUI.h" />
     <ClInclude Include="Layout\HorizontalLayoutUI.h" />
+    <ClInclude Include="Layout\VerticalLayoutUI.h" />
     <ClInclude Include="Render\GDIRender.h" />
     <ClInclude Include="Render\UIPaint.h" />
     <ClInclude Include="stdafx.h" />
@@ -149,6 +150,7 @@
     <ClCompile Include="Layout\ComponentUI.cpp" />
     <ClCompile Include="Layout\ContainerUI.cpp" />
     <ClCompile Include="Layout\HorizontalLayoutUI.cpp" />
+    <ClCompile Include="Layout\VerticalLayoutUI.cpp" />
     <ClCompile Include="Render\GDIRender.cpp" />
     <ClCompile Include="Render\UIPaint.cpp" />
     <ClCompile Include="stdafx.cpp">
