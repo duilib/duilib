@@ -47,7 +47,6 @@ ImageObject* ImageObject::CreateFromString(LPCTSTR lpszString)
 	if ( !CDuiStringOperation::parseAttributeString(lpszString,attributeMap))
 	{
 		pImageObj->SetImagePath(lpszString);
-		pImageObj->Init();
 		return pImageObj;
 	}
 
@@ -101,7 +100,6 @@ ImageObject* ImageObject::CreateFromString(LPCTSTR lpszString)
 	if ( lpszVaule != NULL && _tcsicmp(lpszVaule,_T("true")) ==0 )
 		pImageObj->SetYTiled(true);
 
-	pImageObj->Init();
 	return pImageObj;
 }
 
@@ -194,6 +192,21 @@ HBITMAP ImageObject::GetHBitmap()
 {
 	if ( m_pImageData != NULL)
 		return m_pImageData->hBitmap;
+	else
+	{
+		if ( m_strFilePath.empty() )
+			return NULL;
+
+		m_pImageData = CResourceManager::GetInstance()->GetImage(m_strFilePath.c_str(),m_dwMask);
+		if ( m_pImageData == NULL)
+		{
+			m_strFilePath.clear();
+			return NULL;
+		}
+		else
+			return m_pImageData->hBitmap;
+	}
+		
 	return NULL;
 }
 
