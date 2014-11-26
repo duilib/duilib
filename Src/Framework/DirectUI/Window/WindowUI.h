@@ -20,10 +20,8 @@ public:
 	virtual ~CWindowUI(void);
 
 	virtual void SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue);
-
 	CControlUI *GetRoot() const;
 	CControlUI *GetItem(LPCTSTR lpszItemPath) const;
-
 	CControlUI* FindControl(POINT pt) const;
 	CControlUI* FindControl(LPCTSTR pstrName) const;
 	CControlUI* FindSubControlByName(CControlUI* pParent, LPCTSTR pstrName) const;
@@ -39,7 +37,6 @@ public:
 	void RestoreWindow();
 	bool IsMaximized();
 	bool IsMinimized();
-
 	SIZE GetInitSize();
 	void SetInitSize(int cx, int cy);
 	RECT GetSizeBox();
@@ -47,6 +44,7 @@ public:
 	RECT GetCaptionRect();
 	void SetCaptionRect(RECT& rcCaption);
 
+	// 焦点
 	CControlUI* GetFocus() const;
 	void SetFocus(CControlUI* pControl);
 	void SetFocusNeeded(CControlUI* pControl);
@@ -56,9 +54,11 @@ public:
 	void ReleaseCapture();
 	bool IsCaptured();
 
-	 void NeedUpdate();
-	 void Invalidate(RECT& rcItem);
+	// 刷新
+	void NeedUpdate();
+	void Invalidate(RECT& rcItem);
 
+	// title
 	void SetWindowTitle(LPCTSTR lpszWindowTitle);
 	LPCTSTR	GetWindowTitle();
 
@@ -67,7 +67,6 @@ public:
 	// 窗口控件消息通知接口
 	void AddNotify(INotifyUI *pNotify);
 	void RemoveNotify(INotifyUI *pNotify);
-
 	void SendNotify(TNotifyUI *pMsg, bool bAsync = false);
 	void SendNotify(CControlUI* pControl, UINOTIFY dwType, WPARAM wParam = 0, LPARAM lParam = 0, bool bAsync = false);
 
@@ -75,41 +74,28 @@ public:
 	void AddDelayedCleanup(CControlUI* pControl);
 	void ReapObjects(CControlUI* pControl);
 
+	// 定时器
 	bool SetTimer(CControlUI* pControl, UINT nTimerID, UINT uElapse);
 	bool KillTimer(CControlUI* pControl, UINT nTimerID);
 	void KillTimer(CControlUI* pControl);
 	void RemoveAllTimers();
 
-public:
-	// Window Message Filter
+	// 消息过滤
 	void AddMessageFilter(IMessageFilterUI* pFilter);
 	void RemoveMessageFilter(IMessageFilterUI* pFilter);
-
-public:
 	// 实现自绘窗口的窗口消息处理
 	virtual LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool& bHandled);
 	// 重写的CWindowWnd窗口消息循环
 	virtual LRESULT WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
-
 	virtual void SendNotifyEvent(TNotifyUI *pMsg);
-
-public:
 	// 优先过滤消息
 	virtual bool PreMessageHandler(const LPMSG pMsg, LRESULT& lRes);
 	// 处理加速键消息
 	virtual bool TranslateAccelerator(MSG *pMsg);
-
-	LRESULT ReflectNotifications(
-		_In_ UINT uMsg,
-		_In_ WPARAM wParam,
-		_In_ LPARAM lParam,
-		_Inout_ bool& bHandled);
+	LRESULT ReflectNotifications(_In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam, _Inout_ bool& bHandled);
 
 private:
-	virtual LPCTSTR GetWindowClassName() const;
-	virtual UINT GetClassStyle() const;
-
-private:
+	// 控件与实例
 	HINSTANCE m_hInstance;
 	CControlUI *m_pRootControl;
 	CControlUI *m_pEventClick;
@@ -117,8 +103,8 @@ private:
 	CControlUI *m_pFocus;
 	CControlUI *m_pEventKey;
 
+	// 窗口相关
 	CDuiRect m_rcRestore;
-
 	CDuiSize m_szRoundCorner;		
 	CDuiSize m_szMinWindow;				// 窗口最小
 	CDuiSize m_szMaxWindow;				// 窗口最大
@@ -126,13 +112,14 @@ private:
 	CDuiRect m_rcSizeBox;				// 可调整边框边距
 	CDuiRect m_rcCaption;				// 响应标题栏拖动
 
+	// 刷新
 	bool m_bShowUpdateRect;
 	BYTE m_nAlpha;
 	bool m_bLayedWindow;
 
 	CDuiString m_strWindowTitle;
 
-
+	// 布局与渲染
 	bool m_bFirstLayout;
 	bool m_bUpdateNeeded;
 	bool m_bFocusNeeded;
@@ -165,6 +152,8 @@ private:
 
 
 private:
+	virtual LPCTSTR GetWindowClassName() const;
+	virtual UINT GetClassStyle() const;
 	static CControlUI* CALLBACK __FindControlFromNameHash(CControlUI* pThis, LPVOID pData);
 	static CControlUI* CALLBACK __FindControlFromCount(CControlUI* pThis, LPVOID pData);
 	static CControlUI* CALLBACK __FindControlFromPoint(CControlUI* pThis, LPVOID pData);

@@ -66,71 +66,17 @@ void CControlUI::SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue)
 {
 	if ( lpszValue== NULL || lpszValue[0] == NULL)
 		return;
-
-	VecString vec;
-	CDuiStringOperation::splite(lpszName,_T("."),vec);
-	if ( vec.size() == 2)
-	{
-		// 点分格式，如 normal.backimage
-		// vec[0] 是状态，vec[1] 是属性名
-		LPCTSTR lpszStateName = vec[0].c_str();
-		LPCTSTR lpszPropertyName = vec[1].c_str();
-
-		DWORD dwState;
-		// 为dwState赋值
-		if ( _tcsicmp(lpszStateName,_T("normal")) ==0 )
-			dwState = UISTATE_Normal;
-		else if (_tcsicmp(lpszStateName,_T("hover")) ==0)
-			dwState = UISTATE_Hover;
-		else if (_tcsicmp(lpszStateName,_T("pushed")) ==0)
-			dwState = UISTATE_Pushed;
-		else if (_tcsicmp(lpszStateName,_T("focused")) ==0)
-			dwState = UISTATE_Focused;
-		else if (_tcsicmp(lpszStateName,_T("disabled")) ==0)
-			dwState = UISTATE_Disabled;
-
-		UIProperty propType;
-		// 为propType赋值
-		if ( _tcsicmp(lpszPropertyName,_T("bkcolor")) ==0
-			|| _tcsicmp(lpszPropertyName,_T("bkcolor1")) ==0)
-			propType = UIProperty_Back_Color1;
-		else if ( _tcsicmp(lpszPropertyName,_T("bkcolor2")) ==0)
-			propType = UIProperty_Back_Color3;
-		else if ( _tcsicmp(lpszPropertyName,_T("bkcolor3")) ==0)
-			propType = UIProperty_Back_Color3;
-		else if ( _tcsicmp(lpszPropertyName,_T("bkimage")) ==0)
-			propType = UIProperty_Back_Image;
-		else if ( _tcsicmp(lpszPropertyName,_T("foreimage")) ==0)
-			propType = UIProperty_Fore_Image;
-		else if ( _tcsicmp(lpszPropertyName,_T("bordercolor")) ==0)
-			propType = UIProperty_Border_Color;
-		else if ( _tcsicmp(lpszPropertyName,_T("borderwidth")) ==0)
-			propType = UIProperty_Border_Wdith;
-		else if ( _tcsicmp(lpszPropertyName,_T("borderrect")) ==0)
-			propType = UIProperty_Border_Rect;
-		else if ( _tcsicmp(lpszPropertyName,_T("borderstyle")) ==0)
-			propType = UIProperty_Border_Style;
-
-		SetPropertyForState(lpszValue,propType,dwState);
-		return;
-	}
 	
 	if ( _tcsicmp(lpszName,_T("bkimage")) ==0 )
 		SetPropertyForState(lpszValue,UIProperty_Back_Image);
-	else if (  _tcsicmp(lpszName,_T("foreimage")) ==0 )
-		SetPropertyForState(lpszValue,UIProperty_Fore_Image);
-	else if (  _tcsicmp(lpszName,_T("text")) ==0 )
-		SetPropertyForState(lpszValue,UIProperty_Text_String);
-
-	if ( _tcscmp(lpszName, _T("image")) == 0 )
-	{
-		StringMap attributeMap;
-		CDuiStringOperation::parseAttributeString(lpszValue,attributeMap);
-		if ( attributeMap.size() > 0)
-		{
-
-		}
-	}
+	else if (_tcsicmp(lpszName, _T("foreimage")) == 0)
+		SetPropertyForState(lpszValue, UIProperty_Fore_Image);
+	else if (_tcsicmp(lpszName, L"bkcolor1") == 0)
+		SetPropertyForState(lpszValue, UIProperty_Back_Color1);
+	else if (_tcsicmp(lpszName, L"bkcolor2") == 0)
+		SetPropertyForState(lpszValue, UIProperty_Back_Color2);
+	else if (_tcsicmp(lpszName, L"bkcolor3") == 0)
+		SetPropertyForState(lpszValue, UIProperty_Back_Color3);
 	else if( _tcscmp(lpszName, _T("pos")) == 0 ) 
 	{
 		RECT rcPos = { 0 };
@@ -152,94 +98,67 @@ void CControlUI::SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue)
 		CDuiCodeOperation::StringToRect(lpszValue,&rcPadding);
 		SetPadding(rcPadding);
 	}
-	else if( _tcscmp(lpszName, _T("bkcolor")) == 0 || _tcscmp(lpszName, _T("bkcolor1")) == 0 )
-	{
-		//DWORD clrColor = 0;
-		//clrColor = CDuiCodeOperation::StringToColor(lpszValue);
-		//SetBkColor(clrColor);
-		SetPropertyForState(lpszValue,UIProperty_Back_Color1);
-	}
-	else if( _tcscmp(lpszName, _T("bkcolor2")) == 0 )
-	{
-		DWORD clrColor = 0;
-		clrColor = CDuiCodeOperation::StringToColor(lpszValue);
-		//SetBkColor2(clrColor);
-		SetPropertyForState(lpszValue,UIProperty_Back_Color2);
-	}
-	else if( _tcscmp(lpszName, _T("bkcolor3")) == 0 )
-	{
-		DWORD clrColor = 0;
-		clrColor = CDuiCodeOperation::StringToColor(lpszValue);
-		//SetBkColor3(clrColor);
-	}
 	else if( _tcscmp(lpszName, _T("bordercolor")) == 0 )
 	{
 		DWORD clrColor = 0;
 		clrColor = CDuiCodeOperation::StringToColor(lpszValue);
-		//SetBorderColor(clrColor);
+		SetPropertyForState(lpszValue, UIProperty_Border_Color);
+		SetBorderColor(clrColor);
 	}
 	else if( _tcscmp(lpszName, _T("focusbordercolor")) == 0 )
 	{
 		DWORD clrColor = 0;
 		clrColor = CDuiCodeOperation::StringToColor(lpszValue);
-		//SetFocusBorderColor(clrColor);
+		SetFocusBorderColor(clrColor);
 	}
-	//else if( _tcscmp(lpszName, _T("colorhsl")) == 0 )
-	//	SetColorHSL(_tcscmp(lpszValue, _T("true")) == 0);
-	//else if( _tcscmp(lpszName, _T("bordersize")) == 0 )
-	//{
-	//	CDuiString nValue = lpszValue;
-	//	if(nValue.Find(',') < 0)
-	//	{
-	//		SetBorderSize(_ttoi(lpszValue));
-	//		RECT rcPadding = {0};
-	//		SetBorderSize(rcPadding);
-	//	}
-	//	else
-	//	{
-	//		RECT rcPadding = { 0 };
-	//		LPTSTR pstr = NULL;
-	//		rcPadding.left = _tcstol(lpszValue, &pstr, 10);  ASSERT(pstr);
-	//		rcPadding.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);
-	//		rcPadding.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);
-	//		rcPadding.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
-	//		SetBorderSize(rcPadding);
-	//	}
-	//}
-	//else if( _tcscmp(lpszName, _T("leftbordersize")) == 0 ) SetLeftBorderSize(_ttoi(lpszValue));
-	//else if( _tcscmp(lpszName, _T("topbordersize")) == 0 ) SetTopBorderSize(_ttoi(lpszValue));
-	//else if( _tcscmp(lpszName, _T("rightbordersize")) == 0 ) SetRightBorderSize(_ttoi(lpszValue));
-	//else if( _tcscmp(lpszName, _T("bottombordersize")) == 0 ) SetBottomBorderSize(_ttoi(lpszValue));
-	//else if( _tcscmp(lpszName, _T("borderstyle")) == 0 ) SetBorderStyle(_ttoi(lpszValue));
-	else if( _tcscmp(lpszName, _T("borderround")) == 0 ) {
+	else if( _tcscmp(lpszName, _T("borderround")) == 0 ) 
+	{
 		SIZE cxyRound = { 0 };
 		CDuiCodeOperation::StringToSize(lpszValue,&cxyRound);
-		//SetBorderRound(cxyRound);
+		SetBorderRound(cxyRound);
 	}
-	//else if( _tcscmp(lpszName, _T("bkimage")) == 0 ) SetBkImage(lpszValue);
-	else if( _tcscmp(lpszName, _T("width")) == 0 ) SetFixedWidth(_ttoi(lpszValue));
-	else if( _tcscmp(lpszName, _T("height")) == 0 ) SetFixedHeight(_ttoi(lpszValue));
-	else if( _tcscmp(lpszName, _T("minwidth")) == 0 ) SetMinWidth(_ttoi(lpszValue));
-	else if( _tcscmp(lpszName, _T("minheight")) == 0 ) SetMinHeight(_ttoi(lpszValue));
-	else if( _tcscmp(lpszName, _T("maxwidth")) == 0 ) SetMaxWidth(_ttoi(lpszValue));
-	else if( _tcscmp(lpszName, _T("maxheight")) == 0 ) SetMaxHeight(_ttoi(lpszValue));
-	else if( _tcscmp(lpszName, _T("name")) == 0 ) SetName(lpszValue);
-	else if( _tcscmp(lpszName, _T("text")) == 0 ) SetText(lpszValue);
+	else if (_tcscmp(lpszName, L"bordersize") == 0)
+	{
+		int nSize = CDuiCodeOperation::StringToInt(lpszValue);
+		SetPropertyForState(lpszValue, UIProperty_Border_Wdith);
+		SetBorderSize(nSize);
+	}
+	else if( _tcscmp(lpszName, _T("width")) == 0 ) 
+		SetFixedWidth(_ttoi(lpszValue));
+	else if( _tcscmp(lpszName, _T("height")) == 0 ) 
+		SetFixedHeight(_ttoi(lpszValue));
+	else if( _tcscmp(lpszName, _T("minwidth")) == 0 ) 
+		SetMinWidth(_ttoi(lpszValue));
+	else if( _tcscmp(lpszName, _T("minheight")) == 0 ) 
+		SetMinHeight(_ttoi(lpszValue));
+	else if( _tcscmp(lpszName, _T("maxwidth")) == 0 ) 
+		SetMaxWidth(_ttoi(lpszValue));
+	else if( _tcscmp(lpszName, _T("maxheight")) == 0 ) 
+		SetMaxHeight(_ttoi(lpszValue));
+	else if( _tcscmp(lpszName, _T("name")) == 0 ) 
+		SetName(lpszValue);
+	else if( _tcscmp(lpszName, _T("text")) == 0 ) 
+		SetText(lpszValue);
 	else if (_tcscmp(lpszName, _T("fontindex")) == 0)
 		SetFontIndex(lpszValue);
 	else if (_tcscmp(lpszName, _T("textcolor")) == 0)
 		SetTextColor(CDuiCodeOperation::StringToColor(lpszValue));
 	else if (_tcscmp(lpszName, _T("textstyle")) == 0)
 		SetTextStyle(lpszValue);
-	else if( _tcscmp(lpszName, _T("tooltip")) == 0 ) SetToolTip(lpszValue);
-	//else if( _tcscmp(lpszName, _T("userdata")) == 0 ) SetUserData(lpszValue);
-	else if( _tcscmp(lpszName, _T("enabled")) == 0 ) SetEnabled(_tcscmp(lpszValue, _T("true")) == 0);
-	else if( _tcscmp(lpszName, _T("mouse")) == 0 ) SetMouseEnabled(_tcscmp(lpszValue, _T("true")) == 0);
-	else if( _tcscmp(lpszName, _T("keyboard")) == 0 ) SetKeyboardEnabled(_tcscmp(lpszValue, _T("true")) == 0);
-	else if( _tcscmp(lpszName, _T("visible")) == 0 ) SetVisible(_tcscmp(lpszValue, _T("true")) == 0);
-	else if( _tcscmp(lpszName, _T("float")) == 0 ) SetFloat(_tcscmp(lpszValue, _T("true")) == 0);
-	//else if( _tcscmp(lpszName, _T("shortcut")) == 0 ) SetShortcut(lpszValue[0]);
-	else if( _tcscmp(lpszName, _T("menu")) == 0 ) SetContextMenuUsed(_tcscmp(lpszValue, _T("true")) == 0);
+	else if( _tcscmp(lpszName, _T("tooltip")) == 0 ) 
+		SetToolTip(lpszValue);
+	else if( _tcscmp(lpszName, _T("enabled")) == 0 ) 
+		SetEnabled(_tcscmp(lpszValue, _T("true")) == 0);
+	else if( _tcscmp(lpszName, _T("mouse")) == 0 ) 
+		SetMouseEnabled(_tcscmp(lpszValue, _T("true")) == 0);
+	else if( _tcscmp(lpszName, _T("keyboard")) == 0 ) 
+		SetKeyboardEnabled(_tcscmp(lpszValue, _T("true")) == 0);
+	else if( _tcscmp(lpszName, _T("visible")) == 0 ) 
+		SetVisible(_tcscmp(lpszValue, _T("true")) == 0);
+	else if( _tcscmp(lpszName, _T("float")) == 0 ) 
+		SetFloat(_tcscmp(lpszValue, _T("true")) == 0);
+	else if( _tcscmp(lpszName, _T("menu")) == 0 ) 
+		SetContextMenuUsed(_tcscmp(lpszValue, _T("true")) == 0);
 }
 
 CControlUI* CControlUI::FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags)
@@ -1064,4 +983,60 @@ void CControlUI::SetTextColor(DWORD dwColor)
 DWORD CControlUI::GetTextColor()
 {
 	return m_dwTextColor;
+}
+
+void CControlUI::SetBorderColor(DWORD dwColor)
+{
+	if (m_dwBorderColor == dwColor)
+	{
+		return;
+	}
+	m_dwBorderColor = dwColor;
+	Invalidate();
+}
+
+DWORD CControlUI::GetBorderColor()
+{
+	return m_dwBorderColor;
+}
+
+void CControlUI::SetFocusBorderColor(DWORD dwColor)
+{
+	if (m_dwFocusBorderColor == dwColor)
+	{
+		return;
+	}
+	m_dwFocusBorderColor = dwColor;
+	Invalidate();
+}
+
+DWORD CControlUI::GetFocusBorderColor()
+{
+	return m_dwFocusBorderColor;
+}
+
+void CControlUI::SetBorderRound(SIZE cxySize)
+{
+	m_cxyBorderRound = cxySize;
+	Invalidate();
+}
+
+SIZE CControlUI::GetBorderRound()
+{
+	return m_cxyBorderRound;
+}
+
+void CControlUI::SetBorderSize(int nSize)
+{
+	if (m_nBorderSize == nSize)
+	{
+		return;
+	}
+	m_nBorderSize = nSize;
+	Invalidate();
+}
+
+int CControlUI::GetBorderSize()
+{
+	return m_nBorderSize;
 }
