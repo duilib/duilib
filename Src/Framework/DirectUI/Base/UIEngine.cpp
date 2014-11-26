@@ -52,9 +52,10 @@ void CUIEngine::Init()
 	UI_REGISTER_DYNCREATE(_T("Container"),CContainerUI,false);
 	UI_REGISTER_DYNCREATE(_T("ScrollBar"),CScrollBarUI,true);
 	UI_REGISTER_DYNCREATE(_T("Button"),CButtonUI,true);
-	UI_REGISTER_DYNCREATE(_T("Component"),CComponentUI,false);
 	UI_REGISTER_DYNCREATE(_T("HorizontalLayout"),CHorizontalLayoutUI,false);
 	UI_REGISTER_DYNCREATE(_T("VerticalLayout"),CVerticalLayoutUI,false);
+	UI_REGISTER_DYNCREATE(_T("ChildLayout"),CChildLayoutUI,false);
+	UI_REGISTER_DYNCREATE(_T("TabLayout"),CTabLayoutUI,false);
 
 }
 

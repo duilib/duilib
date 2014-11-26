@@ -108,9 +108,10 @@
     <ClInclude Include="Define\IUIRender.h" />
     <ClInclude Include="Define\UIDefine.h" />
     <ClInclude Include="DirectUI.h" />
-    <ClInclude Include="Layout\ComponentUI.h" />
+    <ClInclude Include="Layout\ChildLayoutUI.h" />
     <ClInclude Include="Layout\ContainerUI.h" />
     <ClInclude Include="Layout\HorizontalLayoutUI.h" />
+    <ClInclude Include="Layout\TabLayoutUI.h" />
     <ClInclude Include="Layout\VerticalLayoutUI.h" />
     <ClInclude Include="Render\GDIRender.h" />
     <ClInclude Include="Render\UIPaint.h" />
@@ -147,9 +148,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Layout\ComponentUI.cpp" />
+    <ClCompile Include="Layout\ChildLayoutUI.cpp" />
     <ClCompile Include="Layout\ContainerUI.cpp" />
     <ClCompile Include="Layout\HorizontalLayoutUI.cpp" />
+    <ClCompile Include="Layout\TabLayoutUI.cpp" />
     <ClCompile Include="Layout\VerticalLayoutUI.cpp" />
     <ClCompile Include="Render\GDIRender.cpp" />
     <ClCompile Include="Render\UIPaint.cpp" />

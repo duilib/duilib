@@ -432,7 +432,7 @@ CControlUI* CContainerUI::FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT u
 	if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() )
 		rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
 
-	m_items.Sort(ZOrderCompare);
+	//m_items.Sort(ZOrderCompare);
 
 	if( (uFlags & UIFIND_TOP_FIRST) != 0 )
 	{
@@ -480,10 +480,12 @@ bool CContainerUI::EventHandler(TEventUI& event)
 {
 	if( !IsMouseEnabled() && event.dwType > UIEVENT__MOUSEBEGIN && event.dwType < UIEVENT__MOUSEEND )
 	{
+		bool bRet = false;
 		if( m_pParent != NULL )
-			return m_pParent->EventHandler(event);
+			bRet = m_pParent->EventHandler(event);
 		else
-			return CControlUI::EventHandler(event);
+			bRet = CControlUI::EventHandler(event);
+		return bRet;
 	}
 
 	if( event.dwType == UIEVENT_SETFOCUS ) 

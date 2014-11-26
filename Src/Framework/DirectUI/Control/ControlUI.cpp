@@ -12,7 +12,7 @@ CControlUI::CControlUI(void)
 	, m_bIsMouseEnabled(true)
 	, m_bIsKeyboardEnabled(true)
 	, m_bIsFocused(false)
-	, m_bIsFloat(true)					// 推荐使用浮动布局
+	, m_bIsFloat(false)					// 推荐使用浮动布局
 	, m_bIsSetPos(false)
 	, m_nTooltipWidth(300)
 	, m_dwState(UISTATE_Normal)
@@ -24,8 +24,12 @@ CControlUI::CControlUI(void)
 	, m_sFontIndex(L"")
 	, m_sTextStyle(L"noprefix")
 	, m_uTextStyle(DT_NOPREFIX)
-	, m_sText(L"")
+	, m_dwBorderColor(0)
+	, m_dwFocusBorderColor(0)
+	, m_nBorderSize(0)
 {
+	m_cxyBorderRound.cx = m_cxyBorderRound.cy = 0;
+	m_cxyMax.cx = m_cxyMax.cy = 7680*4;
 }
 
 
@@ -254,7 +258,8 @@ void CControlUI::SetPosition(LPCRECT rc)
 		m_bIsSetPos = false;
 	}
 
-	if( m_bIsFloat ) {
+	if( m_bIsFloat )
+	{
 		CControlUI* pParent = GetParent();
 		if( pParent != NULL )
 		{
@@ -551,7 +556,8 @@ int CControlUI::GetFixedWidth() const
 void CControlUI::SetFixedWidth(int cx)
 {
 
-	if( cx < 0 ) return; 
+	if( cx < 0 )
+		return; 
 	m_cxyFixed.cx = cx;
 	if( !m_bIsFloat )
 		NeedParentUpdate();

@@ -86,6 +86,9 @@ typedef enum _enUINOTIFY
 	UINOTIFY_TIMER,//timer
 	UINOTIFY_CONTEXTMENU,
 	UINOTIFY_DROPFILES,//dropfiles
+
+	// TabLayout
+	UINOTIFY_TAB_SELECTED,
 	//热键
 	UINOTIFY_HOTKEY, 
 	// 窗口还原时的消息

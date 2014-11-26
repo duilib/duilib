@@ -52,8 +52,10 @@ void CHorizontalLayoutUI::SetPosition(LPCRECT rc)
 		return;
 	}
 
-	if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rcTemp.right -= m_pVerticalScrollBar->GetFixedWidth();
-	if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rcTemp.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
+	if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() )
+		rcTemp.right -= m_pVerticalScrollBar->GetFixedWidth();
+	if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() )
+		rcTemp.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
 
 	// Determine the width of elements that are sizeable
 	SIZE szAvailable = { rcTemp.right - rcTemp.left, rcTemp.bottom - rcTemp.top };
@@ -66,15 +68,21 @@ void CHorizontalLayoutUI::SetPosition(LPCRECT rc)
 	for( int it1 = 0; it1 < m_items.GetSize(); it1++ )
 	{
 		CControlUI* pControl = static_cast<CControlUI*>(m_items[it1]);
-		if( !pControl->IsVisible() ) continue;
-		if( pControl->IsFloat() ) continue;
+		if( !pControl->IsVisible() )
+			continue;
+		if( pControl->IsFloat() )
+			continue;
 		SIZE sz = pControl->EstimateSize(szAvailable);
-		if( sz.cx == 0 ) {
+		if( sz.cx == 0 )
+		{
 			nAdjustables++;
 		}
-		else {
-			if( sz.cx < pControl->GetMinWidth() ) sz.cx = pControl->GetMinWidth();
-			if( sz.cx > pControl->GetMaxWidth() ) sz.cx = pControl->GetMaxWidth();
+		else
+		{
+			if( sz.cx < pControl->GetMinWidth() )
+				sz.cx = pControl->GetMinWidth();
+			if( sz.cx > pControl->GetMaxWidth() )
+				sz.cx = pControl->GetMaxWidth();
 		}
 		cxFixed += sz.cx +  pControl->GetPadding().left + pControl->GetPadding().right;
 		nEstimateNum++;
@@ -83,47 +91,62 @@ void CHorizontalLayoutUI::SetPosition(LPCRECT rc)
 
 	int cxExpand = 0;
 	int cxNeeded = 0;
-	if( nAdjustables > 0 ) cxExpand = max(0, (szAvailable.cx - cxFixed) / nAdjustables);
+	if( nAdjustables > 0 )
+		cxExpand = max(0, (szAvailable.cx - cxFixed) / nAdjustables);
 	// Position the elements
 	SIZE szRemaining = szAvailable;
 	int iPosX = rcTemp.left;
-	if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) {
+	if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() )
+	{
 		iPosX -= m_pHorizontalScrollBar->GetScrollPos();
 	}
 	int iAdjustable = 0;
 	int cxFixedRemaining = cxFixed;
-	for( int it2 = 0; it2 < m_items.GetSize(); it2++ ) {
+	for( int it2 = 0; it2 < m_items.GetSize(); it2++ )
+	{
 		CControlUI* pControl = static_cast<CControlUI*>(m_items[it2]);
-		if( !pControl->IsVisible() ) continue;
-		if( pControl->IsFloat() ) {
+		if( !pControl->IsVisible() )
+			continue;
+		if( pControl->IsFloat() )
+		{
 			SetFloatPos(it2);
 			continue;
 		}
 		RECT rcPadding = pControl->GetPadding();
 		szRemaining.cx -= rcPadding.left;
 		SIZE sz = pControl->EstimateSize(szRemaining);
-		if( sz.cx == 0 ) {
+		if( sz.cx == 0 )
+		{
 			iAdjustable++;
 			sz.cx = cxExpand;
 			// Distribute remaining to last element (usually round-off left-overs)
-			if( iAdjustable == nAdjustables ) {
+			if( iAdjustable == nAdjustables )
+			{
 				sz.cx = max(0, szRemaining.cx - rcPadding.right - cxFixedRemaining);
 			}
-			if( sz.cx < pControl->GetMinWidth() ) sz.cx = pControl->GetMinWidth();
-			if( sz.cx > pControl->GetMaxWidth() ) sz.cx = pControl->GetMaxWidth();
+			if( sz.cx < pControl->GetMinWidth() )
+				sz.cx = pControl->GetMinWidth();
+			if( sz.cx > pControl->GetMaxWidth() )
+				sz.cx = pControl->GetMaxWidth();
 		}
 		else {
-			if( sz.cx < pControl->GetMinWidth() ) sz.cx = pControl->GetMinWidth();
-			if( sz.cx > pControl->GetMaxWidth() ) sz.cx = pControl->GetMaxWidth();
+			if( sz.cx < pControl->GetMinWidth() )
+				sz.cx = pControl->GetMinWidth();
+			if( sz.cx > pControl->GetMaxWidth() )
+				sz.cx = pControl->GetMaxWidth();
 
 			cxFixedRemaining -= sz.cx;
 		}
 
 		sz.cy = pControl->GetFixedHeight();
-		if( sz.cy == 0 ) sz.cy = rcTemp.bottom - rcTemp.top - rcPadding.top - rcPadding.bottom;
-		if( sz.cy < 0 ) sz.cy = 0;
-		if( sz.cy < pControl->GetMinHeight() ) sz.cy = pControl->GetMinHeight();
-		if( sz.cy > pControl->GetMaxHeight() ) sz.cy = pControl->GetMaxHeight();
+		if( sz.cy == 0 )
+			sz.cy = rcTemp.bottom - rcTemp.top - rcPadding.top - rcPadding.bottom;
+		if( sz.cy < 0 )
+			sz.cy = 0;
+		if( sz.cy < pControl->GetMinHeight() )
+			sz.cy = pControl->GetMinHeight();
+		if( sz.cy > pControl->GetMaxHeight() )
+			sz.cy = pControl->GetMaxHeight();
 
 		RECT rcCtrl = { iPosX + rcPadding.left, rcTemp.top + rcPadding.top, iPosX + sz.cx + rcPadding.left + rcPadding.right, rcTemp.top + rcPadding.top + sz.cy};
 		pControl->SetPosition(&rcCtrl);

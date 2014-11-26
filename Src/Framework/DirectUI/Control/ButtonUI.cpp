@@ -89,11 +89,12 @@ bool CButtonUI::EventHandler(TEventUI& event)
 {
 	if( !IsMouseEnabled() && event.dwType > UIEVENT__MOUSEBEGIN && event.dwType < UIEVENT__MOUSEEND )
 	{
+		bool bRet = false;
 		if( m_pParent != NULL )
-			m_pParent->EventHandler(event);
+			bRet = m_pParent->EventHandler(event);
 		else
-			CControlUI::EventHandler(event);
-		return true;
+			bRet = CControlUI::EventHandler(event);
+		return bRet;
 	}
 
 	if( event.dwType == UIEVENT_SETFOCUS ) 
@@ -227,6 +228,16 @@ void CButtonUI::SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue)
 
 		SetPropertyForState(lpszValue, propType, dwState);
 	}
+
+	if ( _tcsicmp(lpszName,_T("hotimage")) == 0)
+		SetPropertyForState(lpszValue, UIProperty_Back_Image, UISTATE_Hover);
+	else if ( _tcsicmp(lpszName,_T("pushedimage")) == 0)
+		SetPropertyForState(lpszValue, UIProperty_Back_Image, UISTATE_Pushed);
+	else if ( _tcsicmp(lpszName,_T("focusedimage")) == 0)
+		SetPropertyForState(lpszValue, UIProperty_Back_Image, UISTATE_Focused);
+	else if ( _tcsicmp(lpszName,_T("disabledimage")) == 0)
+		SetPropertyForState(lpszValue, UIProperty_Back_Image, UISTATE_Disabled);
+
 	CControlUI::SetAttribute(lpszName,lpszValue);
 }
 

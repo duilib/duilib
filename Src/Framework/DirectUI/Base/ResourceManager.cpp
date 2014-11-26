@@ -347,7 +347,7 @@ CControlUI * CResourceManager::CreateControlFromTemplate(TemplateObject *pTempla
 		// 提供IContainter接口的布局控件才继续解析并创建子控件
 		IContainerUI *pContainer = static_cast<IContainerUI*>(pReturnControl->GetInterface(_T("IContainer")));
 		int nCount = pTemplate->GetChildCount();
-		if ( pContainer != NULL && nCount > 0)
+		if ( pContainer != NULL )
 		{
 			// 有子控件
 			for (int i=0;i<nCount;++i )
@@ -356,6 +356,8 @@ CControlUI * CResourceManager::CreateControlFromTemplate(TemplateObject *pTempla
 				if ( pChildControl != NULL)
 					pContainer->Add(pChildControl);
 			}
+
+			pReturnControl->SetManager(pManager,pParent);
 		}
 	}
 

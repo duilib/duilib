@@ -195,12 +195,16 @@ HBITMAP ImageObject::GetHBitmap()
 	else
 	{
 		if ( m_strFilePath.empty() )
+		{
+			ASSERT(false);
 			return NULL;
+		}
 
 		m_pImageData = CResourceManager::GetInstance()->GetImage(m_strFilePath.c_str(),m_dwMask);
 		if ( m_pImageData == NULL)
 		{
 			m_strFilePath.clear();
+			ASSERT(false);
 			return NULL;
 		}
 		else

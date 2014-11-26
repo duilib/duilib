@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <Resouces component="main" >
 	<Layouts>
-		<File name="MainWnd" path="main#layout\MainWnd.xml" />
-		<File name="rightPanel" path="main#layout\content.xml" />
+		<File name="MainWnd" path="main#layout\skin.xml" />
+		<File name="Experience" path="main#layout\Experience.xml" />
 	</Layouts>
 	<Fonts>
 		<Font name="yahei14"  face="微软雅黑" size="22" bold="false" italic="false" />

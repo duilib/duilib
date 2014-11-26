@@ -68,8 +68,8 @@
 
 #include "Layout/HorizontalLayoutUI.h"
 #include "Layout/VerticalLayoutUI.h"
-#include "Layout/ComponentUI.h"
-
+#include "Layout/ChildLayoutUI.h"
+#include "Layout/TabLayoutUI.h"
 #include "Control/ButtonUI.h"
 
 #endif // DirectUI_h__
