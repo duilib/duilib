@@ -58,5 +58,8 @@ TemplateObject* TemplateObject::GetChild(int nIndex)
 
 void TemplateObject::InsertChild(TemplateObject* pChild,int nAtIndex/*=-1*/)
 {
-	m_arrayChild.InsertAt(nAtIndex,pChild);
+	if ( nAtIndex == -1 )
+		m_arrayChild.Add(pChild);
+	else
+		m_arrayChild.InsertAt(nAtIndex,pChild);
 }

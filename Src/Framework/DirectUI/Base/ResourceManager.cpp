@@ -407,7 +407,7 @@ TemplateObject* CResourceManager::XmlToTemplate(TiXmlElement *pElement,TemplateO
 	}
 	else
 	{
-		pParent->InsertChild(pChildTemplateObj,0);
+		pParent->InsertChild(pChildTemplateObj,-1);
 	}
 
 	return NULL;

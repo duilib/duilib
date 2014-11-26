@@ -251,7 +251,7 @@ bool CStdPtrArray::Add(LPVOID pData)
 	{
 		int nAllocated = m_nAllocated * 2;
 		if( nAllocated == 0 )
-			nAllocated = 11;
+			nAllocated = 8;
 		LPVOID* ppVoid = static_cast<LPVOID*>(realloc(m_ppVoid, nAllocated * sizeof(LPVOID)));
 		if( ppVoid != NULL )
 		{
