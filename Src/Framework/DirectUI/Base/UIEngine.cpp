@@ -43,10 +43,17 @@ void CUIEngine::ReleaseInstance()
 void CUIEngine::Init()
 {
 	// 注册所有系统基础控件
+	::InitCommonControls();
+	//::LoadLibrary(_T("msimg32.dll"));
+	// COM和OLE
 	this->InitCOM();
 	this->InitOLE();
+
+	// 其他单例启动，销毁Engine时删除，确保生命周期可控
 	m_pResourceManager = CResourceManager::GetInstance();
 	CUIPaint::GetInstance();
+
+	// 注册提供的基础控件
 	// bIsActive为true，控件区域不响应窗口拖动事件
 	UI_REGISTER_DYNCREATE(_T("Control"),CControlUI,false);
 	UI_REGISTER_DYNCREATE(_T("Container"),CContainerUI,false);
@@ -57,6 +64,7 @@ void CUIEngine::Init()
 	UI_REGISTER_DYNCREATE(_T("ChildLayout"),CChildLayoutUI,false);
 	UI_REGISTER_DYNCREATE(_T("TabLayout"),CTabLayoutUI,false);
 
+	UI_REGISTER_DYNCREATE(_T("Label"),CLabelUI,false);
 }
 
 void CUIEngine::Uninit()

@@ -161,6 +161,7 @@ private:
 private:
 	virtual LPCTSTR GetWindowClassName() const;
 	virtual UINT GetClassStyle() const;
+	HPEN m_hUpdateRectPen;
 	static CControlUI* CALLBACK __FindControlFromNameHash(CControlUI* pThis, LPVOID pData);
 	static CControlUI* CALLBACK __FindControlFromCount(CControlUI* pThis, LPVOID pData);
 	static CControlUI* CALLBACK __FindControlFromPoint(CControlUI* pThis, LPVOID pData);

@@ -26,6 +26,7 @@ CWindowUI::CWindowUI(void)
 	, m_bFirstLayout(true)
 	, m_bUpdateNeeded(false)
 	, m_bFocusNeeded(false)
+	, m_hUpdateRectPen(NULL)
 {
 	m_ptLastMousePos.x = -1;
 	m_ptLastMousePos.y = -1;
@@ -35,6 +36,11 @@ CWindowUI::CWindowUI(void)
 
 CWindowUI::~CWindowUI(void)
 {
+	if ( m_hUpdateRectPen != NULL)
+	{
+		::DeleteObject(m_hUpdateRectPen);
+		m_hUpdateRectPen = NULL;
+	}
 	for( int i = 0; i < m_arrayDelayedCleanup.GetSize(); i++ )
 		delete static_cast<CControlUI*>(m_arrayDelayedCleanup[i]);
 	for( int i = 0; i < m_arrayAsyncNotify.GetSize(); i++ )
@@ -661,6 +667,18 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 			{
 				::BitBlt(ps.hdc, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right - ps.rcPaint.left,
 					ps.rcPaint.bottom - ps.rcPaint.top, m_OffscreenDC.GetSafeHdc(), ps.rcPaint.left, ps.rcPaint.top, SRCCOPY);
+
+				if( m_bShowUpdateRect )
+				{
+					if ( m_hUpdateRectPen == NULL)
+					{
+						m_hUpdateRectPen = ::CreatePen(PS_SOLID, 1, RGB(220, 0, 0));
+					}
+					HPEN hOldPen = (HPEN)::SelectObject(ps.hdc, m_hUpdateRectPen);
+					::SelectObject(ps.hdc, ::GetStockObject(HOLLOW_BRUSH));
+					::Rectangle(ps.hdc, rcPaint.left, rcPaint.top, rcPaint.right, rcPaint.bottom);
+					::SelectObject(ps.hdc, hOldPen);
+				}
 			}
 			else
 			{

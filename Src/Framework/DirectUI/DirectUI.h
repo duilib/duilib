@@ -45,31 +45,38 @@
 
 // DirectUI
 
+// Micro&Utils
 #include "Define/UIDefine.h"
 #include "Define/IUIRender.h"
 #include "Utils/UIUtils.h"
 #include "Utils/UIDelegate.h"
 
+// BaseDefine
 #include "Base/ImageObject.h"
 #include "Base/FontObject.h"
 #include "Render/UIPaint.h"
 #include "Render/GDIRender.h"
 
+// CoreEngine
 #include "Base/ResourceManager.h"
 #include "Base/UIEngine.h"
 #include "Base/ObjectUI.h"
 
 #include "Window/WindowUI.h"
 
+// Base Control
 #include "Control/ControlUI.h"
 #include "Layout/ContainerUI.h"
-
 #include "Control/ScrollBarUI.h"
 
+// Layout
 #include "Layout/HorizontalLayoutUI.h"
 #include "Layout/VerticalLayoutUI.h"
 #include "Layout/ChildLayoutUI.h"
 #include "Layout/TabLayoutUI.h"
+
+// Control
+#include "Control/LabelUI.h"
 #include "Control/ButtonUI.h"
 
 #endif // DirectUI_h__

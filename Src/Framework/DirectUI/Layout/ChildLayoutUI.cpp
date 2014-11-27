@@ -107,6 +107,7 @@ void CChildLayoutUI::SetManager(CWindowUI* pManager, CControlUI* pParent)
 	else
 	{
 		// 是相对或者绝对路径
+#pragma TODO(子页面相对/绝对路径方式未实现)
 	}
 
 

@@ -127,6 +127,9 @@
     <ClInclude Include="Layout\TabLayoutUI.h">
       <Filter>Layout</Filter>
     </ClInclude>
+    <ClInclude Include="Control\LabelUI.h">
+      <Filter>Control</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -215,6 +218,9 @@
     </ClCompile>
     <ClCompile Include="Layout\TabLayoutUI.cpp">
       <Filter>Layout</Filter>
+    </ClCompile>
+    <ClCompile Include="Control\LabelUI.cpp">
+      <Filter>Control</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
