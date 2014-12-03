@@ -168,22 +168,28 @@ CControlUI * CWindowUI::GetItem(LPCTSTR lpszItemPath) const
 
 CControlUI* CWindowUI::FindControl(POINT pt) const
 {
-	ASSERT(m_pRootControl);
-	return m_pRootControl->FindControl(__FindControlFromPoint, &pt, UIFIND_VISIBLE | UIFIND_HITTEST | UIFIND_TOP_FIRST);
+	if (m_pRootControl)
+		return m_pRootControl->FindControl(__FindControlFromPoint, &pt, UIFIND_VISIBLE | UIFIND_HITTEST | UIFIND_TOP_FIRST);
+
+	return NULL;
 }
 
 CControlUI* CWindowUI::FindControl(LPCTSTR lpszName) const
 {
-	ASSERT(m_pRootControl);
-	return static_cast<CControlUI*>(m_mapNameHash.Find(lpszName));
+	if (m_pRootControl && m_mapNameHash.GetSize() > 0 )
+		return static_cast<CControlUI*>(m_mapNameHash.Find(lpszName));
+
+	return NULL;
 }
 
 CControlUI* CWindowUI::FindSubControlByName(CControlUI* pParent, LPCTSTR pstrName) const
 {
 	if( pParent == NULL )
 		pParent = m_pRootControl;
-	ASSERT(pParent);
-	return pParent->FindControl(__FindControlFromName, (LPVOID)pstrName, UIFIND_ALL);
+	if (pParent)
+		return pParent->FindControl(__FindControlFromName, (LPVOID)pstrName, UIFIND_ALL);
+
+	return NULL;
 }
 
 UINT CWindowUI::DoModal()
@@ -395,6 +401,12 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 
 				TemplateObject* pControl = pWindowTemplate->GetChild(0);
 				m_pRootControl = pResourceManager->CreateControlFromTemplate(pControl,this);
+			}
+
+			if ( m_pRootControl == NULL)
+			{
+				::MessageBox(m_hWnd,_T("DirectUI´°¿Ú¹¹½¨Ê§°Ü"),_T("UIEngine"),MB_OK | MB_ICONERROR);
+				PostMessage(WM_DESTROY);
 			}
 		}
 		break;

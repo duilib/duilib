@@ -62,7 +62,7 @@ void CControlUI::SendNotify(UINOTIFY dwType, WPARAM wParam /*= 0*/, LPARAM lPara
 {
 	if ( m_pManager )
 	{
-		m_pManager->SendNotify(this,dwType,wParam,lParam,false);
+		m_pManager->SendNotify(this,dwType,wParam,lParam,bAsync);
 	}
 }
 
@@ -73,7 +73,7 @@ void CControlUI::SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue)
 	
 	if ( _tcsicmp(lpszName,_T("bkimage")) ==0 )
 		SetPropertyForState(lpszValue,UIProperty_Back_Image);
-	else if (_tcsicmp(lpszName, _T("foreimage")) == 0)
+	else if (_tcsicmp(lpszName, _T("foreimage")) == 0) 
 		SetPropertyForState(lpszValue, UIProperty_Fore_Image);
 	else if (_tcsicmp(lpszName, L"bkcolor1") == 0)
 		SetPropertyForState(lpszValue, UIProperty_Back_Color1);
