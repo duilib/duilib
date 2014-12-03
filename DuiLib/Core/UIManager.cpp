@@ -2210,9 +2210,8 @@ bool CPaintManagerUI::TranslateMessage(const LPMSG pMsg)
 
 				if(pMsg->hwnd == pT->GetPaintWindow() || hTempParent == pT->GetPaintWindow())
 				{
-					pT->TranslateAccelerator(pMsg);
-					//					if (pT->TranslateAccelerator(pMsg))
-					//						return true;
+					if (pT->TranslateAccelerator(pMsg))
+						return true;
 
 					pT->PreMessageHandler(pMsg->message, pMsg->wParam, pMsg->lParam, lRes);
 					// 					if( pT->PreMessageHandler(pMsg->message, pMsg->wParam, pMsg->lParam, lRes) ) 
