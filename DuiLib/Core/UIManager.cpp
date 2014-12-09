@@ -2199,31 +2199,36 @@ bool CPaintManagerUI::TranslateMessage(const LPMSG pMsg)
 	if (uChildRes != 0)
 	{
 		HWND hWndParent = ::GetParent(pMsg->hwnd);
-
-		for( int i = 0; i < m_aPreMessages.GetSize(); i++ ) 
+		//code by redrain 2014.12.3,解决edit和webbrowser按tab无法切换焦点的bug
+		//		for( int i = 0; i < m_aPreMessages.GetSize(); i++ ) 
+		for( int i = m_aPreMessages.GetSize() - 1; i >= 0 ; --i ) 
 		{
 			CPaintManagerUI* pT = static_cast<CPaintManagerUI*>(m_aPreMessages[i]);        
 			HWND hTempParent = hWndParent;
 			while(hTempParent)
 			{
+
 				if(pMsg->hwnd == pT->GetPaintWindow() || hTempParent == pT->GetPaintWindow())
 				{
 					if (pT->TranslateAccelerator(pMsg))
 						return true;
 
-					if( pT->PreMessageHandler(pMsg->message, pMsg->wParam, pMsg->lParam, lRes) ) 
-						return true;
-
-					return false;
+					pT->PreMessageHandler(pMsg->message, pMsg->wParam, pMsg->lParam, lRes);
+					// 					if( pT->PreMessageHandler(pMsg->message, pMsg->wParam, pMsg->lParam, lRes) ) 
+					// 						return true;
+					// 
+					// 					return false;  
 				}
 				hTempParent = GetParent(hTempParent);
 			}
+
 		}
 	}
 	else
 	{
 		for( int i = 0; i < m_aPreMessages.GetSize(); i++ ) 
 		{
+			int size = m_aPreMessages.GetSize();
 			CPaintManagerUI* pT = static_cast<CPaintManagerUI*>(m_aPreMessages[i]);
 			if(pMsg->hwnd == pT->GetPaintWindow())
 			{
@@ -2237,7 +2242,7 @@ bool CPaintManagerUI::TranslateMessage(const LPMSG pMsg)
 			}
 		}
 	}
-    return false;
+	return false;
 }
 
 bool CPaintManagerUI::AddTranslateAccelerator(ITranslateAccelerator *pTranslateAccelerator)
