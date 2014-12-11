@@ -7,6 +7,7 @@ CWindowWnd::CWindowWnd(void)
 	, m_bIsAutoDelete(false)
 	, m_OldWndProc(::DefWindowProc)
 	, m_hWnd(NULL)
+	, m_hPaintDC(NULL)
 	, m_bIsDoModal(false)
 {
 }
@@ -18,15 +19,16 @@ CWindowWnd::~CWindowWnd(void)
 
 HWND CWindowWnd::Create(HWND hwndParent, LPCTSTR lpszWindowName, DWORD dwStyle, DWORD dwExStyle, int x /*= CW_USEDEFAULT*/, int y /*= CW_USEDEFAULT*/, int cx /*= CW_USEDEFAULT*/, int cy /*= CW_USEDEFAULT*/)
 {
-	if ( RegisterWindowClass())
-	{
-		m_hWnd = ::CreateWindowEx(dwExStyle, GetWindowClassName(), lpszWindowName, dwStyle, x, y, cx, cy,
-			hwndParent, NULL, CUIEngine::GetInstance()->GetInstanceHandler(), this);
-		DWORD dwLastError = ::GetLastError();
-		ASSERT(m_hWnd!=NULL);
-		return m_hWnd;
-	}
-	return NULL;
+	if ( GetSuperClassName() != NULL && !RegisterSuperclass() )
+		return NULL;
+	if ( GetSuperClassName() == NULL && !RegisterWindowClass())
+		return NULL;
+
+	m_hWnd = ::CreateWindowEx(dwExStyle, GetWindowClassName(), lpszWindowName, dwStyle, x, y, cx, cy,
+		hwndParent, NULL, CUIEngine::GetInstance()->GetInstanceHandler(), this);
+	DWORD dwLastError = ::GetLastError();
+	ASSERT(m_hWnd!=NULL);
+	return m_hWnd;
 }
 
 bool CWindowWnd::RegisterWindowClass()
@@ -77,6 +79,7 @@ LRESULT CALLBACK CWindowWnd::__WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 		LPCREATESTRUCT lpcs = reinterpret_cast<LPCREATESTRUCT>(lParam);
 		pThis = static_cast<CWindowWnd*>(lpcs->lpCreateParams);
 		pThis->m_hWnd = hWnd;
+		pThis->m_hPaintDC = ::GetDC(hWnd);
 		::SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LPARAM>(pThis));
 	} 
 	else
@@ -86,6 +89,7 @@ LRESULT CALLBACK CWindowWnd::__WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 		if( uMsg == WM_NCDESTROY && pThis != NULL )
 		{
 			// 如果当前消息是销毁窗口
+			::ReleaseDC(hWnd,pThis->m_hPaintDC);
 			LRESULT lRes = ::CallWindowProc(pThis->m_OldWndProc, hWnd, uMsg, wParam, lParam);
 			::SetWindowLongPtr(pThis->m_hWnd, GWLP_USERDATA, 0L);
 
@@ -329,6 +333,78 @@ LRESULT CWindowWnd::SendMessage(UINT uMsg, WPARAM wParam /*= 0*/, LPARAM lParam 
 LRESULT CWindowWnd::PostMessage(UINT uMsg, WPARAM wParam /*= 0*/, LPARAM lParam /*= 0L*/)
 {
 	return ::PostMessage(m_hWnd,uMsg,wParam,lParam);
+}
+
+LPCTSTR CWindowWnd::GetSuperClassName() const
+{
+	return NULL;
+}
+
+bool CWindowWnd::RegisterSuperclass()
+{
+	// Get the class information from an existing
+	// window so we can subclass it later on...
+	WNDCLASSEX wc = { 0 };
+	wc.cbSize = sizeof(WNDCLASSEX);
+	if( !::GetClassInfoEx(NULL, GetSuperClassName(), &wc) )
+	{
+		if( !::GetClassInfoEx(CUIEngine::GetInstance()->GetInstanceHandler(), GetSuperClassName(), &wc) )
+		{
+			ASSERT(!"Unable to locate window class");
+			return NULL;
+		}
+	}
+	m_OldWndProc = wc.lpfnWndProc;
+	wc.lpfnWndProc = CWindowWnd::__ControlProc;
+	wc.hInstance = CUIEngine::GetInstance()->GetInstanceHandler();
+	wc.lpszClassName = GetWindowClassName();
+	ATOM ret = ::RegisterClassEx(&wc);
+	ASSERT(ret!=NULL || ::GetLastError()==ERROR_CLASS_ALREADY_EXISTS);
+	return ret != NULL || ::GetLastError() == ERROR_CLASS_ALREADY_EXISTS;
+}
+
+LRESULT CALLBACK CWindowWnd::__ControlProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	CWindowWnd* pThis = NULL;
+	if( uMsg == WM_NCCREATE )
+	{
+		LPCREATESTRUCT lpcs = reinterpret_cast<LPCREATESTRUCT>(lParam);
+		pThis = static_cast<CWindowWnd*>(lpcs->lpCreateParams);
+		::SetProp(hWnd, _T("WndX"), (HANDLE) pThis);
+		pThis->m_hWnd = hWnd;
+	} 
+	else
+	{
+		pThis = reinterpret_cast<CWindowWnd*>(::GetProp(hWnd, _T("WndX")));
+		if( uMsg == WM_NCDESTROY && pThis != NULL )
+		{
+			LRESULT lRes = ::CallWindowProc(pThis->m_OldWndProc, hWnd, uMsg, wParam, lParam);
+			if( pThis->m_bSubclassed )
+				pThis->Unsubclass();
+			::SetProp(hWnd, _T("WndX"), NULL);
+			pThis->m_hWnd = NULL;
+			pThis->OnFinalMessage(hWnd);
+			return lRes;
+		}
+	}
+	if( pThis != NULL )
+	{
+		return pThis->WindowProc(uMsg, wParam, lParam);
+	} 
+	else
+	{
+		return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
+	}
+}
+
+HDC CWindowWnd::GetPaintDC() const
+{
+	return m_hPaintDC;
+}
+
+CWindowWnd::operator HDC() const
+{
+	return m_hPaintDC;
 }
 
 

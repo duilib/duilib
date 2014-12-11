@@ -3,7 +3,7 @@
 /*/////////////////////////////////////////////////////////////
 //
 // 文件名称	:	WindowUI.h
-// 创建人	: 	daviyang35@QQ.com
+// 创建人	: 	daviyang35@gmail.com
 // 创建时间	:	2014-11-08 16:11:01
 // 说明		:	DirectUI Window
 /////////////////////////////////////////////////////////////*/
@@ -70,11 +70,16 @@ public:
 	void SendNotify(TNotifyUI *pMsg, bool bAsync = false);
 	void SendNotify(CControlUI* pControl, UINOTIFY dwType, WPARAM wParam = 0, LPARAM lParam = 0, bool bAsync = true);
 
+	// 窗口默认字体
+	void SetDefaultFont(LPCTSTR lpszFaceName,int nSize = 12, bool bBold = false, bool bUnderline= false, bool bItalic= false ,bool bStrikeout= false);
+	FontObject* GetDefaultFont(void);
+
 	// 子控件管理相关
 	bool InitControls(CControlUI* pControl, CControlUI* pParent = NULL);
 	void AddDelayedCleanup(CControlUI* pControl);
 	void ReapObjects(CControlUI* pControl);
 
+	// PostPaint不明
 	int GetPostPaintCount() const;
 	bool AddPostPaint(CControlUI* pControl);
 	bool RemovePostPaint(CControlUI* pControl);
@@ -129,9 +134,9 @@ private:
 	bool m_bFirstLayout;
 	bool m_bUpdateNeeded;
 	bool m_bFocusNeeded;
-	HDC m_hPaintDC;
 	CMemDC m_OffscreenDC;
 	IUIRender *m_pRenderEngine;
+	FontObject *m_pDefaultFont;
 
 	// Tooltip
 	HWND m_hWndTooltip;
@@ -151,6 +156,7 @@ private:
 	UINT m_uTimerID;
 
 	CStdStringPtrMap m_mapNameHash;
+	CStdStringPtrMap m_mapOptionGroup;
 
 #ifdef _DEBUG
 	void TestUICrossThread();

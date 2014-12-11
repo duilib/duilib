@@ -24,6 +24,9 @@ public:
 	virtual LPCTSTR GetClass() const;
 	virtual LPVOID GetInterface(LPCTSTR lpszClass);
 
+	virtual void Init();
+	virtual void DoInit();
+
 	// 基础属性
 	virtual bool IsVisible() const;
 	virtual void SetVisible(bool bVisible = true);
@@ -56,8 +59,8 @@ public:
 	// 文本相关
 	virtual LPCTSTR GetText() const;
 	virtual void SetText(LPCTSTR pstrText);
-	virtual void SetFontIndex(LPCTSTR lpszFontIndex);
-	virtual LPCTSTR GetFontIndex();
+	virtual void SetFontName(LPCTSTR lpszFontIndex);
+	virtual LPCTSTR GetFontName();
 	virtual void SetTextStyle(LPCTSTR lpszStyle);
 	virtual LPCTSTR GetTextStyle();
 	virtual UINT GetTextStyleByValue();
@@ -101,6 +104,10 @@ public:
 	// tag
 	virtual void SetTag(LPVOID pTag);
 	virtual LPVOID GetTag() const;
+
+	// 快捷键
+	virtual TCHAR GetShortcut() const;
+	virtual void SetShortcut(TCHAR ch);
 
 	// 菜单
 	virtual bool IsContextMenuUsed() const;
@@ -160,8 +167,9 @@ protected:
 	bool m_bIsUpdateNeeded;
 	bool m_bIsMenuUsed;
 	CEventSource m_OnEvent;
+	CEventSource m_OnInit;
 
-private:
+protected:
 	//文本相关
 	CDuiString m_sText;
 	CDuiString m_sFontIndex;
@@ -172,6 +180,9 @@ private:
 	// tooltip
 	CDuiString m_strToolTip;
 	int m_nTooltipWidth;
+
+	// 快捷键
+	TCHAR m_chShortcut;
 
 	// 属性
 	DWORD m_dwBorderColor;

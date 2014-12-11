@@ -16,7 +16,6 @@ CWindowUI::CWindowUI(void)
 	, m_pEventHover(NULL)
 	, m_hWndTooltip(NULL)
 	, m_hInstance(NULL)
-	, m_hPaintDC(NULL)
 	, m_uTimerID(0x1000)
 	, m_nAlpha(255)
 	, m_bMouseTracking(false)
@@ -27,6 +26,7 @@ CWindowUI::CWindowUI(void)
 	, m_bUpdateNeeded(false)
 	, m_bFocusNeeded(false)
 	, m_hUpdateRectPen(NULL)
+	, m_pDefaultFont(NULL)
 {
 	m_ptLastMousePos.x = -1;
 	m_ptLastMousePos.y = -1;
@@ -376,7 +376,6 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 			::SetWindowPos(m_hWnd, NULL, rcClient.left, rcClient.top, rcClient.right - rcClient.left, \
 				rcClient.bottom - rcClient.top, SWP_FRAMECHANGED);
 
-			m_hPaintDC = ::GetDC(m_hWnd);
 			CUIEngine *pUIEngine = CUIEngine::GetInstance();
 			pUIEngine->SkinWindow(this);
 			m_hInstance = pUIEngine->GetInstanceHandler();
@@ -408,12 +407,12 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 				::MessageBox(m_hWnd,_T("DirectUI´°¿Ú¹¹½¨Ê§°Ü"),_T("UIEngine"),MB_OK | MB_ICONERROR);
 				PostMessage(WM_DESTROY);
 			}
+
+			this->InitControls(m_pRootControl);
 		}
 		break;
 	case WM_DESTROY:
 		{
-			::ReleaseDC(m_hWnd,m_hPaintDC);
-			m_hPaintDC = NULL;
 			CUIEngine::GetInstance()->UnSkinWindow(this);
 			if ( m_pRenderEngine != NULL)
 			{
@@ -1405,6 +1404,52 @@ bool CWindowUI::PreMessageHandler(const LPMSG pMsg, LRESULT& lRes)
 			return true;
 		}
 	}
+	switch( pMsg->message )
+	{
+	case WM_KEYDOWN:
+		{
+			// Tabbing between controls
+			if( pMsg->wParam == VK_TAB )
+			{
+				if( m_pFocus && m_pFocus->IsVisible() && m_pFocus->IsEnabled() && _tcsstr(m_pFocus->GetClass(), _T("RichEditUI")) != NULL )
+				{
+					if( static_cast<CRichEditUI*>(m_pFocus)->IsWantTab() )
+						return false;
+				}
+				SetNextTabControl(::GetKeyState(VK_SHIFT) >= 0);
+				return true;
+			}
+		}
+		break;
+	case WM_SYSCHAR:
+		{
+			// Handle ALT-shortcut key-combinations
+			FindShortCut fs = {0};
+			fs.ch = toupper((int)pMsg->wParam);
+			CControlUI* pControl = m_pRootControl->FindControl(__FindControlFromShortcut, &fs, UIFIND_ENABLED | UIFIND_ME_FIRST | UIFIND_TOP_FIRST);
+			if( pControl != NULL )
+			{
+				pControl->SetFocus();
+				pControl->Activate();
+				return true;
+			}
+		}
+		break;
+	case WM_SYSKEYDOWN:
+		{
+			if( m_pFocus != NULL )
+			{
+				TEventUI event;
+				event.dwType = UIEVENT_SYSKEY;
+				event.chKey = (TCHAR)pMsg->wParam;
+				event.ptMouse = m_ptLastMousePos;
+				event.wKeyState = MapKeyState();
+				event.dwTimestamp = ::GetTickCount();
+				m_pFocus->EventHandler(event);
+			}
+		}
+		break;
+	}
 	return false;
 }
 
@@ -1828,6 +1873,42 @@ bool CWindowUI::SetPostPaintIndex(CControlUI* pControl, int iIndex)
 {
 	RemovePostPaint(pControl);
 	return m_arrayPostPaintControls.InsertAt(iIndex, pControl);
+}
+
+CControlUI* CALLBACK CWindowUI::__FindControlFromShortcut(CControlUI* pThis, LPVOID pData)
+{
+	if( !pThis->IsVisible() )
+		return NULL; 
+	FindShortCut* pFS = static_cast<FindShortCut*>(pData);
+	if( pFS->ch == toupper(pThis->GetShortcut()) )
+		pFS->bPickNext = true;
+	if( _tcsstr(pThis->GetClass(), _T("LabelUI")) != NULL )
+		return NULL;   // Labels never get focus!
+	return pFS->bPickNext ? pThis : NULL;
+}
+
+void CWindowUI::SetDefaultFont(LPCTSTR lpszFaceName,int nSize /*= 12*/, bool bBold /*= false*/, bool bUnderline/*= false*/, bool bItalic/*= false */,bool bStrikeout/*= false*/)
+{
+	if ( m_pDefaultFont != NULL )
+	{
+		delete m_pDefaultFont;
+		m_pDefaultFont = new FontObject;
+	}
+
+	m_pDefaultFont->m_FaceName = lpszFaceName;
+	m_pDefaultFont->m_nSize = nSize;
+	m_pDefaultFont->m_bBold = bBold;
+	m_pDefaultFont->m_bUnderline = bUnderline;
+	m_pDefaultFont->m_bItalic = bItalic;
+	m_pDefaultFont->m_bStrikeout = bStrikeout;
+}
+
+FontObject* CWindowUI::GetDefaultFont(void)
+{
+	if ( m_pDefaultFont != NULL)
+		return m_pDefaultFont;
+
+	return CUIEngine::GetInstance()->GetDefaultFont();
 }
 
 #endif

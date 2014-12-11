@@ -27,6 +27,7 @@ CControlUI::CControlUI(void)
 	, m_dwBorderColor(0)
 	, m_dwFocusBorderColor(0)
 	, m_nBorderSize(0)
+	, m_chShortcut('\0')
 {
 	m_cxyBorderRound.cx = m_cxyBorderRound.cy = 0;
 	m_cxyMax.cx = m_cxyMax.cy = 7680*4;
@@ -144,7 +145,7 @@ void CControlUI::SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue)
 	else if( _tcscmp(lpszName, _T("text")) == 0 ) 
 		SetText(lpszValue);
 	else if (_tcscmp(lpszName, _T("fontindex")) == 0)
-		SetFontIndex(lpszValue);
+		SetFontName(lpszValue);
 	else if (_tcscmp(lpszName, _T("textcolor")) == 0)
 		SetTextColor(CDuiCodeOperation::StringToColor(lpszValue));
 	else if (_tcscmp(lpszName, _T("textstyle")) == 0)
@@ -870,7 +871,7 @@ INotifyUI* CControlUI::GetNotifyFilter(void) const
 	return m_pNotifyFilter;
 }
 
-void CControlUI::SetFontIndex(LPCTSTR lpszFontIndex)
+void CControlUI::SetFontName(LPCTSTR lpszFontIndex)
 {
 	ASSERT(lpszFontIndex);
 	if (m_sFontIndex == lpszFontIndex)
@@ -881,7 +882,7 @@ void CControlUI::SetFontIndex(LPCTSTR lpszFontIndex)
 	Invalidate();
 }
 
-LPCTSTR CControlUI::GetFontIndex()
+LPCTSTR CControlUI::GetFontName()
 {
 	return m_sFontIndex.c_str();
 }
@@ -1053,6 +1054,28 @@ SIZE CControlUI::EstimateSize(SIZE szAvailable)
 }
 
 void CControlUI::PostRender(IUIRender* pRender, LPCRECT pRcPaint)
+{
+
+}
+
+TCHAR CControlUI::GetShortcut() const
+{
+	return m_chShortcut;
+}
+
+void CControlUI::SetShortcut(TCHAR ch)
+{
+	m_chShortcut = ch;
+}
+
+void CControlUI::Init()
+{
+	 DoInit();
+	 if( m_OnInit )
+		 m_OnInit(this);
+}
+
+void CControlUI::DoInit()
 {
 
 }

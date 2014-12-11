@@ -9,6 +9,7 @@ CUIEngine::CUIEngine(void)
 	, m_bInitedCOM(false)
 	, m_bInitedOLE(false)
 	, m_pResourceManager(NULL)
+	, m_pDefaultFontObj(NULL)
 {
 }
 
@@ -49,6 +50,8 @@ void CUIEngine::Init()
 	this->InitCOM();
 	this->InitOLE();
 
+	m_pDefaultFontObj = new FontObject;
+
 	// 其他单例启动，销毁Engine时删除，确保生命周期可控
 	m_pResourceManager = CResourceManager::GetInstance();
 	CUIPaint::GetInstance();
@@ -65,10 +68,15 @@ void CUIEngine::Init()
 	UI_REGISTER_DYNCREATE(_T("TabLayout"),CTabLayoutUI,false);
 
 	UI_REGISTER_DYNCREATE(_T("Label"),CLabelUI,false);
+	UI_REGISTER_DYNCREATE(_T("Edit"),CEditUI,true);
+	UI_REGISTER_DYNCREATE(_T("RichEdit"),CRichEditUI,true);
+
 }
 
 void CUIEngine::Uninit()
 {
+	delete m_pDefaultFontObj;
+	m_pDefaultFontObj = NULL;
 	CUIPaint::ReleaseInstance();
 	m_pResourceManager = NULL;
 	CResourceManager::ReleaseInstance();
@@ -114,25 +122,61 @@ int CUIEngine::MessageLoop()
 
 bool CUIEngine::TranslateMessage(const LPMSG pMsg)
 {
+	if(!::IsWindow(pMsg->hwnd))
+	{
+		return false;
+	}
+
 	// pMsg->hwnd 如果在 m_arrayDirectUI 中
 	// 说明这个窗口是自绘窗口，分发消息处理
 	int nCount = m_arrayDirectUI.GetSize();
-	if ( !::IsWindow(pMsg->hwnd) )
+	LRESULT lRes = S_OK;
+
+	UINT uStyle = GetWindowStyle(pMsg->hwnd);
+	bool bIsChildWindow = (uStyle & WS_CHILD ) != 0;
+	if ( bIsChildWindow )
+	{
+		HWND hWndParent = ::GetParent(pMsg->hwnd);
+
+		for( int i = m_arrayDirectUI.GetSize() -1 ; i >=0 ; --i ) 
+		{
+			CWindowUI* pT = static_cast<CWindowUI*>(m_arrayDirectUI[i]);        
+			HWND hTempParent = hWndParent;
+			while(hTempParent)
+			{
+				if(pMsg->hwnd == pT->GetHWND() || hTempParent == pT->GetHWND())
+				{
+					if (pT->TranslateAccelerator(pMsg))
+						return true;
+					// by Redrain WebBrowser Tab
+					pT->PreMessageHandler(pMsg, lRes);
+				}
+				hTempParent = GetParent(hTempParent);
+			}
+		}
 		return false;
+	}
 
 	// 将消息交给窗口实例，使窗口实例有机会过滤消息或处理加速键
-	LRESULT lRes = S_OK;
-	for ( int i=0; i<nCount;++i )
+
+	for(int i = 0; i < nCount; ++i)
 	{
-		CWindowUI* pWindow = static_cast<CWindowUI*>(m_arrayDirectUI.GetAt(i));
-		if ( pMsg->hwnd != pWindow->GetHWND())
+		CWindowUI *pWindow = static_cast<CWindowUI *>(m_arrayDirectUI.GetAt(i));
+
+		if(pMsg->hwnd != pWindow->GetHWND())
+		{
 			continue;
+		}
 
-		if ( pWindow->TranslateAccelerator(pMsg))
+		if(pWindow->TranslateAccelerator(pMsg))
+		{
 			return true;
+		}
 
-		if ( pWindow->PreMessageHandler(pMsg,lRes))
+		if(pWindow->PreMessageHandler(pMsg, lRes))
+		{
 			return true;
+		}
 	}
 
 	return false;
@@ -292,5 +336,37 @@ bool CUIEngine::IsActiveControl(LPCTSTR lpszClass)
 		++iter;
 	}
 	return false;
+}
+
+void CUIEngine::SetDefaultFont(LPCTSTR lpszFaceName,int nSize /*= 12*/, bool bBold /*= false*/, bool bUnderline/*= false*/, bool bItalic/*= false */, bool bStrikeout/*= false */ )
+{
+	if ( m_pDefaultFontObj != NULL )
+	{
+		delete m_pDefaultFontObj;
+		m_pDefaultFontObj = new FontObject;
+	}
+
+	m_pDefaultFontObj->m_FaceName = lpszFaceName;
+	m_pDefaultFontObj->m_nSize = nSize;
+	m_pDefaultFontObj->m_bBold = bBold;
+	m_pDefaultFontObj->m_bUnderline = bUnderline;
+	m_pDefaultFontObj->m_bItalic = bItalic;
+	m_pDefaultFontObj->m_bStrikeout = bStrikeout;
+}
+
+FontObject* CUIEngine::GetDefaultFont(void)
+{
+	return m_pDefaultFontObj;
+}
+
+HFONT CUIEngine::GetFont(LPCTSTR lpszFontName)
+{
+	FontObject *pFontObject = m_pResourceManager->GetFont(lpszFontName);
+	return pFontObject->GetFont();
+}
+
+FontObject * CUIEngine::GetFontObject(LPCTSTR lpszFontName)
+{
+	return m_pResourceManager->GetFont(lpszFontName);
 }
 

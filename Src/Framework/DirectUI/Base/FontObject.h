@@ -10,10 +10,12 @@
 /////////////////////////////////////////////////////////////*/
 #pragma once
 
-typedef struct DIRECTUI_API _stFontObject
+class DIRECTUI_API FontObject
 {
-	_stFontObject(void);
-
+public:
+	FontObject(void);
+	~FontObject();
+	
 	CDuiString m_IndexName;	
 	CDuiString m_FaceName;	
 	int m_nSize;	
@@ -24,8 +26,11 @@ typedef struct DIRECTUI_API _stFontObject
 	bool m_bStrikeout;
 
 	HFONT GetFont();
+	TEXTMETRIC& GetTextMetric();
+
 private:
 	HFONT m_hFont;
-}FontObject;
+	TEXTMETRIC m_TextMetric;
+};
 
 #endif // FontObject_h__

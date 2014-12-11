@@ -2,7 +2,7 @@
 #include "FontObject.h"
 
 
-_stFontObject::_stFontObject()
+FontObject::FontObject()
 	:m_nSize(0),
 	m_bBold(false),
 	m_bItalic(false),
@@ -10,10 +10,12 @@ _stFontObject::_stFontObject()
 	m_bStrikeout(false),
 	m_IndexName(L""),
 	m_FaceName(L""),
-	m_hFont(nullptr)
-{}
+	m_hFont(NULL)
+{
+	::ZeroMemory(&m_TextMetric,sizeof(TEXTMETRIC));
+}
 
-HFONT _stFontObject::GetFont()
+HFONT FontObject::GetFont()
 {
 	if (m_FaceName.empty())
 	{
@@ -52,4 +54,17 @@ HFONT _stFontObject::GetFont()
 
 	m_hFont = ::CreateFontIndirect(&lf);
 	return m_hFont;
+}
+
+FontObject::~FontObject()
+{
+	if ( m_hFont != NULL)
+	{
+		::DeleteObject(m_hFont);
+	}
+}
+
+TEXTMETRIC& FontObject::GetTextMetric()
+{
+	return m_TextMetric;
 }

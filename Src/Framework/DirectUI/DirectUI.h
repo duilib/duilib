@@ -79,4 +79,8 @@
 #include "Control/LabelUI.h"
 #include "Control/ButtonUI.h"
 
+#include "Control/EditUI.h"
+#include "Control/RichEditUI.h"
+
+
 #endif // DirectUI_h__

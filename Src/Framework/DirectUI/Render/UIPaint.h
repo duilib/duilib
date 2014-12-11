@@ -6,7 +6,7 @@
 // 创建人		: 	daviyang35@gmail.com
 // 创建时间	:	2014-11-19 14:58:33
 // 说明			:	控件绘图辅助
-
+作用是分离不同种类基础控件的绘制过程，复用绘制逻辑代码
 /////////////////////////////////////////////////////////////*/
 #pragma once
 
@@ -17,6 +17,12 @@ public:
 	static void ReleaseInstance();
 
 public:
+	void DrawBackColor(IUIRender *pRender,DWORD dwBackColor,DWORD dwBackColor2,DWORD dwBackColor3,LPCRECT pPaint,LPCRECT pOverlap,LPCRECT pControl);
+	void DrawBackImage();
+	void DrawForeImage();
+	void DrawTextString();
+	void DrawBorder();
+
 	void DrawControl(IUIRender *pRender,CControlUI* pControl,LPCRECT rcUpdate);
 	void DrawLabel(IUIRender *pRender,CControlUI *pControl);
 	void DrawButton(IUIRender *pRender,CButtonUI *pControl,LPCRECT rcUpdate);
@@ -31,11 +37,6 @@ public:
 	//void DrawControlStateImage();
 	//void DrawControlText();
 	//void DrawControlBorder();
-
-	void DrawBackColor(IUIRender *pRender,DWORD dwBackColor,DWORD dwBackColor2,DWORD dwBackColor3,LPCRECT pPaint,LPCRECT pOverlap,LPCRECT pControl);
-	void DrawBackImage();
-	void DrawText();
-	void DrawBorder();
 
 private:
 	CUIPaint(void);

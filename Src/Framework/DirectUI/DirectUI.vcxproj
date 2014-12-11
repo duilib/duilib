@@ -104,7 +104,9 @@
     <ClInclude Include="Base\WindowWnd.h" />
     <ClInclude Include="Control\ButtonUI.h" />
     <ClInclude Include="Control\ControlUI.h" />
+    <ClInclude Include="Control\EditUI.h" />
     <ClInclude Include="Control\LabelUI.h" />
+    <ClInclude Include="Control\RichEditUI.h" />
     <ClInclude Include="Control\ScrollBarUI.h" />
     <ClInclude Include="Define\IUIRender.h" />
     <ClInclude Include="Define\UIDefine.h" />
@@ -139,7 +141,9 @@
     <ClCompile Include="Base\WindowWnd.cpp" />
     <ClCompile Include="Control\ButtonUI.cpp" />
     <ClCompile Include="Control\ControlUI.cpp" />
+    <ClCompile Include="Control\EditUI.cpp" />
     <ClCompile Include="Control\LabelUI.cpp" />
+    <ClCompile Include="Control\RichEditUI.cpp" />
     <ClCompile Include="Control\ScrollBarUI.cpp" />
     <ClCompile Include="Define\IUIRender.cpp" />
     <ClCompile Include="dllmain.cpp">

@@ -24,6 +24,17 @@ public:
 	virtual void Render(IUIRender* pRender, LPCRECT pRcPaint);
 	virtual void SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue);
 
+	RECT GetTextPadding() const;
+	void SetTextPadding(LPCRECT lpRect);
+	bool IsShowHtml();
+	void SetShowHtml(bool bShowHtml = true);
+
+	SIZE EstimateSize(SIZE szAvailable);
+
+protected:
+	CDuiRect m_rcTextPadding;
+	bool m_bShowHtml;
+
 };
 
 #endif // LabelUI_h__

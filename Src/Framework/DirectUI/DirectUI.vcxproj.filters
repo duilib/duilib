@@ -130,6 +130,12 @@
     <ClInclude Include="Control\LabelUI.h">
       <Filter>Control</Filter>
     </ClInclude>
+    <ClInclude Include="Control\EditUI.h">
+      <Filter>Control</Filter>
+    </ClInclude>
+    <ClInclude Include="Control\RichEditUI.h">
+      <Filter>Control</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -220,6 +226,12 @@
       <Filter>Layout</Filter>
     </ClCompile>
     <ClCompile Include="Control\LabelUI.cpp">
+      <Filter>Control</Filter>
+    </ClCompile>
+    <ClCompile Include="Control\EditUI.cpp">
+      <Filter>Control</Filter>
+    </ClCompile>
+    <ClCompile Include="Control\RichEditUI.cpp">
       <Filter>Control</Filter>
     </ClCompile>
   </ItemGroup>

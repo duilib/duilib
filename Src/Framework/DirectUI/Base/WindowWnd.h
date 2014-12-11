@@ -29,6 +29,9 @@ public:
 	HWND GetHWND() const;
 	operator HWND() const;
 
+	HDC GetPaintDC() const;
+	operator HDC() const;
+
 	virtual void ShowWindow(int nCmdShow = SW_SHOW);
 	virtual void CloseWindow(UINT nRet = IDOK);
 
@@ -44,17 +47,23 @@ public:
 	void ResizeClient(int cx = -1, int cy = -1);
 
 protected:
-	bool RegisterWindowClass();
+	bool RegisterWindowClass();		// 用于Window
+	bool RegisterSuperclass();			// 用于系统标准控件
 
-	virtual LPCTSTR GetWindowClassName() const;
+	virtual LPCTSTR GetWindowClassName() const;		// 用于Window
+	virtual LPCTSTR GetSuperClassName() const;		// 用于系统控件
 	virtual UINT GetClassStyle() const;
 	virtual LRESULT WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	virtual void OnFinalMessage(HWND hWnd);
 
+	// 注册的窗口消息循环
 	static LRESULT CALLBACK __WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	// 注册的控件消息循环
+	static LRESULT CALLBACK __ControlProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 protected:
 	HWND m_hWnd;
+	HDC m_hPaintDC;
 	WNDPROC m_OldWndProc;
 	bool m_bSubclassed;
 	bool m_bIsAutoDelete;

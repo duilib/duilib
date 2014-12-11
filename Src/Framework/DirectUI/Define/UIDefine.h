@@ -61,6 +61,28 @@
 #ifndef GetWindowOwner
 #define     GetWindowOwner(hwnd)    GetWindow(hwnd, GW_OWNER)
 #endif // !GetWindowOwner
+#ifndef GetWindowInstance
+#define     GetWindowInstance(hwnd) ((HMODULE)GetWindowLongPtr(hwnd, GWLP_HINSTANCE))
+#endif // !GetWindowInstance
+#ifndef GetWindowStyle
+#define     GetWindowStyle(hwnd)    ((DWORD)GetWindowLong(hwnd, GWL_STYLE))
+#endif // !GetWindowStyle
+#ifndef GetWindowExStyle
+#define     GetWindowExStyle(hwnd)  ((DWORD)GetWindowLong(hwnd, GWL_EXSTYLE))
+#endif // !GetWindowExStyle
+
+#define UI_WNDSTYLE_CONTAINER  (0)
+#define UI_WNDSTYLE_FRAME      (WS_OVERLAPPEDWINDOW)
+#define UI_WNDSTYLE_CHILD      (WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN)
+#define UI_WNDSTYLE_DIALOG     (WS_POPUPWINDOW | WS_CAPTION | WS_DLGFRAME | WS_CLIPSIBLINGS | WS_CLIPCHILDREN)
+
+#define UI_WNDSTYLE_EX_FRAME   (WS_EX_WINDOWEDGE)
+#define UI_WNDSTYLE_EX_DIALOG  (WS_EX_TOOLWINDOW | WS_EX_DLGMODALFRAME)
+
+#define UI_CLASSSTYLE_CONTAINER  (0)
+#define UI_CLASSSTYLE_FRAME      (CS_VREDRAW | CS_HREDRAW)
+#define UI_CLASSSTYLE_CHILD      (CS_VREDRAW | CS_HREDRAW | CS_DBLCLKS | CS_SAVEBITS)
+#define UI_CLASSSTYLE_DIALOG     (CS_VREDRAW | CS_HREDRAW | CS_DBLCLKS | CS_SAVEBITS)
 
 //////////////////////////////////////////////////////////////////////////
 // Ã¶¾Ù
@@ -86,6 +108,13 @@ typedef enum _enUINOTIFY
 	UINOTIFY_TIMER,//timer
 	UINOTIFY_CONTEXTMENU,
 	UINOTIFY_DROPFILES,//dropfiles
+
+	// Edit
+	UINOTIFY_EDIT_CHANGE,
+	UINOTIFY_EDIT_RETURN,
+
+	// RichEdit
+	UINOTIFY_RICHEDIT_RETURN,
 
 	// TabLayout
 	UINOTIFY_TAB_SELECTED,
@@ -166,7 +195,7 @@ class CButtonUI;
 class IUIRender;
 class CObjectUI;
 class ImageObject;
-typedef struct _stFontObject FontObject;
+class FontObject;
 class TemplateObject;
 class CScrollBarUI;
 class CButtonUI;

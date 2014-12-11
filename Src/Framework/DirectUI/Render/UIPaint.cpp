@@ -87,7 +87,7 @@ void CUIPaint::DrawButton(IUIRender *pRender,CButtonUI *pControl,LPCRECT rcUpdat
 		return;
 	}
 	
-	FontObject* pFontObject = CResourceManager::GetInstance()->GetFont(pControl->GetFontIndex());
+	FontObject* pFontObject = CResourceManager::GetInstance()->GetFont(pControl->GetFontName());
 	if (pFontObject)
 	{
 		pRender->DrawText(pFontObject, rcUpdate, pControl->GetText(), pControl->GetTextColor(), pControl->GetTextStyleByValue());

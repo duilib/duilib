@@ -56,3 +56,40 @@ void CLabelUI::Render(IUIRender* pRender, LPCRECT pRcPaint)
 void CLabelUI::SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue)
 {
 }
+
+RECT CLabelUI::GetTextPadding() const
+{
+	return m_rcTextPadding;
+}
+
+void CLabelUI::SetTextPadding(LPCRECT lpRect)
+{
+	m_rcTextPadding = *lpRect;
+}
+
+bool CLabelUI::IsShowHtml()
+{
+	return m_bShowHtml;
+}
+
+void CLabelUI::SetShowHtml(bool bShowHtml /*= true*/)
+{
+	if(m_bShowHtml == bShowHtml)
+	{
+		return;
+	}
+
+	m_bShowHtml = bShowHtml;
+	Invalidate();
+}
+
+SIZE CLabelUI::EstimateSize(SIZE szAvailable)
+{
+	if(m_cxyFixed.cy == 0)
+	{
+		FontObject* pFont = CResourceManager::GetInstance()->GetFont(this->GetFontName());
+		return CDuiSize(m_cxyFixed.cx, pFont->GetTextMetric().tmHeight + 4);
+	}
+
+	return CControlUI::EstimateSize(szAvailable);
+}
