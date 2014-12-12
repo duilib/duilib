@@ -9,7 +9,6 @@ CUIEngine::CUIEngine(void)
 	, m_bInitedCOM(false)
 	, m_bInitedOLE(false)
 	, m_pResourceManager(NULL)
-	, m_pDefaultFontObj(NULL)
 {
 }
 
@@ -50,10 +49,9 @@ void CUIEngine::Init()
 	this->InitCOM();
 	this->InitOLE();
 
-	m_pDefaultFontObj = new FontObject;
-
 	// 其他单例启动，销毁Engine时删除，确保生命周期可控
 	m_pResourceManager = CResourceManager::GetInstance();
+	m_pResourceManager->SetDefaultFont(_T("微软雅黑"));
 	CUIPaint::GetInstance();
 
 	// 注册提供的基础控件
@@ -75,8 +73,6 @@ void CUIEngine::Init()
 
 void CUIEngine::Uninit()
 {
-	delete m_pDefaultFontObj;
-	m_pDefaultFontObj = NULL;
 	CUIPaint::ReleaseInstance();
 	m_pResourceManager = NULL;
 	CResourceManager::ReleaseInstance();
@@ -336,27 +332,6 @@ bool CUIEngine::IsActiveControl(LPCTSTR lpszClass)
 		++iter;
 	}
 	return false;
-}
-
-void CUIEngine::SetDefaultFont(LPCTSTR lpszFaceName,int nSize /*= 12*/, bool bBold /*= false*/, bool bUnderline/*= false*/, bool bItalic/*= false */, bool bStrikeout/*= false */ )
-{
-	if ( m_pDefaultFontObj != NULL )
-	{
-		delete m_pDefaultFontObj;
-		m_pDefaultFontObj = new FontObject;
-	}
-
-	m_pDefaultFontObj->m_FaceName = lpszFaceName;
-	m_pDefaultFontObj->m_nSize = nSize;
-	m_pDefaultFontObj->m_bBold = bBold;
-	m_pDefaultFontObj->m_bUnderline = bUnderline;
-	m_pDefaultFontObj->m_bItalic = bItalic;
-	m_pDefaultFontObj->m_bStrikeout = bStrikeout;
-}
-
-FontObject* CUIEngine::GetDefaultFont(void)
-{
-	return m_pDefaultFontObj;
 }
 
 HFONT CUIEngine::GetFont(LPCTSTR lpszFontName)

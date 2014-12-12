@@ -9,8 +9,10 @@ CResourceManager * CResourceManager::m_pInstace = NULL;
 CUIEngine* CResourceManager::m_pEngine = NULL;  
 
 CResourceManager::CResourceManager(void)
+	: m_pDefaultFontObj(NULL)
 {
 	m_DefaultLangID = GetUserDefaultUILanguage();
+	m_pDefaultFontObj = new FontObject;
 }
 
 
@@ -153,7 +155,7 @@ bool CResourceManager::GetAbsolutePath(CDuiString& strFullPath,LPCTSTR lpszRelat
 		{
 			strFullPath = lpszRelativePath;
 			CDuiStringOperation::replace(strFullPath,_T("#"),_T("\\"));
-			CDuiStringOperation::replace(strFullPath,strComponent.c_str(),(iter->second).c_str());
+			CDuiStringOperation::replace(strFullPath,strComponent.c_str(),(iter->second).c_str(),false);
 			return true;
 		}
 	}
@@ -676,9 +678,7 @@ FontObject*	CResourceManager::GetFont(LPCTSTR lpszFontName)
 	ASSERT(lpszFontName);
 	if (m_vecFontPool.size() == 0)
 	{
-		FontObject* pFont = new FontObject;
-		m_vecFontPool.push_back(pFont);
-		return pFont;
+		return m_pDefaultFontObj;
 	}
 
 	FontPoolVector::iterator it = m_vecFontPool.begin();
@@ -689,8 +689,8 @@ FontObject*	CResourceManager::GetFont(LPCTSTR lpszFontName)
 			return (*it);
 		}
 	}
-
-	return nullptr;
+	
+	return m_pDefaultFontObj;
 }
 
 void CResourceManager::RemoveAllFont()
@@ -722,4 +722,25 @@ LPCTSTR CResourceManager::GetResouceDir(LPCTSTR lpszModuleName /*= NULL*/)
 		return iter->second.c_str();
 
 	return NULL;
+}
+
+void CResourceManager::SetDefaultFont(LPCTSTR lpszFaceName,int nSize /*= 12*/, bool bBold /*= false*/, bool bUnderline/*= false*/, bool bItalic/*= false */,bool bStrikeout/*= false*/)
+{
+	if ( m_pDefaultFontObj != NULL )
+	{
+		delete m_pDefaultFontObj;
+		m_pDefaultFontObj = new FontObject;
+	}
+
+	m_pDefaultFontObj->m_FaceName = lpszFaceName;
+	m_pDefaultFontObj->m_nSize = nSize;
+	m_pDefaultFontObj->m_bBold = bBold;
+	m_pDefaultFontObj->m_bUnderline = bUnderline;
+	m_pDefaultFontObj->m_bItalic = bItalic;
+	m_pDefaultFontObj->m_bStrikeout = bStrikeout;
+}
+
+FontObject* CResourceManager::GetDefaultFont(void)
+{
+	return m_pDefaultFontObj;
 }

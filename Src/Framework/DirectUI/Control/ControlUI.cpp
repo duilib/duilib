@@ -43,10 +43,12 @@ CControlUI::~CControlUI(void)
 		delete m_pImageBackground;
 }
 
-void CControlUI::SetManager(CWindowUI* pManager, CControlUI* pParent)
+void CControlUI::SetManager(CWindowUI* pManager, CControlUI* pParent,bool bInit /*= false*/)
 {
 	m_pManager = pManager;
 	m_pParent = pParent;
+	 if( bInit && m_pParent )
+		 Init();
 }
 
 CWindowUI* CControlUI::GetManager()

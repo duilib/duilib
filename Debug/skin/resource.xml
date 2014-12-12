@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <Resouces component="main" >
 	<Layouts>
-		<File name="MainWnd" path="main#layout\skin.xml" />
+		<File name="MainWnd" path="main#layout\MainWnd.xml" />
 		<File name="Experience" path="main#layout\Experience.xml" />
 	</Layouts>
 	<Fonts>

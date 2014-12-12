@@ -91,6 +91,8 @@ public:
 	void KillTimer(CControlUI* pControl);
 	void RemoveAllTimers();
 
+	TEXTMETRIC GetTM(HFONT hFont);
+
 	// ÏûÏ¢¹ıÂË
 	void AddMessageFilter(IMessageFilterUI* pFilter);
 	void RemoveMessageFilter(IMessageFilterUI* pFilter);

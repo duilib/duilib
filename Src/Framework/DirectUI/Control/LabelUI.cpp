@@ -55,6 +55,7 @@ void CLabelUI::Render(IUIRender* pRender, LPCRECT pRcPaint)
 
 void CLabelUI::SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue)
 {
+	CControlUI::SetAttribute(lpszName,lpszValue);
 }
 
 RECT CLabelUI::GetTextPadding() const

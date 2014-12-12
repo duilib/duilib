@@ -28,7 +28,7 @@ public:
 	void DrawButton(IUIRender *pRender,CButtonUI *pControl,LPCRECT rcUpdate);
 	void DrawRadioButton();
 	void DrawCheckBox();
-	void DrawEdit();
+	void DrawEdit(IUIRender *pRender,CEditUI *pControl,LPCRECT rcUpdate);
 	void DrawProgress();
 	void DrawScrollBar(IUIRender *pRender,CScrollBarUI *pControl,LPCRECT rcUpdate);
 

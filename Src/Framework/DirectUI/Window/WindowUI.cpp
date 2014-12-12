@@ -1585,7 +1585,7 @@ void CWindowUI::SetFocus(CControlUI* pControl)
 		return;
 
 	if ( pControl != NULL
-		&& pControl->GetManager() != this
+		&& pControl->GetManager() == this
 		&& pControl->IsVisible()
 		&& pControl->IsEnabled() )
 	{
@@ -1795,10 +1795,9 @@ void CWindowUI::AddDelayedCleanup(CControlUI* pControl)
 
 bool CWindowUI::InitControls(CControlUI* pControl, CControlUI* pParent /*= NULL*/)
 {
-	ASSERT(pControl);
 	if( pControl == NULL )
 		return false;
-	pControl->SetManager(this, pParent != NULL ? pParent : pControl->GetParent());
+	pControl->SetManager(this, pParent != NULL ? pParent : pControl->GetParent(),true);
 	pControl->FindControl(__FindControlFromNameHash, this, UIFIND_ALL);
 	return true;
 }
@@ -1908,7 +1907,16 @@ FontObject* CWindowUI::GetDefaultFont(void)
 	if ( m_pDefaultFont != NULL)
 		return m_pDefaultFont;
 
-	return CUIEngine::GetInstance()->GetDefaultFont();
+	return CResourceManager::GetInstance()->GetDefaultFont();
+}
+
+TEXTMETRIC CWindowUI::GetTM(HFONT hFont)
+{
+	TEXTMETRIC tm = { 0 };
+	HFONT hOldFont = (HFONT) ::SelectObject(m_hPaintDC, hFont);
+	::GetTextMetrics(m_hPaintDC, &tm);
+	::SelectObject(m_hPaintDC, hOldFont);
+	return tm;
 }
 
 #endif

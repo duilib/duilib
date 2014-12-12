@@ -200,6 +200,7 @@ class TemplateObject;
 class CScrollBarUI;
 class CButtonUI;
 class CContainerUI;
+class CEditUI;
 
 //////////////////////////////////////////////////////////////////////////
 // ½á¹¹Ìå

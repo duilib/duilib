@@ -1,35 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <Window size="850,600" caption="0,0,0,100">
-    <Font name="宋体" size="12" bold="false" italic="false" />
-    <Font name="宋体" size="16" bold="true" italic="false" />
-    <Font name="宋体" size="14" bold="false" italic="false" />
-    <Font name="宋体" size="14" bold="true" italic="false" />
-    <Font name="宋体" size="12" bold="true" italic="false" />
-    <Font name="微软雅黑" size="16" bold="true" italic="false" />
-    <VerticalLayout name="RootLayout" bkimage="Window\BG.png">
+    <VerticalLayout name="RootLayout" bkimage="main#res\mainBG.png">
         <HorizontalLayout name="HeaderLayout" height="100">
-            <Label width="212" height="100" bkimage="Window\logo.jpg" textcolor="#002D4D5D" disabledtextcolor="#FFA7A6AA" font="0" />
-            <VerticalLayout>
-                <HorizontalLayout width="638" height="55">
-                    <Control />
-                    <Button name="btnClose" width="25" height="20" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;Window\close.jpg&apos; source=&apos;0,0,25,20&apos;" hotimage="file=&apos;Window\close.jpg&apos; source=&apos;25,0,50,20&apos;" pushedimage="file=&apos;Window\close.jpg&apos; source=&apos;50,0,75,20&apos;" />
-                </HorizontalLayout>
-                <HorizontalLayout>
-                    <Option name="optExperience" width="118" height="45" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;Window\Experience.jpg&apos; source=&apos;0,0,118,45&apos;" hotimage="file=&apos;Window\Experience.jpg&apos; source=&apos;118,0,236,45&apos;" group="optcontrol" selected="true" selectedimage="file=&apos;Window\Experience.jpg&apos; source=&apos;236,0,354,45&apos;" />
-                    <Option name="optDiagnostic" width="118" height="45" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;Window\Diagnostic.jpg&apos; source=&apos;0,0,118,45&apos;" hotimage="file=&apos;Window\Diagnostic.jpg&apos; source=&apos;118,0,236,45&apos;" group="optcontrol" selectedimage="file=&apos;Window\Diagnostic.jpg&apos; source=&apos;236,0,354,45&apos;" />
-                    <Button name="optBSS" width="118" height="45" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="center" normalimage="file=&apos;Window\Experience.jpg&apos; source=&apos;0,0,118,45&apos;" hotimage="file=&apos;Window\Experience.jpg&apos; source=&apos;118,0,236,45&apos;" pushedimage="file=&apos;Experience.jpg&apos; source=&apos;236,0,354,45&apos;" />
-                </HorizontalLayout>
-            </VerticalLayout>
+            <Label width="212" height="100"  textcolor="#002D4D5D" disabledtextcolor="#FFA7A6AA" font="0" />
+            <Edit width="200" height="22" bkcolor1="#FFFFFFFF" />
+			<RichEdit width="200" height="80" bkcolor1="#FFFFFFFF" />
         </HorizontalLayout>
-		<ChildLayout xmlfile="#Experience" />
-        <!-- <TabLayout name="ContentLayout">
-            <VerticalLayout>
-				<ChildLayout xmlfile="#Experience" />
-            </VerticalLayout>
-            <VerticalLayout>
-                <Text text="诊断修复" float="true" pos="212,157,0,0" width="189" height="40" textpadding="2,0,2,0" textcolor="#FF000000" disabledtextcolor="#FFA7A6AA" align="wrap" />
-            </VerticalLayout>
-        </TabLayout> -->
         <HorizontalLayout height="28" />
     </VerticalLayout>
 </Window>

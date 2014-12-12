@@ -28,6 +28,9 @@ public:
 	LANGID GetLanguage();
 	LPCTSTR GetResouceDir(LPCTSTR lpszModuleName = NULL);
 
+	void SetDefaultFont(LPCTSTR lpszFaceName,int nSize = 12, bool bBold = false, bool bUnderline= false, bool bItalic= false ,bool bStrikeout= false);
+	FontObject* GetDefaultFont(void);
+
 	TemplateObject* GetWindowTemplate(LPCTSTR lpszWindowTemplateName);
 	TemplateObject* GetViewTemplate(LPCTSTR lpszViewTemplateName);
 
@@ -67,6 +70,7 @@ private:
 private:
 	LANGID m_DefaultLangID;
 	CDuiString m_strDefaultResourcePath;
+	FontObject *m_pDefaultFontObj;
 
 	FontPoolVector m_vecFontPool;		// 已加载的字体样式缓存
 	StringMap		m_mapI18NCached;		// 多国语字符串缓存

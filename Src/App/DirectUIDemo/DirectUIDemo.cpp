@@ -26,8 +26,6 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 
 	int nRet = pDirectUIEngine->MessageLoop();
 
-	//delete pMainWnd;
-
 	pDirectUIEngine->Uninit();
 	pDirectUIEngine = NULL;
 	CUIEngine::ReleaseInstance();

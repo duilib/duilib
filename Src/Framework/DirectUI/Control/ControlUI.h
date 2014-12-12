@@ -136,7 +136,7 @@ public:
 	virtual LPCTSTR GetTextProperty(UIProperty propType, DWORD dwState = UISTATE_Normal);
 
 	// Manager
-	virtual void SetManager(CWindowUI* pManager, CControlUI* pParent);
+	virtual void SetManager(CWindowUI* pManager, CControlUI* pParent,bool bInit = false);
 	CWindowUI* GetManager();
 	CControlUI* GetParent();
 

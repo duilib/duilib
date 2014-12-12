@@ -29,9 +29,6 @@ public:
 	void InitCOMEx(DWORD dwCoInit);
 	void InitOLE();
 
-	void SetDefaultFont(LPCTSTR lpszFaceName,int nSize = 12, bool bBold = false, bool bUnderline= false, bool bItalic= false ,bool bStrikeout= false);
-	FontObject* GetDefaultFont(void);
-
 	HFONT GetFont(LPCTSTR lpszFontName);
 	FontObject *GetFontObject(LPCTSTR lpszFontName);
 
@@ -71,7 +68,6 @@ private:
 	HINSTANCE m_hInstace;
 	bool m_bInitedCOM;
 	bool m_bInitedOLE;
-	FontObject *m_pDefaultFontObj;
 	CResourceManager * m_pResourceManager;
 	typedef std::map<CDuiString, PROCCONTROLCREATE> ProcControlCreateMap;
 	ProcControlCreateMap m_ControlCreateMap;
