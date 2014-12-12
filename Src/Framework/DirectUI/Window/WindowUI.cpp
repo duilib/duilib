@@ -343,11 +343,11 @@ LRESULT CWindowUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool&
 
 	LRESULT lResult = S_OK;
 
-	int nCount = m_arrayPreMessageFilters.GetSize();
+	int nCount = m_arrayWindowMessageFilters.GetSize();
 	for( int i = 0; i < nCount; i++ ) 
 	{   // Windows Message Filters
 		// 给注册了的接口发送消息，使其有机会过滤消息
-		lResult = static_cast<IMessageFilterUI*>(m_arrayPreMessageFilters[i])->MessageFilter(uMsg, wParam, lParam, bHandled);
+		lResult = static_cast<IMessageFilterUI*>(m_arrayWindowMessageFilters[i])->MessageFilter(uMsg, wParam, lParam, bHandled);
 		if( bHandled )
 			return lResult;
 	}
@@ -1339,7 +1339,24 @@ void CWindowUI::RemoveNotify(INotifyUI *pNotify)
 	}
 }
 
-void CWindowUI::AddMessageFilter(IMessageFilterUI* pFilter)
+void CWindowUI::AddWindowMessageFilter(IMessageFilterUI* pFilter)
+{
+	if ( m_arrayWindowMessageFilters.Find(pFilter) == -1)
+	{
+		m_arrayWindowMessageFilters.Add(pFilter);
+	}
+}
+
+void CWindowUI::RemoveWindowMessageFilter(IMessageFilterUI* pFilter)
+{
+	int nIndex = m_arrayWindowMessageFilters.Find(pFilter);
+	if ( nIndex != -1 )
+	{
+		m_arrayWindowMessageFilters.Remove(nIndex);
+	}
+}
+
+void CWindowUI::AddPreMessageFilter(IMessageFilterUI* pFilter)
 {
 	if ( m_arrayPreMessageFilters.Find(pFilter) == -1)
 	{
@@ -1347,7 +1364,7 @@ void CWindowUI::AddMessageFilter(IMessageFilterUI* pFilter)
 	}
 }
 
-void CWindowUI::RemoveMessageFilter(IMessageFilterUI* pFilter)
+void CWindowUI::RemovePreMessageFilter(IMessageFilterUI* pFilter)
 {
 	int nIndex = m_arrayPreMessageFilters.Find(pFilter);
 	if ( nIndex != -1 )

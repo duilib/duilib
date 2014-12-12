@@ -496,7 +496,7 @@ void CTxtWinHost::TxInvalidateRect(LPCRECT prc, BOOL fMode)
 
 void CTxtWinHost::TxViewChange(BOOL fUpdate) 
 {
-    if( m_re->OnTxViewChanged() ) m_re->Invalidate();
+    if( m_re->OnTxViewChanged() )m_re->Invalidate();
 }
 
 BOOL CTxtWinHost::TxCreateCaret(HBITMAP hbmp, INT xWidth, INT yHeight)
@@ -1652,13 +1652,20 @@ void CRichEditUI::DoInit()
 
 HRESULT CRichEditUI::TxSendMessage(UINT msg, WPARAM wparam, LPARAM lparam, LRESULT *plresult) const
 {
-    if( m_pTwh ) {
-        if( msg == WM_KEYDOWN && TCHAR(wparam) == VK_RETURN ) {
-            if( !m_bWantReturn || (::GetKeyState(VK_CONTROL) < 0 && !m_bWantCtrlReturn) ) {
+    if( m_pTwh )
+	{
+        if( msg == WM_KEYDOWN && TCHAR(wparam) == VK_RETURN )
+		{
+            if( !m_bWantReturn || (::GetKeyState(VK_CONTROL) < 0 && !m_bWantCtrlReturn) )
+			{
                 if( m_pManager != NULL ) m_pManager->SendNotify((CControlUI*)this, _T("return"));
                 return S_OK;
             }
         }
+		if ( msg == WM_KEYUP || msg == WM_KEYDOWN || msg == WM_CHAR)
+		{
+			int i= 0;
+		}
         return m_pTwh->GetTextServices()->TxSendMessage(msg, wparam, lparam, plresult);
     }
     return S_FALSE;
@@ -2189,7 +2196,8 @@ LRESULT CRichEditUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, boo
     }
     LRESULT lResult = 0;
     HRESULT Hr = TxSendMessage(uMsg, wParam, lParam, &lResult);
-    if( Hr == S_OK ) bHandled = bWasHandled;
+    if( Hr == S_OK ) 
+		bHandled = bWasHandled;
     else if( (uMsg >= WM_KEYFIRST && uMsg <= WM_KEYLAST) || uMsg == WM_CHAR || uMsg == WM_IME_CHAR )
         bHandled = bWasHandled;
     else if( uMsg >= WM_MOUSEFIRST && uMsg <= WM_MOUSELAST ) {
