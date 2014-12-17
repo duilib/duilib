@@ -43,8 +43,8 @@ void CUIEngine::ReleaseInstance()
 void CUIEngine::Init()
 {
 	// 注册所有系统基础控件
-	::InitCommonControls();
-	//::LoadLibrary(_T("msimg32.dll"));
+	::InitCommonControls();					// 注册系统控件
+	::LoadLibrary(_T("msimg32.dll"));		// 依赖AlphaBlend
 	// COM和OLE
 	this->InitCOM();
 	this->InitOLE();
