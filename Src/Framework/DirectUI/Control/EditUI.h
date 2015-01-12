@@ -21,7 +21,7 @@ public:
 
 	LPCTSTR GetClass() const;
 	LPVOID GetInterface(LPCTSTR pstrName);
-	virtual bool GetCaptionArea();
+	virtual bool IsClientArea();
 	UINT GetControlFlags() const;
 
 	void SetEnabled(bool bEnable = true);

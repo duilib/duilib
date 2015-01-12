@@ -19,7 +19,7 @@ public:
 
 	virtual LPCTSTR GetClass() const;
 	virtual LPVOID GetInterface(LPCTSTR lpszClass);
-	virtual bool GetCaptionArea();
+	virtual bool IsClientArea();
 	UINT GetControlFlags() const;
 
 	bool Activate();

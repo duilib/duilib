@@ -72,7 +72,7 @@ LPVOID CEditUI::GetInterface(LPCTSTR pstrName)
 	return CLabelUI::GetInterface(pstrName);
 }
 
-bool CEditUI::GetCaptionArea()
+bool CEditUI::IsClientArea()
 {
 	return true;
 }

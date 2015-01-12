@@ -40,7 +40,7 @@ LPVOID CScrollBarUI::GetInterface(LPCTSTR lpszClass)
 		return CControlUI::GetInterface(lpszClass);
 }
 
-bool CScrollBarUI::GetCaptionArea()
+bool CScrollBarUI::IsClientArea()
 {
 	return true;
 }

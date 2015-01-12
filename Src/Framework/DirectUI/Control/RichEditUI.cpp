@@ -272,7 +272,7 @@ LPVOID CRichEditUI::GetInterface(LPCTSTR pstrName)
 	return CContainerUI::GetInterface(pstrName);
 }
 
-bool CRichEditUI::GetCaptionArea()
+bool CRichEditUI::IsClientArea()
 {
 	return true;
 }

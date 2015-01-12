@@ -22,7 +22,7 @@ public:
 	
 	virtual LPCTSTR GetClass() const;
 	virtual LPVOID GetInterface(LPCTSTR lpszClass);
-	virtual bool GetCaptionArea(void);	// 为false时，在Caption区该控件区域不响应客户区消息
+	virtual bool IsClientArea(void);	// 为false时，在Caption区该控件区域不响应客户区消息
 
 private:
 	CDuiString m_strName;

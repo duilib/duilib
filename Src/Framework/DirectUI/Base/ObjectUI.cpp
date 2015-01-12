@@ -40,7 +40,7 @@ LPVOID CObjectUI::GetInterface(LPCTSTR lpszClass)
 	return NULL;
 }
 
-bool CObjectUI::GetCaptionArea(void)
+bool CObjectUI::IsClientArea(void)
 {
 	return false;
 }

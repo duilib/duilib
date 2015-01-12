@@ -44,7 +44,7 @@ LPVOID CButtonUI::GetInterface(LPCTSTR lpszClass)
 		return CControlUI::GetInterface(lpszClass);
 }
 
-bool CButtonUI::GetCaptionArea()
+bool CButtonUI::IsClientArea()
 {
 	return true;
 }
