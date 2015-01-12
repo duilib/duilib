@@ -14,17 +14,23 @@
 class DIRECTUI_API CWindowUI
 	: public CObjectUI
 	, public CWindowWnd
+	, public INotifyUI
 {
+	friend class CDialogBuilder;
 public:
 	CWindowUI(void);
 	virtual ~CWindowUI(void);
 
 	virtual void SetAttribute(LPCTSTR lpszName, LPCTSTR lpszValue);
+
 	CControlUI *GetRoot() const;
 	CControlUI *GetItem(LPCTSTR lpszItemPath) const;
+
 	CControlUI* FindControl(POINT pt) const;
 	CControlUI* FindControl(LPCTSTR pstrName) const;
 	CControlUI* FindSubControlByName(CControlUI* pParent, LPCTSTR pstrName) const;
+
+	virtual bool Notify(TNotifyUI *pMsg);
 
 	HWND CreateDuiWindow(HWND hwndParent, LPCTSTR lpszWindowName,DWORD dwStyle =0, DWORD dwExStyle =0);
 
@@ -37,12 +43,17 @@ public:
 	void RestoreWindow();
 	bool IsMaximized();
 	bool IsMinimized();
+
+	POINT GetMousePos() const;
+
+	// 窗口属性接口
 	SIZE GetInitSize();
 	void SetInitSize(int cx, int cy);
 	RECT GetSizeBox();
 	void SetSizeBox(RECT& rcSizeBox);
 	RECT GetCaptionRect();
 	void SetCaptionRect(RECT& rcCaption);
+	void SetShadowEnable(bool bEnable = true);
 
 	// 焦点
 	CControlUI* GetFocus() const;
@@ -67,8 +78,9 @@ public:
 	// 窗口控件消息通知接口
 	void AddNotify(INotifyUI *pNotify);
 	void RemoveNotify(INotifyUI *pNotify);
+
 	void SendNotify(TNotifyUI *pMsg, bool bAsync = false);
-	void SendNotify(CControlUI* pControl, UINOTIFY dwType, WPARAM wParam = 0, LPARAM lParam = 0, bool bAsync = true);
+	void SendNotify(CControlUI* pControl, UINOTIFY dwType, WPARAM wParam = 0, LPARAM lParam = 0, bool bAsync = false);
 
 	// 窗口默认字体
 	void SetDefaultFont(LPCTSTR lpszFaceName,int nSize = 12, bool bBold = false, bool bUnderline= false, bool bItalic= false ,bool bStrikeout= false);
@@ -79,23 +91,27 @@ public:
 	void AddDelayedCleanup(CControlUI* pControl);
 	void ReapObjects(CControlUI* pControl);
 
-	// PostPaint不明
-	int GetPostPaintCount() const;
-	bool AddPostPaint(CControlUI* pControl);
-	bool RemovePostPaint(CControlUI* pControl);
-	bool SetPostPaintIndex(CControlUI* pControl, int iIndex);
-
-	// 定时器
 	bool SetTimer(CControlUI* pControl, UINT nTimerID, UINT uElapse);
 	bool KillTimer(CControlUI* pControl, UINT nTimerID);
 	void KillTimer(CControlUI* pControl);
 	void RemoveAllTimers();
 
+	HDC GetPaintDC();
+
+	int GetPostPaintCount() const;
+	bool AddPostPaint(CControlUI* pControl);
+	bool RemovePostPaint(CControlUI* pControl);
+	bool SetPostPaintIndex(CControlUI* pControl, int iIndex);
+
+	bool AddOptionGroup(LPCTSTR pStrGroupName, CControlUI* pControl);
+	CStdPtrArray* GetOptionGroup(LPCTSTR pStrGroupName);
+	void RemoveOptionGroup(LPCTSTR pStrGroupName, CControlUI* pControl);
+	void RemoveAllOptionGroups();
+
 	TEXTMETRIC GetTM(HFONT hFont);
 
 public:
-
-	// 消息过滤
+	// 当前窗口的消息过滤
 	void AddWindowMessageFilter(IMessageFilterUI* pFilter);
 	void RemoveWindowMessageFilter(IMessageFilterUI* pFilter);
 
@@ -103,19 +119,36 @@ public:
 	void AddPreMessageFilter(IMessageFilterUI* pFilter);
 	void RemovePreMessageFilter(IMessageFilterUI* pFilter);
 
+	// 加速键消息预处理
+	bool AddTranslateAccelerator(ITranslateAccelerator *pTranslateAccelerator);
+	bool RemoveTranslateAccelerator(ITranslateAccelerator *pTranslateAccelerator);
+
 public:
 	// 实现自绘窗口的窗口消息处理
 	virtual LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool& bHandled);
 	// 重写的CWindowWnd窗口消息循环
 	virtual LRESULT WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+	virtual LRESULT CustomMessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool& bHandled);
+	virtual void SendNotifyEvent(TNotifyUI *pMsg);
+
+public:
 	// 优先过滤消息
 	virtual bool PreMessageHandler(const LPMSG pMsg, LRESULT& lRes);
 	// 处理加速键消息
 	virtual bool TranslateAccelerator(MSG *pMsg);
 
-	LRESULT ReflectNotifications(_In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam, _Inout_ bool& bHandled);
-	virtual void SendNotifyEvent(TNotifyUI *pMsg);
+	LRESULT ReflectNotifications(
+		_In_ UINT uMsg,
+		_In_ WPARAM wParam,
+		_In_ LPARAM lParam,
+		_Inout_ bool& bHandled);
+
 private:
+	virtual LPCTSTR GetWindowClassName() const;
+	virtual UINT GetClassStyle() const;
+
+protected:
 	// 控件与实例
 	HINSTANCE m_hInstance;
 	CControlUI *m_pRootControl;
@@ -144,6 +177,7 @@ private:
 	bool m_bFirstLayout;
 	bool m_bUpdateNeeded;
 	bool m_bFocusNeeded;
+	HDC m_hPaintDC;
 	CMemDC m_OffscreenDC;
 	IUIRender *m_pRenderEngine;
 	FontObject *m_pDefaultFont;
@@ -157,12 +191,12 @@ private:
 	bool m_bMouseTracking;
 	bool m_bMouseCapture;
 	CStdPtrArray m_arrayDelayedCleanup;
+	CStdPtrArray m_arrayPostPaintControls;
 	CStdPtrArray m_arrayAsyncNotify;
 	CStdPtrArray m_arrayNotifyFilters;
 	CStdPtrArray m_arrayWindowMessageFilters;
 	CStdPtrArray m_arrayPreMessageFilters;
 	CStdPtrArray m_arrayTranslateAccelerators;
-	CStdPtrArray m_arrayPostPaintControls;
 	CStdPtrArray m_arrayTimers;
 	UINT m_uTimerID;
 
@@ -171,14 +205,9 @@ private:
 
 #ifdef _DEBUG
 	void TestUICrossThread();
-	DWORD m_dwRunningThread;
 #endif // _DEBUG
 
-
 private:
-	virtual LPCTSTR GetWindowClassName() const;
-	virtual UINT GetClassStyle() const;
-	HPEN m_hUpdateRectPen;
 	static CControlUI* CALLBACK __FindControlFromNameHash(CControlUI* pThis, LPVOID pData);
 	static CControlUI* CALLBACK __FindControlFromCount(CControlUI* pThis, LPVOID pData);
 	static CControlUI* CALLBACK __FindControlFromPoint(CControlUI* pThis, LPVOID pData);

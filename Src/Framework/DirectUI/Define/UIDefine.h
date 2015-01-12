@@ -58,6 +58,20 @@
 #ifndef GetAValue
 #define GetAValue(rgb)      (LOBYTE((rgb)>>24))
 #endif // !GetAValue
+#ifndef ARGB
+	typedef DWORD ARGB;
+#endif // !ARGB
+#ifndef COLOR_ARGB
+#define COLOR_ARGB(a,r,g,b) \
+	((ARGB)((((a)&0xff)<<24)|(((r)&0xff)<<16)|(((g)&0xff)<<8)|((b)&0xff)))
+#endif // !COLOR_ARGB
+#ifndef COLOR_RGBA
+#define COLOR_RGBA(r,g,b,a) ARGB(a,r,g,b)
+#endif // !COLOR_RGBA
+#ifndef COLOR_XRGB
+#define COLOR_XRGB(r,g,b)   ARGB(0xff,r,g,b)
+#endif // !COLOR_XRGB
+
 #ifndef GetWindowOwner
 #define     GetWindowOwner(hwnd)    GetWindow(hwnd, GW_OWNER)
 #endif // !GetWindowOwner
@@ -93,9 +107,10 @@ typedef enum _enUINOTIFY
 	UINOTIFY__FIRST,
 
 	// 窗口事件
-	UINOTIFY_WindowInit,
+	UINOTIFY_WindowCreate,
+	UINOTIFY_WindowResize,
 	UINOTIFY_WindowPaint,
-
+	UINOTIFY_WindowPosChanged,
 	// 通用事件
 	UINOTIFY_LBTNCLICK,
 	UINOTIFY_RBTNCLICK,
@@ -107,24 +122,48 @@ typedef enum _enUINOTIFY
 	UINOTIFY_HOVER,//houver
 	UINOTIFY_TIMER,//timer
 	UINOTIFY_CONTEXTMENU,
+	UINOTIFY_VALUECHANGED,
+	UINOTIFY_SCROLL,
 	UINOTIFY_DROPFILES,//dropfiles
-
-	// Edit
+	UINOTIFY_ITEM_SELECTED,
+	UINOTIFY_DROPDOWN,
 	UINOTIFY_EDIT_CHANGE,
 	UINOTIFY_EDIT_RETURN,
 
 	// RichEdit
 	UINOTIFY_RICHEDIT_RETURN,
+	UINOTIFY_HEADER_CLICK,
+	UINOTIFY_ITEM_ACTIVATE,
+	UINOTIFY_ITEM_LCLICK,
+	UINOTIFY_ITEM_RCLICK,
+	UINOTIFY_ITEM_LDBCLICK,
+	UINOTIFY_ITEM_RDBCLICK,
+	UINOTIFY_ITEM_Enter,
+	UINOTIFY_ITEM_Leave,
 
-	// TabLayout
+	//
+	UINOTIFY_ACTIVEX_SHOW,
+	UINOTIFY_ACTIVEX_LINK,
+	// Animation
+	UINOTIFY_ANIMATION_END,
+	// ComboBox
+	UINOTIFY_CBN_BEFOREDROPDOWN,
+	UINOTIFY_CBN_DROPDOWN,
+	UINOTIFY_CBN_CHECK,
+	// Tab
 	UINOTIFY_TAB_SELECTED,
+	UINOTIFY_TAB_ADD,
+	UINOTIFY_TAB_CLOSE,
+	UINOTIFY_TAB_Ext,
+	UINOTIFY_TAB_DBCLICK,
 	//热键
 	UINOTIFY_HOTKEY, 
 	// 窗口还原时的消息
 
 	UINOTIFY__LAST = UINOTIFY__FIRST + 1000,
-	UINOTIFY__USER,	/// 其他自定义控件消息的起点.
-	UINOTIFY__USER_LAST = UINOTIFY__USER + 1000,
+	UINOTIFY__CUSTOM,	/// 其他自定义控件消息的起点.
+	UINOTIFY__CUSTOM_LAST = UINOTIFY__CUSTOM + 1000,
+	UINOTIFY_USER,
 	// 皮肤事件
 
 }UINOTIFY;
@@ -214,6 +253,16 @@ typedef struct _stTFontInfo
 	bool bUnderline;
 	bool bItalic;
 	TEXTMETRIC tm;
+
+	_stTFontInfo()
+		: hFont(NULL)
+		, iSize(0)
+		, bBold(false)
+		, bUnderline(false)
+		, bItalic(false)
+	{
+		ZeroMemory(&tm,sizeof(TEXTMETRIC));
+	}
 } TFontInfo;
 
 typedef struct _stTImageData
@@ -379,6 +428,7 @@ public:
 #define UISTATE_Checked		0x00000040		// CheckBox RadioButton Selected Flag 64
 #define UISTATE_ReadOnly		0x00000080		// 128
 #define UISTATE_Captured		0x00000100		// 256
+#define UISTATE_Double			0x00000200		// 512 DoubleClick Mask
 
 //////////////////////////////////////////////////////////////////////////
 // 辅助
@@ -425,6 +475,27 @@ static UINT MapKeyState()
 	if( ::GetKeyState(VK_MENU) < 0 )
 		uState |= MK_ALT;
 	return uState;
+}
+
+static bool GetRealWindowRect(HWND hWnd,LPRECT lpRect)
+{
+	bool result = false;
+	WINDOWPLACEMENT winPT;
+
+	if ( ::IsWindowVisible(hWnd) )
+	{
+		result = ::GetWindowRect(hWnd, lpRect) != 0;
+	}
+	else
+	{
+		::GetWindowPlacement(hWnd, &winPT);
+		lpRect->top = winPT.rcNormalPosition.top;
+		lpRect->right = winPT.rcNormalPosition.right;
+		lpRect->left = winPT.rcNormalPosition.left;
+		lpRect->bottom = winPT.rcNormalPosition.bottom;
+		result = IsRectEmpty(&winPT.rcNormalPosition) != 0;
+	}
+	return result;
 }
 
 #endif // UIDefine_h__

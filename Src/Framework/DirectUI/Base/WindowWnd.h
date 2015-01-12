@@ -38,6 +38,10 @@ public:
 	virtual UINT DoModal();
 	virtual void EndModal(UINT nRet = IDOK);
 
+	virtual BOOL MoveWindow(int x,int y,int width = -1, int height = -1,BOOL bRepaint= FALSE);
+
+	virtual BOOL DestroyWindow();
+
 	void CenterWindow();	// 居中，支持扩展屏幕
 	void SetSmallIcon(HICON hSmallIcon);
 	void SetLargeIcon(HICON hLargeIcon);
@@ -68,6 +72,9 @@ protected:
 	bool m_bSubclassed;
 	bool m_bIsAutoDelete;
 	bool m_bIsDoModal;
+#ifdef _DEBUG
+    DWORD m_dwRunningThread;
+#endif // _DEBUG
 };
 
 #endif // WindowWnd_h__

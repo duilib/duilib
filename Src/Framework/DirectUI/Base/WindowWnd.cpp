@@ -24,6 +24,10 @@ HWND CWindowWnd::Create(HWND hwndParent, LPCTSTR lpszWindowName, DWORD dwStyle, 
 	if ( GetSuperClassName() == NULL && !RegisterWindowClass())
 		return NULL;
 
+#ifdef _DEBUG
+    m_dwRunningThread = ::GetCurrentThreadId();
+#endif // _DEBUG
+
 	m_hWnd = ::CreateWindowEx(dwExStyle, GetWindowClassName(), lpszWindowName, dwStyle, x, y, cx, cy,
 		hwndParent, NULL, CUIEngine::GetInstance()->GetInstanceHandler(), this);
 	DWORD dwLastError = ::GetLastError();
@@ -90,8 +94,8 @@ LRESULT CALLBACK CWindowWnd::__WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 		{
 			// 如果当前消息是销毁窗口
 			::ReleaseDC(hWnd,pThis->m_hPaintDC);
-			LRESULT lRes = ::CallWindowProc(pThis->m_OldWndProc, hWnd, uMsg, wParam, lParam);
 			::SetWindowLongPtr(pThis->m_hWnd, GWLP_USERDATA, 0L);
+			LRESULT lRes = ::CallWindowProc(pThis->m_OldWndProc, hWnd, uMsg, wParam, lParam);
 
 			// 当前窗口是子类化的，恢复原窗口过程
 			if( pThis->m_bSubclassed )
@@ -153,7 +157,6 @@ void CWindowWnd::Unsubclass()
 void CWindowWnd::CenterWindow()
 {
 	ASSERT(::IsWindow(m_hWnd));
-	//ASSERT((GetWindowStyle(m_hWnd)&WS_CHILD)==0);
 	RECT rcDlg = { 0 };
 	::GetWindowRect(m_hWnd, &rcDlg);
 	RECT rcArea = { 0 };
@@ -183,10 +186,14 @@ void CWindowWnd::CenterWindow()
 	int yTop = (rcCenter.top + rcCenter.bottom) / 2 - DlgHeight / 2;
 
 	// The dialog is outside the screen, move it inside
-	if( xLeft < rcArea.left ) xLeft = rcArea.left;
-	else if( xLeft + DlgWidth > rcArea.right ) xLeft = rcArea.right - DlgWidth;
-	if( yTop < rcArea.top ) yTop = rcArea.top;
-	else if( yTop + DlgHeight > rcArea.bottom ) yTop = rcArea.bottom - DlgHeight;
+	if( xLeft < rcArea.left )
+		xLeft = rcArea.left;
+	else if( xLeft + DlgWidth > rcArea.right )
+		xLeft = rcArea.right - DlgWidth;
+	if( yTop < rcArea.top )
+		yTop = rcArea.top;
+	else if( yTop + DlgHeight > rcArea.bottom )
+		yTop = rcArea.bottom - DlgHeight;
 	::SetWindowPos(m_hWnd, NULL, xLeft, yTop, -1, -1, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
@@ -266,7 +273,6 @@ UINT CWindowWnd::DoModal()
 
 	::EnableWindow(hWndParent, TRUE);
 	::SetFocus(hWndParent);
-	::SetCapture(hWndParent);
 
 	if( msg.message == WM_QUIT )
 		::PostQuitMessage(msg.wParam);
@@ -327,11 +333,13 @@ void CWindowWnd::EndModal(UINT nRet /*= IDOK*/)
 
 LRESULT CWindowWnd::SendMessage(UINT uMsg, WPARAM wParam /*= 0*/, LPARAM lParam /*= 0L*/)
 {
+	ASSERT(::IsWindow(m_hWnd));
 	return ::SendMessage(m_hWnd,uMsg,wParam,lParam);
 }
 
 LRESULT CWindowWnd::PostMessage(UINT uMsg, WPARAM wParam /*= 0*/, LPARAM lParam /*= 0L*/)
 {
+	ASSERT(::IsWindow(m_hWnd));
 	return ::PostMessage(m_hWnd,uMsg,wParam,lParam);
 }
 
@@ -407,4 +415,26 @@ CWindowWnd::operator HDC() const
 	return m_hPaintDC;
 }
 
+BOOL CWindowWnd::DestroyWindow()
+{
+	if ( ::IsWindow(m_hWnd))
+		return ::DestroyWindow(m_hWnd);
+
+	return FALSE;
+}
+
+BOOL CWindowWnd::MoveWindow(int x,int y,int width /*= -1*/, int height /*= -1*/,BOOL bRepaint/*= FALSE*/)
+{
+	if ( !::IsWindow(m_hWnd))
+		return FALSE;
+
+	CDuiRect rcClient;
+	::GetClientRect(m_hWnd,&rcClient);
+
+	return ::MoveWindow(m_hWnd,
+		x,y, 
+		width == -1 ? rcClient.GetWidth() : width ,
+		height == -1 ? rcClient.GetHeight() : height,
+		bRepaint );
+}
 

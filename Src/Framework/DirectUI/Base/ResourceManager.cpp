@@ -29,6 +29,11 @@ CResourceManager::~CResourceManager(void)
 	// 这句话是否执行不影响析构资源清理，跑到这里来的时候已经全都释放了
 	RemoveAllCachedImage();
 	RemoveAllFont();
+	if ( m_pDefaultFontObj != NULL)
+	{
+		delete m_pDefaultFontObj;
+		m_pDefaultFontObj = NULL;
+	}
 }
 
 CResourceManager * CResourceManager::GetInstance()
