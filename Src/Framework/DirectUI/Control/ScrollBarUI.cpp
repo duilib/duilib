@@ -40,6 +40,11 @@ LPVOID CScrollBarUI::GetInterface(LPCTSTR lpszClass)
 		return CControlUI::GetInterface(lpszClass);
 }
 
+bool CScrollBarUI::GetCaptionArea()
+{
+	return true;
+}
+
 CContainerUI* CScrollBarUI::GetOwner() const
 {
 	return m_pOwner;

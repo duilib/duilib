@@ -51,10 +51,8 @@ public:
 	// 根据窗口名称查找自绘窗口
 	CWindowUI* GetWindow(LPCTSTR lpszName);
 
-	bool IsActiveControl(LPCTSTR lpszClass);
-
 public:
-	virtual void RegisterControl(LPCTSTR lpszType, PROCCONTROLCREATE pFn_ControlCreate,bool bActive=false);
+	virtual void RegisterControl(LPCTSTR lpszType, PROCCONTROLCREATE pFn_ControlCreate);
 	CControlUI* CreateControl(LPCTSTR lpszType);
 	void UnregisterControl(LPCTSTR lpszType);
 
@@ -73,7 +71,6 @@ private:
 	ProcControlCreateMap m_ControlCreateMap;
 
 	CStdPtrArray m_arrayDirectUI;
-	VecString m_vecActiveControl;	// 在NcHitTest中需要返回HTCLIENT的控件
 };
 
 #endif // UIEngine_h__

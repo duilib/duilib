@@ -72,6 +72,11 @@ LPVOID CEditUI::GetInterface(LPCTSTR pstrName)
 	return CLabelUI::GetInterface(pstrName);
 }
 
+bool CEditUI::GetCaptionArea()
+{
+	return true;
+}
+
 UINT CEditUI::GetControlFlags() const
 {
 	if(!IsEnabled())

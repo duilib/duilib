@@ -11,7 +11,6 @@
 
 class CMainWnd
 	: public CWindowUI
-	, public INotifyUI
 {
 public:
 	CMainWnd(void);

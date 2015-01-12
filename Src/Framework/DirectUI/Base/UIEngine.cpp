@@ -56,18 +56,18 @@ void CUIEngine::Init()
 
 	// 注册提供的基础控件
 	// bIsActive为true，控件区域不响应窗口拖动事件
-	UI_REGISTER_DYNCREATE(_T("Control"),CControlUI,false);
-	UI_REGISTER_DYNCREATE(_T("Container"),CContainerUI,false);
-	UI_REGISTER_DYNCREATE(_T("ScrollBar"),CScrollBarUI,true);
-	UI_REGISTER_DYNCREATE(_T("Button"),CButtonUI,true);
-	UI_REGISTER_DYNCREATE(_T("HorizontalLayout"),CHorizontalLayoutUI,false);
-	UI_REGISTER_DYNCREATE(_T("VerticalLayout"),CVerticalLayoutUI,false);
-	UI_REGISTER_DYNCREATE(_T("ChildLayout"),CChildLayoutUI,false);
-	UI_REGISTER_DYNCREATE(_T("TabLayout"),CTabLayoutUI,false);
+	UI_REGISTER_DYNCREATE(_T("Control"),CControlUI);
+	UI_REGISTER_DYNCREATE(_T("Container"),CContainerUI);
+	UI_REGISTER_DYNCREATE(_T("ScrollBar"),CScrollBarUI);
+	UI_REGISTER_DYNCREATE(_T("Button"),CButtonUI);
+	UI_REGISTER_DYNCREATE(_T("HorizontalLayout"),CHorizontalLayoutUI);
+	UI_REGISTER_DYNCREATE(_T("VerticalLayout"),CVerticalLayoutUI);
+	UI_REGISTER_DYNCREATE(_T("ChildLayout"),CChildLayoutUI);
+	UI_REGISTER_DYNCREATE(_T("TabLayout"),CTabLayoutUI);
 
-	UI_REGISTER_DYNCREATE(_T("Label"),CLabelUI,false);
-	UI_REGISTER_DYNCREATE(_T("Edit"),CEditUI,true);
-	UI_REGISTER_DYNCREATE(_T("RichEdit"),CRichEditUI,true);
+	UI_REGISTER_DYNCREATE(_T("Label"),CLabelUI);
+	UI_REGISTER_DYNCREATE(_T("Edit"),CEditUI);
+	UI_REGISTER_DYNCREATE(_T("RichEdit"),CRichEditUI);
 
 }
 
@@ -220,7 +220,7 @@ void CUIEngine::InitOLE()
 	}
 }
 
-void CUIEngine::RegisterControl(LPCTSTR lpszType, PROCCONTROLCREATE pFn_ControlCreate,bool bActive/*=false*/)
+void CUIEngine::RegisterControl(LPCTSTR lpszType, PROCCONTROLCREATE pFn_ControlCreate)
 {
 	if ( pFn_ControlCreate == NULL)
 		return ;
@@ -229,8 +229,6 @@ void CUIEngine::RegisterControl(LPCTSTR lpszType, PROCCONTROLCREATE pFn_ControlC
 	if ( iter == m_ControlCreateMap.end() )
 	{
 		m_ControlCreateMap[lpszType] = pFn_ControlCreate;
-		if ( bActive )
-		m_vecActiveControl.push_back(lpszType);
 	}
 	else
 	{
@@ -251,26 +249,10 @@ CControlUI* CUIEngine::CreateControl(LPCTSTR lpszType)
 
 void CUIEngine::UnregisterControl(LPCTSTR lpszType)
 {
+	ProcControlCreateMap::iterator iter = m_ControlCreateMap.find(lpszType);
+	if ( iter != m_ControlCreateMap.end())
 	{
-		ProcControlCreateMap::iterator iter = m_ControlCreateMap.find(lpszType);
-		if ( iter != m_ControlCreateMap.end())
-		{
-			m_ControlCreateMap.erase(iter);
-		}
-	}
-
-	{
-		VecString::iterator iter = m_vecActiveControl.begin();
-		VecString::iterator end = m_vecActiveControl.end();
-		while (iter != end)
-		{
-			if ( CDuiStringOperation::compareNoCase(lpszType,iter->c_str()) == 0 )
-			{
-				m_vecActiveControl.erase(iter);
-				break;
-			}
-			++iter;
-		}
+		m_ControlCreateMap.erase(iter);
 	}
 }
 
@@ -317,21 +299,6 @@ CWindowUI* CUIEngine::GetWindow(LPCTSTR lpszName)
 		}
 	}
 	return NULL;
-}
-
-bool CUIEngine::IsActiveControl(LPCTSTR lpszClass)
-{
-	VecString::iterator iter = m_vecActiveControl.begin();
-	VecString::iterator end = m_vecActiveControl.end();
-	while (iter != end)
-	{
-		if ( CDuiStringOperation::compareNoCase(lpszClass,iter->c_str()) == 0 )
-		{
-			return true;
-		}
-		++iter;
-	}
-	return false;
 }
 
 HFONT CUIEngine::GetFont(LPCTSTR lpszFontName)

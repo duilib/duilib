@@ -44,6 +44,11 @@ LPVOID CButtonUI::GetInterface(LPCTSTR lpszClass)
 		return CControlUI::GetInterface(lpszClass);
 }
 
+bool CButtonUI::GetCaptionArea()
+{
+	return true;
+}
+
 UINT CButtonUI::GetControlFlags() const
 {
 	return (IsKeyboardEnabled() ? UIFLAG_TABSTOP : 0) | (IsEnabled() ? UIFLAG_SETCURSOR : 0);

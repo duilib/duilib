@@ -25,7 +25,7 @@ public:
 
 	virtual LPCTSTR GetClass() const;
 	virtual LPVOID GetInterface(LPCTSTR lpszClass);
-
+	virtual bool GetCaptionArea();
 	CContainerUI* GetOwner() const;
 	void SetOwner(CContainerUI* pOwner);
 

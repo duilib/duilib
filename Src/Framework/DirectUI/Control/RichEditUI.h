@@ -22,6 +22,7 @@ public:
 
 	LPCTSTR GetClass() const;
 	LPVOID GetInterface(LPCTSTR pstrName);
+	virtual bool GetCaptionArea();
 	UINT GetControlFlags() const;
 
 	bool IsWantTab();

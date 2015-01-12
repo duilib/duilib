@@ -39,3 +39,8 @@ LPVOID CObjectUI::GetInterface(LPCTSTR lpszClass)
 		return this;
 	return NULL;
 }
+
+bool CObjectUI::GetCaptionArea(void)
+{
+	return false;
+}

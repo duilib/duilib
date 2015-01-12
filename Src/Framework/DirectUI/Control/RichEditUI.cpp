@@ -272,6 +272,11 @@ LPVOID CRichEditUI::GetInterface(LPCTSTR pstrName)
 	return CContainerUI::GetInterface(pstrName);
 }
 
+bool CRichEditUI::GetCaptionArea()
+{
+	return true;
+}
+
 UINT CRichEditUI::GetControlFlags() const
 {
 	if( !IsEnabled() ) return CControlUI::GetControlFlags();

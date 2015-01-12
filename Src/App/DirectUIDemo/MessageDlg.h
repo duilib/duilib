@@ -10,7 +10,6 @@
 #pragma once
 class CMessageDlg
 	: public CWindowUI
-	, public INotifyUI
 {
 public:
 	CMessageDlg(void);
