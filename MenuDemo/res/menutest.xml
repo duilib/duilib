@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Window>
-  <Font name="微软雅黑" size="12" bold="false" default="true" />
-  <Font name="微软雅黑" size="12" bold="true"/>
+  <Font id="0" name="微软雅黑" size="12" bold="false" default="true" />
+  <Font id="1" name="微软雅黑" size="12" bold="true"/>
   <Default name="Menu" value="inset=&quot;2,2,2,2&quot; itemtextpadding=&quot;30,0,0,0&quot; bkimage=&quot;res='121' restype='png' corner='30,8,8,8'&quot; hole=&quot;false&quot;" />
   <Menu>
     <MenuElement height="95" padding="30,0,0,0">

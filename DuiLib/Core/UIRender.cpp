@@ -50,6 +50,8 @@ extern "C"
 
 namespace DuiLib {
 
+static int g_iFontID = MAX_FONT_ID;
+
 /////////////////////////////////////////////////////////////////////////////////////
 //
 //
@@ -139,9 +141,9 @@ static void HSLtoRGB(DWORD* ARGB, float H, float S, float L) {
         ntr = tr<0?tr+1:(tr>1?tr-1:tr),
         ntg = tg<0?tg+1:(tg>1?tg-1:tg),
         ntb = tb<0?tb+1:(tb>1?tb-1:tb),
-        R = 255*(6*ntr<1?p+(q-p)*6*ntr:(2*ntr<1?q:(3*ntr<2?p+(q-p)*6*(2.0f*OneThird-ntr):p))),
+        B = 255*(6*ntr<1?p+(q-p)*6*ntr:(2*ntr<1?q:(3*ntr<2?p+(q-p)*6*(2.0f*OneThird-ntr):p))),
         G = 255*(6*ntg<1?p+(q-p)*6*ntg:(2*ntg<1?q:(3*ntg<2?p+(q-p)*6*(2.0f*OneThird-ntg):p))),
-        B = 255*(6*ntb<1?p+(q-p)*6*ntb:(2*ntb<1?q:(3*ntb<2?p+(q-p)*6*(2.0f*OneThird-ntb):p)));
+        R = 255*(6*ntb<1?p+(q-p)*6*ntb:(2*ntb<1?q:(3*ntb<2?p+(q-p)*6*(2.0f*OneThird-ntb):p)));
     *ARGB &= 0xFF000000;
     *ARGB |= RGB( (BYTE)(R<0?0:(R>255?255:R)), (BYTE)(G<0?0:(G>255?255:G)), (BYTE)(B<0?0:(B>255?255:B)) );
 }
@@ -1383,7 +1385,10 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     if( aFontArray.GetSize() > 0 ) pFontInfo = (TFontInfo*)aFontArray.GetAt(aFontArray.GetSize() - 1);
                     if( pFontInfo->bUnderline == false ) {
                         HFONT hFont = pManager->GetFont(pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic);
-                        if( hFont == NULL ) hFont = pManager->AddFont(pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic);
+						if( hFont == NULL ) {
+							hFont = pManager->AddFont(g_iFontID, pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic);
+							g_iFontID += 1;
+						}
                         pFontInfo = pManager->GetFontInfo(hFont);
                         aFontArray.Add(pFontInfo);
                         pTm = &pFontInfo->tm;
@@ -1401,7 +1406,10 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     if( aFontArray.GetSize() > 0 ) pFontInfo = (TFontInfo*)aFontArray.GetAt(aFontArray.GetSize() - 1);
                     if( pFontInfo->bBold == false ) {
                         HFONT hFont = pManager->GetFont(pFontInfo->sFontName, pFontInfo->iSize, true, pFontInfo->bUnderline, pFontInfo->bItalic);
-                        if( hFont == NULL ) hFont = pManager->AddFont(pFontInfo->sFontName, pFontInfo->iSize, true, pFontInfo->bUnderline, pFontInfo->bItalic);
+						if( hFont == NULL ) {
+							hFont = pManager->AddFont(g_iFontID, pFontInfo->sFontName, pFontInfo->iSize, true, pFontInfo->bUnderline, pFontInfo->bItalic);
+							g_iFontID += 1;
+						}
                         pFontInfo = pManager->GetFontInfo(hFont);
                         aFontArray.Add(pFontInfo);
                         pTm = &pFontInfo->tm;
@@ -1462,7 +1470,10 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                         if( sFontAttr.Find(_T("underline")) >= 0 ) bUnderline = true;
                         if( sFontAttr.Find(_T("italic")) >= 0 ) bItalic = true;
                         HFONT hFont = pManager->GetFont(sFontName, iFontSize, bBold, bUnderline, bItalic);
-                        if( hFont == NULL ) hFont = pManager->AddFont(sFontName, iFontSize, bBold, bUnderline, bItalic);
+						if( hFont == NULL ) {
+							hFont = pManager->AddFont(g_iFontID, sFontName, iFontSize, bBold, bUnderline, bItalic);
+							g_iFontID += 1;
+						}
                         TFontInfo* pFontInfo = pManager->GetFontInfo(hFont);
                         aFontArray.Add(pFontInfo);
                         pTm = &pFontInfo->tm;
@@ -1493,7 +1504,10 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                         if( aFontArray.GetSize() > 0 ) pFontInfo = (TFontInfo*)aFontArray.GetAt(aFontArray.GetSize() - 1);
                         if( pFontInfo->bItalic == false ) {
                             HFONT hFont = pManager->GetFont(pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, pFontInfo->bUnderline, true);
-                            if( hFont == NULL ) hFont = pManager->AddFont(pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, pFontInfo->bUnderline, true);
+							if( hFont == NULL ) {
+								hFont = pManager->AddFont(g_iFontID, pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, pFontInfo->bUnderline, true);
+								g_iFontID += 1;
+							}
                             pFontInfo = pManager->GetFontInfo(hFont);
                             aFontArray.Add(pFontInfo);
                             pTm = &pFontInfo->tm;
@@ -1626,7 +1640,10 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     if( aFontArray.GetSize() > 0 ) pFontInfo = (TFontInfo*)aFontArray.GetAt(aFontArray.GetSize() - 1);
                     if( pFontInfo->bUnderline == false ) {
                         HFONT hFont = pManager->GetFont(pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic);
-                        if( hFont == NULL ) hFont = pManager->AddFont(pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic);
+						if( hFont == NULL ) {
+							hFont = pManager->AddFont(g_iFontID, pFontInfo->sFontName, pFontInfo->iSize, pFontInfo->bBold, true, pFontInfo->bItalic);
+							g_iFontID += 1;
+						}
                         pFontInfo = pManager->GetFontInfo(hFont);
                         aFontArray.Add(pFontInfo);
                         pTm = &pFontInfo->tm;

@@ -96,12 +96,43 @@ typedef struct tagTFontInfo
 typedef struct tagTImageInfo
 {
     HBITMAP hBitmap;
+    LPBYTE pBits;
     int nX;
     int nY;
     bool alphaChannel;
+    bool bUseHSL;
     CDuiString sResType;
     DWORD dwMask;
 } TImageInfo;
+
+typedef struct tagTDrawInfo
+{
+	tagTDrawInfo();
+	void Clear();
+	CDuiString sDrawString;
+	bool bLoaded;
+	const TImageInfo* pImageInfo;
+	RECT rcDestOffset;
+	RECT rcBmpPart;
+	RECT rcCorner;
+	BYTE uFade;
+	bool bHole;
+	bool bTiledX;
+	bool bTiledY;
+} TDrawInfo;
+
+typedef struct tagTResInfo
+{
+	DWORD m_dwDefaultDisabledColor;
+	DWORD m_dwDefaultFontColor;
+	DWORD m_dwDefaultLinkFontColor;
+	DWORD m_dwDefaultLinkHoverFontColor;
+	DWORD m_dwDefaultSelectedBkColor;
+	TFontInfo m_DefaultFontInfo;
+	CStdStringPtrMap m_CustomFonts;
+	CStdStringPtrMap m_ImageHash;
+	CStdStringPtrMap m_AttrHash;
+} TResInfo;
 
 // Structure for notifications from the system
 // to the control implementation.
@@ -209,49 +240,42 @@ public:
     static bool LoadPlugin(LPCTSTR pstrModuleName);
     static CStdPtrArray* GetPlugins();
 
-    bool UseParentResource(CPaintManagerUI* pm);
-    CPaintManagerUI* GetParentResource() const;
-
     DWORD GetDefaultDisabledColor() const;
-    void SetDefaultDisabledColor(DWORD dwColor);
+    void SetDefaultDisabledColor(DWORD dwColor, bool bShared = false);
     DWORD GetDefaultFontColor() const;
-    void SetDefaultFontColor(DWORD dwColor);
+    void SetDefaultFontColor(DWORD dwColor, bool bShared = false);
     DWORD GetDefaultLinkFontColor() const;
-    void SetDefaultLinkFontColor(DWORD dwColor);
+    void SetDefaultLinkFontColor(DWORD dwColor, bool bShared = false);
     DWORD GetDefaultLinkHoverFontColor() const;
-    void SetDefaultLinkHoverFontColor(DWORD dwColor);
+    void SetDefaultLinkHoverFontColor(DWORD dwColor, bool bShared = false);
     DWORD GetDefaultSelectedBkColor() const;
-    void SetDefaultSelectedBkColor(DWORD dwColor);
+    void SetDefaultSelectedBkColor(DWORD dwColor, bool bShared = false);
     TFontInfo* GetDefaultFontInfo();
-    void SetDefaultFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic);
-    DWORD GetCustomFontCount() const;
-    HFONT AddFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic);
-    HFONT AddFontAt(int index, LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic);
-    HFONT GetFont(int index);
+    void SetDefaultFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bShared = false);
+    DWORD GetCustomFontCount(bool bShared = false) const;
+    HFONT AddFont(int id, LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bShared = false);
+    HFONT GetFont(int id);
     HFONT GetFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic);
-    bool FindFont(HFONT hFont);
-    bool FindFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic);
-    int GetFontIndex(HFONT hFont);
-    int GetFontIndex(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic);
-    bool RemoveFont(HFONT hFont);
-    bool RemoveFontAt(int index);
-    void RemoveAllFonts();
-    TFontInfo* GetFontInfo(int index);
+	int GetFontIndex(HFONT hFont, bool bShared = false);
+	int GetFontIndex(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bShared = false);
+    void RemoveFont(HFONT hFont, bool bShared = false);
+    void RemoveFont(int id, bool bShared = false);
+    void RemoveAllFonts(bool bShared = false);
+    TFontInfo* GetFontInfo(int id);
     TFontInfo* GetFontInfo(HFONT hFont);
 
     const TImageInfo* GetImage(LPCTSTR bitmap);
     const TImageInfo* GetImageEx(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0);
-    const TImageInfo* AddImage(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0);
-    const TImageInfo* AddImage(LPCTSTR bitmap, HBITMAP hBitmap, int iWidth, int iHeight, bool bAlpha);
-    bool RemoveImage(LPCTSTR bitmap);
-    void RemoveAllImages();
+    const TImageInfo* AddImage(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0, bool bShared = false);
+    const TImageInfo* AddImage(LPCTSTR bitmap, HBITMAP hBitmap, int iWidth, int iHeight, bool bAlpha, bool bShared = false);
+    void RemoveImage(LPCTSTR bitmap, bool bShared = false);
+    void RemoveAllImages(bool bShared = false);
     void ReloadAllImages();
 
-    void AddDefaultAttributeList(LPCTSTR pStrControlName, LPCTSTR pStrControlAttrList);
+    void AddDefaultAttributeList(LPCTSTR pStrControlName, LPCTSTR pStrControlAttrList, bool bShared = false);
     LPCTSTR GetDefaultAttributeList(LPCTSTR pStrControlName) const;
-    bool RemoveDefaultAttributeList(LPCTSTR pStrControlName);
-    const CStdStringPtrMap& GetDefaultAttribultes() const;
-    void RemoveAllDefaultAttributeList();
+    bool RemoveDefaultAttributeList(LPCTSTR pStrControlName, bool bShared = false);
+    void RemoveAllDefaultAttributeList(bool bShared = false);
 
     bool AttachDialog(CControlUI* pControl);
     bool InitControls(CControlUI* pControl, CControlUI* pParent = NULL);
@@ -373,25 +397,19 @@ private:
     CStdPtrArray m_aFoundControls;
     CStdStringPtrMap m_mNameHash;
     CStdStringPtrMap m_mOptionGroup;
-    //
-    CPaintManagerUI* m_pParentResourcePM;
-    DWORD m_dwDefaultDisabledColor;
-    DWORD m_dwDefaultFontColor;
-    DWORD m_dwDefaultLinkFontColor;
-    DWORD m_dwDefaultLinkHoverFontColor;
-    DWORD m_dwDefaultSelectedBkColor;
-    TFontInfo m_DefaultFontInfo;
-    CStdPtrArray m_aCustomFonts;
 
-    CStdStringPtrMap m_mImageHash;
-    CStdStringPtrMap m_DefaultAttrHash;
     //
+	TResInfo m_ResInfo;
+
+    //
+	static HINSTANCE m_hResourceInstance;
+	static CDuiString m_pStrResourcePath;
+	static CDuiString m_pStrResourceZip;
+	static HANDLE m_hResourceZip;
+
+	static bool m_bCachedResourceZip;
+	static TResInfo m_SharedResInfo;
     static HINSTANCE m_hInstance;
-    static HINSTANCE m_hResourceInstance;
-    static CDuiString m_pStrResourcePath;
-    static CDuiString m_pStrResourceZip;
-    static bool m_bCachedResourceZip;
-    static HANDLE m_hResourceZip;
     static short m_H;
     static short m_S;
     static short m_L;
@@ -399,7 +417,6 @@ private:
     static CStdPtrArray m_aPlugins;
 
 public:
-	static CDuiString m_pStrDefaultFontName;
 	CStdPtrArray m_aTranslateAccelerator;
 };
 

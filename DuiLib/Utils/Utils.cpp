@@ -356,25 +356,25 @@ namespace DuiLib
 
 	CDuiString::CDuiString() : m_pstr(m_szBuffer)
 	{
-		m_szBuffer[0] = '\0';
+		m_szBuffer[0] = _T('\0');
 	}
 
 	CDuiString::CDuiString(const TCHAR ch) : m_pstr(m_szBuffer)
 	{
 		m_szBuffer[0] = ch;
-		m_szBuffer[1] = '\0';
+		m_szBuffer[1] = _T('\0');
 	}
 
 	CDuiString::CDuiString(LPCTSTR lpsz, int nLen) : m_pstr(m_szBuffer)
 	{      
 		ASSERT(!::IsBadStringPtr(lpsz,-1) || lpsz==NULL);
-		m_szBuffer[0] = '\0';
+		m_szBuffer[0] = _T('\0');
 		Assign(lpsz, nLen);
 	}
 
 	CDuiString::CDuiString(const CDuiString& src) : m_pstr(m_szBuffer)
 	{
-		m_szBuffer[0] = '\0';
+		m_szBuffer[0] = _T('\0');
 		Assign(src.m_pstr);
 	}
 
@@ -431,19 +431,19 @@ namespace DuiLib
 			m_pstr = static_cast<LPTSTR>(realloc(m_pstr, (cchMax + 1) * sizeof(TCHAR)));
 		}
 		_tcsncpy(m_pstr, pstr, cchMax);
-		m_pstr[cchMax] = '\0';
+		m_pstr[cchMax] = _T('\0');
 	}
 
 	bool CDuiString::IsEmpty() const 
 	{ 
-		return m_pstr[0] == '\0'; 
+		return m_pstr[0] == _T('\0'); 
 	}
 
 	void CDuiString::Empty() 
 	{ 
 		if( m_pstr != m_szBuffer ) free(m_pstr);
 		m_pstr = m_szBuffer;
-		m_szBuffer[0] = '\0'; 
+		m_szBuffer[0] = _T('\0'); 
 	}
 
 	LPCTSTR CDuiString::GetData() const
@@ -554,7 +554,7 @@ namespace DuiLib
 	{
 		Empty();
 		m_szBuffer[0] = ch;
-		m_szBuffer[1] = '\0';
+		m_szBuffer[1] = _T('\0');
 		return *this;
 	}
 
@@ -597,7 +597,7 @@ namespace DuiLib
 
 	const CDuiString& CDuiString::operator+=(const TCHAR ch)
 	{      
-		TCHAR str[] = { ch, '\0' };
+		TCHAR str[] = { ch, _T('\0') };
 		Append(str);
 		return *this;
 	}
