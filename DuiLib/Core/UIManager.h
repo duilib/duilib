@@ -83,7 +83,7 @@ typedef enum EVENTTYPE_UI
 /////////////////////////////////////////////////////////////////////////////////////
 //
 
-typedef struct tagTFontInfo
+typedef struct UILIB_API tagTFontInfo
 {
     HFONT hFont;
     CDuiString sFontName;
@@ -94,7 +94,7 @@ typedef struct tagTFontInfo
     TEXTMETRIC tm;
 } TFontInfo;
 
-typedef struct tagTImageInfo
+typedef struct UILIB_API tagTImageInfo
 {
     HBITMAP hBitmap;
     LPBYTE pBits;
@@ -123,7 +123,15 @@ typedef struct UILIB_API tagTDrawInfo
 	bool bTiledY;
 } TDrawInfo;
 
-typedef struct tagTResInfo
+typedef struct UILIB_API tagTPercentInfo
+{
+	double left;
+	double top;
+	double right;
+	double bottom;
+} TPercentInfo;
+
+typedef struct UILIB_API tagTResInfo
 {
 	DWORD m_dwDefaultDisabledColor;
 	DWORD m_dwDefaultFontColor;
@@ -138,7 +146,7 @@ typedef struct tagTResInfo
 
 // Structure for notifications from the system
 // to the control implementation.
-typedef struct tagTEventUI
+typedef struct UILIB_API tagTEventUI
 {
     int Type;
     CControlUI* pSender;
@@ -150,32 +158,21 @@ typedef struct tagTEventUI
     LPARAM lParam;
 } TEventUI;
 
-// Structure for relative position to the parent
-typedef struct tagTRelativePosUI
-{
-	bool bRelative;
-	SIZE szParent;
-	int nMoveXPercent;
-	int nMoveYPercent;
-	int nZoomXPercent;
-	int nZoomYPercent;
-}TRelativePosUI;
-
 // Listener interface
-class INotifyUI
+class UILIB_API INotifyUI
 {
 public:
     virtual void Notify(TNotifyUI& msg) = 0;
 };
 
 // MessageFilter interface
-class IMessageFilterUI
+class UILIB_API IMessageFilterUI
 {
 public:
     virtual LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool& bHandled) = 0;
 };
 
-class ITranslateAccelerator
+class UILIB_API ITranslateAccelerator
 {
 public:
 	virtual LRESULT TranslateAccelerator(MSG *pMsg) = 0;

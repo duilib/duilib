@@ -91,10 +91,8 @@ public:
     virtual void SetMinHeight(int cy);
     virtual int GetMaxHeight() const;
     virtual void SetMaxHeight(int cy);
-    virtual void SetRelativePos(SIZE szMove,SIZE szZoom);
-    virtual void SetRelativeParentSize(SIZE sz);
-    virtual TRelativePosUI GetRelativePos() const;
-    virtual bool IsRelativePos() const;
+	virtual TPercentInfo GetFloatPercent() const;
+	virtual void SetFloatPercent(TPercentInfo piFloatPercent);
 
     // 鼠标提示
     virtual CDuiString GetToolTip() const;
@@ -190,8 +188,8 @@ protected:
 	bool m_bKeyboardEnabled ;
     bool m_bFocused;
     bool m_bFloat;
+	TPercentInfo m_piFloatPercent;
     bool m_bSetPos; // 防止SetPos循环调用
-    TRelativePosUI m_tRelativePos;
 
     CDuiString m_sText;
     CDuiString m_sToolTip;

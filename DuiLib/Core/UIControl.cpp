@@ -37,7 +37,7 @@ m_nTooltipWidth(300)
     ::ZeroMemory(&m_rcItem, sizeof(RECT));
     ::ZeroMemory(&m_rcPaint, sizeof(RECT));
 	::ZeroMemory(&m_rcBorderSize,sizeof(RECT));
-    ::ZeroMemory(&m_tRelativePos, sizeof(TRelativePosUI));
+	m_piFloatPercent.left = m_piFloatPercent.top = m_piFloatPercent.right = m_piFloatPercent.bottom = 0.0f;
 }
 
 CControlUI::~CControlUI()
@@ -213,12 +213,6 @@ void CControlUI::SetBorderSize(int nSize)
     Invalidate();
 }
 
-//************************************
-// 函数名称: SetBorderSize
-// 返回类型: void
-// 参数信息: RECT rc
-// 函数说明: 
-//************************************
 void CControlUI::SetBorderSize( RECT rc )
 {
 	m_rcBorderSize = rc;
@@ -267,12 +261,11 @@ void CControlUI::SetPos(RECT rc, bool bNeedInvalidate)
         CControlUI* pParent = GetParent();
         if( pParent != NULL ) {
             RECT rcParentPos = pParent->GetPos();
-            if( m_cXY.cx >= 0 ) m_cXY.cx = m_rcItem.left - rcParentPos.left;
-            else m_cXY.cx = m_rcItem.right - rcParentPos.right;
-            if( m_cXY.cy >= 0 ) m_cXY.cy = m_rcItem.top - rcParentPos.top;
-            else m_cXY.cy = m_rcItem.bottom - rcParentPos.bottom;
-            m_cxyFixed.cx = m_rcItem.right - m_rcItem.left;
-            m_cxyFixed.cy = m_rcItem.bottom - m_rcItem.top;
+            //m_cXY.cx = m_rcItem.left - rcParentPos.left;
+            //if( m_cXY.cy >= 0 ) m_cXY.cy = m_rcItem.top - rcParentPos.top;
+            //else m_cXY.cy = m_rcItem.bottom - rcParentPos.bottom;
+            //m_cxyFixed.cx = m_rcItem.right - m_rcItem.left;
+            //m_cxyFixed.cy = m_rcItem.bottom - m_rcItem.top;
         }
     }
 
@@ -446,28 +439,15 @@ void CControlUI::SetMaxHeight(int cy)
     else NeedUpdate();
 }
 
-void CControlUI::SetRelativePos(SIZE szMove,SIZE szZoom)
+TPercentInfo CControlUI::GetFloatPercent() const
 {
-    m_tRelativePos.bRelative = TRUE;
-    m_tRelativePos.nMoveXPercent = szMove.cx;
-    m_tRelativePos.nMoveYPercent = szMove.cy;
-    m_tRelativePos.nZoomXPercent = szZoom.cx;
-    m_tRelativePos.nZoomYPercent = szZoom.cy;
+	return m_piFloatPercent;
 }
 
-void CControlUI::SetRelativeParentSize(SIZE sz)
+void CControlUI::SetFloatPercent(TPercentInfo piFloatPercent)
 {
-    m_tRelativePos.szParent = sz;
-}
-
-TRelativePosUI CControlUI::GetRelativePos() const
-{
-    return m_tRelativePos;
-}
-
-bool CControlUI::IsRelativePos() const
-{
-    return m_tRelativePos.bRelative;
+	m_piFloatPercent = piFloatPercent;
+	NeedParentUpdate();
 }
 
 CDuiString CControlUI::GetToolTip() const
@@ -766,19 +746,12 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         rcPos.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
         rcPos.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
         rcPos.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
-        SIZE szXY = {rcPos.left >= 0 ? rcPos.left : rcPos.right, rcPos.top >= 0 ? rcPos.top : rcPos.bottom};
+        SIZE szXY = {rcPos.left, rcPos.top};
         SetFixedXY(szXY);
+		ASSERT(rcPos.right - rcPos.left >= 0);
+		ASSERT(rcPos.bottom - rcPos.top >= 0);
         SetFixedWidth(rcPos.right - rcPos.left);
         SetFixedHeight(rcPos.bottom - rcPos.top);
-    }
-    else if( _tcscmp(pstrName, _T("relativepos")) == 0 ) {
-        SIZE szMove,szZoom;
-        LPTSTR pstr = NULL;
-        szMove.cx = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
-        szMove.cy = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
-        szZoom.cx = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
-        szZoom.cy = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr); 
-        SetRelativePos(szMove,szZoom);
     }
     else if( _tcscmp(pstrName, _T("padding")) == 0 ) {
         RECT rcPadding = { 0 };
@@ -869,7 +842,22 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else if( _tcscmp(pstrName, _T("mouse")) == 0 ) SetMouseEnabled(_tcscmp(pstrValue, _T("true")) == 0);
 	else if( _tcscmp(pstrName, _T("keyboard")) == 0 ) SetKeyboardEnabled(_tcscmp(pstrValue, _T("true")) == 0);
     else if( _tcscmp(pstrName, _T("visible")) == 0 ) SetVisible(_tcscmp(pstrValue, _T("true")) == 0);
-    else if( _tcscmp(pstrName, _T("float")) == 0 ) SetFloat(_tcscmp(pstrValue, _T("true")) == 0);
+    else if( _tcscmp(pstrName, _T("float")) == 0 ) {
+		CDuiString nValue = pstrValue;
+		if(nValue.Find(',') < 0) {
+			SetFloat(_tcscmp(pstrValue, _T("true")) == 0);
+		}
+		else {
+			TPercentInfo piFloatPercent = { 0 };
+			LPTSTR pstr = NULL;
+			piFloatPercent.left = _tcstod(pstrValue, &pstr);  ASSERT(pstr);
+			piFloatPercent.top = _tcstod(pstr + 1, &pstr);    ASSERT(pstr);
+			piFloatPercent.right = _tcstod(pstr + 1, &pstr);  ASSERT(pstr);
+			piFloatPercent.bottom = _tcstod(pstr + 1, &pstr); ASSERT(pstr);
+			SetFloatPercent(piFloatPercent);
+			SetFloat(true);
+		}
+	}
     else if( _tcscmp(pstrName, _T("shortcut")) == 0 ) SetShortcut(pstrValue[0]);
     else if( _tcscmp(pstrName, _T("menu")) == 0 ) SetContextMenuUsed(_tcscmp(pstrValue, _T("true")) == 0);
 	else if( _tcscmp(pstrName, _T("virtualwnd")) == 0 ) SetVirtualWnd(pstrValue);

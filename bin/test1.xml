@@ -19,7 +19,7 @@
 		<Button name="changeskinbtn" height="20" text="换肤" maxwidth="120" />
 		<RichEdit name="testrichedit" bordercolor="#FF0000" bordersize="0" borderround="18,18" inset="4,2,4,2" bkcolor="#A0F2F5FA" bkcolor2="#A0FF0000" bkcolor3="#A0F2F5FA" font="1" multiline="true" vscrollbar="true" autovscroll="true" enabled="true" rich="true" readonly="false" text="1爱3">
 			<Control bkcolor="#FFF22E2E" float="true" pos="80,40,260,220" bkimage="winbk.bmp" />
-			<Button name="insertimagebtn" float="true" pos="80,10,160,30" text="删除自己" />
+			<Button name="insertimagebtn" float="0.5,0.5,0.5,0.5" pos="-80,-10,80,10" text="删除自己" />
 		</RichEdit>
 		<Control height="26"/>
 		<Edit name="testedit" text="{a www.baidu.com}ddd{/a}" showhtml="true" maxwidth="280" bkcolor="#FF00E000" nativebkcolor="#FF00E000"/>

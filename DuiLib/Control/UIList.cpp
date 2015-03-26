@@ -990,7 +990,6 @@ void CListBodyUI::SetScrollPos(SIZE szPos)
 
     if( cx == 0 && cy == 0 ) return;
 
-    RECT rcPos;
     for( int it2 = 0; it2 < m_items.GetSize(); it2++ ) {
         CControlUI* pControl = static_cast<CControlUI*>(m_items[it2]);
         if( !pControl->IsVisible() ) continue;

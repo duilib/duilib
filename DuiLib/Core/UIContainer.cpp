@@ -340,7 +340,6 @@ namespace DuiLib
 
 		if( cx == 0 && cy == 0 ) return;
 
-		RECT rcPos;
 		for( int it2 = 0; it2 < m_items.GetSize(); it2++ ) {
 			CControlUI* pControl = static_cast<CControlUI*>(m_items[it2]);
 			if( !pControl->IsVisible() ) continue;
@@ -749,23 +748,14 @@ namespace DuiLib
 
 		SIZE szXY = pControl->GetFixedXY();
 		SIZE sz = {pControl->GetFixedWidth(), pControl->GetFixedHeight()};
+		TPercentInfo rcPercent = pControl->GetFloatPercent();
+		LONG width = m_rcItem.right - m_rcItem.left;
+		LONG height = m_rcItem.bottom - m_rcItem.top;
 		RECT rcCtrl = { 0 };
-		if( szXY.cx >= 0 ) {
-			rcCtrl.left = m_rcItem.left + szXY.cx;
-			rcCtrl.right = m_rcItem.left + szXY.cx + sz.cx;
-		}
-		else {
-			rcCtrl.left = m_rcItem.right + szXY.cx - sz.cx;
-			rcCtrl.right = m_rcItem.right + szXY.cx;
-		}
-		if( szXY.cy >= 0 ) {
-			rcCtrl.top = m_rcItem.top + szXY.cy;
-			rcCtrl.bottom = m_rcItem.top + szXY.cy + sz.cy;
-		}
-		else {
-			rcCtrl.top = m_rcItem.bottom + szXY.cy - sz.cy;
-			rcCtrl.bottom = m_rcItem.bottom + szXY.cy;
-		}
+		rcCtrl.left = m_rcItem.left + (LONG)(width*rcPercent.left) + szXY.cx;
+		rcCtrl.right = m_rcItem.left + (LONG)(width*rcPercent.right) + szXY.cx + sz.cx;
+		rcCtrl.top = m_rcItem.top + (LONG)(height*rcPercent.top) + szXY.cy;
+		rcCtrl.bottom = m_rcItem.top + (LONG)(height*rcPercent.bottom) + szXY.cy + sz.cy;
 		pControl->SetPos(rcCtrl, false);
 	}
 
