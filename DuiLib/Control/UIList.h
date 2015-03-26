@@ -24,17 +24,17 @@ typedef struct tagTListInfoUI
     RECT rcTextPadding;
     DWORD dwTextColor;
     DWORD dwBkColor;
-    CDuiString sBkImage;
+    TDrawInfo diBk;
     bool bAlternateBk;
     DWORD dwSelectedTextColor;
     DWORD dwSelectedBkColor;
-    CDuiString sSelectedImage;
+    TDrawInfo diSelected;
     DWORD dwHotTextColor;
     DWORD dwHotBkColor;
-    CDuiString sHotImage;
+    TDrawInfo diHot;
     DWORD dwDisabledTextColor;
     DWORD dwDisabledBkColor;
-    CDuiString sDisabledImage;
+    TDrawInfo diDisabled;
     DWORD dwLineColor;
     bool bShowHtml;
     bool bMultiExpandable;
@@ -131,6 +131,7 @@ public:
     void SetItemTextColor(DWORD dwTextColor);
     void SetItemBkColor(DWORD dwBkColor);
     void SetItemBkImage(LPCTSTR pStrImage);
+	bool IsAlternateBk() const;
     void SetAlternateBk(bool bAlternateBk);
     void SetSelectedItemTextColor(DWORD dwTextColor);
     void SetSelectedItemBkColor(DWORD dwBkColor);
@@ -148,7 +149,6 @@ public:
 	DWORD GetItemTextColor() const;
 	DWORD GetItemBkColor() const;
 	LPCTSTR GetItemBkImage() const;
-    bool IsAlternateBk() const;
 	DWORD GetSelectedItemTextColor() const;
 	DWORD GetSelectedItemBkColor() const;
 	LPCTSTR GetSelectedItemImage() const;
@@ -164,7 +164,8 @@ public:
     int GetExpandedItem() const;
     bool ExpandItem(int iIndex, bool bExpand = true);
 
-    void SetPos(RECT rc);
+	void SetPos(RECT rc, bool bNeedInvalidate = true);
+	void Move(SIZE szOffset, bool bNeedInvalidate = true);
     void DoEvent(TEventUI& event);
     void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 
@@ -210,7 +211,7 @@ public:
     CListBodyUI(CListUI* pOwner);
 
     void SetScrollPos(SIZE szPos);
-    void SetPos(RECT rc);
+	void SetPos(RECT rc, bool bNeedInvalidate = true);
     void DoEvent(TEventUI& event);
     BOOL SortItems(PULVCompareFunc pfnCompare, UINT_PTR dwData);
 protected:
@@ -293,12 +294,11 @@ protected:
     UINT m_uTextStyle;
     bool m_bShowHtml;
 	RECT m_rcTextPadding;
-    CDuiString m_sNormalImage;
-    CDuiString m_sHotImage;
-    CDuiString m_sPushedImage;
-    CDuiString m_sFocusedImage;
-    CDuiString m_sSepImage;
-    CDuiString m_sSepImageModify;
+    TDrawInfo m_diNormal;
+    TDrawInfo m_diHot;
+    TDrawInfo m_diPushed;
+    TDrawInfo m_diFocused;
+    TDrawInfo m_diSep;
 };
 
 

@@ -97,7 +97,6 @@
 #include "Control/UIProgress.h"
 #include "Control/UISlider.h"
 
-#include "Control/UIComboBox.h"
 #include "Control/UIRichEdit.h"
 #include "Control/UIDateTime.h"
 

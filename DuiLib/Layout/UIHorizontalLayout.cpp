@@ -26,9 +26,9 @@ namespace DuiLib
 		else return 0;
 	}
 
-	void CHorizontalLayoutUI::SetPos(RECT rc)
+	void CHorizontalLayoutUI::SetPos(RECT rc, bool bNeedInvalidate)
 	{
-		CControlUI::SetPos(rc);
+		CControlUI::SetPos(rc, bNeedInvalidate);
 		rc = m_rcItem;
 
 		// Adjust for inset
@@ -115,7 +115,7 @@ namespace DuiLib
 			if( sz.cy > pControl->GetMaxHeight() ) sz.cy = pControl->GetMaxHeight();
 
 			RECT rcCtrl = { iPosX + rcPadding.left, rc.top + rcPadding.top, iPosX + sz.cx + rcPadding.left + rcPadding.right, rc.top + rcPadding.top + sz.cy};
-			pControl->SetPos(rcCtrl);
+			pControl->SetPos(rcCtrl, false);
 			iPosX += sz.cx + m_iChildPadding + rcPadding.left + rcPadding.right;
             cxNeeded += sz.cx + rcPadding.left + rcPadding.right;
 			szRemaining.cx -= sz.cx + m_iChildPadding + rcPadding.right;

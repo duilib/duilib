@@ -46,7 +46,8 @@ namespace DuiLib
 		void SetSelAll();
 		void SetReplaceSel(LPCTSTR lpszReplace);
 
-		void SetPos(RECT rc);
+		void SetPos(RECT rc, bool bNeedInvalidate = true);
+		void Move(SIZE szOffset, bool bNeedInvalidate = true);
 		void SetVisible(bool bVisible = true);
 		void SetInternVisible(bool bVisible = true);
 		SIZE EstimateSize(SIZE szAvailable);
@@ -64,12 +65,13 @@ namespace DuiLib
 		bool m_bPasswordMode;
 		TCHAR m_cPasswordChar;
 		UINT m_uButtonState;
-		CDuiString m_sNormalImage;
-		CDuiString m_sHotImage;
-		CDuiString m_sFocusedImage;
-		CDuiString m_sDisabledImage;
 		DWORD m_dwEditbkColor;
 		int m_iWindowStyls;
+
+		TDrawInfo m_diNormal;
+		TDrawInfo m_diHot;
+		TDrawInfo m_diFocused;
+		TDrawInfo m_diDisabled;
 	};
 }
 #endif // __UIEDIT_H__

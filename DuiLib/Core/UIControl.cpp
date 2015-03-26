@@ -150,15 +150,15 @@ void CControlUI::SetBkColor3(DWORD dwBackColor)
 
 LPCTSTR CControlUI::GetBkImage()
 {
-    return m_sBkImage;
+    return m_diBk.sDrawString;
 }
 
 void CControlUI::SetBkImage(LPCTSTR pStrImage)
 {
-    if( m_sBkImage == pStrImage ) return;
-
-    m_sBkImage = pStrImage;
-    Invalidate();
+	if( m_diBk.sDrawString == pStrImage && m_diBk.pImageInfo != NULL ) return;
+	m_diBk.Clear();
+	m_diBk.sDrawString = pStrImage;
+	Invalidate();
 }
 
 DWORD CControlUI::GetBorderColor() const
@@ -236,9 +236,9 @@ void CControlUI::SetBorderRound(SIZE cxyRound)
     Invalidate();
 }
 
-bool CControlUI::DrawImage(HDC hDC, LPCTSTR pStrImage, LPCTSTR pStrModify)
+bool CControlUI::DrawImage(HDC hDC, TDrawInfo& drawInfo)
 {
-    return CRenderEngine::DrawImageString(hDC, m_pManager, m_rcItem, m_rcPaint, pStrImage, pStrModify);
+	return CRenderEngine::DrawImage(hDC, m_pManager, m_rcItem, m_rcPaint, drawInfo);
 }
 
 const RECT& CControlUI::GetPos() const
@@ -246,7 +246,7 @@ const RECT& CControlUI::GetPos() const
     return m_rcItem;
 }
 
-void CControlUI::SetPos(RECT rc)
+void CControlUI::SetPos(RECT rc, bool bNeedInvalidate)
 {
     if( rc.right < rc.left ) rc.right = rc.left;
     if( rc.bottom < rc.top ) rc.bottom = rc.top;
@@ -277,21 +277,43 @@ void CControlUI::SetPos(RECT rc)
     }
 
     m_bUpdateNeeded = false;
-    invalidateRc.Join(m_rcItem);
 
-    CControlUI* pParent = this;
-    RECT rcTemp;
-    RECT rcParent;
-    while( pParent = pParent->GetParent() )
-    {
-        rcTemp = invalidateRc;
-        rcParent = pParent->GetPos();
-        if( !::IntersectRect(&invalidateRc, &rcTemp, &rcParent) ) 
-        {
-            return;
-        }
-    }
-    m_pManager->Invalidate(invalidateRc);
+	if( bNeedInvalidate && IsVisible() ) {
+		invalidateRc.Join(m_rcItem);
+		CControlUI* pParent = this;
+		RECT rcTemp;
+		RECT rcParent;
+		while( pParent = pParent->GetParent() ) {
+			if( !pParent->IsVisible() ) return;
+			rcTemp = invalidateRc;
+			rcParent = pParent->GetPos();
+			if( !::IntersectRect(&invalidateRc, &rcTemp, &rcParent) ) return;
+		}
+		m_pManager->Invalidate(invalidateRc);
+	}
+}
+
+void CControlUI::Move(SIZE szOffset, bool bNeedInvalidate)
+{
+	CDuiRect invalidateRc = m_rcItem;
+	m_rcItem.left += szOffset.cx;
+	m_rcItem.top += szOffset.cy;
+	m_rcItem.right += szOffset.cx;
+	m_rcItem.bottom += szOffset.cy;
+
+	if( bNeedInvalidate && m_pManager == NULL && IsVisible() ) {
+		invalidateRc.Join(m_rcItem);
+		CControlUI* pParent = this;
+		RECT rcTemp;
+		RECT rcParent;
+		while( pParent = pParent->GetParent() ) {
+			if( !pParent->IsVisible() ) return;
+			rcTemp = invalidateRc;
+			rcParent = pParent->GetPos();
+			if( !::IntersectRect(&invalidateRc, &rcTemp, &rcParent) ) return;
+		}
+		m_pManager->Invalidate(invalidateRc);
+	}
 }
 
 int CControlUI::GetWidth() const
@@ -599,6 +621,7 @@ CControlUI* CControlUI::FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFl
     if( (uFlags & UIFIND_VISIBLE) != 0 && !IsVisible() ) return NULL;
     if( (uFlags & UIFIND_ENABLED) != 0 && !IsEnabled() ) return NULL;
 	if( (uFlags & UIFIND_HITTEST) != 0 && (!m_bMouseEnabled || !::PtInRect(&m_rcItem, * static_cast<LPPOINT>(pData))) ) return NULL;
+	if( (uFlags & UIFIND_UPDATETEST) != 0 && Proc(this, pData) != NULL ) return NULL;
     return Proc(this, pData);
 }
 
@@ -933,8 +956,7 @@ void CControlUI::PaintBkColor(HDC hDC)
 
 void CControlUI::PaintBkImage(HDC hDC)
 {
-    if( m_sBkImage.IsEmpty() ) return;
-    if( !DrawImage(hDC, (LPCTSTR)m_sBkImage) ) m_sBkImage.Empty();
+	DrawImage(hDC, m_diBk);
 }
 
 void CControlUI::PaintStatusImage(HDC hDC)

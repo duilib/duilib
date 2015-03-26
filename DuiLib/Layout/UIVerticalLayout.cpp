@@ -26,9 +26,9 @@ namespace DuiLib
 		else return 0;
 	}
 
-	void CVerticalLayoutUI::SetPos(RECT rc)
+	void CVerticalLayoutUI::SetPos(RECT rc, bool bNeedInvalidate)
 	{
-		CControlUI::SetPos(rc);
+		CControlUI::SetPos(rc, bNeedInvalidate);
 		rc = m_rcItem;
 
 		// Adjust for inset
@@ -119,7 +119,7 @@ namespace DuiLib
 			if( sz.cx > pControl->GetMaxWidth() ) sz.cx = pControl->GetMaxWidth();
 
 			RECT rcCtrl = { iPosX + rcPadding.left, iPosY + rcPadding.top, iPosX + rcPadding.left + sz.cx, iPosY + sz.cy + rcPadding.top + rcPadding.bottom };
-			pControl->SetPos(rcCtrl);
+			pControl->SetPos(rcCtrl, false);
 
 			iPosY += sz.cy + m_iChildPadding + rcPadding.top + rcPadding.bottom;
 			cyNeeded += sz.cy + rcPadding.top + rcPadding.bottom;

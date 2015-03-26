@@ -606,10 +606,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Control\UIComboBox.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\Control\UIDateTime.cpp"
 					>
 				</File>
@@ -776,10 +772,6 @@
 				</File>
 				<File
 					RelativePath=".\Control\UICombo.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Control\UIComboBox.h"
 					>
 				</File>
 				<File

@@ -55,13 +55,13 @@ namespace DuiLib
 		DWORD m_dwPushedTextColor;
 		DWORD m_dwFocusedTextColor;
 
-		CDuiString m_sNormalImage;
-		CDuiString m_sHotImage;
-		CDuiString m_sHotForeImage;
-		CDuiString m_sPushedImage;
-		CDuiString m_sPushedForeImage;
-		CDuiString m_sFocusedImage;
-		CDuiString m_sDisabledImage;
+		TDrawInfo m_diNormal;
+		TDrawInfo m_diHot;
+		TDrawInfo m_diHotFore;
+		TDrawInfo m_diPushed;
+		TDrawInfo m_diPushedFore;
+		TDrawInfo m_diFocused;
+		TDrawInfo m_diDisabled;
 	};
 
 }	// namespace DuiLib

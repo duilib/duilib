@@ -120,7 +120,7 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     }
     else if( uMsg == WM_CLOSE ) {
         m_pOwner->SetManager(m_pOwner->GetManager(), m_pOwner->GetParent(), false);
-        m_pOwner->SetPos(m_pOwner->GetPos());
+        m_pOwner->SetPos(m_pOwner->GetPos(), false);
         m_pOwner->SetFocus();
     }
     else if( uMsg == WM_LBUTTONUP ) {
@@ -539,57 +539,67 @@ void CComboUI::SetTextPadding(RECT rc)
 
 LPCTSTR CComboUI::GetNormalImage() const
 {
-    return m_sNormalImage;
+    return m_diNormal.sDrawString;
 }
 
 void CComboUI::SetNormalImage(LPCTSTR pStrImage)
 {
-    m_sNormalImage = pStrImage;
-    Invalidate();
+	if( m_diNormal.sDrawString == pStrImage && m_diNormal.pImageInfo != NULL ) return;
+	m_diNormal.Clear();
+	m_diNormal.sDrawString = pStrImage;
+	Invalidate();
 }
 
 LPCTSTR CComboUI::GetHotImage() const
 {
-    return m_sHotImage;
+    return m_diHot.sDrawString;
 }
 
 void CComboUI::SetHotImage(LPCTSTR pStrImage)
 {
-    m_sHotImage = pStrImage;
-    Invalidate();
+	if( m_diHot.sDrawString == pStrImage && m_diHot.pImageInfo != NULL ) return;
+	m_diHot.Clear();
+	m_diHot.sDrawString = pStrImage;
+	Invalidate();
 }
 
 LPCTSTR CComboUI::GetPushedImage() const
 {
-    return m_sPushedImage;
+    return m_diPushed.sDrawString;
 }
 
 void CComboUI::SetPushedImage(LPCTSTR pStrImage)
 {
-    m_sPushedImage = pStrImage;
-    Invalidate();
+	if( m_diPushed.sDrawString == pStrImage && m_diPushed.pImageInfo != NULL ) return;
+	m_diPushed.Clear();
+	m_diPushed.sDrawString = pStrImage;
+	Invalidate();
 }
 
 LPCTSTR CComboUI::GetFocusedImage() const
 {
-    return m_sFocusedImage;
+	return m_diFocused.sDrawString;
 }
 
 void CComboUI::SetFocusedImage(LPCTSTR pStrImage)
 {
-    m_sFocusedImage = pStrImage;
-    Invalidate();
+	if( m_diFocused.sDrawString == pStrImage && m_diFocused.pImageInfo != NULL ) return;
+	m_diFocused.Clear();
+	m_diFocused.sDrawString = pStrImage;
+	Invalidate();
 }
 
 LPCTSTR CComboUI::GetDisabledImage() const
 {
-    return m_sDisabledImage;
+	return m_diDisabled.sDrawString;
 }
 
 void CComboUI::SetDisabledImage(LPCTSTR pStrImage)
 {
-    m_sDisabledImage = pStrImage;
-    Invalidate();
+	if( m_diDisabled.sDrawString == pStrImage && m_diDisabled.pImageInfo != NULL ) return;
+	m_diDisabled.Clear();
+	m_diDisabled.sDrawString = pStrImage;
+	Invalidate();
 }
 
 TListInfoUI* CComboUI::GetListInfo()
@@ -633,7 +643,9 @@ void CComboUI::SetItemBkColor(DWORD dwBkColor)
 
 void CComboUI::SetItemBkImage(LPCTSTR pStrImage)
 {
-    m_ListInfo.sBkImage = pStrImage;
+	if( m_ListInfo.diBk.sDrawString == pStrImage && m_ListInfo.diBk.pImageInfo != NULL ) return;
+	m_ListInfo.diBk.Clear();
+	m_ListInfo.diBk.sDrawString = pStrImage;
 }
 
 DWORD CComboUI::GetItemTextColor() const
@@ -648,7 +660,7 @@ DWORD CComboUI::GetItemBkColor() const
 
 LPCTSTR CComboUI::GetItemBkImage() const
 {
-	return m_ListInfo.sBkImage;
+	return m_ListInfo.diBk.sDrawString;
 }
 
 bool CComboUI::IsAlternateBk() const
@@ -673,7 +685,9 @@ void CComboUI::SetSelectedItemBkColor(DWORD dwBkColor)
 
 void CComboUI::SetSelectedItemImage(LPCTSTR pStrImage)
 {
-	m_ListInfo.sSelectedImage = pStrImage;
+	if( m_ListInfo.diSelected.sDrawString == pStrImage && m_ListInfo.diSelected.pImageInfo != NULL ) return;
+	m_ListInfo.diSelected.Clear();
+	m_ListInfo.diSelected.sDrawString = pStrImage;
 }
 
 DWORD CComboUI::GetSelectedItemTextColor() const
@@ -688,7 +702,7 @@ DWORD CComboUI::GetSelectedItemBkColor() const
 
 LPCTSTR CComboUI::GetSelectedItemImage() const
 {
-	return m_ListInfo.sSelectedImage;
+	return m_ListInfo.diSelected.sDrawString;
 }
 
 void CComboUI::SetHotItemTextColor(DWORD dwTextColor)
@@ -703,7 +717,9 @@ void CComboUI::SetHotItemBkColor(DWORD dwBkColor)
 
 void CComboUI::SetHotItemImage(LPCTSTR pStrImage)
 {
-    m_ListInfo.sHotImage = pStrImage;
+	if( m_ListInfo.diHot.sDrawString == pStrImage && m_ListInfo.diHot.pImageInfo != NULL ) return;
+	m_ListInfo.diHot.Clear();
+	m_ListInfo.diHot.sDrawString = pStrImage;
 }
 
 DWORD CComboUI::GetHotItemTextColor() const
@@ -717,7 +733,7 @@ DWORD CComboUI::GetHotItemBkColor() const
 
 LPCTSTR CComboUI::GetHotItemImage() const
 {
-	return m_ListInfo.sHotImage;
+	return m_ListInfo.diHot.sDrawString;
 }
 
 void CComboUI::SetDisabledItemTextColor(DWORD dwTextColor)
@@ -732,7 +748,9 @@ void CComboUI::SetDisabledItemBkColor(DWORD dwBkColor)
 
 void CComboUI::SetDisabledItemImage(LPCTSTR pStrImage)
 {
-    m_ListInfo.sDisabledImage = pStrImage;
+	if( m_ListInfo.diDisabled.sDrawString == pStrImage && m_ListInfo.diDisabled.pImageInfo != NULL ) return;
+	m_ListInfo.diDisabled.Clear();
+	m_ListInfo.diDisabled.sDrawString = pStrImage;
 }
 
 DWORD CComboUI::GetDisabledItemTextColor() const
@@ -747,7 +765,7 @@ DWORD CComboUI::GetDisabledItemBkColor() const
 
 LPCTSTR CComboUI::GetDisabledItemImage() const
 {
-	return m_ListInfo.sDisabledImage;
+	return m_ListInfo.diDisabled.sDrawString;
 }
 
 DWORD CComboUI::GetItemLineColor() const
@@ -773,13 +791,18 @@ void CComboUI::SetItemShowHtml(bool bShowHtml)
     Invalidate();
 }
 
-void CComboUI::SetPos(RECT rc)
+void CComboUI::SetPos(RECT rc, bool bNeedInvalidate)
 {
     // Put all elements out of sight
     RECT rcNull = { 0 };
-    for( int i = 0; i < m_items.GetSize(); i++ ) static_cast<CControlUI*>(m_items[i])->SetPos(rcNull);
+    for( int i = 0; i < m_items.GetSize(); i++ ) static_cast<CControlUI*>(m_items[i])->SetPos(rcNull, false);
     // Position this control
-    CControlUI::SetPos(rc);
+    CControlUI::SetPos(rc, bNeedInvalidate);
+}
+
+void CComboUI::Move(SIZE szOffset, bool bNeedInvalidate)
+{
+	CControlUI::Move(szOffset, bNeedInvalidate);
 }
 
 void CComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
@@ -907,34 +930,20 @@ void CComboUI::PaintStatusImage(HDC hDC)
     else m_uButtonState &= ~ UISTATE_DISABLED;
 
     if( (m_uButtonState & UISTATE_DISABLED) != 0 ) {
-        if( !m_sDisabledImage.IsEmpty() ) {
-            if( !DrawImage(hDC, (LPCTSTR)m_sDisabledImage) ) m_sDisabledImage.Empty();
-            else return;
-        }
+		DrawImage(hDC, m_diDisabled);
     }
     else if( (m_uButtonState & UISTATE_PUSHED) != 0 ) {
-        if( !m_sPushedImage.IsEmpty() ) {
-            if( !DrawImage(hDC, (LPCTSTR)m_sPushedImage) ) m_sPushedImage.Empty();
-            else return;
-        }
+		DrawImage(hDC, m_diPushed);
     }
     else if( (m_uButtonState & UISTATE_HOT) != 0 ) {
-        if( !m_sHotImage.IsEmpty() ) {
-            if( !DrawImage(hDC, (LPCTSTR)m_sHotImage) ) m_sHotImage.Empty();
-            else return;
-        }
+		DrawImage(hDC, m_diHot);
     }
     else if( (m_uButtonState & UISTATE_FOCUSED) != 0 ) {
-        if( !m_sFocusedImage.IsEmpty() ) {
-            if( !DrawImage(hDC, (LPCTSTR)m_sFocusedImage) ) m_sFocusedImage.Empty();
-            else return;
-        }
+		DrawImage(hDC, m_diFocused);
     }
-
-    if( !m_sNormalImage.IsEmpty() ) {
-        if( !DrawImage(hDC, (LPCTSTR)m_sNormalImage) ) m_sNormalImage.Empty();
-        else return;
-    }
+	else {
+		DrawImage(hDC, m_diNormal);
+	}
 }
 
 void CComboUI::PaintText(HDC hDC)
@@ -953,9 +962,9 @@ void CComboUI::PaintText(HDC hDC)
         }
         else {
             RECT rcOldPos = pControl->GetPos();
-            pControl->SetPos(rcText);
+            pControl->SetPos(rcText, false);
             pControl->DoPaint(hDC, rcText);
-            pControl->SetPos(rcOldPos);
+            pControl->SetPos(rcOldPos, false);
         }
     }
 }

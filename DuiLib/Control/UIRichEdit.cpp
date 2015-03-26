@@ -1892,9 +1892,9 @@ SIZE CRichEditUI::EstimateSize(SIZE szAvailable)
     return CContainerUI::EstimateSize(szAvailable);
 }
 
-void CRichEditUI::SetPos(RECT rc)
+void CRichEditUI::SetPos(RECT rc, bool bNeedInvalidate)
 {
-    CControlUI::SetPos(rc);
+    CControlUI::SetPos(rc, bNeedInvalidate);
     rc = m_rcItem;
 
     rc.left += m_rcInset.left;
@@ -1941,11 +1941,11 @@ void CRichEditUI::SetPos(RECT rc)
 
     if( m_pVerticalScrollBar != NULL && m_pVerticalScrollBar->IsVisible() ) {
         RECT rcScrollBarPos = { rc.right, rc.top, rc.right + m_pVerticalScrollBar->GetFixedWidth(), rc.bottom};
-        m_pVerticalScrollBar->SetPos(rcScrollBarPos);
+        m_pVerticalScrollBar->SetPos(rcScrollBarPos, false);
     }
     if( m_pHorizontalScrollBar != NULL && m_pHorizontalScrollBar->IsVisible() ) {
         RECT rcScrollBarPos = { rc.left, rc.bottom, rc.right, rc.bottom + m_pHorizontalScrollBar->GetFixedHeight()};
-        m_pHorizontalScrollBar->SetPos(rcScrollBarPos);
+        m_pHorizontalScrollBar->SetPos(rcScrollBarPos, false);
     }
 
     for( int it = 0; it < m_items.GetSize(); it++ ) {
@@ -1955,9 +1955,31 @@ void CRichEditUI::SetPos(RECT rc)
             SetFloatPos(it);
         }
         else {
-            pControl->SetPos(rc); // 所有非float子控件放大到整个客户区
-        }
+			SIZE sz = { rc.right - rc.left, rc.bottom - rc.top };
+			if( sz.cx < pControl->GetMinWidth() ) sz.cx = pControl->GetMinWidth();
+			if( sz.cx > pControl->GetMaxWidth() ) sz.cx = pControl->GetMaxWidth();
+			if( sz.cy < pControl->GetMinHeight() ) sz.cy = pControl->GetMinHeight();
+			if( sz.cy > pControl->GetMaxHeight() ) sz.cy = pControl->GetMaxHeight();
+			RECT rcCtrl = { rc.left, rc.top, rc.left + sz.cx, rc.top + sz.cy };
+			pControl->SetPos(rcCtrl, false);
+		}
     }
+}
+
+void CRichEditUI::Move(SIZE szOffset, bool bNeedInvalidate)
+{
+	CContainerUI::Move(szOffset, bNeedInvalidate);
+	if( m_pTwh != NULL ) {
+		RECT rc = m_rcItem;
+		rc.left += m_rcInset.left;
+		rc.top += m_rcInset.top;
+		rc.right -= m_rcInset.right;
+		rc.bottom -= m_rcInset.bottom;
+
+		if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetFixedWidth();
+		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
+		m_pTwh->SetClientRect(&rc);
+	}
 }
 
 void CRichEditUI::DoPaint(HDC hDC, const RECT& rcPaint)

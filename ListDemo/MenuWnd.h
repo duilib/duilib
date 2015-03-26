@@ -27,10 +27,13 @@ class CShadowWnd : public CWindowWnd
 {
 private:
     bool m_bNeedUpdate;
+	TDrawInfo m_di;
     CPaintManagerUI m_pm;
 
 public:
-    CShadowWnd() { };
+    CShadowWnd() {
+		m_di.sDrawString = _T("file='menu_bk.png' corner='40,8,8,8'");
+	};
     LPCTSTR GetWindowClassName() const { return _T("UIShadow"); };
     UINT GetClassStyle() const { return UI_CLASSSTYLE_FRAME; };
     void OnFinalMessage(HWND /*hWnd*/) { delete this; };
@@ -48,7 +51,8 @@ public:
         HBITMAP hbmpBackground = CreateMyBitmap(hDcPaint, dwWidth, dwHeight, &pBackgroundBits);
         ::ZeroMemory(pBackgroundBits, dwWidth * dwHeight * 4);
         HBITMAP hOldBitmap = (HBITMAP) ::SelectObject(hDcBackground, hbmpBackground);
-        CRenderEngine::DrawImageString(hDcBackground, &m_pm, rcClient, rcClient, _T("file='menu_bk.png' corner='40,8,8,8'"), NULL);
+		
+        CRenderEngine::DrawImage(hDcBackground, &m_pm, rcClient, rcClient, m_di);
 
         RECT rcWnd = { 0 };
         ::GetWindowRect(m_hWnd, &rcWnd);

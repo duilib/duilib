@@ -52,9 +52,9 @@ namespace DuiLib
 		DWORD			m_dwSelectedBkColor;
 		DWORD			m_dwSelectedTextColor;
 
-		CDuiString		m_sSelectedImage;
-		CDuiString		m_sSelectedHotImage;
-		CDuiString		m_sForeImage;
+		TDrawInfo		m_diSelected;
+		TDrawInfo		m_diSelectedHot;
+		TDrawInfo		m_diFore;
 	};
 
 } // namespace DuiLib

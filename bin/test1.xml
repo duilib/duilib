@@ -9,7 +9,6 @@
 	<Default shared="true" name="CheckBox" value="textcolor=&quot;#FFbac0c5&quot; hottextcolor=&quot;#FF386382&quot; selectedtextcolor=&quot;#FF386382&quot; disabledtextcolor=&quot;#FFbac0c5&quot; textpadding=&quot;20,2,0,0&quot; align=&quot;left&quot; selectedimage=&quot;file='Icon/checked.png' dest='0,2,16,18'&quot; normalimage=&quot;file='Icon/unchecked.png' dest='0,2,16,18'&quot;" />
 	
 	<VerticalLayout inset="10,6,10,6" bkcolor="#FFEA679F" colorhsl="true" borderround="18,18" bkimage="file='voice_rect.png' xtiled='true' ytiled='true' dest='0,0,200,400'">
-		<!--如果richedit在窗口内是第一个获得焦点的，会出现一个光标刷新bug，暂无解决办法-->
 		<Slider name="alpha_controlor" min="20" max="255" value="255"/>
 		<Control height="4"/>
 		<Slider name="h_controlor" max="360" value="180"/>

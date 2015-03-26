@@ -78,7 +78,7 @@ namespace DuiLib
 		LPCTSTR GetBkDisabledImage();
 		void SetBkDisabledImage(LPCTSTR pStrImage);
 
-		void SetPos(RECT rc);
+		void SetPos(RECT rc, bool bNeedInvalidate = true);
 		void DoEvent(TEventUI& event);
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 
@@ -108,40 +108,38 @@ namespace DuiLib
 		int m_nLastScrollOffset;
 		int m_nScrollRepeatDelay;
 
-		CDuiString m_sBkNormalImage;
-		CDuiString m_sBkHotImage;
-		CDuiString m_sBkPushedImage;
-		CDuiString m_sBkDisabledImage;
+		TDrawInfo m_diBkNormal;
+		TDrawInfo m_diBkHot;
+		TDrawInfo m_diBkPushed;
+		TDrawInfo m_diBkDisabled;
 
 		bool m_bShowButton1;
 		RECT m_rcButton1;
 		UINT m_uButton1State;
-		CDuiString m_sButton1NormalImage;
-		CDuiString m_sButton1HotImage;
-		CDuiString m_sButton1PushedImage;
-		CDuiString m_sButton1DisabledImage;
+		TDrawInfo m_diButton1Normal;
+		TDrawInfo m_diButton1Hot;
+		TDrawInfo m_diButton1Pushed;
+		TDrawInfo m_diButton1Disabled;
 
 		bool m_bShowButton2;
 		RECT m_rcButton2;
 		UINT m_uButton2State;
-		CDuiString m_sButton2NormalImage;
-		CDuiString m_sButton2HotImage;
-		CDuiString m_sButton2PushedImage;
-		CDuiString m_sButton2DisabledImage;
+		TDrawInfo m_diButton2Normal;
+		TDrawInfo m_diButton2Hot;
+		TDrawInfo m_diButton2Pushed;
+		TDrawInfo m_diButton2Disabled;
 
 		RECT m_rcThumb;
 		UINT m_uThumbState;
-		CDuiString m_sThumbNormalImage;
-		CDuiString m_sThumbHotImage;
-		CDuiString m_sThumbPushedImage;
-		CDuiString m_sThumbDisabledImage;
+		TDrawInfo m_diThumbNormal;
+		TDrawInfo m_diThumbHot;
+		TDrawInfo m_diThumbPushed;
+		TDrawInfo m_diThumbDisabled;
 
-		CDuiString m_sRailNormalImage;
-		CDuiString m_sRailHotImage;
-		CDuiString m_sRailPushedImage;
-		CDuiString m_sRailDisabledImage;
-
-		CDuiString m_sImageModify;
+		TDrawInfo m_diRailNormal;
+		TDrawInfo m_diRailHot;
+		TDrawInfo m_diRailPushed;
+		TDrawInfo m_diRailDisabled;
 	};
 }
 

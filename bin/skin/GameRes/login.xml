@@ -15,7 +15,7 @@
 				<ListLabelElement text="张三" selected="true" />
 				<ListLabelElement text="李四" />
 			</Combo>
-			<Button text="{u}{l}注册账号{/l}{/u}" showhtml="true" float="true" pos="230, 20, 300, 42" tooltip="如果你还没有账号，请点击注册一个账号" />
+			<Button text="{u}注册账号{/u}" showhtml="true" float="true" pos="230, 20, 300, 42" tooltip="如果你还没有账号，请点击注册一个账号" />
 			<Edit name="accountedit" float="true" pos="81, 21, 199, 41" tooltip="请在这里输入您的账号"/>
 			<Label text="密码：" float="true" pos="10, 55, 78, 75" />
 			<Edit name="pwdedit" float="true" pos="80, 55, 220, 75" password="true" tooltip="请在这里输入您的密码" bordercolor="#FF4EA0D1" bordersize="1"/>

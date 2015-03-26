@@ -135,9 +135,9 @@ namespace DuiLib
 		return CContainerUI::SetAttribute(pstrName, pstrValue);
 	}
 
-	void CTabLayoutUI::SetPos(RECT rc)
+	void CTabLayoutUI::SetPos(RECT rc, bool bNeedInvalidate)
 	{
-		CControlUI::SetPos(rc);
+		CControlUI::SetPos(rc, bNeedInvalidate);
 		rc = m_rcItem;
 
 		// Adjust for inset
@@ -178,7 +178,7 @@ namespace DuiLib
 			if( sz.cy > pControl->GetMaxHeight() ) sz.cy = pControl->GetMaxHeight();
 
 			RECT rcCtrl = { rc.left, rc.top, rc.left + sz.cx, rc.top + sz.cy};
-			pControl->SetPos(rcCtrl);
+			pControl->SetPos(rcCtrl, false);
 		}
 	}
 }

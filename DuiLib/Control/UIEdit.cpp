@@ -371,45 +371,53 @@ namespace DuiLib
 
 	LPCTSTR CEditUI::GetNormalImage()
 	{
-		return m_sNormalImage;
+		return m_diNormal.sDrawString;
 	}
 
 	void CEditUI::SetNormalImage(LPCTSTR pStrImage)
 	{
-		m_sNormalImage = pStrImage;
+		if( m_diNormal.sDrawString == pStrImage && m_diNormal.pImageInfo != NULL ) return;
+		m_diNormal.Clear();
+		m_diNormal.sDrawString = pStrImage;
 		Invalidate();
 	}
 
 	LPCTSTR CEditUI::GetHotImage()
 	{
-		return m_sHotImage;
+		return m_diHot.sDrawString;	
 	}
 
 	void CEditUI::SetHotImage(LPCTSTR pStrImage)
 	{
-		m_sHotImage = pStrImage;
+		if( m_diHot.sDrawString == pStrImage && m_diHot.pImageInfo != NULL ) return;
+		m_diHot.Clear();
+		m_diHot.sDrawString = pStrImage;
 		Invalidate();
 	}
 
 	LPCTSTR CEditUI::GetFocusedImage()
 	{
-		return m_sFocusedImage;
+		return m_diFocused.sDrawString;	
 	}
 
 	void CEditUI::SetFocusedImage(LPCTSTR pStrImage)
 	{
-		m_sFocusedImage = pStrImage;
+		if( m_diFocused.sDrawString == pStrImage && m_diFocused.pImageInfo != NULL ) return;
+		m_diFocused.Clear();
+		m_diFocused.sDrawString = pStrImage;
 		Invalidate();
 	}
 
 	LPCTSTR CEditUI::GetDisabledImage()
 	{
-		return m_sDisabledImage;
+		return m_diDisabled.sDrawString;	
 	}
 
 	void CEditUI::SetDisabledImage(LPCTSTR pStrImage)
 	{
-		m_sDisabledImage = pStrImage;
+		if( m_diDisabled.sDrawString == pStrImage && m_diDisabled.pImageInfo != NULL ) return;
+		m_diDisabled.Clear();
+		m_diDisabled.sDrawString = pStrImage;
 		Invalidate();
 	}
 
@@ -438,13 +446,23 @@ namespace DuiLib
 		if( m_pWindow != NULL ) Edit_ReplaceSel(*m_pWindow, lpszReplace);
 	}
 
-	void CEditUI::SetPos(RECT rc)
+	void CEditUI::SetPos(RECT rc, bool bNeedInvalidate)
 	{
-		CControlUI::SetPos(rc);
+		CControlUI::SetPos(rc, bNeedInvalidate);
 		if( m_pWindow != NULL ) {
 			RECT rcPos = m_pWindow->CalPos();
 			::SetWindowPos(m_pWindow->GetHWND(), NULL, rcPos.left, rcPos.top, rcPos.right - rcPos.left, 
 				rcPos.bottom - rcPos.top, SWP_NOZORDER | SWP_NOACTIVATE);        
+		}
+	}
+
+	void CEditUI::Move(SIZE szOffset, bool bNeedInvalidate)
+	{
+		CControlUI::Move(szOffset, bNeedInvalidate);
+		if( m_pWindow != NULL ) {
+			RECT rcPos = m_pWindow->CalPos();
+			::SetWindowPos(m_pWindow->GetHWND(), NULL, rcPos.left, rcPos.top, rcPos.right - rcPos.left, 
+				rcPos.bottom - rcPos.top, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);        
 		}
 	}
 
@@ -492,28 +510,16 @@ namespace DuiLib
 		else m_uButtonState &= ~ UISTATE_DISABLED;
 
 		if( (m_uButtonState & UISTATE_DISABLED) != 0 ) {
-			if( !m_sDisabledImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sDisabledImage) ) m_sDisabledImage.Empty();
-				else return;
-			}
+			if( DrawImage(hDC, m_diDisabled) ) return;
 		}
 		else if( (m_uButtonState & UISTATE_FOCUSED) != 0 ) {
-			if( !m_sFocusedImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sFocusedImage) ) m_sFocusedImage.Empty();
-				else return;
-			}
+			if( DrawImage(hDC, m_diFocused) ) return;
 		}
 		else if( (m_uButtonState & UISTATE_HOT) != 0 ) {
-			if( !m_sHotImage.IsEmpty() ) {
-				if( !DrawImage(hDC, (LPCTSTR)m_sHotImage) ) m_sHotImage.Empty();
-				else return;
-			}
+			if( DrawImage(hDC, m_diHot) ) return;
 		}
 
-		if( !m_sNormalImage.IsEmpty() ) {
-			if( !DrawImage(hDC, (LPCTSTR)m_sNormalImage) ) m_sNormalImage.Empty();
-			else return;
-		}
+		if( DrawImage(hDC, m_diNormal) ) return;
 	}
 
 	void CEditUI::PaintText(HDC hDC)

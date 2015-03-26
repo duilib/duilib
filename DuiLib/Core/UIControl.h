@@ -47,7 +47,7 @@ public:
     void SetColorHSL(bool bColorHSL);
     SIZE GetBorderRound() const;
     void SetBorderRound(SIZE cxyRound);
-    bool DrawImage(HDC hDC, LPCTSTR pStrImage, LPCTSTR pStrModify = NULL);
+    bool DrawImage(HDC hDC, TDrawInfo& drawInfo);
 
 	//边框相关
 	int GetBorderSize() const;
@@ -69,7 +69,8 @@ public:
 
     // 位置相关
     virtual const RECT& GetPos() const;
-    virtual void SetPos(RECT rc);
+    virtual void SetPos(RECT rc, bool bNeedInvalidate = true);
+	virtual void Move(SIZE szOffset, bool bNeedInvalidate = true);
     virtual int GetWidth() const;
     virtual int GetHeight() const;
     virtual int GetX() const;
@@ -201,8 +202,8 @@ protected:
     DWORD m_dwBackColor;
     DWORD m_dwBackColor2;
     DWORD m_dwBackColor3;
-    CDuiString m_sBkImage;
-	CDuiString m_sForeImage;
+    TDrawInfo m_diBk;
+	TDrawInfo m_diFore;
     DWORD m_dwBorderColor;
 	DWORD m_dwFocusBorderColor;
     bool m_bColorHSL;

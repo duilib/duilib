@@ -905,9 +905,9 @@ void CActiveXUI::SetInternVisible(bool bVisible)
         ::ShowWindow(m_hwndHost, IsVisible() ? SW_SHOW : SW_HIDE);
 }
 
-void CActiveXUI::SetPos(RECT rc)
+void CActiveXUI::SetPos(RECT rc, bool bNeedInvalidate)
 {
-    CControlUI::SetPos(rc);
+    CControlUI::SetPos(rc, bNeedInvalidate);
 
     if( !m_bCreated ) DoCreateControl();
 
@@ -932,6 +932,15 @@ void CActiveXUI::SetPos(RECT rc)
         ASSERT(m_pControl->m_pWindow);
         ::MoveWindow(*m_pControl->m_pWindow, m_rcItem.left, m_rcItem.top, m_rcItem.right - m_rcItem.left, m_rcItem.bottom - m_rcItem.top, TRUE);
     }
+}
+
+void CActiveXUI::Move(SIZE szOffset, bool bNeedInvalidate)
+{
+	CControlUI::Move(szOffset, bNeedInvalidate);
+	if( !m_pControl->m_bWindowless ) {
+		ASSERT(m_pControl->m_pWindow);
+		::MoveWindow(*m_pControl->m_pWindow, m_rcItem.left, m_rcItem.top, m_rcItem.right - m_rcItem.left, m_rcItem.bottom - m_rcItem.top, TRUE);
+	}
 }
 
 void CActiveXUI::DoPaint(HDC hDC, const RECT& rcPaint)

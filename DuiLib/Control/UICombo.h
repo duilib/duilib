@@ -91,7 +91,8 @@ public:
     void SetItemShowHtml(bool bShowHtml = true);
 
     SIZE EstimateSize(SIZE szAvailable);
-    void SetPos(RECT rc);
+	void SetPos(RECT rc, bool bNeedInvalidate = true);
+	void Move(SIZE szOffset, bool bNeedInvalidate = true);
     void DoEvent(TEventUI& event);
     void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
     
@@ -108,11 +109,11 @@ protected:
     SIZE m_szDropBox;
     UINT m_uButtonState;
 
-    CDuiString m_sNormalImage;
-    CDuiString m_sHotImage;
-    CDuiString m_sPushedImage;
-    CDuiString m_sFocusedImage;
-    CDuiString m_sDisabledImage;
+	TDrawInfo m_diNormal;
+    TDrawInfo m_diHot;
+    TDrawInfo m_diPushed;
+    TDrawInfo m_diFocused;
+    TDrawInfo m_diDisabled;
 
     TListInfoUI m_ListInfo;
 };

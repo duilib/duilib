@@ -51,6 +51,20 @@ typedef struct tagTIMERINFO
 
 /////////////////////////////////////////////////////////////////////////////////////
 
+tagTDrawInfo::tagTDrawInfo()
+{
+	Clear();
+}
+
+void tagTDrawInfo::Clear()
+{
+	sDrawString.Empty();
+	::ZeroMemory(&bLoaded, sizeof(tagTDrawInfo) - offsetof(tagTDrawInfo, bLoaded));
+	uFade = 255;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+
 HPEN m_hUpdateRectPen = NULL;
 
 HINSTANCE CPaintManagerUI::m_hResourceInstance = NULL;
@@ -60,16 +74,12 @@ HANDLE CPaintManagerUI::m_hResourceZip = NULL;
 bool CPaintManagerUI::m_bCachedResourceZip = true;
 TResInfo CPaintManagerUI::m_SharedResInfo;
 HINSTANCE CPaintManagerUI::m_hInstance = NULL;
+bool CPaintManagerUI::m_bUseHSL = false;
 short CPaintManagerUI::m_H = 180;
 short CPaintManagerUI::m_S = 100;
 short CPaintManagerUI::m_L = 100;
 CStdPtrArray CPaintManagerUI::m_aPreMessages;
 CStdPtrArray CPaintManagerUI::m_aPlugins;
-
-
-
-
-
 
 CPaintManagerUI::CPaintManagerUI() :
 m_hWndPaint(NULL),
@@ -118,10 +128,10 @@ m_nOpacity(255)
 	}
 
 	m_ResInfo.m_dwDefaultDisabledColor = m_SharedResInfo.m_dwDefaultDisabledColor;
-	m_ResInfo.m_dwDefaultFontColor = m_SharedResInfo.m_dwDefaultDisabledColor;;
-	m_ResInfo.m_dwDefaultLinkFontColor = m_SharedResInfo.m_dwDefaultDisabledColor;;
-	m_ResInfo.m_dwDefaultLinkHoverFontColor = m_SharedResInfo.m_dwDefaultDisabledColor;;
-	m_ResInfo.m_dwDefaultSelectedBkColor = m_SharedResInfo.m_dwDefaultDisabledColor;;
+	m_ResInfo.m_dwDefaultFontColor = m_SharedResInfo.m_dwDefaultFontColor;
+	m_ResInfo.m_dwDefaultLinkFontColor = m_SharedResInfo.m_dwDefaultLinkFontColor;
+	m_ResInfo.m_dwDefaultLinkHoverFontColor = m_SharedResInfo.m_dwDefaultLinkHoverFontColor;
+	m_ResInfo.m_dwDefaultSelectedBkColor = m_SharedResInfo.m_dwDefaultSelectedBkColor;
 
     if( m_hUpdateRectPen == NULL ) {
         m_hUpdateRectPen = ::CreatePen(PS_SOLID, 1, RGB(220, 0, 0));
@@ -278,31 +288,36 @@ void CPaintManagerUI::SetResourceZip(LPCTSTR pStrPath, bool bCachedResourceZip)
     }
 }
 
-void CPaintManagerUI::GetHSL(short* H, short* S, short* L)
+bool CPaintManagerUI::GetHSL(short* H, short* S, short* L)
 {
     *H = m_H;
     *S = m_S;
     *L = m_L;
+	return m_bUseHSL;
 }
 
 void CPaintManagerUI::SetHSL(bool bUseHSL, short H, short S, short L)
 {
-    if( H == m_H && S == m_S && L == m_L ) return;
-    m_H = CLAMP(H, 0, 360);
-    m_S = CLAMP(S, 0, 200);
-    m_L = CLAMP(L, 0, 200);
-    for( int i = 0; i < m_aPreMessages.GetSize(); i++ ) {
-        CPaintManagerUI* pManager = static_cast<CPaintManagerUI*>(m_aPreMessages[i]);
-        if( pManager != NULL && pManager->GetRoot() != NULL )
-            pManager->GetRoot()->Invalidate();
-    }
+	if( m_bUseHSL || m_bUseHSL != bUseHSL ) {
+		m_bUseHSL = bUseHSL;
+		if( H == m_H && S == m_S && L == m_L ) return;
+		m_H = CLAMP(H, 0, 360);
+		m_S = CLAMP(S, 0, 200);
+		m_L = CLAMP(L, 0, 200);
+		AdjustSharedImagesHSL();
+		for( int i = 0; i < m_aPreMessages.GetSize(); i++ ) {
+			CPaintManagerUI* pManager = static_cast<CPaintManagerUI*>(m_aPreMessages[i]);
+			if( pManager != NULL ) pManager->AdjustImagesHSL();
+		}
+	}
 }
 
 void CPaintManagerUI::ReloadSkin()
 {
+	ReloadSharedImages();
     for( int i = 0; i < m_aPreMessages.GetSize(); i++ ) {
         CPaintManagerUI* pManager = static_cast<CPaintManagerUI*>(m_aPreMessages[i]);
-        pManager->ReloadAllImages();
+        pManager->ReloadImages();
     }
 }
 
@@ -622,7 +637,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
                 ::GetClientRect(m_hWndPaint, &rcClient);
                 if( !::IsRectEmpty(&rcClient) ) {
                     if( m_pRoot->IsUpdateNeeded() ) {
-                        m_pRoot->SetPos(rcClient);
                         if( m_hDcOffscreen != NULL ) ::DeleteDC(m_hDcOffscreen);
                         if( m_hDcBackground != NULL ) ::DeleteDC(m_hDcBackground);
                         if( m_hbmpOffscreen != NULL ) ::DeleteObject(m_hbmpOffscreen);
@@ -631,12 +645,16 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
                         m_hDcBackground = NULL;
                         m_hbmpOffscreen = NULL;
                         m_hbmpBackground = NULL;
+						m_pRoot->SetPos(rcClient, true);
                     }
                     else {
-                        CControlUI* pControl = NULL;
-                        while( pControl = m_pRoot->FindControl(__FindControlFromUpdate, NULL, UIFIND_VISIBLE | UIFIND_ME_FIRST) ) {
-                            pControl->SetPos( pControl->GetPos() );
-                        }
+						CControlUI* pControl = NULL;
+						m_aFoundControls.Empty();
+						m_pRoot->FindControl(__FindControlsFromUpdate, NULL, UIFIND_VISIBLE | UIFIND_ME_FIRST | UIFIND_UPDATETEST);
+						for( int it = 0; it < m_aFoundControls.GetSize(); it++ ) {
+							pControl = static_cast<CControlUI*>(m_aFoundControls[it]);
+							pControl->SetPos(pControl->GetPos(), true);
+						}
                     }
                     // We'll want to notify the window when it is first initialized
                     // with the correct layout. The window form would take the time
@@ -1100,9 +1118,25 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
     return false;
 }
 
+bool CPaintManagerUI::IsUpdateNeeded() const
+{
+	return m_bUpdateNeeded;
+}
+
 void CPaintManagerUI::NeedUpdate()
 {
     m_bUpdateNeeded = true;
+}
+
+void CPaintManagerUI::Invalidate()
+{
+	::InvalidateRect(m_hWndPaint, NULL, FALSE);
+	//if( !m_bLayered ) ::InvalidateRect(m_hWndPaint, NULL, FALSE);
+	//else {
+	//	RECT rcClient = { 0 };
+	//	::GetClientRect(m_hWndPaint, &rcClient);
+	//	::UnionRect(&m_rcLayeredUpdate, &m_rcLayeredUpdate, &rcClient);
+	//}
 }
 
 void CPaintManagerUI::Invalidate(RECT& rcItem)
@@ -1786,6 +1820,8 @@ HFONT CPaintManagerUI::AddFont(int id, LPCTSTR pStrFontName, int nSize, bool bBo
 
 HFONT CPaintManagerUI::GetFont(int id)
 {
+	if (id < 0) return GetDefaultFontInfo()->hFont;
+		
 	TCHAR idBuffer[16];
 	::ZeroMemory(idBuffer, sizeof(idBuffer));
 	_itot(id, idBuffer, 10);
@@ -1815,7 +1851,7 @@ HFONT CPaintManagerUI::GetFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool
 		}
 	}
 
-	return GetDefaultFontInfo()->hFont;
+	return NULL;
 }
 
 int CPaintManagerUI::GetFontIndex(HFONT hFont, bool bShared)
@@ -2026,11 +2062,11 @@ const TImageInfo* CPaintManagerUI::GetImage(LPCTSTR bitmap)
     return data;
 }
 
-const TImageInfo* CPaintManagerUI::GetImageEx(LPCTSTR bitmap, LPCTSTR type, DWORD mask)
+const TImageInfo* CPaintManagerUI::GetImageEx(LPCTSTR bitmap, LPCTSTR type, DWORD mask, bool bUseHSL)
 {
     const TImageInfo* data = GetImage(bitmap);
     if( !data ) {
-        if( AddImage(bitmap, type, mask, false) ) {
+        if( AddImage(bitmap, type, mask, bUseHSL, false) ) {
             data = static_cast<TImageInfo*>(m_ResInfo.m_ImageHash.Find(bitmap));
         }
     }
@@ -2038,8 +2074,10 @@ const TImageInfo* CPaintManagerUI::GetImageEx(LPCTSTR bitmap, LPCTSTR type, DWOR
     return data;
 }
 
-const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, LPCTSTR type, DWORD mask, bool bShared)
+const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, LPCTSTR type, DWORD mask, bool bUseHSL, bool bShared)
 {
+	if( bitmap == NULL || bitmap[0] == _T('\0') ) return NULL;
+
     TImageInfo* data = NULL;
     if( type != NULL ) {
         if( isdigit(*bitmap) ) {
@@ -2052,24 +2090,33 @@ const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, LPCTSTR type, DWORD 
         data = CRenderEngine::LoadImage(bitmap, NULL, mask);
     }
 
-    if( !data ) return NULL;
-    if( type != NULL ) data->sResType = type;
-    data->dwMask = mask;
-
-	if (bShared)
-	{
-		if( !m_SharedResInfo.m_ImageHash.Insert(bitmap, data) ) {
-			::DeleteObject(data->hBitmap);
-			delete data;
-			data = NULL;
-		}
+	if( data == NULL ) return NULL;
+	data->bUseHSL = bUseHSL;
+	if( type != NULL ) data->sResType = type;
+	data->dwMask = mask;
+	if( data->bUseHSL ) {
+		data->pSrcBits = new BYTE[data->nX * data->nY * 4];
+		::CopyMemory(data->pSrcBits, data->pBits, data->nX * data->nY * 4);
 	}
-	else
+	else data->pSrcBits = NULL;
+	if( m_bUseHSL ) CRenderEngine::AdjustImage(true, data, m_H, m_S, m_L);
+	if (data)
 	{
-		if( !m_ResInfo.m_ImageHash.Insert(bitmap, data) ) {
-			::DeleteObject(data->hBitmap);
-			delete data;
-			data = NULL;
+		if (bShared)
+		{
+			if( !m_SharedResInfo.m_ImageHash.Insert(bitmap, data) ) {
+				::DeleteObject(data->hBitmap);
+				delete data;
+				data = NULL;
+			}
+		}
+		else
+		{
+			if( !m_ResInfo.m_ImageHash.Insert(bitmap, data) ) {
+				::DeleteObject(data->hBitmap);
+				delete data;
+				data = NULL;
+			}
 		}
 	}
 
@@ -2078,15 +2125,20 @@ const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, LPCTSTR type, DWORD 
 
 const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, HBITMAP hBitmap, int iWidth, int iHeight, bool bAlpha, bool bShared)
 {
+	// 因无法确定外部HBITMAP格式，不能使用hsl调整
+	if( bitmap == NULL || bitmap[0] == _T('\0') ) return NULL;
     if( hBitmap == NULL || iWidth <= 0 || iHeight <= 0 ) return NULL;
 
-    TImageInfo* data = new TImageInfo;
-    data->hBitmap = hBitmap;
-    data->nX = iWidth;
-    data->nY = iHeight;
-    data->alphaChannel = bAlpha;
-    //data->sResType = _T("");
-    data->dwMask = 0;
+	TImageInfo* data = new TImageInfo;
+	data->hBitmap = hBitmap;
+	data->pBits = NULL;
+	data->nX = iWidth;
+	data->nY = iHeight;
+	data->alphaChannel = bAlpha;
+	data->bUseHSL = false;
+	data->pSrcBits = NULL;
+	//data->sResType = _T("");
+	data->dwMask = 0;
 
 	if (bShared)
 	{
@@ -2161,38 +2213,78 @@ void CPaintManagerUI::RemoveAllImages(bool bShared)
 	}
 }
 
-void CPaintManagerUI::ReloadAllImages()
+void CPaintManagerUI::AdjustSharedImagesHSL()
 {
-    bool bRedraw = false;
-    TImageInfo* data;
-    TImageInfo* pNewData;
-    for( int i = 0; i< m_SharedResInfo.m_ImageHash.GetSize(); i++ ) {
-        if(LPCTSTR bitmap = m_SharedResInfo.m_ImageHash.GetAt(i)) {
-            data = static_cast<TImageInfo*>(m_SharedResInfo.m_ImageHash.Find(bitmap));
-            if( data != NULL ) {
-                if( !data->sResType.IsEmpty() ) {
-                    if( isdigit(*bitmap) ) {
-                        LPTSTR pstr = NULL;
-                        int iIndex = _tcstol(bitmap, &pstr, 10);
-                        pNewData = CRenderEngine::LoadImage(iIndex, data->sResType.GetData(), data->dwMask);
-                    }
-                }
-                else {
-                    pNewData = CRenderEngine::LoadImage(bitmap, NULL, data->dwMask);
-                }
-                if( pNewData == NULL ) continue;
+	TImageInfo* data;
+	for( int i = 0; i< m_SharedResInfo.m_ImageHash.GetSize(); i++ ) {
+		if(LPCTSTR key = m_SharedResInfo.m_ImageHash.GetAt(i)) {
+			data = static_cast<TImageInfo*>(m_SharedResInfo.m_ImageHash.Find(key));
+			if( data && data->bUseHSL ) {
+				CRenderEngine::AdjustImage(m_bUseHSL, data, m_H, m_S, m_L);
+			}
+		}
+	}
+}
 
-                if( data->hBitmap != NULL ) ::DeleteObject(data->hBitmap);
-                data->hBitmap = pNewData->hBitmap;
-                data->nX = pNewData->nX;
-                data->nY = pNewData->nY;
-                data->alphaChannel = pNewData->alphaChannel;
+void CPaintManagerUI::AdjustImagesHSL()
+{
+	TImageInfo* data;
+	for( int i = 0; i< m_ResInfo.m_ImageHash.GetSize(); i++ ) {
+		if(LPCTSTR key = m_ResInfo.m_ImageHash.GetAt(i)) {
+			data = static_cast<TImageInfo*>(m_ResInfo.m_ImageHash.Find(key));
+			if( data && data->bUseHSL ) {
+				CRenderEngine::AdjustImage(m_bUseHSL, data, m_H, m_S, m_L);
+			}
+		}
+	}
+	Invalidate();
+}
 
-                delete pNewData;
-                bRedraw = true;
-            }
-        }
-    }
+void CPaintManagerUI::ReloadSharedImages()
+{
+	TImageInfo* data;
+	TImageInfo* pNewData;
+	for( int i = 0; i< m_SharedResInfo.m_ImageHash.GetSize(); i++ ) {
+		if(LPCTSTR bitmap = m_SharedResInfo.m_ImageHash.GetAt(i)) {
+			data = static_cast<TImageInfo*>(m_SharedResInfo.m_ImageHash.Find(bitmap));
+			if( data != NULL ) {
+				if( !data->sResType.IsEmpty() ) {
+					if( isdigit(*bitmap) ) {
+						LPTSTR pstr = NULL;
+						int iIndex = _tcstol(bitmap, &pstr, 10);
+						pNewData = CRenderEngine::LoadImage(iIndex, data->sResType.GetData(), data->dwMask);
+					}
+				}
+				else {
+					pNewData = CRenderEngine::LoadImage(bitmap, NULL, data->dwMask);
+				}
+				if( pNewData == NULL ) continue;
+
+				if( data->hBitmap != NULL ) ::DeleteObject(data->hBitmap);
+				if( data->pSrcBits != NULL ) delete[] data->pSrcBits;
+				data->hBitmap = pNewData->hBitmap;
+				data->pBits = pNewData->pBits;
+				data->nX = pNewData->nX;
+				data->nY = pNewData->nY;
+				data->alphaChannel = pNewData->alphaChannel;
+				data->pSrcBits = NULL;
+				if( data->bUseHSL ) {
+					data->pSrcBits = new BYTE[data->nX * data->nY * 4];
+					::CopyMemory(data->pSrcBits, data->pBits, data->nX * data->nY * 4);
+				}
+				else data->pSrcBits = NULL;
+				if( m_bUseHSL ) CRenderEngine::AdjustImage(true, data, m_H, m_S, m_L);
+
+				delete pNewData;
+			}
+		}
+	}
+}
+
+void CPaintManagerUI::ReloadImages()
+{
+	TImageInfo* data;
+	TImageInfo* pNewData;
 	for( int i = 0; i< m_ResInfo.m_ImageHash.GetSize(); i++ ) {
 		if(LPCTSTR bitmap = m_ResInfo.m_ImageHash.GetAt(i)) {
 			data = static_cast<TImageInfo*>(m_ResInfo.m_ImageHash.Find(bitmap));
@@ -2210,17 +2302,25 @@ void CPaintManagerUI::ReloadAllImages()
 				if( pNewData == NULL ) continue;
 
 				if( data->hBitmap != NULL ) ::DeleteObject(data->hBitmap);
+				if( data->pSrcBits != NULL ) delete[] data->pSrcBits;
 				data->hBitmap = pNewData->hBitmap;
+				data->pBits = pNewData->pBits;
 				data->nX = pNewData->nX;
 				data->nY = pNewData->nY;
 				data->alphaChannel = pNewData->alphaChannel;
+				data->pSrcBits = NULL;
+				if( data->bUseHSL ) {
+					data->pSrcBits = new BYTE[data->nX * data->nY * 4];
+					::CopyMemory(data->pSrcBits, data->pBits, data->nX * data->nY * 4);
+				}
+				else data->pSrcBits = NULL;
+				if( m_bUseHSL ) CRenderEngine::AdjustImage(true, data, m_H, m_S, m_L);
 
 				delete pNewData;
-				bRedraw = true;
 			}
 		}
 	}
-    if( bRedraw && m_pRoot ) m_pRoot->Invalidate();
+    if( m_pRoot ) m_pRoot->Invalidate();
 }
 
 void CPaintManagerUI::AddDefaultAttributeList(LPCTSTR pStrControlName, LPCTSTR pStrControlAttrList, bool bShared)
@@ -2352,7 +2452,7 @@ CStdPtrArray* CPaintManagerUI::FindSubControlsByClass(CControlUI* pParent, LPCTS
     return &m_aFoundControls;
 }
 
-CStdPtrArray* CPaintManagerUI::GetSubControlsByClass()
+CStdPtrArray* CPaintManagerUI::GetFoundControls()
 {
     return &m_aFoundControls;
 }
@@ -2403,11 +2503,6 @@ CControlUI* CALLBACK CPaintManagerUI::__FindControlFromShortcut(CControlUI* pThi
     return pFS->bPickNext ? pThis : NULL;
 }
 
-CControlUI* CALLBACK CPaintManagerUI::__FindControlFromUpdate(CControlUI* pThis, LPVOID pData)
-{
-    return pThis->IsUpdateNeeded() ? pThis : NULL;
-}
-
 CControlUI* CALLBACK CPaintManagerUI::__FindControlFromName(CControlUI* pThis, LPVOID pData)
 {
     LPCTSTR pstrName = static_cast<LPCTSTR>(pData);
@@ -2420,7 +2515,7 @@ CControlUI* CALLBACK CPaintManagerUI::__FindControlFromClass(CControlUI* pThis, 
 {
     LPCTSTR pstrType = static_cast<LPCTSTR>(pData);
     LPCTSTR pType = pThis->GetClass();
-    CStdPtrArray* pFoundControls = pThis->GetManager()->GetSubControlsByClass();
+    CStdPtrArray* pFoundControls = pThis->GetManager()->GetFoundControls();
     if( _tcscmp(pstrType, _T("*")) == 0 || _tcscmp(pstrType, pType) == 0 ) {
         int iIndex = -1;
         while( pFoundControls->GetAt(++iIndex) != NULL ) ;
@@ -2435,8 +2530,17 @@ CControlUI* CALLBACK CPaintManagerUI::__FindControlsFromClass(CControlUI* pThis,
     LPCTSTR pstrType = static_cast<LPCTSTR>(pData);
     LPCTSTR pType = pThis->GetClass();
     if( _tcscmp(pstrType, _T("*")) == 0 || _tcscmp(pstrType, pType) == 0 ) 
-        pThis->GetManager()->GetSubControlsByClass()->Add((LPVOID)pThis);
+        pThis->GetManager()->GetFoundControls()->Add((LPVOID)pThis);
     return NULL;
+}
+
+CControlUI* CALLBACK CPaintManagerUI::__FindControlsFromUpdate(CControlUI* pThis, LPVOID pData)
+{
+	if( pThis->IsUpdateNeeded() ) {
+		pThis->GetManager()->GetFoundControls()->Add((LPVOID)pThis);
+		return pThis;
+	}
+	return NULL;
 }
 
 bool CPaintManagerUI::TranslateAccelerator(LPMSG pMsg)

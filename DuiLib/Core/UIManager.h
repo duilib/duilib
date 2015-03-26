@@ -57,7 +57,8 @@ typedef enum EVENTTYPE_UI
 #define UIFIND_VISIBLE       0x00000001
 #define UIFIND_ENABLED       0x00000002
 #define UIFIND_HITTEST       0x00000004
-#define UIFIND_TOP_FIRST     0x00000008
+#define UIFIND_UPDATETEST    0x00000008
+#define UIFIND_TOP_FIRST     0x00000010
 #define UIFIND_ME_FIRST      0x80000000
 
 // Flags for the CDialogLayout stretching
@@ -97,6 +98,7 @@ typedef struct tagTImageInfo
 {
     HBITMAP hBitmap;
     LPBYTE pBits;
+	LPBYTE pSrcBits;
     int nX;
     int nY;
     bool alphaChannel;
@@ -105,7 +107,7 @@ typedef struct tagTImageInfo
     DWORD dwMask;
 } TImageInfo;
 
-typedef struct tagTDrawInfo
+typedef struct UILIB_API tagTDrawInfo
 {
 	tagTDrawInfo();
 	void Clear();
@@ -193,7 +195,9 @@ public:
 
 public:
     void Init(HWND hWnd);
+	bool IsUpdateNeeded() const;
     void NeedUpdate();
+	void Invalidate();
     void Invalidate(RECT& rcItem);
 
     HDC GetPaintDC() const;
@@ -234,7 +238,7 @@ public:
     static void SetResourcePath(LPCTSTR pStrPath);
 	static void SetResourceZip(LPVOID pVoid, unsigned int len);
     static void SetResourceZip(LPCTSTR pstrZip, bool bCachedResourceZip = false);
-    static void GetHSL(short* H, short* S, short* L);
+    static bool GetHSL(short* H, short* S, short* L);
     static void SetHSL(bool bUseHSL, short H, short S, short L); // H:0~360, S:0~200, L:0~200 
     static void ReloadSkin();
     static bool LoadPlugin(LPCTSTR pstrModuleName);
@@ -265,12 +269,11 @@ public:
     TFontInfo* GetFontInfo(HFONT hFont);
 
     const TImageInfo* GetImage(LPCTSTR bitmap);
-    const TImageInfo* GetImageEx(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0);
-    const TImageInfo* AddImage(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0, bool bShared = false);
+    const TImageInfo* GetImageEx(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0, bool bUseHSL = false);
+    const TImageInfo* AddImage(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0, bool bUseHSL = false, bool bShared = false);
     const TImageInfo* AddImage(LPCTSTR bitmap, HBITMAP hBitmap, int iWidth, int iHeight, bool bAlpha, bool bShared = false);
     void RemoveImage(LPCTSTR bitmap, bool bShared = false);
     void RemoveAllImages(bool bShared = false);
-    void ReloadAllImages();
 
     void AddDefaultAttributeList(LPCTSTR pStrControlName, LPCTSTR pStrControlAttrList, bool bShared = false);
     LPCTSTR GetDefaultAttributeList(LPCTSTR pStrControlName) const;
@@ -330,7 +333,6 @@ public:
     CControlUI* FindSubControlByName(CControlUI* pParent, LPCTSTR pstrName) const;
     CControlUI* FindSubControlByClass(CControlUI* pParent, LPCTSTR pstrClass, int iIndex = 0);
     CStdPtrArray* FindSubControlsByClass(CControlUI* pParent, LPCTSTR pstrClass);
-    CStdPtrArray* GetSubControlsByClass();
 
     static void MessageLoop();
     static bool TranslateMessage(const LPMSG pMsg);
@@ -341,15 +343,21 @@ public:
 	void UsedVirtualWnd(bool bUsed);
 
 private:
+	CStdPtrArray* GetFoundControls();
     static CControlUI* CALLBACK __FindControlFromNameHash(CControlUI* pThis, LPVOID pData);
     static CControlUI* CALLBACK __FindControlFromCount(CControlUI* pThis, LPVOID pData);
     static CControlUI* CALLBACK __FindControlFromPoint(CControlUI* pThis, LPVOID pData);
     static CControlUI* CALLBACK __FindControlFromTab(CControlUI* pThis, LPVOID pData);
     static CControlUI* CALLBACK __FindControlFromShortcut(CControlUI* pThis, LPVOID pData);
-    static CControlUI* CALLBACK __FindControlFromUpdate(CControlUI* pThis, LPVOID pData);
     static CControlUI* CALLBACK __FindControlFromName(CControlUI* pThis, LPVOID pData);
     static CControlUI* CALLBACK __FindControlFromClass(CControlUI* pThis, LPVOID pData);
     static CControlUI* CALLBACK __FindControlsFromClass(CControlUI* pThis, LPVOID pData);
+	static CControlUI* CALLBACK __FindControlsFromUpdate(CControlUI* pThis, LPVOID pData);
+
+	static void AdjustSharedImagesHSL();
+	void AdjustImagesHSL();
+	static void ReloadSharedImages();
+	void ReloadImages();
 
 private:
     HWND m_hWndPaint;
@@ -410,6 +418,7 @@ private:
 	static bool m_bCachedResourceZip;
 	static TResInfo m_SharedResInfo;
     static HINSTANCE m_hInstance;
+	static bool m_bUseHSL;
     static short m_H;
     static short m_S;
     static short m_L;

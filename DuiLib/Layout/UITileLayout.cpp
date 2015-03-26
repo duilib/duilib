@@ -57,9 +57,9 @@ namespace DuiLib
 		else CContainerUI::SetAttribute(pstrName, pstrValue);
 	}
 
-	void CTileLayoutUI::SetPos(RECT rc)
+	void CTileLayoutUI::SetPos(RECT rc, bool bNeedInvalidate)
 	{
-		CControlUI::SetPos(rc);
+		CControlUI::SetPos(rc, bNeedInvalidate);
 		rc = m_rcItem;
 
 		// Adjust for inset
@@ -163,7 +163,7 @@ namespace DuiLib
 			if( szTile.cy > pControl->GetMaxHeight() ) szTile.cy = pControl->GetMaxHeight();
 			RECT rcPos = {(rcTile.left + rcTile.right - szTile.cx) / 2, (rcTile.top + rcTile.bottom - szTile.cy) / 2,
 				(rcTile.left + rcTile.right - szTile.cx) / 2 + szTile.cx, (rcTile.top + rcTile.bottom - szTile.cy) / 2 + szTile.cy};
-			pControl->SetPos(rcPos);
+			pControl->SetPos(rcPos, false);
 
 			if( (++iCount % m_nColumns) == 0 ) {
 				ptTile.x = iPosX;

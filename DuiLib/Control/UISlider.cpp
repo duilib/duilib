@@ -65,34 +65,40 @@ namespace DuiLib
 
 	LPCTSTR CSliderUI::GetThumbImage() const
 	{
-		return m_sThumbImage;
+		return m_diThumb.sDrawString;
 	}
 
 	void CSliderUI::SetThumbImage(LPCTSTR pStrImage)
 	{
-		m_sThumbImage = pStrImage;
+		if( m_diThumb.sDrawString == pStrImage && m_diThumb.pImageInfo != NULL ) return;
+		m_diThumb.Clear();
+		m_diThumb.sDrawString = pStrImage;
 		Invalidate();
 	}
 
 	LPCTSTR CSliderUI::GetThumbHotImage() const
 	{
-		return m_sThumbHotImage;
+		return m_diThumbHot.sDrawString;
 	}
 
 	void CSliderUI::SetThumbHotImage(LPCTSTR pStrImage)
 	{
-		m_sThumbHotImage = pStrImage;
+		if( m_diThumbHot.sDrawString == pStrImage && m_diThumbHot.pImageInfo != NULL ) return;
+		m_diThumbHot.Clear();
+		m_diThumbHot.sDrawString = pStrImage;
 		Invalidate();
 	}
 
 	LPCTSTR CSliderUI::GetThumbPushedImage() const
 	{
-		return m_sThumbPushedImage;
+		return m_diThumbPushed.sDrawString;
 	}
 
 	void CSliderUI::SetThumbPushedImage(LPCTSTR pStrImage)
 	{
-		m_sThumbPushedImage = pStrImage;
+		if( m_diThumbPushed.sDrawString == pStrImage && m_diThumbPushed.pImageInfo != NULL ) return;
+		m_diThumbPushed.Clear();
+		m_diThumbPushed.sDrawString = pStrImage;
 		Invalidate();
 	}
 
@@ -223,27 +229,15 @@ namespace DuiLib
 		rcThumb.right -= m_rcItem.left;
 		rcThumb.bottom -= m_rcItem.top;
 		if( (m_uButtonState & UISTATE_CAPTURED) != 0 ) {
-			if( !m_sThumbPushedImage.IsEmpty() ) {
-				m_sImageModify.Empty();
-				m_sImageModify.SmallFormat(_T("dest='%d,%d,%d,%d'"), rcThumb.left, rcThumb.top, rcThumb.right, rcThumb.bottom);
-				if( !DrawImage(hDC, (LPCTSTR)m_sThumbPushedImage, (LPCTSTR)m_sImageModify) ) m_sThumbPushedImage.Empty();
-				else return;
-			}
+			m_diThumbPushed.rcDestOffset = rcThumb;
+			if( DrawImage(hDC, m_diThumbPushed) ) return;
 		}
 		else if( (m_uButtonState & UISTATE_HOT) != 0 ) {
-			if( !m_sThumbHotImage.IsEmpty() ) {
-				m_sImageModify.Empty();
-				m_sImageModify.SmallFormat(_T("dest='%d,%d,%d,%d'"), rcThumb.left, rcThumb.top, rcThumb.right, rcThumb.bottom);
-				if( !DrawImage(hDC, (LPCTSTR)m_sThumbHotImage, (LPCTSTR)m_sImageModify) ) m_sThumbHotImage.Empty();
-				else return;
-			}
+			m_diThumbHot.rcDestOffset = rcThumb;
+			if( DrawImage(hDC, m_diThumbHot) ) return;
 		}
 
-		if( !m_sThumbImage.IsEmpty() ) {
-			m_sImageModify.Empty();
-			m_sImageModify.SmallFormat(_T("dest='%d,%d,%d,%d'"), rcThumb.left, rcThumb.top, rcThumb.right, rcThumb.bottom);
-			if( !DrawImage(hDC, (LPCTSTR)m_sThumbImage, (LPCTSTR)m_sImageModify) ) m_sThumbImage.Empty();
-			else return;
-		}
+		m_diThumb.rcDestOffset = rcThumb;
+		if( DrawImage(hDC, m_diThumb) ) return;
 	}
 }
