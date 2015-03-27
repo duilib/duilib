@@ -230,6 +230,7 @@ public:
         CLoginFrameWnd* pLoginFrame = new CLoginFrameWnd();
         if( pLoginFrame == NULL ) { Close(); return; }
         pLoginFrame->Create(m_hWnd, _T(""), UI_WNDSTYLE_DIALOG, 0, 0, 0, 0, 0, NULL);
+		pLoginFrame->SetIcon(IDI_ICON_DUILIB);
         pLoginFrame->CenterWindow();
         pLoginFrame->ShowModal();
     }
@@ -621,7 +622,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*l
 
     CGameFrameWnd* pFrame = new CGameFrameWnd();
     if( pFrame == NULL ) return 0;
-    pFrame->Create(NULL, _T(""), UI_WNDSTYLE_FRAME, 0L, 0, 0, 1024, 738);
+	pFrame->SetIcon(IDI_ICON_DUILIB);
+    pFrame->Create(NULL, _T("ÓÎÏ·ÖÐÐÄ"), UI_WNDSTYLE_FRAME, 0L, 0, 0, 1024, 738);
     pFrame->CenterWindow();
     ::ShowWindow(*pFrame, SW_SHOWMAXIMIZED);
 

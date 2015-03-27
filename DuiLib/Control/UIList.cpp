@@ -1011,6 +1011,7 @@ void CListBodyUI::SetScrollPos(SIZE szPos)
 			pControl->Move(CSize(-cx, -cy), false);
 			pInfo->rcColumn[i] = pControl->GetPos();
         }
+		pHeader->Invalidate();
     }
 }
 

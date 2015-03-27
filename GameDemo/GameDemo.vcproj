@@ -435,6 +435,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\GameDemo.rc"
+				>
+			</File>
+			<File
 				RelativePath="StdAfx.cpp"
 				>
 				<FileConfiguration
@@ -481,6 +485,10 @@
 			>
 			<File
 				RelativePath=".\ControlEx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\resource.h"
 				>
 			</File>
 			<File
@@ -532,6 +540,14 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\duilib.ico"
+			>
+		</File>
+		<File
+			RelativePath=".\icon1.ico"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
