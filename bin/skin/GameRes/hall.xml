@@ -32,7 +32,7 @@
     			<Option name="hallswitch" showhtml="true" text="{i gamezone.png}游戏大厅" width="160" selected="true" group="swithbar" align="center" normalimage="file='tab_normal.bmp' corner='2,2,2,2'" selectedimage="file='tab_select.bmp' corner='2,2,2,2'" hotimage="file='tab_hot.bmp' corner='2,2,2,2'" hottextcolor="#CC1010"/>
 				<HorizontalLayout name="roomswitchpanel" width="160" visible="false">
 					<Option name="roomswitch" showhtml="true" group="swithbar" align="center" normalimage="file='tab_normal.bmp' corner='2,2,2,2'" selectedimage="file='tab_select.bmp' corner='2,2,2,2'" hotimage="file='tab_hot.bmp' corner='2,2,2,2'" hottextcolor="#CC1010"/>
-					<Button name="roomclosebtn" float="true" pos="-14,2,-2,14" normalimage="file='tab_close.png' source='0,0,12,12'" hotimage="file='tab_close.png' source='12,0,24,12'" pushedimage="file='tab_close.png' source='24,0,36,12'"/>
+					<Button name="roomclosebtn" float="1,0,1,0" pos="-14,2,-2,14" normalimage="file='tab_close.png' source='0,0,12,12'" hotimage="file='tab_close.png' source='12,0,24,12'" pushedimage="file='tab_close.png' source='24,0,36,12'"/>
 				</HorizontalLayout>
     			<Label padding="40,2,2,2" text="{i gameicons.png 18 0}这里是一条系统消息" showhtml="true" />
     			<Button name="fontswitch" float="true" pos="-82,4,-2,28" text="切换字体"/>
@@ -44,7 +44,7 @@
     					<GameList name="gamelist" bkcolor="#FFF6F9FF" inset="1,1,1,1" bordercolor="#FF1B4876" bordersize="1" header="hidden" itemhotimage="file='tree_hot.bmp' corner='2,1,2,1' " itemselectedimage="file='tree_select.bmp' corner='2,1,2,1'" itemlinecolor="#FFE4EAF2" itemshowhtml="true" vscrollbar="true" hscrollbar="true" vscrollbarstyle="width=&quot;6&quot; showbutton1=&quot;false&quot; showbutton2=&quot;false&quot;">
     					</GameList>
     				</HorizontalLayout>
-    				<ActiveX name="ie" clsid="{8856F961-340A-11D0-A96B-00C04FD705A2}" delaycreate="false"/>
+                <ActiveX name="ie" clsid="{8856F961-340A-11D0-A96B-00C04FD705A2}" delaycreate="false"/>
     			</HorizontalLayout>
     			<HorizontalLayout>
     				<VerticalLayout>
@@ -68,7 +68,8 @@
     							<ListHeaderItem text="胜率" width="60" normalimage="headerctrl_normal.bmp" hotimage="headerctrl_hot.bmp" pushedimage="headerctrl_down.bmp" sepimage="Headerctrl_Sperator.bmp" />
     							<ListHeaderItem text="断线率" width="60" normalimage="headerctrl_normal.bmp" hotimage="headerctrl_hot.bmp" pushedimage="headerctrl_down.bmp" sepimage="Headerctrl_Sperator.bmp" />
     							<ListHeaderItem text="总局数" width="60" normalimage="headerctrl_normal.bmp" hotimage="headerctrl_hot.bmp" pushedimage="headerctrl_down.bmp" sepimage="Headerctrl_Sperator.bmp" />
-    						</List>    						<Control height="4" />
+    						</List>    						
+    						<Control height="4" />
     						<Text name="sysmsg" height="90" text="系统公告栏" showhtml="true" bkcolor="#FFFFE8B1" />
     						<Control height="4" />
 							<RichEdit name="chatmsglist" inset="4,2,4,2" bkcolor="#FFFFE8B1" bkcolor2="#FFF2F5FA" bkcolor3="#FFFFE8B1" multiline="true" vscrollbar="true" autovscroll="true" enabled="true" rich="true" readonly="true" />

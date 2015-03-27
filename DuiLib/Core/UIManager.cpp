@@ -1834,16 +1834,16 @@ HFONT CPaintManagerUI::GetFont(int id)
 HFONT CPaintManagerUI::GetFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic)
 {
     TFontInfo* pFontInfo = NULL;
-	for( int i = 0; i< m_ResInfo.m_AttrHash.GetSize(); i++ ) {
-		if(LPCTSTR key = m_ResInfo.m_AttrHash.GetAt(i)) {
+	for( int i = 0; i< m_ResInfo.m_CustomFonts.GetSize(); i++ ) {
+		if(LPCTSTR key = m_ResInfo.m_CustomFonts.GetAt(i)) {
 			pFontInfo = static_cast<TFontInfo*>(m_ResInfo.m_CustomFonts.Find(key));
 			if (pFontInfo && pFontInfo->sFontName == pStrFontName && pFontInfo->iSize == nSize && 
 				pFontInfo->bBold == bBold && pFontInfo->bUnderline == bUnderline && pFontInfo->bItalic == bItalic) 
 				return pFontInfo->hFont;
 		}
 	}
-	for( int i = 0; i< m_SharedResInfo.m_AttrHash.GetSize(); i++ ) {
-		if(LPCTSTR key = m_SharedResInfo.m_AttrHash.GetAt(i)) {
+	for( int i = 0; i< m_SharedResInfo.m_CustomFonts.GetSize(); i++ ) {
+		if(LPCTSTR key = m_SharedResInfo.m_CustomFonts.GetAt(i)) {
 			pFontInfo = static_cast<TFontInfo*>(m_SharedResInfo.m_CustomFonts.Find(key));
 			if (pFontInfo && pFontInfo->sFontName == pStrFontName && pFontInfo->iSize == nSize && 
 				pFontInfo->bBold == bBold && pFontInfo->bUnderline == bUnderline && pFontInfo->bItalic == bItalic) 

@@ -469,6 +469,7 @@ STDMETHODIMP CActiveXCtrl::GetDC(LPCRECT pRect, DWORD grfFlags, HDC* phDC)
     DUITRACE(_T("AX: CActiveXCtrl::GetDC"));
     if( phDC == NULL ) return E_POINTER;
     if( m_pOwner == NULL ) return E_UNEXPECTED;
+	if( m_bWindowless ) return S_FALSE;
     *phDC = ::GetDC(m_pOwner->m_hwndHost);
     if( (grfFlags & OLEDC_PAINTBKGND) != 0 ) {
         CDuiRect rcItem = m_pOwner->GetPos();
