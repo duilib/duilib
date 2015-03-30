@@ -31,7 +31,7 @@ public:
     static DWORD AdjustColor(DWORD dwColor, short H, short S, short L);
 	static void AdjustImage(bool bUseHSL, TImageInfo* imageInfo, short H, short S, short L);
     static TImageInfo* LoadImage(STRINGorID bitmap, LPCTSTR type = NULL, DWORD mask = 0);
-    static void FreeImage(const TImageInfo* bitmap);
+    static void FreeImage(TImageInfo* bitmap, bool bDelete = true);
     static void DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RECT& rcPaint, \
         const RECT& rcBmpPart, const RECT& rcCorners, bool alphaChannel, BYTE uFade = 255, 
         bool hole = false, bool xtiled = false, bool ytiled = false);

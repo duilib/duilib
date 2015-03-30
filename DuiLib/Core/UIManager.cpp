@@ -1798,6 +1798,13 @@ HFONT CPaintManagerUI::AddFont(int id, LPCTSTR pStrFontName, int nSize, bool bBo
 	_itot(id, idBuffer, 10);
 	if (bShared)
 	{
+		TFontInfo* pOldFontInfo = static_cast<TFontInfo*>(m_SharedResInfo.m_CustomFonts.Find(idBuffer));
+		if (pOldFontInfo)
+		{
+			::DeleteObject(pOldFontInfo->hFont);
+			delete pOldFontInfo;
+		}
+
 		if( !m_SharedResInfo.m_CustomFonts.Insert(idBuffer, pFontInfo) ) 
 		{
 			::DeleteObject(hFont);
@@ -1807,6 +1814,13 @@ HFONT CPaintManagerUI::AddFont(int id, LPCTSTR pStrFontName, int nSize, bool bBo
 	}
 	else
 	{
+		TFontInfo* pOldFontInfo = static_cast<TFontInfo*>(m_ResInfo.m_CustomFonts.Find(idBuffer));
+		if (pOldFontInfo)
+		{
+			::DeleteObject(pOldFontInfo->hFont);
+			delete pOldFontInfo;
+		}
+
 		if( !m_ResInfo.m_CustomFonts.Insert(idBuffer, pFontInfo) ) 
 		{
 			::DeleteObject(hFont);
@@ -2105,16 +2119,14 @@ const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, LPCTSTR type, DWORD 
 		if (bShared)
 		{
 			if( !m_SharedResInfo.m_ImageHash.Insert(bitmap, data) ) {
-				::DeleteObject(data->hBitmap);
-				delete data;
+				CRenderEngine::FreeImage(data);
 				data = NULL;
 			}
 		}
 		else
 		{
 			if( !m_ResInfo.m_ImageHash.Insert(bitmap, data) ) {
-				::DeleteObject(data->hBitmap);
-				delete data;
+				CRenderEngine::FreeImage(data);
 				data = NULL;
 			}
 		}
@@ -2143,16 +2155,14 @@ const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, HBITMAP hBitmap, int
 	if (bShared)
 	{
 		if( !m_SharedResInfo.m_ImageHash.Insert(bitmap, data) ) {
-			::DeleteObject(data->hBitmap);
-			delete data;
+			CRenderEngine::FreeImage(data);
 			data = NULL;
 		}
 	}
 	else
 	{
 		if( !m_SharedResInfo.m_ImageHash.Insert(bitmap, data) ) {
-			::DeleteObject(data->hBitmap);
-			delete data;
+			CRenderEngine::FreeImage(data);
 			data = NULL;
 		}
 	}
@@ -2162,7 +2172,7 @@ const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, HBITMAP hBitmap, int
 
 void CPaintManagerUI::RemoveImage(LPCTSTR bitmap, bool bShared)
 {
-	const TImageInfo* data = NULL;
+	TImageInfo* data = NULL;
 	if (bShared) 
 	{
 		data = static_cast<TImageInfo*>(m_SharedResInfo.m_ImageHash.Find(bitmap));
@@ -2260,8 +2270,7 @@ void CPaintManagerUI::ReloadSharedImages()
 				}
 				if( pNewData == NULL ) continue;
 
-				if( data->hBitmap != NULL ) ::DeleteObject(data->hBitmap);
-				if( data->pSrcBits != NULL ) delete[] data->pSrcBits;
+				CRenderEngine::FreeImage(data, false);
 				data->hBitmap = pNewData->hBitmap;
 				data->pBits = pNewData->pBits;
 				data->nX = pNewData->nX;
@@ -2301,8 +2310,7 @@ void CPaintManagerUI::ReloadImages()
 				}
 				if( pNewData == NULL ) continue;
 
-				if( data->hBitmap != NULL ) ::DeleteObject(data->hBitmap);
-				if( data->pSrcBits != NULL ) delete[] data->pSrcBits;
+				CRenderEngine::FreeImage(data, false);
 				data->hBitmap = pNewData->hBitmap;
 				data->pBits = pNewData->pBits;
 				data->nX = pNewData->nX;

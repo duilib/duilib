@@ -35,7 +35,7 @@
 					<Button name="roomclosebtn" float="1,0,1,0" pos="-14,2,-2,14" normalimage="file='tab_close.png' source='0,0,12,12'" hotimage="file='tab_close.png' source='12,0,24,12'" pushedimage="file='tab_close.png' source='24,0,36,12'"/>
 				</HorizontalLayout>
     			<Label padding="40,2,2,2" text="{i gameicons.png 18 0}这里是一条系统消息" showhtml="true" />
-    			<Button name="fontswitch" float="true" pos="-82,4,-2,28" text="切换字体"/>
+    			<Button name="fontswitch" float="1,0,1,0" pos="-82,4,-2,28" text="切换字体"/>
     		</HorizontalLayout>
     		<Control height="2" />
     		<TabLayout name="switch">

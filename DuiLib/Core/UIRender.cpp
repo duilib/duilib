@@ -467,12 +467,18 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
 	return data;
 }
 
-void CRenderEngine::FreeImage(const TImageInfo* bitmap)
+void CRenderEngine::FreeImage(TImageInfo* bitmap, bool bDelete)
 {
+	if (bitmap == NULL) return;
 	if (bitmap->hBitmap) {
-		::DeleteObject(bitmap->hBitmap) ; 
+		::DeleteObject(bitmap->hBitmap);
+		bitmap->hBitmap = NULL;
 	}
-	delete bitmap ;
+	if (bitmap->pSrcBits) {
+		delete[] bitmap->pSrcBits;
+		bitmap->pSrcBits = NULL;
+	}
+	if (bDelete) delete bitmap ;
 }
 
 void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RECT& rcPaint,
