@@ -142,6 +142,7 @@ typedef struct UILIB_API tagTResInfo
 	CStdStringPtrMap m_CustomFonts;
 	CStdStringPtrMap m_ImageHash;
 	CStdStringPtrMap m_AttrHash;
+	CStdStringPtrMap m_MultiLanguageHash;
 } TResInfo;
 
 // Structure for notifications from the system
@@ -271,11 +272,19 @@ public:
     const TImageInfo* AddImage(LPCTSTR bitmap, HBITMAP hBitmap, int iWidth, int iHeight, bool bAlpha, bool bShared = false);
     void RemoveImage(LPCTSTR bitmap, bool bShared = false);
     void RemoveAllImages(bool bShared = false);
+	static void ReloadSharedImages();
+	void ReloadImages();
 
     void AddDefaultAttributeList(LPCTSTR pStrControlName, LPCTSTR pStrControlAttrList, bool bShared = false);
     LPCTSTR GetDefaultAttributeList(LPCTSTR pStrControlName) const;
     bool RemoveDefaultAttributeList(LPCTSTR pStrControlName, bool bShared = false);
     void RemoveAllDefaultAttributeList(bool bShared = false);
+
+	static void AddMultiLanguageString(int id, LPCTSTR pStrMultiLanguage);
+	static LPCTSTR GetMultiLanguageString(int id);
+	static bool RemoveMultiLanguageString(int id);
+	static void RemoveAllMultiLanguageString();
+	static void ProcessMultiLanguageTokens(CDuiString& pStrMultiLanguage);
 
     bool AttachDialog(CControlUI* pControl);
     bool InitControls(CControlUI* pControl, CControlUI* pParent = NULL);
@@ -353,8 +362,6 @@ private:
 
 	static void AdjustSharedImagesHSL();
 	void AdjustImagesHSL();
-	static void ReloadSharedImages();
-	void ReloadImages();
 
 private:
     HWND m_hWndPaint;

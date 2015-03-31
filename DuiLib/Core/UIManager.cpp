@@ -821,6 +821,7 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             // Create tooltip information
             CDuiString sToolTip = pHover->GetToolTip();
             if( sToolTip.IsEmpty() ) return true;
+			ProcessMultiLanguageTokens(sToolTip);
             ::ZeroMemory(&m_ToolTip, sizeof(TOOLINFO));
             m_ToolTip.cbSize = sizeof(TOOLINFO);
             m_ToolTip.uFlags = TTF_IDISHWND;
@@ -2338,10 +2339,8 @@ void CPaintManagerUI::AddDefaultAttributeList(LPCTSTR pStrControlName, LPCTSTR p
 		CDuiString* pDefaultAttr = new CDuiString(pStrControlAttrList);
 		if (pDefaultAttr != NULL)
 		{
-			if (m_SharedResInfo.m_AttrHash.Find(pStrControlName) == NULL)
-				m_SharedResInfo.m_AttrHash.Set(pStrControlName, (LPVOID)pDefaultAttr);
-			else
-				delete pDefaultAttr;
+			CDuiString* pOldDefaultAttr = static_cast<CDuiString*>(m_SharedResInfo.m_AttrHash.Set(pStrControlName, (LPVOID)pDefaultAttr));
+			if (pOldDefaultAttr) delete pOldDefaultAttr;
 		}
 	}
 	else
@@ -2349,10 +2348,8 @@ void CPaintManagerUI::AddDefaultAttributeList(LPCTSTR pStrControlName, LPCTSTR p
 		CDuiString* pDefaultAttr = new CDuiString(pStrControlAttrList);
 		if (pDefaultAttr != NULL)
 		{
-			if (m_ResInfo.m_AttrHash.Find(pStrControlName) == NULL)
-				m_ResInfo.m_AttrHash.Set(pStrControlName, (LPVOID)pDefaultAttr);
-			else
-				delete pDefaultAttr;
+			CDuiString* pOldDefaultAttr = static_cast<CDuiString*>(m_ResInfo.m_AttrHash.Set(pStrControlName, (LPVOID)pDefaultAttr));
+			if (pOldDefaultAttr) delete pOldDefaultAttr;
 		}
 	}
 }
@@ -2408,6 +2405,73 @@ void CPaintManagerUI::RemoveAllDefaultAttributeList(bool bShared)
 			}
 		}
 		m_ResInfo.m_AttrHash.RemoveAll();
+	}
+}
+
+void CPaintManagerUI::AddMultiLanguageString(int id, LPCTSTR pStrMultiLanguage)
+{
+	TCHAR idBuffer[16];
+	::ZeroMemory(idBuffer, sizeof(idBuffer));
+	_itot(id, idBuffer, 10);
+
+	CDuiString* pMultiLanguage = new CDuiString(pStrMultiLanguage);
+	if (pMultiLanguage != NULL)
+	{
+		CDuiString* pOldMultiLanguage = static_cast<CDuiString*>(m_SharedResInfo.m_MultiLanguageHash.Set(idBuffer, (LPVOID)pMultiLanguage));
+		if (pOldMultiLanguage) delete pOldMultiLanguage;
+	}
+}
+
+LPCTSTR CPaintManagerUI::GetMultiLanguageString(int id)
+{
+	TCHAR idBuffer[16];
+	::ZeroMemory(idBuffer, sizeof(idBuffer));
+	_itot(id, idBuffer, 10);
+
+	CDuiString* pMultiLanguage = static_cast<CDuiString*>(m_SharedResInfo.m_MultiLanguageHash.Find(idBuffer));
+	if (pMultiLanguage) return pMultiLanguage->GetData();
+	return NULL;
+}
+
+bool CPaintManagerUI::RemoveMultiLanguageString(int id)
+{
+	TCHAR idBuffer[16];
+	::ZeroMemory(idBuffer, sizeof(idBuffer));
+	_itot(id, idBuffer, 10);
+
+	CDuiString* pMultiLanguage = static_cast<CDuiString*>(m_SharedResInfo.m_MultiLanguageHash.Find(idBuffer));
+	if( !pMultiLanguage ) return false;
+
+	delete pMultiLanguage;
+	return m_SharedResInfo.m_MultiLanguageHash.Remove(idBuffer);
+}
+
+void CPaintManagerUI::RemoveAllMultiLanguageString()
+{
+	CDuiString* pMultiLanguage;
+	for( int i = 0; i< m_SharedResInfo.m_MultiLanguageHash.GetSize(); i++ ) {
+		if(LPCTSTR key = m_SharedResInfo.m_MultiLanguageHash.GetAt(i)) {
+			pMultiLanguage = static_cast<CDuiString*>(m_SharedResInfo.m_MultiLanguageHash.Find(key));
+			if (pMultiLanguage) delete pMultiLanguage;
+		}
+	}
+	m_SharedResInfo.m_MultiLanguageHash.RemoveAll();
+}
+
+void CPaintManagerUI::ProcessMultiLanguageTokens(CDuiString& pStrMultiLanguage)
+{
+	// Replace string-tokens: %{nnn}, nnn=int
+	int iPos = pStrMultiLanguage.Find(_T('%'));
+	while( iPos >= 0 ) {
+		if( pStrMultiLanguage.GetAt(iPos + 1) == _T('{') ) {
+			int iEndPos = iPos + 2;
+			while( isdigit(pStrMultiLanguage.GetAt(iEndPos)) ) iEndPos++;
+			if( pStrMultiLanguage.GetAt(iEndPos) == '}' ) {
+				LPCTSTR pStrTemp = CPaintManagerUI::GetMultiLanguageString((UINT)_ttoi(pStrMultiLanguage.GetData() + iPos + 2));
+				pStrMultiLanguage.Replace(pStrMultiLanguage.Mid(iPos, iEndPos - iPos + 1), pStrTemp);
+			}
+		}
+		iPos = pStrMultiLanguage.Find(_T('%'), iPos + 1);
 	}
 }
 

@@ -1216,6 +1216,11 @@ void CRenderEngine::DrawText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTS
 {
     ASSERT(::GetObjectType(hDC)==OBJ_DC || ::GetObjectType(hDC)==OBJ_MEMDC);
     if( pstrText == NULL || pManager == NULL ) return;
+
+	CDuiString sText = pstrText;
+	CPaintManagerUI::ProcessMultiLanguageTokens(sText);
+	pstrText = sText;
+
     ::SetBkMode(hDC, TRANSPARENT);
     ::SetTextColor(hDC, RGB(GetBValue(dwTextColor), GetGValue(dwTextColor), GetRValue(dwTextColor)));
     HFONT hOldFont = (HFONT)::SelectObject(hDC, pManager->GetFont(iFont));
@@ -1258,6 +1263,10 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
     HRGN hOldRgn = ::CreateRectRgnIndirect(&rcClip);
     HRGN hRgn = ::CreateRectRgnIndirect(&rc);
     if( bDraw ) ::ExtSelectClipRgn(hDC, hRgn, RGN_AND);
+
+	CDuiString sText = pstrText;
+	CPaintManagerUI::ProcessMultiLanguageTokens(sText);
+	pstrText = sText;
 
     TEXTMETRIC* pTm = &pManager->GetDefaultFontInfo()->tm;
     HFONT hOldFont = (HFONT) ::SelectObject(hDC, pManager->GetDefaultFontInfo()->hFont);
@@ -1962,6 +1971,9 @@ HBITMAP CRenderEngine::GenerateBitmap(CPaintManagerUI* pManager, CControlUI* pCo
 
 SIZE CRenderEngine::GetTextSize( HDC hDC, CPaintManagerUI* pManager , LPCTSTR pstrText, int iFont, UINT uStyle )
 {
+	CDuiString sText = pstrText;
+	CPaintManagerUI::ProcessMultiLanguageTokens(sText);
+	pstrText = sText;
 	SIZE size = {0,0};
 	ASSERT(::GetObjectType(hDC)==OBJ_DC || ::GetObjectType(hDC)==OBJ_MEMDC);
 	if( pstrText == NULL || pManager == NULL ) return size;
