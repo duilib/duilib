@@ -175,7 +175,7 @@ void CRichListWnd::OnFinalMessage( HWND hWnd)
 	delete this;
 }
 
-DuiLib::CDuiString CRichListWnd::GetSkinFolder()
+CDuiString CRichListWnd::GetSkinFolder()
 {
 #ifdef _DEBUG
 	return _T("skin\\RichListRes\\");
@@ -185,7 +185,7 @@ DuiLib::CDuiString CRichListWnd::GetSkinFolder()
 	
 }
 
-DuiLib::CDuiString CRichListWnd::GetSkinFile()
+CDuiString CRichListWnd::GetSkinFile()
 {
 	return _T("duilib.xml");
 }
@@ -199,7 +199,7 @@ UILIB_RESOURCETYPE CRichListWnd::GetResourceType() const
 #endif
 }
 
-DuiLib::CDuiString CRichListWnd::GetZIPFileName() const
+CDuiString CRichListWnd::GetZIPFileName() const
 {
 	return _T("RichListRes.zip");
 }

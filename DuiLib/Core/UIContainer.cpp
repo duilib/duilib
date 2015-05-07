@@ -344,7 +344,7 @@ namespace DuiLib
 			CControlUI* pControl = static_cast<CControlUI*>(m_items[it2]);
 			if( !pControl->IsVisible() ) continue;
 			if( pControl->IsFloat() ) continue;
-			pControl->Move(CSize(-cx, -cy), false);
+			pControl->Move(CDuiSize(-cx, -cy), false);
 		}
 
 		Invalidate();
@@ -752,10 +752,10 @@ namespace DuiLib
 		LONG width = m_rcItem.right - m_rcItem.left;
 		LONG height = m_rcItem.bottom - m_rcItem.top;
 		RECT rcCtrl = { 0 };
-		rcCtrl.left = m_rcItem.left + (LONG)(width*rcPercent.left) + szXY.cx;
-		rcCtrl.right = m_rcItem.left + (LONG)(width*rcPercent.right) + szXY.cx + sz.cx;
-		rcCtrl.top = m_rcItem.top + (LONG)(height*rcPercent.top) + szXY.cy;
-		rcCtrl.bottom = m_rcItem.top + (LONG)(height*rcPercent.bottom) + szXY.cy + sz.cy;
+		rcCtrl.left = (LONG)(width*rcPercent.left) + szXY.cx;
+		rcCtrl.top = (LONG)(height*rcPercent.top) + szXY.cy;
+		rcCtrl.right = (LONG)(width*rcPercent.right) + szXY.cx + sz.cx;
+		rcCtrl.bottom = (LONG)(height*rcPercent.bottom) + szXY.cy + sz.cy;
 		pControl->SetPos(rcCtrl, false);
 	}
 
@@ -859,7 +859,7 @@ namespace DuiLib
 			return FALSE;
 	}
 
-	DuiLib::CDuiString CContainerUI::GetSubControlText( LPCTSTR pstrSubControlName )
+	CDuiString CContainerUI::GetSubControlText( LPCTSTR pstrSubControlName )
 	{
 		CControlUI* pSubControl=NULL;
 		pSubControl=this->FindSubControl(pstrSubControlName);

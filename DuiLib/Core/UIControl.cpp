@@ -158,6 +158,11 @@ void CControlUI::SetBkImage(LPCTSTR pStrImage)
 	if( m_diBk.sDrawString == pStrImage && m_diBk.pImageInfo != NULL ) return;
 	m_diBk.Clear();
 	m_diBk.sDrawString = pStrImage;
+	DrawImage(NULL, m_diBk);
+	if( m_bFloat && m_cxyFixed.cx == 0 && m_cxyFixed.cy == 0 && m_diBk.pImageInfo ) {
+		m_cxyFixed.cx = m_diBk.pImageInfo->nX;
+		m_cxyFixed.cy = m_diBk.pImageInfo->nY;
+	}
 	Invalidate();
 }
 
@@ -248,7 +253,27 @@ void CControlUI::SetPos(RECT rc, bool bNeedInvalidate)
     CDuiRect invalidateRc = m_rcItem;
     if( ::IsRectEmpty(&invalidateRc) ) invalidateRc = rc;
 
-    m_rcItem = rc;
+	if( m_bFloat ) {
+		CControlUI* pParent = GetParent();
+		if( pParent != NULL ) {
+			RECT rcParentPos = pParent->GetPos();
+			RECT rcCtrl = {rcParentPos.left + rc.left, rcParentPos.top + rc.top, 
+				rcParentPos.left + rc.right, rcParentPos.top + rc.bottom};
+			m_rcItem = rcCtrl;
+
+			LONG width = rcParentPos.right - rcParentPos.left;
+			LONG height = rcParentPos.bottom - rcParentPos.top;
+			RECT rcPercent = {(LONG)(width*m_piFloatPercent.left), (LONG)(height*m_piFloatPercent.top),
+				(LONG)(width*m_piFloatPercent.right), (LONG)(height*m_piFloatPercent.bottom)};
+			m_cXY.cx = rc.left - rcPercent.left;
+			m_cXY.cy = rc.top - rcPercent.top;
+			m_cxyFixed.cx = rc.right - rcPercent.right - m_cXY.cx;
+			m_cxyFixed.cy = rc.bottom - rcPercent.bottom - m_cXY.cy;
+		}
+	}
+	else {
+		m_rcItem = rc;
+	}
     if( m_pManager == NULL ) return;
 
     if( !m_bSetPos ) {
@@ -257,18 +282,6 @@ void CControlUI::SetPos(RECT rc, bool bNeedInvalidate)
         m_bSetPos = false;
     }
     
-    if( m_bFloat ) {
-        CControlUI* pParent = GetParent();
-        if( pParent != NULL ) {
-            RECT rcParentPos = pParent->GetPos();
-            //m_cXY.cx = m_rcItem.left - rcParentPos.left;
-            //if( m_cXY.cy >= 0 ) m_cXY.cy = m_rcItem.top - rcParentPos.top;
-            //else m_cXY.cy = m_rcItem.bottom - rcParentPos.bottom;
-            //m_cxyFixed.cx = m_rcItem.right - m_rcItem.left;
-            //m_cxyFixed.cy = m_rcItem.bottom - m_rcItem.top;
-        }
-    }
-
     m_bUpdateNeeded = false;
 
 	if( bNeedInvalidate && IsVisible() ) {

@@ -108,7 +108,7 @@ SIZE CMenuUI::EstimateSize(SIZE szAvailable)
 		if( cxFixed < sz.cx )
 			cxFixed = sz.cx;
     }
-    return CSize(cxFixed, cyFixed);
+    return CDuiSize(cxFixed, cyFixed);
 }
 
 void CMenuUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
@@ -380,7 +380,7 @@ LRESULT CMenuWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 			SIZE szInit = m_pm.GetInitSize();
 			CDuiRect rc;
-			CPoint point = m_BasedPoint;
+			CDuiPoint point = m_BasedPoint;
 			rc.left = point.x;
 			rc.top = point.y;
 			rc.right = rc.left + szInit.cx;
@@ -693,7 +693,7 @@ void CMenuElementUI::CreateMenuWnd()
 	param.wParam = 2;
 	s_context_menu_observer.RBroadcast(param);
 
-	m_pWindow->Init(static_cast<CMenuElementUI*>(this), _T(""), _T(""), CPoint());
+	m_pWindow->Init(static_cast<CMenuElementUI*>(this), _T(""), _T(""), CDuiPoint());
 }
 
 

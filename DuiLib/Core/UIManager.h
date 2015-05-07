@@ -110,9 +110,11 @@ typedef struct UILIB_API tagTImageInfo
 typedef struct UILIB_API tagTDrawInfo
 {
 	tagTDrawInfo();
+	tagTDrawInfo(LPCTSTR lpsz);
 	void Clear();
 	CDuiString sDrawString;
 	bool bLoaded;
+	CDuiString sImageName;
 	const TImageInfo* pImageInfo;
 	RECT rcDestOffset;
 	RECT rcBmpPart;

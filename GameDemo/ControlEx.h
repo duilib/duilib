@@ -300,8 +300,8 @@ public:
 
     SIZE GetExpanderSizeX(Node* node) const
     {
-        if( !node || node == _root ) return CSize();
-        if( node->data()._level >= 3 ) return CSize();
+        if( !node || node == _root ) return CDuiSize();
+        if( node->data()._level >= 3 ) return CDuiSize();
 
         SIZE szExpander = {0};
         szExpander.cx = 6 + 24 * node->data()._level - 4/*适当放大一点*/;
@@ -324,7 +324,7 @@ public:
 
     DeskListUI() : m_uButtonState(0), m_dwDelayDeltaY(0), m_dwDelayNum(0), m_dwDelayLeft(0)
     {
-        SetItemSize(CSize(182, 152));
+        SetItemSize(CDuiSize(182, 152));
         CDialogBuilder builder;
         CContainerUI* pDesk = static_cast<CContainerUI*>(builder.Create(_T("desk.xml"), (UINT)0));
         if( pDesk != NULL ) {

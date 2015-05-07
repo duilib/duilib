@@ -1024,6 +1024,7 @@ bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc
 			}
 			if( *pstrImage++ != _T(' ') ) break;
 		}
+		drawInfo.sImageName = sImageName;
 
 		const TImageInfo* data = NULL;
 		if( bUseRes == false ) {

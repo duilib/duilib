@@ -56,6 +56,12 @@ tagTDrawInfo::tagTDrawInfo()
 	Clear();
 }
 
+tagTDrawInfo::tagTDrawInfo(LPCTSTR lpsz)
+{
+	Clear();
+	sDrawString = lpsz;
+}
+
 void tagTDrawInfo::Clear()
 {
 	sDrawString.Empty();
@@ -366,7 +372,7 @@ SIZE CPaintManagerUI::GetClientSize() const
 {
     RECT rcClient = { 0 };
     ::GetClientRect(m_hWndPaint, &rcClient);
-    return CSize(rcClient.right - rcClient.left, rcClient.bottom - rcClient.top);
+    return CDuiSize(rcClient.right - rcClient.left, rcClient.bottom - rcClient.top);
 }
 
 SIZE CPaintManagerUI::GetInitSize()
@@ -1181,6 +1187,7 @@ bool CPaintManagerUI::InitControls(CControlUI* pControl, CControlUI* pParent /*=
 
 void CPaintManagerUI::ReapObjects(CControlUI* pControl)
 {
+    if( pControl == NULL ) return;
     if( pControl == m_pEventKey ) m_pEventKey = NULL;
     if( pControl == m_pEventHover ) m_pEventHover = NULL;
     if( pControl == m_pEventClick ) m_pEventClick = NULL;
@@ -1804,6 +1811,7 @@ HFONT CPaintManagerUI::AddFont(int id, LPCTSTR pStrFontName, int nSize, bool bBo
 		{
 			::DeleteObject(pOldFontInfo->hFont);
 			delete pOldFontInfo;
+            m_SharedResInfo.m_CustomFonts.Remove(idBuffer);
 		}
 
 		if( !m_SharedResInfo.m_CustomFonts.Insert(idBuffer, pFontInfo) ) 
@@ -1820,6 +1828,7 @@ HFONT CPaintManagerUI::AddFont(int id, LPCTSTR pStrFontName, int nSize, bool bBo
 		{
 			::DeleteObject(pOldFontInfo->hFont);
 			delete pOldFontInfo;
+            m_ResInfo.m_CustomFonts.Remove(idBuffer);
 		}
 
 		if( !m_ResInfo.m_CustomFonts.Insert(idBuffer, pFontInfo) ) 
@@ -2119,6 +2128,13 @@ const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, LPCTSTR type, DWORD 
 	{
 		if (bShared)
 		{
+            TImageInfo* pOldImageInfo = static_cast<TImageInfo*>(m_SharedResInfo.m_ImageHash.Find(bitmap));
+            if (pOldImageInfo)
+            {
+                CRenderEngine::FreeImage(pOldImageInfo);
+                m_SharedResInfo.m_ImageHash.Remove(bitmap);
+            }
+
 			if( !m_SharedResInfo.m_ImageHash.Insert(bitmap, data) ) {
 				CRenderEngine::FreeImage(data);
 				data = NULL;
@@ -2126,6 +2142,13 @@ const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, LPCTSTR type, DWORD 
 		}
 		else
 		{
+            TImageInfo* pOldImageInfo = static_cast<TImageInfo*>(m_ResInfo.m_ImageHash.Find(bitmap));
+            if (pOldImageInfo)
+            {
+                CRenderEngine::FreeImage(pOldImageInfo);
+                m_ResInfo.m_ImageHash.Remove(bitmap);
+            }
+
 			if( !m_ResInfo.m_ImageHash.Insert(bitmap, data) ) {
 				CRenderEngine::FreeImage(data);
 				data = NULL;

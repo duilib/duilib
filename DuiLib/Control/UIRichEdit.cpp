@@ -1566,9 +1566,9 @@ bool CRichEditUI::LineScroll(int nLines, int nChars)
     return (BOOL)lResult == TRUE;
 }
 
-CPoint CRichEditUI::GetCharPos(long lChar) const
+CDuiPoint CRichEditUI::GetCharPos(long lChar) const
 { 
-    CPoint pt; 
+    CDuiPoint pt; 
     TxSendMessage(EM_POSFROMCHAR, (WPARAM)&pt, (LPARAM)lChar, 0); 
     return pt;
 }
@@ -1581,14 +1581,14 @@ long CRichEditUI::LineFromChar(long nIndex) const
     return (long)lResult;
 }
 
-CPoint CRichEditUI::PosFromChar(UINT nChar) const
+CDuiPoint CRichEditUI::PosFromChar(UINT nChar) const
 { 
     POINTL pt; 
     TxSendMessage(EM_POSFROMCHAR, (WPARAM)&pt, nChar, 0); 
-    return CPoint(pt.x, pt.y); 
+    return CDuiPoint(pt.x, pt.y); 
 }
 
-int CRichEditUI::CharFromPos(CPoint pt) const
+int CRichEditUI::CharFromPos(CDuiPoint pt) const
 { 
     POINTL ptl = {pt.x, pt.y}; 
     if( !m_pTwh ) return 0;
@@ -1888,7 +1888,7 @@ void CRichEditUI::DoEvent(TEventUI& event)
 
 SIZE CRichEditUI::EstimateSize(SIZE szAvailable)
 {
-    //return CSize(m_rcItem); // 这种方式在第一次设置大小之后就大小不变了
+    //return CDuiSize(m_rcItem); // 这种方式在第一次设置大小之后就大小不变了
     return CContainerUI::EstimateSize(szAvailable);
 }
 

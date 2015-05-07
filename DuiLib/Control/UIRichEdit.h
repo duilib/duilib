@@ -83,10 +83,10 @@ public:
     int LineIndex(int nLine = -1) const;
     int LineLength(int nLine = -1) const;
     bool LineScroll(int nLines, int nChars = 0);
-	CPoint GetCharPos(long lChar) const;
+	CDuiPoint GetCharPos(long lChar) const;
     long LineFromChar(long nIndex) const;
-    CPoint PosFromChar(UINT nChar) const;
-    int CharFromPos(CPoint pt) const;
+    CDuiPoint PosFromChar(UINT nChar) const;
+    int CharFromPos(CDuiPoint pt) const;
     void EmptyUndoBuffer();
     UINT SetUndoLimit(UINT nLimit);
     long StreamIn(int nFormat, EDITSTREAM &es);

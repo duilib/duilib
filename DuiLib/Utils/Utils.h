@@ -21,26 +21,26 @@ namespace DuiLib
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
 
-	class UILIB_API CPoint : public tagPOINT
+	class UILIB_API CDuiPoint : public tagPOINT
 	{
 	public:
-		CPoint();
-		CPoint(const POINT& src);
-		CPoint(int x, int y);
-		CPoint(LPARAM lParam);
+		CDuiPoint();
+		CDuiPoint(const POINT& src);
+		CDuiPoint(int x, int y);
+		CDuiPoint(LPARAM lParam);
 	};
 
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
 
-	class UILIB_API CSize : public tagSIZE
+	class UILIB_API CDuiSize : public tagSIZE
 	{
 	public:
-		CSize();
-		CSize(const SIZE& src);
-		CSize(const RECT rc);
-		CSize(int cx, int cy);
+		CDuiSize();
+		CDuiSize(const SIZE& src);
+		CDuiSize(const RECT rc);
+		CDuiSize(int cx, int cy);
 	};
 
 

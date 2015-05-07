@@ -188,7 +188,7 @@ void CComboWnd::Scroll(int dx, int dy)
 {
     if( dx == 0 && dy == 0 ) return;
     SIZE sz = m_pLayout->GetScrollPos();
-    m_pLayout->SetScrollPos(CSize(sz.cx + dx, sz.cy + dy));
+    m_pLayout->SetScrollPos(CDuiSize(sz.cx + dx, sz.cy + dy));
 }
 
 #if(_WIN32_WINNT >= 0x0501)
@@ -202,7 +202,7 @@ UINT CComboWnd::GetClassStyle() const
 
 CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0)
 {
-    m_szDropBox = CSize(0, 150);
+    m_szDropBox = CDuiSize(0, 150);
     ::ZeroMemory(&m_rcTextPadding, sizeof(m_rcTextPadding));
 
     m_ListInfo.nColumns = 0;
@@ -477,7 +477,7 @@ void CComboUI::DoEvent(TEventUI& event)
 
 SIZE CComboUI::EstimateSize(SIZE szAvailable)
 {
-    if( m_cxyFixed.cy == 0 ) return CSize(m_cxyFixed.cx, m_pManager->GetDefaultFontInfo()->tm.tmHeight + 12);
+    if( m_cxyFixed.cy == 0 ) return CDuiSize(m_cxyFixed.cx, m_pManager->GetDefaultFontInfo()->tm.tmHeight + 12);
     return CControlUI::EstimateSize(szAvailable);
 }
 
@@ -930,20 +930,19 @@ void CComboUI::PaintStatusImage(HDC hDC)
     else m_uButtonState &= ~ UISTATE_DISABLED;
 
     if( (m_uButtonState & UISTATE_DISABLED) != 0 ) {
-		DrawImage(hDC, m_diDisabled);
+        if (DrawImage(hDC, m_diDisabled)) return;
     }
     else if( (m_uButtonState & UISTATE_PUSHED) != 0 ) {
-		DrawImage(hDC, m_diPushed);
+        if (DrawImage(hDC, m_diPushed)) return;
     }
     else if( (m_uButtonState & UISTATE_HOT) != 0 ) {
-		DrawImage(hDC, m_diHot);
+        if (DrawImage(hDC, m_diHot)) return;
     }
     else if( (m_uButtonState & UISTATE_FOCUSED) != 0 ) {
-		DrawImage(hDC, m_diFocused);
+        if (DrawImage(hDC, m_diFocused)) return;
     }
-	else {
-		DrawImage(hDC, m_diNormal);
-	}
+
+    DrawImage(hDC, m_diNormal);
 }
 
 void CComboUI::PaintText(HDC hDC)
