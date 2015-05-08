@@ -13,6 +13,7 @@ namespace DuiLib
 	{
 	public:
 		LPCTSTR GetClass() const;
+		LPVOID GetInterface(LPCTSTR pstrName);
 
 		void SetCheck(bool bCheck);
 		bool GetCheck() const;

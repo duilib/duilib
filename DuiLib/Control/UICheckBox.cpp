@@ -8,6 +8,12 @@ namespace DuiLib
 		return _T("CheckBoxUI");
 	}
 
+	LPVOID CCheckBoxUI::GetInterface(LPCTSTR pstrName)
+	{
+		if( _tcscmp(pstrName, DUI_CTR_CHECKBOX) == 0 ) return static_cast<CCheckBoxUI*>(this);
+		return COptionUI::GetInterface(pstrName);
+	}
+
 	void CCheckBoxUI::SetCheck(bool bCheck)
 	{
 		Selected(bCheck);
