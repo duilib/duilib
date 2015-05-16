@@ -679,6 +679,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Utils\stb_image.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Utils\UIDelegate.h"
 					>
 				</File>
