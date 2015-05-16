@@ -404,7 +404,7 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
     LPBYTE pImage = NULL;
     int x,y,n;
     pImage = stbi_load_from_memory(pData, dwSize, &x, &y, &n, 4);
-    delete[] pData;
+    free(pImage);
 	if( !pImage ) {
 		//::MessageBox(0, _T("½âÎöÍ¼Æ¬Ê§°Ü"), _T("×¥BUG"), MB_OK);
 		return NULL;
