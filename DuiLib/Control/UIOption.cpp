@@ -199,8 +199,6 @@ namespace DuiLib
 
 	void COptionUI::PaintStatusImage(HDC hDC)
 	{
-		m_uButtonState &= ~UISTATE_PUSHED;
-
 		if( (m_uButtonState & UISTATE_SELECTED) != 0 ) {
 			if ((m_uButtonState & UISTATE_HOT) != 0)
 			{
@@ -214,7 +212,10 @@ namespace DuiLib
 			}	
 		}
 
+		UINT uSavedState = m_uButtonState;
+		m_uButtonState &= ~UISTATE_PUSHED;
 		CButtonUI::PaintStatusImage(hDC);
+		m_uButtonState = uSavedState;
 
 Label_ForeImage:
 		DrawImage(hDC, m_diFore);
@@ -248,6 +249,11 @@ Label_ForeImage:
 			m_dwTextColor = oldTextColor;
 		}
 		else
+		{
+			UINT uSavedState = m_uButtonState;
+			m_uButtonState &= ~UISTATE_PUSHED;
 			CButtonUI::PaintText(hDC);
+			m_uButtonState = uSavedState;
+		}
 	}
 }
