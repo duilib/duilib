@@ -964,7 +964,7 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 			// 将不会触发异常
 			CControlUI* pClick = m_pEventClick;
 			m_pEventClick = NULL;
-            m_pEventClick->Event(event);
+            pClick->Event(event);
         }
         break;
     case WM_RBUTTONDOWN:
