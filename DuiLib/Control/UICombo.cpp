@@ -120,7 +120,8 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     }
     else if( uMsg == WM_CLOSE ) {
         m_pOwner->SetManager(m_pOwner->GetManager(), m_pOwner->GetParent(), false);
-        m_pOwner->SetPos(m_pOwner->GetPos(), false);
+		if( !m_pOwner->IsFloat() ) m_pOwner->SetPos(m_pOwner->GetPos(), false);
+		else m_pOwner->SetPos(m_pOwner->GetRelativePos(), false);
         m_pOwner->SetFocus();
     }
     else if( uMsg == WM_LBUTTONUP ) {

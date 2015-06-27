@@ -245,6 +245,20 @@ const RECT& CControlUI::GetPos() const
     return m_rcItem;
 }
 
+RECT CControlUI::GetRelativePos() const
+{
+	CControlUI* pParent = GetParent();
+	if( pParent != NULL ) {
+		RECT rcParentPos = pParent->GetPos();
+		CDuiRect rcRelativePos(m_rcItem);
+		rcRelativePos.Offset(-rcParentPos.left, -rcParentPos.top);
+		return rcRelativePos;
+	}
+	else {
+		return CDuiRect(0, 0, 0, 0);
+	}
+}
+
 void CControlUI::SetPos(RECT rc, bool bNeedInvalidate)
 {
     if( rc.right < rc.left ) rc.right = rc.left;
@@ -761,8 +775,8 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         rcPos.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
         SIZE szXY = {rcPos.left, rcPos.top};
         SetFixedXY(szXY);
-		ASSERT(rcPos.right - rcPos.left >= 0);
-		ASSERT(rcPos.bottom - rcPos.top >= 0);
+		//ASSERT(rcPos.right - rcPos.left >= 0);
+		//ASSERT(rcPos.bottom - rcPos.top >= 0);
         SetFixedWidth(rcPos.right - rcPos.left);
         SetFixedHeight(rcPos.bottom - rcPos.top);
     }
