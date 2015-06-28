@@ -2499,7 +2499,8 @@ void CPaintManagerUI::ProcessMultiLanguageTokens(CDuiString& pStrMultiLanguage)
 			while( isdigit(pStrMultiLanguage.GetAt(iEndPos)) ) iEndPos++;
 			if( pStrMultiLanguage.GetAt(iEndPos) == '}' ) {
 				LPCTSTR pStrTemp = CPaintManagerUI::GetMultiLanguageString((UINT)_ttoi(pStrMultiLanguage.GetData() + iPos + 2));
-				pStrMultiLanguage.Replace(pStrMultiLanguage.Mid(iPos, iEndPos - iPos + 1), pStrTemp);
+                if (pStrTemp)
+				    pStrMultiLanguage.Replace(pStrMultiLanguage.Mid(iPos, iEndPos - iPos + 1), pStrTemp);
 			}
 		}
 		iPos = pStrMultiLanguage.Find(_T('%'), iPos + 1);
