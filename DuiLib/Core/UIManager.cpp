@@ -659,7 +659,8 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 						m_pRoot->FindControl(__FindControlsFromUpdate, NULL, UIFIND_VISIBLE | UIFIND_ME_FIRST | UIFIND_UPDATETEST);
 						for( int it = 0; it < m_aFoundControls.GetSize(); it++ ) {
 							pControl = static_cast<CControlUI*>(m_aFoundControls[it]);
-							pControl->SetPos(pControl->GetPos(), true);
+							if( !pControl->IsFloat() ) pControl->SetPos(pControl->GetPos(), true);
+							else pControl->SetPos(pControl->GetRelativePos(), true);
 						}
                     }
                     // We'll want to notify the window when it is first initialized
