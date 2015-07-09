@@ -896,13 +896,19 @@ namespace DuiLib
 	//************************************
 	bool CTreeViewUI::Remove( CTreeNodeUI* pControl )
 	{
-		while(pControl->GetCountChild() > 0)
+		while(pControl->IsHasChild())
 		{
 			CTreeNodeUI* pNode = pControl->GetChildNode(0);
 			if(pNode)
 			{
 				pControl->Remove(pNode);
 			}
+		}
+
+		CTreeNodeUI* pParent = pControl->GetParentNode();
+		if (pParent)
+		{
+			pParent->Remove(pControl);
 		}
 		CListUI::Remove(pControl);
 		return true;
