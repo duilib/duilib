@@ -27,8 +27,6 @@ namespace DuiLib
 		m_TransText(168),
 		m_TransShadow1(60),
 		m_TransText1(168),
-		m_hAlign(DT_LEFT),
-		m_vAlign(DT_CENTER),
 		m_dwTextColor1(-1),
 		m_dwTextShadowColorA(0xff000000),
 		m_dwTextShadowColorB(-1),
@@ -319,8 +317,14 @@ namespace DuiLib
 			nGraphics.SetTextRenderingHint(m_TextRenderingHintAntiAlias);
 
 			StringFormat format;
-			format.SetAlignment((StringAlignment)m_hAlign);
-			format.SetLineAlignment((StringAlignment)m_vAlign);
+			StringAlignment sa = StringAlignment::StringAlignmentNear;
+			if ((m_uTextStyle & DT_VCENTER) != 0) sa = StringAlignment::StringAlignmentCenter;
+			else if( (m_uTextStyle & DT_BOTTOM) != 0) sa = StringAlignment::StringAlignmentFar;
+			format.SetAlignment((StringAlignment)sa);
+			sa = StringAlignment::StringAlignmentNear;
+			if ((m_uTextStyle & DT_CENTER) != 0) sa = StringAlignment::StringAlignmentCenter;
+			else if( (m_uTextStyle & DT_RIGHT) != 0) sa = StringAlignment::StringAlignmentFar;
+			format.SetLineAlignment((StringAlignment)sa);
 
 			RectF nRc((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top);
 			RectF nShadowRc = nRc;
@@ -585,6 +589,7 @@ namespace DuiLib
 		try
 		{
 			m_EnableEffect = _EnabledEffect;
+			m_TextValue = CControlUI::GetText();
 		}
 		catch (...)
 		{

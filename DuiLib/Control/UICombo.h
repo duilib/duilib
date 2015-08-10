@@ -41,6 +41,8 @@ public:
 
     bool Activate();
 
+	bool GetShowText() const;
+	void SetShowText(bool flag);
     RECT GetTextPadding() const;
     void SetTextPadding(RECT rc);
     LPCTSTR GetNormalImage() const;
@@ -104,6 +106,7 @@ protected:
     CComboWnd* m_pWindow;
 
     int m_iCurSel;
+	bool m_bShowText;
     RECT m_rcTextPadding;
     CDuiString m_sDropBoxAttributes;
     SIZE m_szDropBox;

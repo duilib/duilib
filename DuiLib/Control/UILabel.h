@@ -82,8 +82,6 @@ namespace DuiLib
 		RECT	m_rcTextPadding;
 		bool	m_bShowHtml;
 
-		int						m_hAlign;
-		int						m_vAlign;
 		int						m_TransShadow;
 		int						m_TransShadow1;
 		int						m_TransText;

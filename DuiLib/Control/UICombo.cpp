@@ -221,6 +221,8 @@ CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0)
     m_ListInfo.dwLineColor = 0;
     m_ListInfo.bShowHtml = false;
     m_ListInfo.bMultiExpandable = false;
+
+	m_bShowText = true;
     ::ZeroMemory(&m_ListInfo.rcTextPadding, sizeof(m_ListInfo.rcTextPadding));
     ::ZeroMemory(&m_ListInfo.rcColumn, sizeof(m_ListInfo.rcColumn));
 }
@@ -527,6 +529,17 @@ void CComboUI::SetDropBoxSize(SIZE szDropBox)
     m_szDropBox = szDropBox;
 }
 
+bool CComboUI::GetShowText() const
+{
+	return m_bShowText;
+}
+
+void CComboUI::SetShowText(bool flag)
+{
+	m_bShowText = flag;
+	Invalidate();
+}
+
 RECT CComboUI::GetTextPadding() const
 {
     return m_rcTextPadding;
@@ -817,6 +830,7 @@ void CComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         rcTextPadding.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
         SetTextPadding(rcTextPadding);
     }
+	else if( _tcscmp(pstrName, _T("showtext")) == 0 ) SetShowText(_tcscmp(pstrValue, _T("true")) == 0);
     else if( _tcscmp(pstrName, _T("normalimage")) == 0 ) SetNormalImage(pstrValue);
     else if( _tcscmp(pstrName, _T("hotimage")) == 0 ) SetHotImage(pstrValue);
     else if( _tcscmp(pstrName, _T("pushedimage")) == 0 ) SetPushedImage(pstrValue);
@@ -948,6 +962,8 @@ void CComboUI::PaintStatusImage(HDC hDC)
 
 void CComboUI::PaintText(HDC hDC)
 {
+	if (!m_bShowText) return;
+
     RECT rcText = m_rcItem;
     rcText.left += m_rcTextPadding.left;
     rcText.right -= m_rcTextPadding.right;
