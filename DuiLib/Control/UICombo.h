@@ -29,7 +29,9 @@ public:
     SIZE GetDropBoxSize() const;
     void SetDropBoxSize(SIZE szDropBox);
 
-    int GetCurSel() const;  
+    int GetCurSel() const;
+	bool GetSelectCloseFlag();
+	void SetSelectCloseFlag(bool flag);
     bool SelectItem(int iIndex, bool bTakeFocus = false);
 
     bool SetItemIndex(CControlUI* pControl, int iIndex);
@@ -107,6 +109,7 @@ protected:
 
     int m_iCurSel;
 	bool m_bShowText;
+	bool m_bSelectCloseFlag;
     RECT m_rcTextPadding;
     CDuiString m_sDropBoxAttributes;
     SIZE m_szDropBox;
