@@ -773,7 +773,8 @@ namespace DuiLib
 			m_pVerticalScrollBar->SetScrollRange(cyRequired - (rc.bottom - rc.top));
 			m_pVerticalScrollBar->SetScrollPos(0);
 			m_bScrollProcess = true;
-			SetPos(m_rcItem);
+			if( !IsFloat() ) SetPos(m_rcItem);
+			else SetPos(GetRelativePos());
 			m_bScrollProcess = false;
 			return;
 		}
@@ -786,7 +787,8 @@ namespace DuiLib
 			m_pVerticalScrollBar->SetVisible(false);
 			m_pVerticalScrollBar->SetScrollPos(0);
 			m_pVerticalScrollBar->SetScrollRange(0);
-			SetPos(m_rcItem);
+			if( !IsFloat() ) SetPos(m_rcItem);
+			else SetPos(GetRelativePos());
 		}
 		else
 		{
@@ -801,7 +803,8 @@ namespace DuiLib
 					m_pVerticalScrollBar->SetScrollPos(0);
 				}
 				if( iScrollPos > m_pVerticalScrollBar->GetScrollPos() ) {
-					SetPos(m_rcItem, false);
+					if( !IsFloat() ) SetPos(m_rcItem, false);
+					else SetPos(GetRelativePos(), false);
 				}
 			}
 		}
