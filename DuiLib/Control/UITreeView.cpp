@@ -896,16 +896,19 @@ namespace DuiLib
 	//************************************
 	bool CTreeViewUI::Remove( CTreeNodeUI* pControl )
 	{
-		if(pControl->GetCountChild() > 0)
+		while(pControl->IsHasChild())
 		{
-			int nCount = pControl->GetCountChild();
-			for(int nIndex = 0;nIndex < nCount;nIndex++)
+			CTreeNodeUI* pNode = pControl->GetChildNode(0);
+			if(pNode)
 			{
-				CTreeNodeUI* pNode = pControl->GetChildNode(nIndex);
-				if(pNode){
-					pControl->Remove(pNode);
-				}
+				pControl->Remove(pNode);
 			}
+		}
+
+		CTreeNodeUI* pParent = pControl->GetParentNode();
+		if (pParent)
+		{
+			pParent->Remove(pControl);
 		}
 		CListUI::Remove(pControl);
 		return true;
@@ -920,9 +923,7 @@ namespace DuiLib
 	bool CTreeViewUI::RemoveAt( int iIndex )
 	{
 		CTreeNodeUI* pItem = (CTreeNodeUI*)GetItemAt(iIndex);
-		if(pItem->GetCountChild())
-			Remove(pItem);
-		return true;
+		return Remove(pItem);
 	}
 
 	void CTreeViewUI::RemoveAll()

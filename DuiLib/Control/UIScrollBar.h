@@ -31,6 +31,8 @@ namespace DuiLib
 
 		bool GetShowButton1();
 		void SetShowButton1(bool bShow);
+		DWORD GetButton1Color() const;
+		void SetButton1Color(DWORD dwColor);
 		LPCTSTR GetButton1NormalImage();
 		void SetButton1NormalImage(LPCTSTR pStrImage);
 		LPCTSTR GetButton1HotImage();
@@ -42,6 +44,8 @@ namespace DuiLib
 
 		bool GetShowButton2();
 		void SetShowButton2(bool bShow);
+		DWORD GetButton2Color() const;
+		void SetButton2Color(DWORD dwColor);
 		LPCTSTR GetButton2NormalImage();
 		void SetButton2NormalImage(LPCTSTR pStrImage);
 		LPCTSTR GetButton2HotImage();
@@ -51,6 +55,8 @@ namespace DuiLib
 		LPCTSTR GetButton2DisabledImage();
 		void SetButton2DisabledImage(LPCTSTR pStrImage);
 
+		DWORD GetThumbColor() const;
+		void SetThumbColor(DWORD dwColor);
 		LPCTSTR GetThumbNormalImage();
 		void SetThumbNormalImage(LPCTSTR pStrImage);
 		LPCTSTR GetThumbHotImage();
@@ -116,6 +122,7 @@ namespace DuiLib
 		bool m_bShowButton1;
 		RECT m_rcButton1;
 		UINT m_uButton1State;
+		DWORD m_dwButton1Color;
 		TDrawInfo m_diButton1Normal;
 		TDrawInfo m_diButton1Hot;
 		TDrawInfo m_diButton1Pushed;
@@ -124,6 +131,7 @@ namespace DuiLib
 		bool m_bShowButton2;
 		RECT m_rcButton2;
 		UINT m_uButton2State;
+		DWORD m_dwButton2Color;
 		TDrawInfo m_diButton2Normal;
 		TDrawInfo m_diButton2Hot;
 		TDrawInfo m_diButton2Pushed;
@@ -131,6 +139,7 @@ namespace DuiLib
 
 		RECT m_rcThumb;
 		UINT m_uThumbState;
+		DWORD m_dwThumbColor;
 		TDrawInfo m_diThumbNormal;
 		TDrawInfo m_diThumbHot;
 		TDrawInfo m_diThumbPushed;

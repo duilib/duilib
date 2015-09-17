@@ -120,7 +120,8 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     }
     else if( uMsg == WM_CLOSE ) {
         m_pOwner->SetManager(m_pOwner->GetManager(), m_pOwner->GetParent(), false);
-        m_pOwner->SetPos(m_pOwner->GetPos(), false);
+		if( !m_pOwner->IsFloat() ) m_pOwner->SetPos(m_pOwner->GetPos(), false);
+		else m_pOwner->SetPos(m_pOwner->GetRelativePos(), false);
         m_pOwner->SetFocus();
     }
     else if( uMsg == WM_LBUTTONUP ) {
@@ -220,6 +221,9 @@ CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0)
     m_ListInfo.dwLineColor = 0;
     m_ListInfo.bShowHtml = false;
     m_ListInfo.bMultiExpandable = false;
+
+	m_bShowText = true;
+	m_bSelectCloseFlag = true;
     ::ZeroMemory(&m_ListInfo.rcTextPadding, sizeof(m_ListInfo.rcTextPadding));
     ::ZeroMemory(&m_ListInfo.rcColumn, sizeof(m_ListInfo.rcColumn));
 }
@@ -250,9 +254,19 @@ int CComboUI::GetCurSel() const
     return m_iCurSel;
 }
 
+bool CComboUI::GetSelectCloseFlag()
+{
+	return m_bSelectCloseFlag;
+}
+
+void CComboUI::SetSelectCloseFlag(bool flag)
+{
+	m_bSelectCloseFlag = flag;
+}
+
 bool CComboUI::SelectItem(int iIndex, bool bTakeFocus)
 {
-    if( m_pWindow != NULL ) m_pWindow->Close();
+    if( m_bSelectCloseFlag && m_pWindow != NULL ) m_pWindow->Close();
     if( iIndex == m_iCurSel ) return true;
     int iOldSel = m_iCurSel;
     if( m_iCurSel >= 0 ) {
@@ -426,29 +440,43 @@ void CComboUI::DoEvent(TEventUI& event)
             Activate();
             return;
         case VK_UP:
+			SetSelectCloseFlag(false);
             SelectItem(FindSelectable(m_iCurSel - 1, false));
+			SetSelectCloseFlag(true);
             return;
         case VK_DOWN:
+			SetSelectCloseFlag(false);
             SelectItem(FindSelectable(m_iCurSel + 1, true));
+			SetSelectCloseFlag(true);
             return;
         case VK_PRIOR:
+			SetSelectCloseFlag(false);
             SelectItem(FindSelectable(m_iCurSel - 1, false));
+			SetSelectCloseFlag(true);
             return;
         case VK_NEXT:
+			SetSelectCloseFlag(false);
             SelectItem(FindSelectable(m_iCurSel + 1, true));
+			SetSelectCloseFlag(true);
             return;
         case VK_HOME:
+			SetSelectCloseFlag(false);
             SelectItem(FindSelectable(0, false));
+			SetSelectCloseFlag(true);
             return;
         case VK_END:
+			SetSelectCloseFlag(false);
             SelectItem(FindSelectable(GetCount() - 1, true));
+			SetSelectCloseFlag(true);
             return;
         }
     }
     if( event.Type == UIEVENT_SCROLLWHEEL )
     {
         bool bDownward = LOWORD(event.wParam) == SB_LINEDOWN;
+		SetSelectCloseFlag(false);
         SelectItem(FindSelectable(m_iCurSel + (bDownward ? 1 : -1), bDownward));
+		SetSelectCloseFlag(true);
         return;
     }
     if( event.Type == UIEVENT_CONTEXTMENU )
@@ -524,6 +552,17 @@ SIZE CComboUI::GetDropBoxSize() const
 void CComboUI::SetDropBoxSize(SIZE szDropBox)
 {
     m_szDropBox = szDropBox;
+}
+
+bool CComboUI::GetShowText() const
+{
+	return m_bShowText;
+}
+
+void CComboUI::SetShowText(bool flag)
+{
+	m_bShowText = flag;
+	Invalidate();
 }
 
 RECT CComboUI::GetTextPadding() const
@@ -816,6 +855,7 @@ void CComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         rcTextPadding.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
         SetTextPadding(rcTextPadding);
     }
+	else if( _tcscmp(pstrName, _T("showtext")) == 0 ) SetShowText(_tcscmp(pstrValue, _T("true")) == 0);
     else if( _tcscmp(pstrName, _T("normalimage")) == 0 ) SetNormalImage(pstrValue);
     else if( _tcscmp(pstrName, _T("hotimage")) == 0 ) SetHotImage(pstrValue);
     else if( _tcscmp(pstrName, _T("pushedimage")) == 0 ) SetPushedImage(pstrValue);
@@ -947,6 +987,8 @@ void CComboUI::PaintStatusImage(HDC hDC)
 
 void CComboUI::PaintText(HDC hDC)
 {
+	if (!m_bShowText) return;
+
     RECT rcText = m_rcItem;
     rcText.left += m_rcTextPadding.left;
     rcText.right -= m_rcTextPadding.right;
