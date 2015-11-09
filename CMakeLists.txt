@@ -17,7 +17,6 @@ add_definitions(-DUNICODE -D_UNICODE)
 
 # add each CMake file
 add_subdirectory(duilib)
-add_subdirectory(DuiDesigner)
 add_subdirectory(360SafeDemo)
 add_subdirectory(FlashDemo)
 add_subdirectory(GameDemo)
