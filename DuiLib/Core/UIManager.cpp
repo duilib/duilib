@@ -174,7 +174,11 @@ CPaintManagerUI::~CPaintManagerUI()
     RemoveAllTimers();
 
     // Reset other parts...
-    if( m_hwndTooltip != NULL ) ::DestroyWindow(m_hwndTooltip);
+    if( m_hwndTooltip != NULL )
+	{
+		::DestroyWindow(m_hwndTooltip);
+		m_hwndTooltip = NULL;
+	}
     if( m_hDcOffscreen != NULL ) ::DeleteDC(m_hDcOffscreen);
     if( m_hDcBackground != NULL ) ::DeleteDC(m_hDcBackground);
     if( m_hbmpOffscreen != NULL ) ::DeleteObject(m_hbmpOffscreen);
@@ -614,6 +618,12 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             // focus loss...
             HWND hwndParent = GetWindowOwner(m_hWndPaint);
             if( hwndParent != NULL ) ::SetFocus(hwndParent);
+			if (m_hwndTooltip != NULL) //by jiangdong 修改当父窗体以成员变量形式在窗口类中存在时候,当点击父窗体关闭按钮的时候
+				                       //提示框内容还停留在页面中，没有销毁。
+			{
+				::DestroyWindow(m_hwndTooltip);
+				m_hwndTooltip = NULL;
+			}
         }
         break;
     case WM_ERASEBKGND:
