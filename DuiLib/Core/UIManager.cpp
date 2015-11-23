@@ -65,6 +65,7 @@ tagTDrawInfo::tagTDrawInfo(LPCTSTR lpsz)
 void tagTDrawInfo::Clear()
 {
 	sDrawString.Empty();
+    sImageName.Empty();
 	::ZeroMemory(&bLoaded, sizeof(tagTDrawInfo) - offsetof(tagTDrawInfo, bLoaded));
 	uFade = 255;
 }
