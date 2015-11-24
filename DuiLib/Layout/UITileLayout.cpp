@@ -121,6 +121,8 @@ namespace DuiLib
 					if( szAvailable.cx > pControl->GetMaxWidth() ) szAvailable.cx = pControl->GetMaxWidth();
 
 					SIZE szTile = pLineControl->EstimateSize(szAvailable);
+					if( szTile.cx == 0 ) szTile.cx = m_szItem.cx;
+					if( szTile.cy == 0 ) szTile.cy = m_szItem.cy;
 					if( szTile.cx < pControl->GetMinWidth() ) szTile.cx = pControl->GetMinWidth();
 					if( szTile.cx > pControl->GetMaxWidth() ) szTile.cx = pControl->GetMaxWidth();
 					if( szTile.cy < pControl->GetMinHeight() ) szTile.cy = pControl->GetMinHeight();
@@ -142,6 +144,8 @@ namespace DuiLib
 
 			SIZE szAvailable = { rcTile.right - rcTile.left, rcTile.bottom - rcTile.top };
 			SIZE szTile = pControl->EstimateSize(szAvailable);
+			if( szTile.cx == 0 ) szTile.cx = m_szItem.cx;
+			if( szTile.cy == 0 ) szTile.cy = m_szItem.cy;
 			if( szTile.cx == 0 ) szTile.cx = szAvailable.cx;
 			if( szTile.cy == 0 ) szTile.cy = szAvailable.cy;
 			if( szTile.cx < pControl->GetMinWidth() ) szTile.cx = pControl->GetMinWidth();
