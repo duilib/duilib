@@ -116,12 +116,6 @@ namespace DuiLib
 
 					RECT rcPadding = pLineControl->GetPadding();
 					SIZE szAvailable = { rcTile.right - rcTile.left - rcPadding.left - rcPadding.right, 9999 };
-					if( iIndex == iCount || (iIndex + 1) % m_nColumns == 0 ) {
-						szAvailable.cx -= m_iChildPadding / 2;
-					}
-					else {
-						szAvailable.cx -= m_iChildPadding;
-					}
 
 					if( szAvailable.cx < pControl->GetMinWidth() ) szAvailable.cx = pControl->GetMinWidth();
 					if( szAvailable.cx > pControl->GetMaxWidth() ) szAvailable.cx = pControl->GetMaxWidth();
@@ -139,15 +133,8 @@ namespace DuiLib
 
 			RECT rcPadding = pControl->GetPadding();
 
-			rcTile.left += rcPadding.left + m_iChildPadding / 2;
-			rcTile.right -= rcPadding.right + m_iChildPadding / 2;
-			if( (iCount % m_nColumns) == 0 ) {
-				rcTile.left -= m_iChildPadding / 2;
-			}
-
-			if( ( (iCount + 1) % m_nColumns) == 0 ) {
-				rcTile.right += m_iChildPadding / 2;
-			}
+			rcTile.left += rcPadding.left;
+			rcTile.right -= rcPadding.right;
 
 			// Set position
 			rcTile.top = ptTile.y + rcPadding.top;
