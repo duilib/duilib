@@ -623,6 +623,7 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 			{
 				::DestroyWindow(m_hwndTooltip);
 				m_hwndTooltip = NULL;
+				m_bMouseTracking = false;
 			}
         }
         break;
