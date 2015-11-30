@@ -198,9 +198,9 @@ namespace DuiLib
 	// 参数信息: bool bSelect
 	// 函数说明: 
 	//************************************
-	bool CTreeNodeUI::Select( bool bSelect /*= true*/ )
+	bool CTreeNodeUI::Select( bool bSelect /*= true*/,  bool bTriggerEvent)
 	{
-		bool nRet = CListContainerElementUI::Select(bSelect);
+		bool nRet = CListContainerElementUI::Select(bSelect, bTriggerEvent);
 		if(m_bSelected)
 			pItemButton->SetTextColor(GetSelItemTextColor());
 		else 
@@ -896,19 +896,16 @@ namespace DuiLib
 	//************************************
 	bool CTreeViewUI::Remove( CTreeNodeUI* pControl )
 	{
-		while(pControl->IsHasChild())
+		if(pControl->GetCountChild() > 0)
 		{
-			CTreeNodeUI* pNode = pControl->GetChildNode(0);
-			if(pNode)
+			int nCount = pControl->GetCountChild();
+			for(int nIndex = 0;nIndex < nCount;nIndex++)
 			{
-				pControl->Remove(pNode);
+				CTreeNodeUI* pNode = pControl->GetChildNode(nIndex);
+				if(pNode){
+					pControl->Remove(pNode);
+				}
 			}
-		}
-
-		CTreeNodeUI* pParent = pControl->GetParentNode();
-		if (pParent)
-		{
-			pParent->Remove(pControl);
 		}
 		CListUI::Remove(pControl);
 		return true;
@@ -923,7 +920,9 @@ namespace DuiLib
 	bool CTreeViewUI::RemoveAt( int iIndex )
 	{
 		CTreeNodeUI* pItem = (CTreeNodeUI*)GetItemAt(iIndex);
-		return Remove(pItem);
+		if(pItem->GetCountChild())
+			Remove(pItem);
+		return true;
 	}
 
 	void CTreeViewUI::RemoveAll()

@@ -565,18 +565,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
     // Not ready yet?
     if( m_hWndPaint == NULL ) return false;
     
-    TNotifyUI* pMsg = NULL;
-    while( pMsg = static_cast<TNotifyUI*>(m_aAsyncNotify.GetAt(0)) ) {
-        m_aAsyncNotify.Remove(0);
-        if( pMsg->pSender != NULL ) {
-            if( pMsg->pSender->OnNotify ) pMsg->pSender->OnNotify(pMsg);
-        }
-        for( int j = 0; j < m_aNotifiers.GetSize(); j++ ) {
-            static_cast<INotifyUI*>(m_aNotifiers[j])->Notify(*pMsg);
-        }
-        delete pMsg;
-    }
-    
     // Cycle through listeners
     for( int i = 0; i < m_aMessageFilters.GetSize(); i++ ) 
     {
@@ -594,6 +582,18 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             for( int i = 0; i < m_aDelayedCleanup.GetSize(); i++ ) 
                 delete static_cast<CControlUI*>(m_aDelayedCleanup[i]);
             m_aDelayedCleanup.Empty();
+
+			TNotifyUI* pMsg = NULL;
+			while( pMsg = static_cast<TNotifyUI*>(m_aAsyncNotify.GetAt(0)) ) {
+				m_aAsyncNotify.Remove(0);
+				if( pMsg->pSender != NULL ) {
+					if( pMsg->pSender->OnNotify ) pMsg->pSender->OnNotify(pMsg);
+				}
+				for( int j = 0; j < m_aNotifiers.GetSize(); j++ ) {
+					static_cast<INotifyUI*>(m_aNotifiers[j])->Notify(*pMsg);
+				}
+				delete pMsg;
+			}
         }
         break;
     case WM_CLOSE:
@@ -624,7 +624,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 			{
 				::DestroyWindow(m_hwndTooltip);
 				m_hwndTooltip = NULL;
-				m_bMouseTracking = false;
 			}
         }
         break;
@@ -1131,18 +1130,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
         break;
     }
 
-    pMsg = NULL;
-    while( pMsg = static_cast<TNotifyUI*>(m_aAsyncNotify.GetAt(0)) ) {
-        m_aAsyncNotify.Remove(0);
-        if( pMsg->pSender != NULL ) {
-            if( pMsg->pSender->OnNotify ) pMsg->pSender->OnNotify(pMsg);
-        }
-        for( int j = 0; j < m_aNotifiers.GetSize(); j++ ) {
-            static_cast<INotifyUI*>(m_aNotifiers[j])->Notify(*pMsg);
-        }
-        delete pMsg;
-    }
-
     return false;
 }
 
@@ -1618,6 +1605,7 @@ void CPaintManagerUI::SendNotify(TNotifyUI& Msg, bool bAsync /*= false*/)
         pMsg->ptMouse = Msg.ptMouse;
         pMsg->dwTimestamp = Msg.dwTimestamp;
         m_aAsyncNotify.Add(pMsg);
+		::PostMessage(m_hWndPaint, WM_APP + 1, 0, 0L);
     }
 }
 

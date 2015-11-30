@@ -24,7 +24,7 @@ namespace DuiLib
 		LPVOID	GetInterface(LPCTSTR pstrName);
 		void	DoEvent(TEventUI& event);
 		void	Invalidate();
-		bool	Select(bool bSelect = true);
+		bool	Select(bool bSelect = true, bool bTriggerEvent=true);
 
 		bool	Add(CControlUI* _pTreeNodeUI);
 		bool	AddAt(CControlUI* pControl, int iIndex);
