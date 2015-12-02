@@ -1095,4 +1095,9 @@
 		<Attribute name="selitemtextcolor" default="0x00000000" type="DWORD" comment="item被选中时文本颜色"/>
 		<Attribute name="selhotitemtextcolor" default="0x00000000" type="DWORD" comment="item被选中时且鼠标进入时的文本颜色"/>
 	</TreeNode>
+	<GifAnim parent="Control" notifies="setfocus killfocus timer menu windowinit(root)">
+		<Attribute name="bkimage" default="" type="STRING" comment="Gif动画图片路径(不支持source等属性设置)"/>
+		<Attribute name="autoplay" default="true" type="BOOL" comment="是否自动播放GIF动画"/>
+		<Attribute name="autosize" default="false" type="BOOL" comment="是否根据图片自动设置控件大小(开启后width和height属性失效)"/>
+	</GifAnim>
 </Controls>
