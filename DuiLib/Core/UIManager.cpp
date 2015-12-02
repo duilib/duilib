@@ -65,6 +65,7 @@ tagTDrawInfo::tagTDrawInfo(LPCTSTR lpsz)
 void tagTDrawInfo::Clear()
 {
 	sDrawString.Empty();
+    sImageName.Empty();
 	::ZeroMemory(&bLoaded, sizeof(tagTDrawInfo) - offsetof(tagTDrawInfo, bLoaded));
 	uFade = 255;
 }
@@ -174,7 +175,11 @@ CPaintManagerUI::~CPaintManagerUI()
     RemoveAllTimers();
 
     // Reset other parts...
-    if( m_hwndTooltip != NULL ) ::DestroyWindow(m_hwndTooltip);
+    if( m_hwndTooltip != NULL )
+	{
+		::DestroyWindow(m_hwndTooltip);
+		m_hwndTooltip = NULL;
+	}
     if( m_hDcOffscreen != NULL ) ::DeleteDC(m_hDcOffscreen);
     if( m_hDcBackground != NULL ) ::DeleteDC(m_hDcBackground);
     if( m_hbmpOffscreen != NULL ) ::DeleteObject(m_hbmpOffscreen);
@@ -560,18 +565,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
     // Not ready yet?
     if( m_hWndPaint == NULL ) return false;
     
-    TNotifyUI* pMsg = NULL;
-    while( pMsg = static_cast<TNotifyUI*>(m_aAsyncNotify.GetAt(0)) ) {
-        m_aAsyncNotify.Remove(0);
-        if( pMsg->pSender != NULL ) {
-            if( pMsg->pSender->OnNotify ) pMsg->pSender->OnNotify(pMsg);
-        }
-        for( int j = 0; j < m_aNotifiers.GetSize(); j++ ) {
-            static_cast<INotifyUI*>(m_aNotifiers[j])->Notify(*pMsg);
-        }
-        delete pMsg;
-    }
-    
     // Cycle through listeners
     for( int i = 0; i < m_aMessageFilters.GetSize(); i++ ) 
     {
@@ -589,6 +582,18 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             for( int i = 0; i < m_aDelayedCleanup.GetSize(); i++ ) 
                 delete static_cast<CControlUI*>(m_aDelayedCleanup[i]);
             m_aDelayedCleanup.Empty();
+
+			TNotifyUI* pMsg = NULL;
+			while( pMsg = static_cast<TNotifyUI*>(m_aAsyncNotify.GetAt(0)) ) {
+				m_aAsyncNotify.Remove(0);
+				if( pMsg->pSender != NULL ) {
+					if( pMsg->pSender->OnNotify ) pMsg->pSender->OnNotify(pMsg);
+				}
+				for( int j = 0; j < m_aNotifiers.GetSize(); j++ ) {
+					static_cast<INotifyUI*>(m_aNotifiers[j])->Notify(*pMsg);
+				}
+				delete pMsg;
+			}
         }
         break;
     case WM_CLOSE:
@@ -614,6 +619,12 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             // focus loss...
             HWND hwndParent = GetWindowOwner(m_hWndPaint);
             if( hwndParent != NULL ) ::SetFocus(hwndParent);
+			if (m_hwndTooltip != NULL) //by jiangdong 修改当父窗体以成员变量形式在窗口类中存在时候,当点击父窗体关闭按钮的时候
+				                       //提示框内容还停留在页面中，没有销毁。
+			{
+				::DestroyWindow(m_hwndTooltip);
+				m_hwndTooltip = NULL;
+			}
         }
         break;
     case WM_ERASEBKGND:
@@ -1119,18 +1130,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
         break;
     }
 
-    pMsg = NULL;
-    while( pMsg = static_cast<TNotifyUI*>(m_aAsyncNotify.GetAt(0)) ) {
-        m_aAsyncNotify.Remove(0);
-        if( pMsg->pSender != NULL ) {
-            if( pMsg->pSender->OnNotify ) pMsg->pSender->OnNotify(pMsg);
-        }
-        for( int j = 0; j < m_aNotifiers.GetSize(); j++ ) {
-            static_cast<INotifyUI*>(m_aNotifiers[j])->Notify(*pMsg);
-        }
-        delete pMsg;
-    }
-
     return false;
 }
 
@@ -1606,6 +1605,7 @@ void CPaintManagerUI::SendNotify(TNotifyUI& Msg, bool bAsync /*= false*/)
         pMsg->ptMouse = Msg.ptMouse;
         pMsg->dwTimestamp = Msg.dwTimestamp;
         m_aAsyncNotify.Add(pMsg);
+		::PostMessage(m_hWndPaint, WM_APP + 1, 0, 0L);
     }
 }
 

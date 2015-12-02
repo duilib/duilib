@@ -88,6 +88,11 @@ STDMETHODIMP CWebBrowserUI::Invoke( DISPID dispIdMember, REFIID riid, LCID lcid,
 			pDispParams->rgvarg[1].pdispVal,
 			pDispParams->rgvarg[0].pvarVal);
 		break;
+	case DISPID_DOCUMENTCOMPLETE:
+		DocumentComplete(
+			pDispParams->rgvarg[1].pdispVal,
+			pDispParams->rgvarg[0].pvarVal);
+		break;
 	case DISPID_NAVIGATEERROR:
 		NavigateError(
 			pDispParams->rgvarg[4].pdispVal,
@@ -216,6 +221,26 @@ void CWebBrowserUI::NavigateComplete2( IDispatch *pDisp,VARIANT *&url )
 	if (m_pWebBrowserEventHandler)
 	{
 		m_pWebBrowserEventHandler->NavigateComplete2(pDisp,url);
+	}
+}
+
+void CWebBrowserUI::DocumentComplete(IDispatch *pDisp,VARIANT *&url)
+{
+	//CComPtr<IServiceProvider > pISP;
+	//CComPtr<IServiceProvider> pISPTop;
+	//CComPtr<IWebBrowser2> pTopTarget;
+	//pDisp->QueryInterface(::IID_IServiceProvider,(void**)&pISP);
+	//pISP->QueryService(SID_STopLevelBrowser, ::IID_IServiceProvider,(void**)&pISPTop); 
+	//pISPTop->QueryService(SID_SWebBrowserApp, IID_IWebBrowser2,(void**)&pTopTarget);
+
+	//if (m_pWebBrowserEventHandler && pDisp == pTopTarget)
+	//{
+	//	m_pWebBrowserEventHandler->DocumentComplete(pDisp,url);
+	//}
+
+	if (m_pWebBrowserEventHandler && m_pWebBrowser2 == pDisp)
+	{
+		m_pWebBrowserEventHandler->DocumentComplete(pDisp,url);
 	}
 }
 

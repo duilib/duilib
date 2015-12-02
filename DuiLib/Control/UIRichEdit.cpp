@@ -760,12 +760,12 @@ void CTxtWinHost::SetFont(HFONT hFont)
     ::GetObject(hFont, sizeof(LOGFONT), &lf);
     LONG yPixPerInch = ::GetDeviceCaps(m_re->GetManager()->GetPaintDC(), LOGPIXELSY);
     cf.yHeight = -lf.lfHeight * LY_PER_INCH / yPixPerInch;
-    if(lf.lfWeight >= FW_BOLD)
-        cf.dwEffects |= CFE_BOLD;
-    if(lf.lfItalic)
-        cf.dwEffects |= CFE_ITALIC;
-    if(lf.lfUnderline)
-        cf.dwEffects |= CFE_UNDERLINE;
+    if(lf.lfWeight >= FW_BOLD) cf.dwEffects |= CFE_BOLD;
+	else cf.dwEffects &= ~CFE_BOLD;
+    if(lf.lfItalic) cf.dwEffects |= CFE_ITALIC;
+	else cf.dwEffects &= ~CFE_ITALIC;
+    if(lf.lfUnderline) cf.dwEffects |= CFE_UNDERLINE;
+	else cf.dwEffects &= ~CFE_UNDERLINE;
     cf.bCharSet = lf.lfCharSet;
     cf.bPitchAndFamily = lf.lfPitchAndFamily;
 #ifdef _UNICODE
@@ -1688,6 +1688,11 @@ void CRichEditUI::OnTxNotify(DWORD iNotify, void *pv)
 {
 	switch(iNotify)
 	{ 
+	case EN_CHANGE:
+		{
+			GetManager()->SendNotify(this, DUI_MSGTYPE_TEXTCHANGED);
+		}
+		break;
 	case EN_DROPFILES:   
 	case EN_MSGFILTER:   
 	case EN_OLEOPFAILED:   
