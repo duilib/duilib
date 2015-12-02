@@ -303,6 +303,7 @@
     <ClCompile Include="Control\UICombo.cpp" />
     <ClCompile Include="Control\UIDateTime.cpp" />
     <ClCompile Include="Control\UIEdit.cpp" />
+    <ClCompile Include="Control\UIGifAnim.cpp" />
     <ClCompile Include="Control\UILabel.cpp" />
     <ClCompile Include="Control\UIList.cpp" />
     <ClCompile Include="Control\UIOption.cpp" />
@@ -343,6 +344,7 @@
     <ClInclude Include="Control\UICombo.h" />
     <ClInclude Include="Control\UIDateTime.h" />
     <ClInclude Include="Control\UIEdit.h" />
+    <ClInclude Include="Control\UIGifAnim.h" />
     <ClInclude Include="Control\UILabel.h" />
     <ClInclude Include="Control\UIList.h" />
     <ClInclude Include="Control\UIOption.h" />

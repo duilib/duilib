@@ -51,6 +51,10 @@ public:
     void SetExtent(SIZEL *psizelExtent);
     void LimitText(LONG nChars);
     BOOL IsCaptured();
+	BOOL IsShowCaret();
+	void NeedFreshCaret();
+	INT GetCaretWidth();
+	INT GetCaretHeight();
 
     BOOL GetAllowBeep();
     void SetAllowBeep(BOOL fAllowBeep);
@@ -143,7 +147,13 @@ private:
     unsigned	fTransparent		:1; // Whether control is transparent
     unsigned	fTimer				:1;	// A timer is set
     unsigned    fCaptured           :1;
+	unsigned    fShowCaret          :1;
+	unsigned    fNeedFreshCaret     :1; // 修正改变大小后点击其他位置原来光标不能消除的问题
 
+	INT         iCaretWidth;
+	INT         iCaretHeight;
+	INT         iCaretLastWidth;
+	INT         iCaretLastHeight;
     LONG		lSelBarWidth;			// Width of the selection bar
     LONG  		cchTextMost;			// maximum text size
     DWORD		dwEventMask;			// DoEvent mask to pass on to parent window
@@ -506,6 +516,7 @@ BOOL CTxtWinHost::TxCreateCaret(HBITMAP hbmp, INT xWidth, INT yHeight)
 
 BOOL CTxtWinHost::TxShowCaret(BOOL fShow)
 {
+	fShowCaret = fShow;
     if(fShow)
         return ::ShowCaret(m_re->GetManager()->GetPaintWindow());
     else
@@ -514,7 +525,22 @@ BOOL CTxtWinHost::TxShowCaret(BOOL fShow)
 
 BOOL CTxtWinHost::TxSetCaretPos(INT x, INT y)
 {
-    return ::SetCaretPos(x, y);
+	POINT ptCaret = { 0 };
+	::GetCaretPos(&ptCaret);
+	RECT rcCaret = { ptCaret.x, ptCaret.y, ptCaret.x + iCaretLastWidth, ptCaret.y + iCaretLastHeight };
+	if( m_re->GetManager()->IsLayered() ) m_re->GetManager()->Invalidate(rcCaret);
+	else if( fNeedFreshCaret == TRUE ) {
+		m_re->GetManager()->Invalidate(rcCaret);
+		fNeedFreshCaret = FALSE;
+	}
+	rcCaret.left = x;
+	rcCaret.top = y;
+	rcCaret.right = x + iCaretWidth;
+	rcCaret.bottom = y + iCaretHeight;
+	if( m_re->GetManager()->IsLayered() ) m_re->GetManager()->Invalidate(rcCaret);
+	iCaretLastWidth = iCaretWidth;
+	iCaretLastHeight = iCaretHeight;
+	return ::SetCaretPos(x, y);
 }
 
 BOOL CTxtWinHost::TxSetTimer(UINT idTimer, UINT uTimeout)
@@ -809,6 +835,26 @@ BOOL CTxtWinHost::IsCaptured()
     return fCaptured;
 }
 
+BOOL CTxtWinHost::IsShowCaret()
+{
+	return fShowCaret;
+}
+
+void CTxtWinHost::NeedFreshCaret()
+{
+	fNeedFreshCaret = TRUE;
+}
+
+INT CTxtWinHost::GetCaretWidth()
+{
+	return iCaretWidth;
+}
+
+INT CTxtWinHost::GetCaretHeight()
+{
+	return iCaretHeight;
+}
+
 BOOL CTxtWinHost::GetAllowBeep()
 {
     return fAllowBeep;
@@ -1024,7 +1070,7 @@ void CTxtWinHost::SetParaFormat(PARAFORMAT2 &p)
 
 CRichEditUI::CRichEditUI() : m_pTwh(NULL), m_bVScrollBarFixing(false), m_bWantTab(true), m_bWantReturn(true), 
     m_bWantCtrlReturn(true), m_bRich(true), m_bReadOnly(false), m_bWordWrap(false), m_dwTextColor(0), m_iFont(-1), 
-    m_iLimitText(cInitTextMax), m_lTwhStyle(ES_MULTILINE), m_bInited(false)
+	m_iLimitText(cInitTextMax), m_lTwhStyle(ES_MULTILINE), m_bDrawCaret(true), m_bInited(false)
 {
 }
 
@@ -1645,6 +1691,7 @@ void CRichEditUI::DoInit()
         m_pTwh->GetTextServices()->TxSendMessage(EM_SETLANGOPTIONS, 0, 0, &lResult);
         m_pTwh->OnTxInPlaceActivate(NULL);
         m_pManager->AddMessageFilter(this);
+		if( m_pManager->IsLayered() ) m_pManager->SetTimer(this, DEFAULT_TIMERID, ::GetCaretBlinkTime());
     }
 
 	m_bInited= true;
@@ -1854,11 +1901,34 @@ void CRichEditUI::DoEvent(TEventUI& event)
 		Invalidate();
 		return;
     }
-    if( event.Type == UIEVENT_TIMER ) {
-        if( m_pTwh ) {
-            m_pTwh->GetTextServices()->TxSendMessage(WM_TIMER, event.wParam, event.lParam, 0);
-        } 
-    }
+	else if( event.Type == UIEVENT_TIMER ) {
+		if( event.wParam == DEFAULT_TIMERID ) {
+			if( m_pTwh && m_pManager->IsLayered() && IsFocused() ) {
+				m_bDrawCaret = !m_bDrawCaret;
+				POINT ptCaret;
+				::GetCaretPos(&ptCaret);
+				RECT rcCaret = { ptCaret.x, ptCaret.y, ptCaret.x + m_pTwh->GetCaretWidth(), 
+					ptCaret.y + m_pTwh->GetCaretHeight() };
+				RECT rcTemp = rcCaret;
+				if( !::IntersectRect(&rcCaret, &rcTemp, &m_rcItem) ) return;
+				CControlUI* pParent = this;
+				RECT rcParent;
+				while( pParent = pParent->GetParent() ) {
+					rcTemp = rcCaret;
+					rcParent = pParent->GetPos();
+					if( !::IntersectRect(&rcCaret, &rcTemp, &rcParent) ) {
+						return;
+					}
+				}                    
+				m_pManager->Invalidate(rcCaret);
+			}
+			return;
+		}
+		if( m_pTwh ) {
+			m_pTwh->GetTextServices()->TxSendMessage(WM_TIMER, event.wParam, event.lParam, 0);
+		} 
+		return;
+	}
     if( event.Type == UIEVENT_SCROLLWHEEL ) {
         if( (event.wKeyState & MK_CONTROL) != 0  ) {
             return;
@@ -2073,6 +2143,15 @@ void CRichEditUI::DoPaint(HDC hDC, const RECT& rcPaint)
             }
         }
     }
+
+	if( m_pTwh && m_pTwh->IsShowCaret() && m_pManager->IsLayered() && IsFocused() && m_bDrawCaret ) {
+		POINT ptCaret;
+		::GetCaretPos(&ptCaret);
+		if( ::PtInRect(&m_rcItem, ptCaret) ) {
+			RECT rcCaret = { ptCaret.x, ptCaret.y, ptCaret.x, ptCaret.y + m_pTwh->GetCaretHeight() };
+			CRenderEngine::DrawLine(hDC, rcCaret, m_pTwh->GetCaretWidth(), 0xFF000000);
+		}
+	}
 
     if( m_pVerticalScrollBar != NULL && m_pVerticalScrollBar->IsVisible() ) {
         if( ::IntersectRect(&rcTemp, &rcPaint, &m_pVerticalScrollBar->GetPos()) ) {

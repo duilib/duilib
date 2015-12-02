@@ -147,6 +147,7 @@ namespace DuiLib
 		::GetWindowText(m_hWnd, pstr, cchLen);
 		m_pOwner->m_sText = pstr;
 		m_pOwner->GetManager()->SendNotify(m_pOwner, DUI_MSGTYPE_TEXTCHANGED);
+		if( m_pOwner->GetManager()->IsLayered() ) m_pOwner->Invalidate();
 		return 0;
 	}
 

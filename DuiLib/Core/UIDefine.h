@@ -6,6 +6,7 @@ namespace DuiLib
 {
 
 #define MAX_FONT_ID		30000
+#define LAYEREDUPDATE_TIMERID	0x2000
 
 enum DuiSig
 {
