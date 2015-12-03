@@ -46,7 +46,7 @@ public:
     bool OnAlphaChanged(void* param) {
         TNotifyUI* pMsg = (TNotifyUI*)param;
         if( pMsg->sType == _T("valuechanged") ) {
-            m_pm.SetTransparent((static_cast<CSliderUI*>(pMsg->pSender))->GetValue());
+            m_pm.SetOpacity((static_cast<CSliderUI*>(pMsg->pSender))->GetValue());
         }
         return true;
     }
