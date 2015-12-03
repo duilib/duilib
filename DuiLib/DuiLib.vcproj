@@ -442,10 +442,6 @@
 				RelativePath=".\UIlib.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\Utils\WinImplBase.cpp"
-				>
-			</File>
 			<Filter
 				Name="Utils"
 				>
@@ -491,6 +487,10 @@
 				</File>
 				<File
 					RelativePath=".\Utils\Utils.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\WinImplBase.cpp"
 					>
 				</File>
 				<File
@@ -611,6 +611,10 @@
 				</File>
 				<File
 					RelativePath=".\Control\UIEdit.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Control\UIGifAnim.cpp"
 					>
 				</File>
 				<File
@@ -784,6 +788,10 @@
 				</File>
 				<File
 					RelativePath=".\Control\UIEdit.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Control\UIGifAnim.h"
 					>
 				</File>
 				<File
