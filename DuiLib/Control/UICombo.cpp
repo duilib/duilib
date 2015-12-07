@@ -1004,7 +1004,7 @@ void CComboUI::PaintText(HDC hDC)
         else {
             RECT rcOldPos = pControl->GetPos();
             pControl->SetPos(rcText, false);
-            pControl->DoPaint(hDC, rcText);
+            pControl->Paint(hDC, rcText);
             pControl->SetPos(rcOldPos, false);
         }
     }

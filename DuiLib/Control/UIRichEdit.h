@@ -23,6 +23,8 @@ public:
     void SetWantReturn(bool bWantReturn = true);
     bool IsWantCtrlReturn();
     void SetWantCtrlReturn(bool bWantCtrlReturn = true);
+    bool IsTransparent();
+    void SetTransparent(bool bTransparent = true);
     bool IsRich();
     void SetRich(bool bRich = true);
     bool IsReadOnly();
@@ -135,6 +137,7 @@ protected:
     bool m_bWantTab;
     bool m_bWantReturn;
     bool m_bWantCtrlReturn;
+    bool m_bTransparent;
     bool m_bRich;
     bool m_bReadOnly;
     bool m_bWordWrap;

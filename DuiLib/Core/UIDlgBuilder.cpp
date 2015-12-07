@@ -215,9 +215,16 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
                     else if( _tcsicmp(pstrName, _T("showdirty")) == 0 ) {
                         pManager->SetShowUpdateRect(_tcsicmp(pstrValue, _T("true")) == 0);
                     } 
-                    else if( _tcsicmp(pstrName, _T("alpha")) == 0 ) {
+                    else if( _tcsicmp(pstrName, _T("opacity")) == 0 ) {
                         pManager->SetOpacity(_ttoi(pstrValue));
                     } 
+					else if( _tcscmp(pstrName, _T("layeredopacity")) == 0 ) {
+						pManager->SetLayeredOpacity(_ttoi(pstrValue));
+					} 
+					else if( _tcscmp(pstrName, _T("layeredimage")) == 0 ) {
+						pManager->SetLayered(true);
+						pManager->SetLayeredImage(pstrValue);
+					} 
                     else if( _tcsicmp(pstrName, _T("disabledfontcolor")) == 0 ) {
                         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
                         LPTSTR pstr = NULL;

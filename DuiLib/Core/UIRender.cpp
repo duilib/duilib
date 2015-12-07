@@ -1938,7 +1938,7 @@ HBITMAP CRenderEngine::GenerateBitmap(CPaintManagerUI* pManager, CControlUI* pCo
     ASSERT(hPaintDC);
     ASSERT(hPaintBitmap);
     HBITMAP hOldPaintBitmap = (HBITMAP) ::SelectObject(hPaintDC, hPaintBitmap);
-    pControl->DoPaint(hPaintDC, rc);
+    pControl->Paint(hPaintDC, rc);
 
     BITMAPINFO bmi = { 0 };
     bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);

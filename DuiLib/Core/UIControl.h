@@ -150,6 +150,7 @@ public:
 
     virtual SIZE EstimateSize(SIZE szAvailable);
 
+	virtual void Paint(HDC hDC, const RECT& rcPaint);
     virtual void DoPaint(HDC hDC, const RECT& rcPaint);
     virtual void PaintBkColor(HDC hDC);
     virtual void PaintBkImage(HDC hDC);
@@ -169,6 +170,8 @@ public:
     CEventSource OnSize;
     CEventSource OnEvent;
     CEventSource OnNotify;
+	CEventSource OnPaint;
+	CEventSource OnPostPaint;
 
 protected:
     CPaintManagerUI* m_pManager;

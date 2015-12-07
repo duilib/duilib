@@ -926,6 +926,15 @@ SIZE CControlUI::EstimateSize(SIZE szAvailable)
     return m_cxyFixed;
 }
 
+void CControlUI::Paint(HDC hDC, const RECT& rcPaint)
+{
+	if( !::IntersectRect(&m_rcPaint, &rcPaint, &m_rcItem) ) return;
+	if( OnPaint ) {
+		if( !OnPaint(this) ) return;
+	}
+	DoPaint(hDC, rcPaint);
+}
+
 void CControlUI::DoPaint(HDC hDC, const RECT& rcPaint)
 {
     if( !::IntersectRect(&m_rcPaint, &rcPaint, &m_rcItem) ) return;
@@ -1032,7 +1041,7 @@ void CControlUI::PaintBorder(HDC hDC)
 
 void CControlUI::DoPostPaint(HDC hDC, const RECT& rcPaint)
 {
-    return;
+	if( OnPostPaint ) OnPostPaint(this);
 }
 
 //************************************
