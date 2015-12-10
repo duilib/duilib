@@ -94,6 +94,7 @@ void CComboWnd::OnFinalMessage(HWND hWnd)
 LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     if( uMsg == WM_CREATE ) {
+		m_pm.SetForceUseSharedRes(true);
         m_pm.Init(m_hWnd);
         // The trick is to add the items to the new container. Their owner gets
         // reassigned by this operation - which is why it is important to reassign

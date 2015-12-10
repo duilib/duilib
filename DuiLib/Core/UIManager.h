@@ -260,6 +260,9 @@ public:
     static bool LoadPlugin(LPCTSTR pstrModuleName);
     static CStdPtrArray* GetPlugins();
 
+	bool IsForceUseSharedRes() const;
+	void SetForceUseSharedRes(bool bForce);
+
     DWORD GetDefaultDisabledColor() const;
     void SetDefaultDisabledColor(DWORD dwColor, bool bShared = false);
     DWORD GetDefaultFontColor() const;
@@ -332,6 +335,9 @@ public:
     void SetCapture();
     void ReleaseCapture();
     bool IsCaptured();
+
+	bool IsPainting();
+	void SetPainting(bool bIsPainting);
 
     bool AddNotifier(INotifyUI* pControl);
     bool RemoveNotifier(INotifyUI* pControl);   
@@ -430,6 +436,7 @@ private:
 
     bool m_bMouseTracking;
     bool m_bMouseCapture;
+	bool m_bIsPainting;
 	bool m_bUsedVirtualWnd;
 
     //
@@ -446,6 +453,7 @@ private:
     CStdStringPtrMap m_mOptionGroup;
 
     //
+	bool m_bForceUseSharedRes;
 	TResInfo m_ResInfo;
 
     //

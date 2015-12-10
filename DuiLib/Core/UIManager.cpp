@@ -139,8 +139,10 @@ m_bFocusNeeded(false),
 m_bUpdateNeeded(false),
 m_bMouseTracking(false),
 m_bMouseCapture(false),
+m_bIsPainting(false),
 m_bOffscreenPaint(true),
 m_bUsedVirtualWnd(false),
+m_bForceUseSharedRes(false),
 m_nOpacity(0xFF),
 m_bLayered(false),
 m_bLayeredChanged(false)
@@ -856,7 +858,8 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 			else {
 				if( !::GetUpdateRect(m_hWndPaint, &rcPaint, FALSE) ) return true;
 			}
-
+			
+			SetPainting(true);
             if( m_bUpdateNeeded ) {
                 m_bUpdateNeeded = false;
                 if( !::IsRectEmpty(&rcClient) ) {
@@ -896,6 +899,7 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 						SendNotify(m_pRoot, DUI_MSGTYPE_WINDOWINIT,  0, 0, false);
 						if( m_bLayered && m_bLayeredChanged ) {
 							Invalidate();
+							SetPainting(false);
 							return true;
 						}
 					}
@@ -1017,6 +1021,7 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 		m_bLayeredChanged = false;
         if( m_bUpdateNeeded ) Invalidate();
 
+		SetPainting(false);
         return true;
     case WM_PRINTCLIENT:
         {
@@ -1785,6 +1790,17 @@ bool CPaintManagerUI::IsCaptured()
     return m_bMouseCapture;
 }
 
+
+bool CPaintManagerUI::IsPainting()
+{
+	return m_bIsPainting;
+}
+
+void CPaintManagerUI::SetPainting(bool bIsPainting)
+{
+	m_bIsPainting = bIsPainting;
+}
+
 bool CPaintManagerUI::SetNextTabControl(bool bForward)
 {
     // If we're in the process of restructuring the layout we can delay the
@@ -1937,6 +1953,16 @@ void CPaintManagerUI::SendNotify(TNotifyUI& Msg, bool bAsync /*= false*/)
         m_aAsyncNotify.Add(pMsg);
 		::PostMessage(m_hWndPaint, WM_APP + 1, 0, 0L);
     }
+}
+
+bool CPaintManagerUI::IsForceUseSharedRes() const
+{
+	return m_bForceUseSharedRes;
+}
+
+void CPaintManagerUI::SetForceUseSharedRes(bool bForce)
+{
+	m_bForceUseSharedRes = bForce;
 }
 
 DWORD CPaintManagerUI::GetDefaultDisabledColor() const
@@ -2143,7 +2169,7 @@ HFONT CPaintManagerUI::AddFont(int id, LPCTSTR pStrFontName, int nSize, bool bBo
 	TCHAR idBuffer[16];
 	::ZeroMemory(idBuffer, sizeof(idBuffer));
 	_itot(id, idBuffer, 10);
-	if (bShared)
+	if (bShared || m_bForceUseSharedRes)
 	{
 		TFontInfo* pOldFontInfo = static_cast<TFontInfo*>(m_SharedResInfo.m_CustomFonts.Find(idBuffer));
 		if (pOldFontInfo)
@@ -2430,7 +2456,8 @@ const TImageInfo* CPaintManagerUI::GetImageEx(LPCTSTR bitmap, LPCTSTR type, DWOR
     const TImageInfo* data = GetImage(bitmap);
     if( !data ) {
         if( AddImage(bitmap, type, mask, bUseHSL, false) ) {
-            data = static_cast<TImageInfo*>(m_ResInfo.m_ImageHash.Find(bitmap));
+			if (m_bForceUseSharedRes) data = static_cast<TImageInfo*>(m_SharedResInfo.m_ImageHash.Find(bitmap));
+			else data = static_cast<TImageInfo*>(m_ResInfo.m_ImageHash.Find(bitmap)); 
         }
     }
 
@@ -2465,7 +2492,7 @@ const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, LPCTSTR type, DWORD 
 	if( m_bUseHSL ) CRenderEngine::AdjustImage(true, data, m_H, m_S, m_L);
 	if (data)
 	{
-		if (bShared)
+		if (bShared || m_bForceUseSharedRes)
 		{
             TImageInfo* pOldImageInfo = static_cast<TImageInfo*>(m_SharedResInfo.m_ImageHash.Find(bitmap));
             if (pOldImageInfo)
@@ -2515,7 +2542,7 @@ const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, HBITMAP hBitmap, int
 	//data->sResType = _T("");
 	data->dwMask = 0;
 
-	if (bShared)
+	if (bShared || m_bForceUseSharedRes)
 	{
 		if( !m_SharedResInfo.m_ImageHash.Insert(bitmap, data) ) {
 			CRenderEngine::FreeImage(data);
@@ -2696,7 +2723,7 @@ void CPaintManagerUI::ReloadImages()
 
 void CPaintManagerUI::AddDefaultAttributeList(LPCTSTR pStrControlName, LPCTSTR pStrControlAttrList, bool bShared)
 {
-	if (bShared)
+	if (bShared || m_bForceUseSharedRes)
 	{
 		CDuiString* pDefaultAttr = new CDuiString(pStrControlAttrList);
 		if (pDefaultAttr != NULL)
