@@ -20,13 +20,18 @@ namespace DuiLib
 		LRESULT OnEditChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	protected:
+		enum { 
+			DEFAULT_TIMERID = 20,
+		};
+
 		CEditUI* m_pOwner;
 		HBRUSH m_hBkBrush;
 		bool m_bInit;
+		bool m_bDrawCaret;
 	};
 
 
-	CEditWnd::CEditWnd() : m_pOwner(NULL), m_hBkBrush(NULL), m_bInit(false)
+	CEditWnd::CEditWnd() : m_pOwner(NULL), m_hBkBrush(NULL), m_bInit(false), m_bDrawCaret(false)
 	{
 	}
 
@@ -87,11 +92,14 @@ namespace DuiLib
 		return WC_EDIT;
 	}
 
-	void CEditWnd::OnFinalMessage(HWND /*hWnd*/)
+	void CEditWnd::OnFinalMessage(HWND hWnd)
 	{
 		m_pOwner->Invalidate();
 		// Clear reference and die
 		if( m_hBkBrush != NULL ) ::DeleteObject(m_hBkBrush);
+		if (m_pOwner->GetManager()->IsLayered()) {
+			m_pOwner->GetManager()->RemovePaintChildWnd(hWnd);
+		}
 		m_pOwner->m_pWindow = NULL;
 		delete this;
 	}
@@ -100,7 +108,13 @@ namespace DuiLib
 	{
 		LRESULT lRes = 0;
 		BOOL bHandled = TRUE;
-		if( uMsg == WM_KILLFOCUS ) lRes = OnKillFocus(uMsg, wParam, lParam, bHandled);
+		if( uMsg == WM_CREATE ) {
+			if( m_pOwner->GetManager()->IsLayered() ) {
+				::SetTimer(m_hWnd, DEFAULT_TIMERID, ::GetCaretBlinkTime(), NULL);
+			}
+			bHandled = FALSE;
+		}
+		else if( uMsg == WM_KILLFOCUS ) lRes = OnKillFocus(uMsg, wParam, lParam, bHandled);
 		else if( uMsg == OCM_COMMAND ) {
 			if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_CHANGE ) lRes = OnEditChanged(uMsg, wParam, lParam, bHandled);
 			else if( GET_WM_COMMAND_CMD(wParam, lParam) == EN_UPDATE ) {
@@ -113,6 +127,9 @@ namespace DuiLib
 			m_pOwner->GetManager()->SendNotify(m_pOwner, DUI_MSGTYPE_RETURN);
 		}
 		else if( uMsg == OCM__BASE + WM_CTLCOLOREDIT  || uMsg == OCM__BASE + WM_CTLCOLORSTATIC ) {
+			if (m_pOwner->GetManager()->IsLayered() && !m_pOwner->GetManager()->IsPainting()) {
+				m_pOwner->GetManager()->AddPaintChildWnd(m_hWnd);
+			}
 			if( m_pOwner->GetNativeEditBkColor() == 0xFFFFFFFF ) return NULL;
 			::SetBkMode((HDC)wParam, TRANSPARENT);
 			DWORD dwTextColor = m_pOwner->GetTextColor();
@@ -122,6 +139,37 @@ namespace DuiLib
 				m_hBkBrush = ::CreateSolidBrush(RGB(GetBValue(clrColor), GetGValue(clrColor), GetRValue(clrColor)));
 			}
 			return (LRESULT)m_hBkBrush;
+		}
+		else if( uMsg == WM_PAINT) {
+			if (m_pOwner->GetManager()->IsLayered()) {
+				m_pOwner->GetManager()->AddPaintChildWnd(m_hWnd);
+			}
+			bHandled = FALSE;
+		}
+		else if( uMsg == WM_PRINT ) {
+			if (m_pOwner->GetManager()->IsLayered()) {
+				lRes = CWindowWnd::HandleMessage(uMsg, wParam, lParam);
+				if( m_pOwner->IsEnabled() && m_bDrawCaret ) { // todo:≈–∂œ «∑Òenabled
+					RECT rcClient;
+					::GetClientRect(m_hWnd, &rcClient);
+					POINT ptCaret;
+					::GetCaretPos(&ptCaret);
+					RECT rcCaret = { ptCaret.x, ptCaret.y, ptCaret.x, ptCaret.y+rcClient.bottom-rcClient.top };
+					CRenderEngine::DrawLine((HDC)wParam, rcCaret, 1, 0xFF000000);
+				}
+				return lRes;
+			}
+			bHandled = FALSE;
+		}
+		else if( uMsg == WM_TIMER ) {
+			if (wParam == DEFAULT_TIMERID) {
+				m_bDrawCaret = !m_bDrawCaret;
+				RECT rcClient;
+				::GetClientRect(m_hWnd, &rcClient);
+				::InvalidateRect(m_hWnd, &rcClient, FALSE);
+				return 0;
+			}
+			bHandled = FALSE;
 		}
 		else bHandled = FALSE;
 		if( !bHandled ) return CWindowWnd::HandleMessage(uMsg, wParam, lParam);

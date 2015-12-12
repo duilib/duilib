@@ -355,6 +355,10 @@ public:
     bool RemovePostPaint(CControlUI* pControl);
     bool SetPostPaintIndex(CControlUI* pControl, int iIndex);
 
+	int GetPaintChildWndCount() const;
+	bool AddPaintChildWnd(HWND hChildWnd);
+	bool RemovePaintChildWnd(HWND hChildWnd);
+
     void AddDelayedCleanup(CControlUI* pControl);
 
 	bool AddTranslateAccelerator(ITranslateAccelerator *pTranslateAccelerator);
@@ -445,6 +449,7 @@ private:
     CStdPtrArray m_aPreMessageFilters;
     CStdPtrArray m_aMessageFilters;
     CStdPtrArray m_aPostPaintControls;
+	CStdPtrArray m_aChildWnds;
     CStdPtrArray m_aDelayedCleanup;
     CStdPtrArray m_aAsyncNotify;
     CStdPtrArray m_aFoundControls;

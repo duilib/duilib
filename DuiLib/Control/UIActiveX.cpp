@@ -26,13 +26,20 @@ public:
 protected:
     void DoVerb(LONG iVerb);
 
+	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnMouseActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnEraseBkgnd(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnPrint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 protected:
+	enum { 
+		DEFAULT_TIMERID = 20,
+	};
+
     CActiveXCtrl* m_pOwner;
 };
 
@@ -756,7 +763,7 @@ HRESULT CActiveXCtrl::CreateActiveXWnd()
 HWND CActiveXWnd::Init(CActiveXCtrl* pOwner, HWND hWndParent)
 {
     m_pOwner = pOwner;
-    UINT uStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+    UINT uStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS /*| WS_CLIPCHILDREN*/;
     Create(hWndParent, _T("UIActiveX"), uStyle, 0L, 0,0,0,0, NULL);
     return m_hWnd;
 }
@@ -768,6 +775,9 @@ LPCTSTR CActiveXWnd::GetWindowClassName() const
 
 void CActiveXWnd::OnFinalMessage(HWND hWnd)
 {
+	if( m_pOwner->m_pOwner->GetManager()->IsLayered() ) {
+		m_pOwner->m_pOwner->GetManager()->RemovePaintChildWnd(hWnd);
+	}
     //delete this; // 这里不需要清理，CActiveXUI会清理的
 }
 
@@ -790,7 +800,10 @@ LRESULT CActiveXWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     LRESULT lRes=0;
     BOOL bHandled = TRUE;
     switch( uMsg ) {
+	case WM_CREATE:        lRes = OnCreate(uMsg, wParam, lParam, bHandled); break;
+	case WM_TIMER:         lRes = OnTimer(uMsg, wParam, lParam, bHandled); break;
     case WM_PAINT:         lRes = OnPaint(uMsg, wParam, lParam, bHandled); break;
+	case WM_PRINT:		   lRes = OnPrint(uMsg, wParam, lParam, bHandled); break;
     case WM_SETFOCUS:      lRes = OnSetFocus(uMsg, wParam, lParam, bHandled); break;
     case WM_KILLFOCUS:     lRes = OnKillFocus(uMsg, wParam, lParam, bHandled); break;
     case WM_ERASEBKGND:    lRes = OnEraseBkgnd(uMsg, wParam, lParam, bHandled); break;
@@ -801,6 +814,26 @@ LRESULT CActiveXWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     }
     if( !bHandled ) return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
     return lRes;
+}
+
+LRESULT CActiveXWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	if( m_pOwner->m_pOwner->GetManager()->IsLayered() ) {
+		::SetTimer(m_hWnd, DEFAULT_TIMERID, 50, NULL);
+	}
+	return 0;
+}
+
+LRESULT CActiveXWnd::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	if (wParam == DEFAULT_TIMERID) {
+		if (m_pOwner->m_pOwner->GetManager()->IsLayered()) {
+			m_pOwner->m_pOwner->GetManager()->AddPaintChildWnd(m_hWnd);
+		}
+		return 0;
+	}
+	bHandled = FALSE;
+	return 0;
 }
 
 LRESULT CActiveXWnd::OnEraseBkgnd(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -846,6 +879,13 @@ LRESULT CActiveXWnd::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
     return 1;
 }
 
+LRESULT CActiveXWnd::OnPrint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	RECT rcClient;
+	::GetClientRect(m_hWnd, &rcClient);
+	m_pOwner->m_pViewObject->Draw(DVASPECT_CONTENT, -1, NULL, NULL, NULL, (HDC)wParam, (RECTL*) &rcClient, NULL, NULL, NULL); 
+	return 1;
+}
 
 /////////////////////////////////////////////////////////////////////////////////////
 //

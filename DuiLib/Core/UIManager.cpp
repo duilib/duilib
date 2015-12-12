@@ -72,6 +72,24 @@ void tagTDrawInfo::Clear()
 
 /////////////////////////////////////////////////////////////////////////////////////
 
+static void GetChildWndRect(HWND hWnd, HWND hChildWnd, RECT& rcChildWnd)
+{
+	::GetWindowRect(hChildWnd, &rcChildWnd);
+
+	POINT pt;
+	pt.x = rcChildWnd.left;
+	pt.y = rcChildWnd.top;
+	::ScreenToClient(hWnd, &pt);
+	rcChildWnd.left = pt.x;
+	rcChildWnd.top = pt.y;
+
+	pt.x = rcChildWnd.right;
+	pt.y = rcChildWnd.bottom;
+	::ScreenToClient(hWnd, &pt);
+	rcChildWnd.right = pt.x;
+	rcChildWnd.bottom = pt.y;
+}
+
 static HBITMAP CreateARGB32Bitmap(HDC hDC, int cx, int cy, COLORREF** pBits)
 {
 	LPBITMAPINFO lpbiSrc = NULL;
@@ -939,6 +957,44 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
                 HBITMAP hOldBitmap = (HBITMAP) ::SelectObject(m_hDcOffscreen, m_hbmpOffscreen);
                 int iSaveDC = ::SaveDC(m_hDcOffscreen);
                 m_pRoot->Paint(m_hDcOffscreen, rcPaint);
+
+				if( m_bLayered ) {
+					for( int i = 0; i < m_aChildWnds.GetSize(); ) {
+						HWND hChildWnd = static_cast<HWND>(m_aChildWnds[i]);
+						if (!::IsWindow(hChildWnd)) {
+							m_aChildWnds.Remove(i);
+							continue;
+						}
+						++i;
+						if (!::IsWindowVisible(hChildWnd)) continue;
+						RECT rcChildWnd;
+						GetChildWndRect(m_hWndPaint, hChildWnd, rcChildWnd);
+
+						RECT rcTemp = { 0 };
+						if( !::IntersectRect(&rcTemp, &rcPaint, &rcChildWnd) ) continue;
+
+						COLORREF* pChildBitmapBits = NULL;
+						HDC hChildMemDC = ::CreateCompatibleDC(m_hDcOffscreen);
+						HBITMAP hChildBitmap = CreateARGB32Bitmap(hChildMemDC, rcChildWnd.right-rcChildWnd.left, rcChildWnd.bottom-rcChildWnd.top, &pChildBitmapBits); 
+						::ZeroMemory(pChildBitmapBits, (rcChildWnd.right - rcChildWnd.left)*(rcChildWnd.bottom - rcChildWnd.top)*4);
+						HBITMAP hOldChildBitmap = (HBITMAP) ::SelectObject(hChildMemDC, hChildBitmap);
+						::SendMessage(hChildWnd, WM_PRINT, (WPARAM)hChildMemDC,(LPARAM)(PRF_CHECKVISIBLE|PRF_CHILDREN|PRF_CLIENT|PRF_OWNED));
+						COLORREF* pChildBitmapBit;
+						for( LONG y = rcChildWnd.bottom - rcChildWnd.bottom; y < rcChildWnd.bottom - rcChildWnd.top; ++y ) {
+							for( LONG x = rcChildWnd.left; x < rcChildWnd.right; ++x ) {
+								pChildBitmapBit = pChildBitmapBits+y*(rcChildWnd.right-rcChildWnd.left) + x;
+								if (*pChildBitmapBit != 0x00000000) *pChildBitmapBit |= 0xff000000;
+							}
+						}
+						::BitBlt(m_hDcOffscreen, rcChildWnd.left, rcChildWnd.top, rcChildWnd.right - rcChildWnd.left,
+							rcChildWnd.bottom - rcChildWnd.top, hChildMemDC, 0, 0, SRCCOPY);
+						::SelectObject(hChildMemDC, hOldChildBitmap);
+						::DeleteObject(hChildBitmap);
+						::DeleteDC(hChildMemDC);
+					}
+					//m_aChildWnds.Empty();
+				}
+
                 for( int i = 0; i < m_aPostPaintControls.GetSize(); i++ ) {
                     CControlUI* pPostPaintControl = static_cast<CControlUI*>(m_aPostPaintControls[i]);
                     pPostPaintControl->DoPostPaint(m_hDcOffscreen, rcPaint);
@@ -1302,7 +1358,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             if( pControl == NULL ) break;
             if( pControl->GetManager() != this ) break;
             pControl->SetFocus();
-            SetCapture();
             TEventUI event = { 0 };
             event.Type = UIEVENT_RBUTTONDOWN;
             event.pSender = pControl;
@@ -1323,7 +1378,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             ::ScreenToClient(m_hWndPaint, &pt);
             m_ptLastMousePos = pt;
             if( m_pEventClick == NULL ) break;
-            ReleaseCapture();
             TEventUI event = { 0 };
             event.Type = UIEVENT_CONTEXTMENU;
             event.pSender = m_pEventClick;
@@ -1507,6 +1561,7 @@ bool CPaintManagerUI::AttachDialog(CControlUI* pControl)
     // pull the internal memory of the calling code. We'll delay the cleanup.
     if( m_pRoot != NULL ) {
         m_aPostPaintControls.Empty();
+		m_aChildWnds.Empty();
         AddDelayedCleanup(m_pRoot);
     }
     // Set the dialog root element
@@ -1905,6 +1960,31 @@ bool CPaintManagerUI::SetPostPaintIndex(CControlUI* pControl, int iIndex)
 {
     RemovePostPaint(pControl);
     return m_aPostPaintControls.InsertAt(iIndex, pControl);
+}
+
+int CPaintManagerUI::GetPaintChildWndCount() const
+{
+	return m_aChildWnds.GetSize();
+}
+
+bool CPaintManagerUI::AddPaintChildWnd(HWND hChildWnd)
+{
+	RECT rcChildWnd;
+	GetChildWndRect(m_hWndPaint, hChildWnd, rcChildWnd);
+	Invalidate(rcChildWnd);
+
+	if (m_aChildWnds.Find(hChildWnd) >= 0) return false;
+	return m_aChildWnds.Add(hChildWnd);
+}
+
+bool CPaintManagerUI::RemovePaintChildWnd(HWND hChildWnd)
+{
+	for( int i = 0; i < m_aChildWnds.GetSize(); i++ ) {
+		if( static_cast<HWND>(m_aChildWnds[i]) == hChildWnd ) {
+			return m_aChildWnds.Remove(i);
+		}
+	}
+	return false;
 }
 
 void CPaintManagerUI::AddDelayedCleanup(CControlUI* pControl)

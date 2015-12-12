@@ -74,10 +74,13 @@ namespace DuiLib
 		return DATETIMEPICK_CLASS;
 	}
 
-	void CDateTimeWnd::OnFinalMessage(HWND /*hWnd*/)
+	void CDateTimeWnd::OnFinalMessage(HWND hWnd)
 	{
 		// Clear reference and die
 		if( m_hBkBrush != NULL ) ::DeleteObject(m_hBkBrush);
+		if( m_pOwner->GetManager()->IsLayered() ) {
+			m_pOwner->GetManager()->RemovePaintChildWnd(hWnd);
+		} 
 		m_pOwner->m_pWindow = NULL;
 		delete this;
 	}
@@ -127,6 +130,12 @@ namespace DuiLib
 		// 			}
 		// 			return (LRESULT)m_hBkBrush;
 		// 		}
+		else if( uMsg == WM_PAINT) {
+			if (m_pOwner->GetManager()->IsLayered()) {
+				m_pOwner->GetManager()->AddPaintChildWnd(m_hWnd);
+			}
+			bHandled = FALSE;
+		}
 		else bHandled = FALSE;
 		if( !bHandled ) return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
 		return lRes;
