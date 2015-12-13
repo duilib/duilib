@@ -153,7 +153,6 @@ static COLORREF PixelAlpha(COLORREF clrSrc, double src_darken, COLORREF clrDest,
     return RGB (GetRValue (clrSrc) * src_darken + GetRValue (clrDest) * dest_darken, 
         GetGValue (clrSrc) * src_darken + GetGValue (clrDest) * dest_darken, 
         GetBValue (clrSrc) * src_darken + GetBValue (clrDest) * dest_darken);
-
 }
 
 static BOOL WINAPI AlphaBitBlt(HDC hDC, int nDestX, int nDestY, int dwWidth, int dwHeight, HDC hSrcDC, \
@@ -283,6 +282,29 @@ DWORD CRenderEngine::AdjustColor(DWORD dwColor, short H, short S, short L)
     fL *= L1;
     HSLtoRGB(&dwColor, fH, fS, fL);
     return dwColor;
+}
+
+HBITMAP CRenderEngine::CreateARGB32Bitmap(HDC hDC, int cx, int cy, COLORREF** pBits)
+{
+	LPBITMAPINFO lpbiSrc = NULL;
+	lpbiSrc = (LPBITMAPINFO) new BYTE[sizeof(BITMAPINFOHEADER)];
+	if (lpbiSrc == NULL) return NULL;
+
+	lpbiSrc->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	lpbiSrc->bmiHeader.biWidth = cx;
+	lpbiSrc->bmiHeader.biHeight = cy;
+	lpbiSrc->bmiHeader.biPlanes = 1;
+	lpbiSrc->bmiHeader.biBitCount = 32;
+	lpbiSrc->bmiHeader.biCompression = BI_RGB;
+	lpbiSrc->bmiHeader.biSizeImage = cx * cy;
+	lpbiSrc->bmiHeader.biXPelsPerMeter = 0;
+	lpbiSrc->bmiHeader.biYPelsPerMeter = 0;
+	lpbiSrc->bmiHeader.biClrUsed = 0;
+	lpbiSrc->bmiHeader.biClrImportant = 0;
+
+	HBITMAP hBitmap = CreateDIBSection (hDC, lpbiSrc, DIB_RGB_COLORS, (void **)pBits, NULL, NULL);
+	delete [] lpbiSrc;
+	return hBitmap;
 }
 
 void CRenderEngine::AdjustImage(bool bUseHSL, TImageInfo* imageInfo, short H, short S, short L)

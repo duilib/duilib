@@ -29,6 +29,7 @@ class UILIB_API CRenderEngine
 {
 public:
     static DWORD AdjustColor(DWORD dwColor, short H, short S, short L);
+	static HBITMAP CreateARGB32Bitmap(HDC hDC, int cx, int cy, COLORREF** pBits);
 	static void AdjustImage(bool bUseHSL, TImageInfo* imageInfo, short H, short S, short L);
     static TImageInfo* LoadImage(STRINGorID bitmap, LPCTSTR type = NULL, DWORD mask = 0);
     static void FreeImage(TImageInfo* bitmap, bool bDelete = true);

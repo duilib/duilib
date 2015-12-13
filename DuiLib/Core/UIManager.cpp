@@ -90,29 +90,6 @@ static void GetChildWndRect(HWND hWnd, HWND hChildWnd, RECT& rcChildWnd)
 	rcChildWnd.bottom = pt.y;
 }
 
-static HBITMAP CreateARGB32Bitmap(HDC hDC, int cx, int cy, COLORREF** pBits)
-{
-	LPBITMAPINFO lpbiSrc = NULL;
-	lpbiSrc = (LPBITMAPINFO) new BYTE[sizeof(BITMAPINFOHEADER)];
-	if (lpbiSrc == NULL) return NULL;
-
-	lpbiSrc->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	lpbiSrc->bmiHeader.biWidth = cx;
-	lpbiSrc->bmiHeader.biHeight = cy;
-	lpbiSrc->bmiHeader.biPlanes = 1;
-	lpbiSrc->bmiHeader.biBitCount = 32;
-	lpbiSrc->bmiHeader.biCompression = BI_RGB;
-	lpbiSrc->bmiHeader.biSizeImage = cx * cy;
-	lpbiSrc->bmiHeader.biXPelsPerMeter = 0;
-	lpbiSrc->bmiHeader.biYPelsPerMeter = 0;
-	lpbiSrc->bmiHeader.biClrUsed = 0;
-	lpbiSrc->bmiHeader.biClrImportant = 0;
-
-	HBITMAP hBitmap = CreateDIBSection (hDC, lpbiSrc, DIB_RGB_COLORS, (void **)pBits, NULL, NULL);
-	delete [] lpbiSrc;
-	return hBitmap;
-}
-
 /////////////////////////////////////////////////////////////////////////////////////
 typedef BOOL (__stdcall *PFUNCUPDATELAYEREDWINDOW)(HWND, HDC, POINT*, SIZE*, HDC, POINT*, COLORREF, BLENDFUNCTION*, DWORD);
 PFUNCUPDATELAYEREDWINDOW g_fUpdateLayeredWindow = NULL;
@@ -670,6 +647,8 @@ LPCTSTR CPaintManagerUI::GetLayeredImage()
 void CPaintManagerUI::SetLayeredImage(LPCTSTR pstrImage)
 {
 	m_diLayered.sDrawString = pstrImage;
+	RECT rcNull = {0};
+	CRenderEngine::DrawImage(NULL, this, rcNull, rcNull, m_diLayered);
 }
 
 bool CPaintManagerUI::PreMessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& /*lRes*/)
@@ -944,7 +923,7 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             if( m_bOffscreenPaint && m_hbmpOffscreen == NULL )
             {
                 m_hDcOffscreen = ::CreateCompatibleDC(m_hDcPaint);
-                if( m_bLayered ) m_hbmpOffscreen = CreateARGB32Bitmap(m_hDcPaint, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top, &m_pOffscreenBits); 
+				if( m_bLayered ) m_hbmpOffscreen = CRenderEngine::CreateARGB32Bitmap(m_hDcPaint, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top, &m_pOffscreenBits); 
                 else m_hbmpOffscreen = ::CreateCompatibleBitmap(m_hDcPaint, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top); 
                 ASSERT(m_hDcOffscreen);
                 ASSERT(m_hbmpOffscreen);
@@ -956,6 +935,15 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             {
                 HBITMAP hOldBitmap = (HBITMAP) ::SelectObject(m_hDcOffscreen, m_hbmpOffscreen);
                 int iSaveDC = ::SaveDC(m_hDcOffscreen);
+				if (m_bLayered && m_diLayered.pImageInfo == NULL) {
+					COLORREF* pOffscreenBits = NULL;
+					for( LONG y = rcClient.bottom - rcPaint.bottom; y < rcClient.bottom - rcPaint.top; ++y ) {
+						for( LONG x = rcPaint.left; x < rcPaint.right; ++x ) {
+							pOffscreenBits = m_pOffscreenBits + y*(rcClient.right - rcClient.left) + x;
+							*pOffscreenBits = 0;
+						}
+					}
+				}
                 m_pRoot->Paint(m_hDcOffscreen, rcPaint);
 
 				if( m_bLayered ) {
@@ -975,7 +963,7 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 
 						COLORREF* pChildBitmapBits = NULL;
 						HDC hChildMemDC = ::CreateCompatibleDC(m_hDcOffscreen);
-						HBITMAP hChildBitmap = CreateARGB32Bitmap(hChildMemDC, rcChildWnd.right-rcChildWnd.left, rcChildWnd.bottom-rcChildWnd.top, &pChildBitmapBits); 
+						HBITMAP hChildBitmap = CRenderEngine::CreateARGB32Bitmap(hChildMemDC, rcChildWnd.right-rcChildWnd.left, rcChildWnd.bottom-rcChildWnd.top, &pChildBitmapBits); 
 						::ZeroMemory(pChildBitmapBits, (rcChildWnd.right - rcChildWnd.left)*(rcChildWnd.bottom - rcChildWnd.top)*4);
 						HBITMAP hOldChildBitmap = (HBITMAP) ::SelectObject(hChildMemDC, hChildBitmap);
 						::SendMessage(hChildWnd, WM_PRINT, (WPARAM)hChildMemDC,(LPARAM)(PRF_CHECKVISIBLE|PRF_CHILDREN|PRF_CLIENT|PRF_OWNED));
@@ -992,7 +980,6 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 						::DeleteObject(hChildBitmap);
 						::DeleteDC(hChildMemDC);
 					}
-					//m_aChildWnds.Empty();
 				}
 
                 for( int i = 0; i < m_aPostPaintControls.GetSize(); i++ ) {
@@ -1010,42 +997,45 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
                     rcLayeredClient.top += m_rcLayeredInset.top;
                     rcLayeredClient.right -= m_rcLayeredInset.right;
                     rcLayeredClient.bottom -= m_rcLayeredInset.bottom;
-                    if( m_hbmpBackground == NULL ) {
-                        m_hDcBackground = ::CreateCompatibleDC(m_hDcPaint);
-                        m_hbmpBackground = CreateARGB32Bitmap(m_hDcPaint, dwWidth, dwHeight, &m_pBackgroundBits); 
-                        ASSERT(m_hDcBackground);
-                        ASSERT(m_hbmpBackground);
-                        ::ZeroMemory(m_pBackgroundBits, dwWidth * dwHeight * 4);
-                        ::SelectObject(m_hDcBackground, m_hbmpBackground);
-                        CRenderClip clip;
-                        CRenderClip::GenerateClip(m_hDcBackground, rcLayeredClient, clip);
-                        CRenderEngine::DrawImage(m_hDcBackground, this, rcLayeredClient, rcLayeredClient, m_diLayered);
-                    }
-                    else if( m_bLayeredChanged ) {
-                        ::ZeroMemory(m_pBackgroundBits, dwWidth * dwHeight * 4);
-                        CRenderClip clip;
-                        CRenderClip::GenerateClip(m_hDcBackground, rcLayeredClient, clip);
-                        CRenderEngine::DrawImage(m_hDcBackground, this, rcLayeredClient, rcLayeredClient, m_diLayered);
-                    }
-                    COLORREF* pOffscreenBits = m_pOffscreenBits;
-                    COLORREF* pBackgroundBits = m_pBackgroundBits;
-                    BYTE A = 0;
-                    BYTE R = 0;
-                    BYTE G = 0;
-                    BYTE B = 0;
-                    if( m_diLayered.pImageInfo && m_diLayered.pImageInfo->bAlpha ) {
-                        for( LONG y = rcClient.bottom - rcPaint.bottom; y < rcClient.bottom - rcPaint.top; ++y ) {
-                            for( LONG x = rcPaint.left; x < rcPaint.right; ++x ) {
-                                pOffscreenBits = m_pOffscreenBits + y * dwWidth + x;
-                                pBackgroundBits = m_pBackgroundBits + y * dwWidth + x;
-                                A = (BYTE)((*pBackgroundBits) >> 24);
-                                R = (BYTE)((*pOffscreenBits) >> 16) * A / 255;
-                                G = (BYTE)((*pOffscreenBits) >> 8) * A / 255;
-                                B = (BYTE)(*pOffscreenBits) * A / 255;
-                                *pOffscreenBits = RGB(B, G, R) + ((DWORD)A << 24);
-                            }
-                        }
-                    }
+
+					COLORREF* pOffscreenBits = m_pOffscreenBits;
+					COLORREF* pBackgroundBits = m_pBackgroundBits;
+					BYTE A = 0;
+					BYTE R = 0;
+					BYTE G = 0;
+					BYTE B = 0;
+					if (m_diLayered.pImageInfo != NULL) {
+						if( m_hbmpBackground == NULL) {
+							m_hDcBackground = ::CreateCompatibleDC(m_hDcPaint);
+							m_hbmpBackground = CRenderEngine::CreateARGB32Bitmap(m_hDcPaint, dwWidth, dwHeight, &m_pBackgroundBits); 
+							ASSERT(m_hDcBackground);
+							ASSERT(m_hbmpBackground);
+							::ZeroMemory(m_pBackgroundBits, dwWidth * dwHeight * 4);
+							::SelectObject(m_hDcBackground, m_hbmpBackground);
+							CRenderClip clip;
+							CRenderClip::GenerateClip(m_hDcBackground, rcLayeredClient, clip);
+							CRenderEngine::DrawImage(m_hDcBackground, this, rcLayeredClient, rcLayeredClient, m_diLayered);
+						}
+						else if( m_bLayeredChanged ) {
+							::ZeroMemory(m_pBackgroundBits, dwWidth * dwHeight * 4);
+							CRenderClip clip;
+							CRenderClip::GenerateClip(m_hDcBackground, rcLayeredClient, clip);
+							CRenderEngine::DrawImage(m_hDcBackground, this, rcLayeredClient, rcLayeredClient, m_diLayered);
+						}
+						if( m_diLayered.pImageInfo->bAlpha ) {
+							for( LONG y = rcClient.bottom - rcPaint.bottom; y < rcClient.bottom - rcPaint.top; ++y ) {
+								for( LONG x = rcPaint.left; x < rcPaint.right; ++x ) {
+									pOffscreenBits = m_pOffscreenBits + y * dwWidth + x;
+									pBackgroundBits = m_pBackgroundBits + y * dwWidth + x;
+									A = (BYTE)((*pBackgroundBits) >> 24);
+									R = (BYTE)((*pOffscreenBits) >> 16) * A / 255;
+									G = (BYTE)((*pOffscreenBits) >> 8) * A / 255;
+									B = (BYTE)(*pOffscreenBits) * A / 255;
+									*pOffscreenBits = RGB(B, G, R) + ((DWORD)A << 24);
+								}
+							}
+						}
+					}
                     BLENDFUNCTION bf = { AC_SRC_OVER, 0, m_nOpacity, AC_SRC_ALPHA };
                     POINT ptPos   = { rcWnd.left, rcWnd.top };
                     SIZE sizeWnd  = { dwWidth, dwHeight };

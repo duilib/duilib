@@ -131,6 +131,12 @@ public:
     virtual bool IsFloat() const;
     virtual void SetFloat(bool bFloat = true);
 
+	// 自定义(未处理的)属性
+	void AddCustomAttribute(LPCTSTR pstrName, LPCTSTR pstrAttr);
+	LPCTSTR GetCustomAttribute(LPCTSTR pstrName) const;
+	bool RemoveCustomAttribute(LPCTSTR pstrName);
+	void RemoveAllCustomAttribute();
+
     virtual CControlUI* FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags);
 
     void Invalidate();
@@ -216,6 +222,7 @@ protected:
     SIZE m_cxyBorderRound;
     RECT m_rcPaint;
 	RECT m_rcBorderSize;
+	CStdStringPtrMap m_mCustomAttrHash;
 };
 
 } // namespace DuiLib
