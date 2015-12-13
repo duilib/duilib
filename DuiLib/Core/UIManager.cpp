@@ -980,8 +980,8 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 						HBITMAP hOldChildBitmap = (HBITMAP) ::SelectObject(hChildMemDC, hChildBitmap);
 						::SendMessage(hChildWnd, WM_PRINT, (WPARAM)hChildMemDC,(LPARAM)(PRF_CHECKVISIBLE|PRF_CHILDREN|PRF_CLIENT|PRF_OWNED));
 						COLORREF* pChildBitmapBit;
-						for( LONG y = rcChildWnd.bottom - rcChildWnd.bottom; y < rcChildWnd.bottom - rcChildWnd.top; ++y ) {
-							for( LONG x = rcChildWnd.left; x < rcChildWnd.right; ++x ) {
+						for( LONG y = 0; y < rcChildWnd.bottom-rcChildWnd.top; y++ ) {
+							for( LONG x = 0; x < rcChildWnd.right-rcChildWnd.left; x++ ) {
 								pChildBitmapBit = pChildBitmapBits+y*(rcChildWnd.right-rcChildWnd.left) + x;
 								if (*pChildBitmapBit != 0x00000000) *pChildBitmapBit |= 0xff000000;
 							}
