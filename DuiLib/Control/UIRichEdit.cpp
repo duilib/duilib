@@ -1921,6 +1921,7 @@ void CRichEditUI::DoEvent(TEventUI& event)
 	else if( event.Type == UIEVENT_TIMER ) {
 		if( event.wParam == DEFAULT_TIMERID ) {
 			if( m_pTwh && m_pManager->IsLayered() && IsFocused() ) {
+				if (::GetFocus() != m_pManager->GetPaintWindow()) return;
 				m_bDrawCaret = !m_bDrawCaret;
 				POINT ptCaret;
 				::GetCaretPos(&ptCaret);
@@ -2301,6 +2302,9 @@ LRESULT CRichEditUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, boo
         if( dwHitResult != HITRESULT_HIT ) return 0;
         if( uMsg == WM_SETCURSOR ) bWasHandled = false;
         else if( uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONDBLCLK || uMsg == WM_RBUTTONDOWN ) {
+			if (::GetFocus() != GetManager()->GetPaintWindow()) {
+				GetManager()->SetFocus(NULL);
+			}
             SetFocus();
         }
     }

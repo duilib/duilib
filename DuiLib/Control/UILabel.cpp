@@ -63,7 +63,7 @@ namespace DuiLib
 		CControlUI::SetText(pstrText);
 		if( m_EnableEffect) {
 #ifdef _UNICODE
-			m_pWideText = m_sText.GetData();
+			m_pWideText = (LPWSTR)m_sText.GetData();
 #else 
 			int iLen = _tcslen(pstrText);
 			if (m_pWideText) delete[] m_pWideText;
@@ -429,7 +429,7 @@ namespace DuiLib
 		m_EnableEffect = _EnabledEffect;
 		if (m_EnableEffect) {
 #ifdef _UNICODE
-			m_pWideText = m_sText.GetData();
+			m_pWideText = (LPWSTR)m_sText.GetData();
 #else 
 			int iLen = m_sText.GetLength();
 			if (m_pWideText) delete[] m_pWideText;

@@ -763,7 +763,7 @@ HRESULT CActiveXCtrl::CreateActiveXWnd()
 HWND CActiveXWnd::Init(CActiveXCtrl* pOwner, HWND hWndParent)
 {
     m_pOwner = pOwner;
-    UINT uStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS /*| WS_CLIPCHILDREN*/;
+    UINT uStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
     Create(hWndParent, _T("UIActiveX"), uStyle, 0L, 0,0,0,0, NULL);
     return m_hWnd;
 }
@@ -884,6 +884,25 @@ LRESULT CActiveXWnd::OnPrint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 	RECT rcClient;
 	::GetClientRect(m_hWnd, &rcClient);
 	m_pOwner->m_pViewObject->Draw(DVASPECT_CONTENT, -1, NULL, NULL, NULL, (HDC)wParam, (RECTL*) &rcClient, NULL, NULL, NULL); 
+	
+	RECT rcPos = m_pOwner->m_pOwner->GetPos();
+	GUITHREADINFO guiThreadInfo;
+	guiThreadInfo.cbSize = sizeof(GUITHREADINFO);
+	::GetGUIThreadInfo(NULL, &guiThreadInfo);
+	if (guiThreadInfo.hwndCaret) {
+		POINT ptCaret;
+		ptCaret.x = guiThreadInfo.rcCaret.left;
+		ptCaret.y = guiThreadInfo.rcCaret.top;
+		::ClientToScreen(guiThreadInfo.hwndCaret, &ptCaret);
+		::ScreenToClient(m_pOwner->m_pOwner->GetManager()->GetPaintWindow(), &ptCaret);
+		if( ::PtInRect(&rcPos, ptCaret) ) {
+			RECT rcCaret;
+			rcCaret = guiThreadInfo.rcCaret;
+			rcCaret.right = rcCaret.left;
+			CRenderEngine::DrawLine((HDC)wParam, rcCaret, 1, 0xFF000000);
+		}
+	}
+
 	return 1;
 }
 
