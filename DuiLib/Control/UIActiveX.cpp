@@ -16,6 +16,7 @@ class CActiveXCtrl;
 class CActiveXWnd : public CWindowWnd
 {
 public:
+	CActiveXWnd() : m_iLayeredTick(0), m_bDrawCaret(false) {}
     HWND Init(CActiveXCtrl* pOwner, HWND hWndParent);
 
     LPCTSTR GetWindowClassName() const;
@@ -41,6 +42,8 @@ protected:
 	};
 
     CActiveXCtrl* m_pOwner;
+	int m_iLayeredTick;
+	bool m_bDrawCaret;
 };
 
 
@@ -829,6 +832,11 @@ LRESULT CActiveXWnd::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 	if (wParam == DEFAULT_TIMERID) {
 		if (m_pOwner->m_pOwner->GetManager()->IsLayered()) {
 			m_pOwner->m_pOwner->GetManager()->AddPaintChildWnd(m_hWnd);
+			m_iLayeredTick += 1;
+			if (m_iLayeredTick >= 10) {
+				m_iLayeredTick = 0;
+				m_bDrawCaret = !m_bDrawCaret;
+			}
 		}
 		return 0;
 	}
@@ -885,21 +893,23 @@ LRESULT CActiveXWnd::OnPrint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 	::GetClientRect(m_hWnd, &rcClient);
 	m_pOwner->m_pViewObject->Draw(DVASPECT_CONTENT, -1, NULL, NULL, NULL, (HDC)wParam, (RECTL*) &rcClient, NULL, NULL, NULL); 
 	
-	RECT rcPos = m_pOwner->m_pOwner->GetPos();
-	GUITHREADINFO guiThreadInfo;
-	guiThreadInfo.cbSize = sizeof(GUITHREADINFO);
-	::GetGUIThreadInfo(NULL, &guiThreadInfo);
-	if (guiThreadInfo.hwndCaret) {
-		POINT ptCaret;
-		ptCaret.x = guiThreadInfo.rcCaret.left;
-		ptCaret.y = guiThreadInfo.rcCaret.top;
-		::ClientToScreen(guiThreadInfo.hwndCaret, &ptCaret);
-		::ScreenToClient(m_pOwner->m_pOwner->GetManager()->GetPaintWindow(), &ptCaret);
-		if( ::PtInRect(&rcPos, ptCaret) ) {
-			RECT rcCaret;
-			rcCaret = guiThreadInfo.rcCaret;
-			rcCaret.right = rcCaret.left;
-			CRenderEngine::DrawLine((HDC)wParam, rcCaret, 1, 0xFF000000);
+	if (m_bDrawCaret ) {
+		RECT rcPos = m_pOwner->m_pOwner->GetPos();
+		GUITHREADINFO guiThreadInfo;
+		guiThreadInfo.cbSize = sizeof(GUITHREADINFO);
+		::GetGUIThreadInfo(NULL, &guiThreadInfo);
+		if (guiThreadInfo.hwndCaret) {
+			POINT ptCaret;
+			ptCaret.x = guiThreadInfo.rcCaret.left;
+			ptCaret.y = guiThreadInfo.rcCaret.top;
+			::ClientToScreen(guiThreadInfo.hwndCaret, &ptCaret);
+			::ScreenToClient(m_pOwner->m_pOwner->GetManager()->GetPaintWindow(), &ptCaret);
+			if( ::PtInRect(&rcPos, ptCaret) ) {
+				RECT rcCaret;
+				rcCaret = guiThreadInfo.rcCaret;
+				rcCaret.right = rcCaret.left;
+				CRenderEngine::DrawLine((HDC)wParam, rcCaret, 1, 0xFF000000);
+			}
 		}
 	}
 
