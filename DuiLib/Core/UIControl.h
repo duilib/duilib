@@ -70,6 +70,7 @@ public:
     // 位置相关
     virtual const RECT& GetPos() const;
 	virtual RECT GetRelativePos() const; // 相对(父控件)位置
+	virtual RECT GetClientPos() const; // 客户区域（除去scrollbar和inset）
 	// 只有控件为float的时候，外部调用SetPos和Move才是有效的，位置参数是相对父控件的位置
     virtual void SetPos(RECT rc, bool bNeedInvalidate = true);
 	virtual void Move(SIZE szOffset, bool bNeedInvalidate = true);
