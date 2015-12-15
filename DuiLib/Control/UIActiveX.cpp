@@ -923,11 +923,13 @@ LRESULT CActiveXWnd::OnPrint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 CActiveXUI::CActiveXUI() : m_pUnk(NULL), m_pControl(NULL), m_hwndHost(NULL), m_bCreated(false), m_bDelayCreate(true)
 {
     m_clsid = IID_NULL;
+	::CoInitialize(NULL);
 }
 
 CActiveXUI::~CActiveXUI()
 {
     ReleaseControl();
+	::CoUninitialize();
 }
 
 LPCTSTR CActiveXUI::GetClass() const
