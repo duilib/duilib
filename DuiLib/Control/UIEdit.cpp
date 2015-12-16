@@ -110,9 +110,7 @@ namespace DuiLib
 		m_pOwner->Invalidate();
 		// Clear reference and die
 		if( m_hBkBrush != NULL ) ::DeleteObject(m_hBkBrush);
-		if (m_pOwner->GetManager()->IsLayered()) {
-			m_pOwner->GetManager()->RemovePaintChildWnd(hWnd);
-		}
+		m_pOwner->GetManager()->RemoveRealWindow(hWnd);
 		m_pOwner->m_pWindow = NULL;
 		delete this;
 	}
@@ -122,6 +120,7 @@ namespace DuiLib
 		LRESULT lRes = 0;
 		BOOL bHandled = TRUE;
 		if( uMsg == WM_CREATE ) {
+			m_pOwner->GetManager()->AddRealWindow(m_pOwner, m_hWnd);
 			if( m_pOwner->GetManager()->IsLayered() ) {
 				::SetTimer(m_hWnd, DEFAULT_TIMERID, ::GetCaretBlinkTime(), NULL);
 			}
@@ -141,7 +140,7 @@ namespace DuiLib
 		}
 		else if( uMsg == OCM__BASE + WM_CTLCOLOREDIT  || uMsg == OCM__BASE + WM_CTLCOLORSTATIC ) {
 			if (m_pOwner->GetManager()->IsLayered() && !m_pOwner->GetManager()->IsPainting()) {
-				m_pOwner->GetManager()->AddPaintChildWnd(m_hWnd);
+				m_pOwner->GetManager()->AddRealWindow(m_pOwner, m_hWnd);
 			}
 			if( m_pOwner->GetNativeEditBkColor() == 0xFFFFFFFF ) return NULL;
 			::SetBkMode((HDC)wParam, TRANSPARENT);
@@ -155,7 +154,7 @@ namespace DuiLib
 		}
 		else if( uMsg == WM_PAINT) {
 			if (m_pOwner->GetManager()->IsLayered()) {
-				m_pOwner->GetManager()->AddPaintChildWnd(m_hWnd);
+				m_pOwner->GetManager()->AddRealWindow(m_pOwner, m_hWnd);
 			}
 			bHandled = FALSE;
 		}
@@ -192,6 +191,9 @@ namespace DuiLib
 	LRESULT CEditWnd::OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		LRESULT lRes = ::DefWindowProc(m_hWnd, uMsg, wParam, lParam);
+		if ((HWND)wParam != m_pOwner->GetManager()->GetPaintWindow()) {
+			::SendMessage(m_pOwner->GetManager()->GetPaintWindow(), WM_KILLFOCUS, wParam, lParam);
+		}
 		SendMessage(WM_CLOSE);
 		return lRes;
 	}
@@ -241,6 +243,12 @@ namespace DuiLib
 		if( !IsEnabled() ) return CControlUI::GetControlFlags();
 
 		return UIFLAG_SETCURSOR | UIFLAG_TABSTOP;
+	}
+
+	HWND CEditUI::GetRealWindow() const
+	{
+		if (m_pWindow) return m_pWindow->GetHWND();
+		return NULL;
 	}
 
 	void CEditUI::DoEvent(TEventUI& event)

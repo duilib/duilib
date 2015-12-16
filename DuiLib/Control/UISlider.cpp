@@ -16,7 +16,7 @@ namespace DuiLib
 
 	UINT CSliderUI::GetControlFlags() const
 	{
-		if( IsEnabled() ) return UIFLAG_SETCURSOR;
+		if( IsEnabled() ) return UIFLAG_SETCURSOR | UIFLAG_TABSTOP;
 		else return 0;
 	}
 

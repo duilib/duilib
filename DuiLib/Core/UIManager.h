@@ -322,7 +322,7 @@ public:
     void RemoveAllOptionGroups();
 
     CControlUI* GetFocus() const;
-    void SetFocus(CControlUI* pControl);
+    void SetFocus(CControlUI* pControl, bool bFocusWnd=true);
     void SetFocusNeeded(CControlUI* pControl);
 
     bool SetNextTabControl(bool bForward = true);
@@ -341,8 +341,8 @@ public:
 
     bool AddNotifier(INotifyUI* pControl);
     bool RemoveNotifier(INotifyUI* pControl);   
-    void SendNotify(TNotifyUI& Msg, bool bAsync = false);
-    void SendNotify(CControlUI* pControl, LPCTSTR pstrMessage, WPARAM wParam = 0, LPARAM lParam = 0, bool bAsync = false);
+    void SendNotify(TNotifyUI& Msg, bool bAsync = false, bool bEnableRepeat = true);
+    void SendNotify(CControlUI* pControl, LPCTSTR pstrMessage, WPARAM wParam = 0, LPARAM lParam = 0, bool bAsync = false, bool bEnableRepeat = true);
 
     bool AddPreMessageFilter(IMessageFilterUI* pFilter);
     bool RemovePreMessageFilter(IMessageFilterUI* pFilter);
@@ -355,9 +355,9 @@ public:
     bool RemovePostPaint(CControlUI* pControl);
     bool SetPostPaintIndex(CControlUI* pControl, int iIndex);
 
-	int GetPaintChildWndCount() const;
-	bool AddPaintChildWnd(HWND hChildWnd);
-	bool RemovePaintChildWnd(HWND hChildWnd);
+	int GetRealWindowCount() const;
+	bool AddRealWindow(CControlUI* pControl, HWND hChildWnd);
+	bool RemoveRealWindow(HWND hChildWnd);
 
     void AddDelayedCleanup(CControlUI* pControl);
 
@@ -395,6 +395,7 @@ private:
 
 	static void AdjustSharedImagesHSL();
 	void AdjustImagesHSL();
+	void PostAsyncNotify();
 
 private:
 	CDuiString m_sName;
@@ -442,6 +443,7 @@ private:
     bool m_bMouseCapture;
 	bool m_bIsPainting;
 	bool m_bUsedVirtualWnd;
+	bool m_bAsyncNotifyPosted;
 
     //
     CStdPtrArray m_aNotifiers;
@@ -449,7 +451,8 @@ private:
     CStdPtrArray m_aPreMessageFilters;
     CStdPtrArray m_aMessageFilters;
     CStdPtrArray m_aPostPaintControls;
-	CStdPtrArray m_aChildWnds;
+	CStdPtrArray m_aRealWindow;
+	CStdPtrArray m_aRealWindowControl;
     CStdPtrArray m_aDelayedCleanup;
     CStdPtrArray m_aAsyncNotify;
     CStdPtrArray m_aFoundControls;

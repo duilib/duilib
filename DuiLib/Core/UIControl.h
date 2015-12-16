@@ -22,6 +22,7 @@ public:
     virtual LPCTSTR GetClass() const;
     virtual LPVOID GetInterface(LPCTSTR pstrName);
     virtual UINT GetControlFlags() const;
+	virtual HWND GetRealWindow() const;
 
     virtual bool Activate();
     virtual CPaintManagerUI* GetManager() const;

@@ -73,6 +73,11 @@ UINT CControlUI::GetControlFlags() const
     return 0;
 }
 
+HWND CControlUI::GetRealWindow() const
+{
+	return NULL;
+}
+
 bool CControlUI::Activate()
 {
     if( !IsVisible() ) return false;
@@ -613,7 +618,7 @@ bool CControlUI::IsFocused() const
 
 void CControlUI::SetFocus()
 {
-    if( m_pManager != NULL ) m_pManager->SetFocus(this);
+    if( m_pManager != NULL ) m_pManager->SetFocus(this, false);
 }
 
 bool CControlUI::IsFloat() const

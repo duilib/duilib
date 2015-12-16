@@ -137,6 +137,7 @@ m_bMouseCapture(false),
 m_bIsPainting(false),
 m_bOffscreenPaint(true),
 m_bUsedVirtualWnd(false),
+m_bAsyncNotifyPosted(false),
 m_bForceUseSharedRes(false),
 m_nOpacity(0xFF),
 m_bLayered(false),
@@ -770,6 +771,7 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
     switch( uMsg ) {
     case WM_APP + 1:
         {
+			m_bAsyncNotifyPosted = false;
             for( int i = 0; i < m_aDelayedCleanup.GetSize(); i++ ) 
                 delete static_cast<CControlUI*>(m_aDelayedCleanup[i]);
             m_aDelayedCleanup.Empty();
@@ -947,10 +949,11 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
                 m_pRoot->Paint(m_hDcOffscreen, rcPaint);
 
 				if( m_bLayered ) {
-					for( int i = 0; i < m_aChildWnds.GetSize(); ) {
-						HWND hChildWnd = static_cast<HWND>(m_aChildWnds[i]);
+					for( int i = 0; i < m_aRealWindow.GetSize(); ) {
+						HWND hChildWnd = static_cast<HWND>(m_aRealWindow[i]);
 						if (!::IsWindow(hChildWnd)) {
-							m_aChildWnds.Remove(i);
+							m_aRealWindow.Remove(i);
+							m_aRealWindowControl.Remove(i);
 							continue;
 						}
 						++i;
@@ -1063,11 +1066,11 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             }
             // All Done!
             ::EndPaint(m_hWndPaint, &ps);
-        }
-		m_bLayeredChanged = false;
-        if( m_bUpdateNeeded ) Invalidate();
 
-		SetPainting(false);
+			SetPainting(false);
+			m_bLayeredChanged = false;
+			if( m_bUpdateNeeded ) Invalidate();
+        }
         return true;
     case WM_PRINTCLIENT:
         {
@@ -1475,6 +1478,28 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             pControl->Event(event);
         }
         return true;
+	case WM_KILLFOCUS:
+		{
+			if( wParam != NULL ) {
+				HWND hWnd = ::GetFocus();
+				HWND hParentWnd = NULL;
+				while( hParentWnd = ::GetParent(hWnd) ) {
+					if( m_hWndPaint == hParentWnd ) {
+						for( int i = 0; i < m_aRealWindow.GetSize(); i++ ) {
+							if( static_cast<HWND>(m_aRealWindow[i]) == hWnd ) {
+								if( static_cast<CControlUI*>(m_aRealWindowControl[i]) != m_pFocus ) {
+									SetFocus(static_cast<CControlUI*>(m_aRealWindowControl[i]), false);
+								}
+								break;
+							}
+						}
+						break;
+					}
+					hWnd = hParentWnd;
+				}
+			}
+		}
+		break;
     case WM_NOTIFY:
         {
             LPNMHDR lpNMHDR = (LPNMHDR) lParam;
@@ -1551,7 +1576,7 @@ bool CPaintManagerUI::AttachDialog(CControlUI* pControl)
     // pull the internal memory of the calling code. We'll delay the cleanup.
     if( m_pRoot != NULL ) {
         m_aPostPaintControls.Empty();
-		m_aChildWnds.Empty();
+		m_aRealWindow.Empty();
         AddDelayedCleanup(m_pRoot);
     }
     // Set the dialog root element
@@ -1681,11 +1706,11 @@ CControlUI* CPaintManagerUI::GetFocus() const
     return m_pFocus;
 }
 
-void CPaintManagerUI::SetFocus(CControlUI* pControl)
+void CPaintManagerUI::SetFocus(CControlUI* pControl, bool bFocusWnd)
 {
     // Paint manager window has focus?
     HWND hFocusWnd = ::GetFocus();
-    if( hFocusWnd != m_hWndPaint && pControl != m_pFocus ) ::SetFocus(m_hWndPaint);
+    if( bFocusWnd && hFocusWnd != m_hWndPaint && pControl != m_pFocus ) ::SetFocus(m_hWndPaint);
     // Already has focus?
     if( pControl == m_pFocus ) return;
     // Remove focus from old control
@@ -1952,26 +1977,34 @@ bool CPaintManagerUI::SetPostPaintIndex(CControlUI* pControl, int iIndex)
     return m_aPostPaintControls.InsertAt(iIndex, pControl);
 }
 
-int CPaintManagerUI::GetPaintChildWndCount() const
+int CPaintManagerUI::GetRealWindowCount() const
 {
-	return m_aChildWnds.GetSize();
+	return m_aRealWindow.GetSize();
 }
 
-bool CPaintManagerUI::AddPaintChildWnd(HWND hChildWnd)
+bool CPaintManagerUI::AddRealWindow(CControlUI* pControl, HWND hChildWnd)
 {
 	RECT rcChildWnd;
 	GetChildWndRect(m_hWndPaint, hChildWnd, rcChildWnd);
 	Invalidate(rcChildWnd);
 
-	if (m_aChildWnds.Find(hChildWnd) >= 0) return false;
-	return m_aChildWnds.Add(hChildWnd);
+	if (m_aRealWindow.Find(hChildWnd) >= 0) return false;
+	if (m_aRealWindow.Add(hChildWnd)) {
+		m_aRealWindowControl.Add(pControl);
+		return true;
+	}
+	return false;
 }
 
-bool CPaintManagerUI::RemovePaintChildWnd(HWND hChildWnd)
+bool CPaintManagerUI::RemoveRealWindow(HWND hChildWnd)
 {
-	for( int i = 0; i < m_aChildWnds.GetSize(); i++ ) {
-		if( static_cast<HWND>(m_aChildWnds[i]) == hChildWnd ) {
-			return m_aChildWnds.Remove(i);
+	for( int i = 0; i < m_aRealWindow.GetSize(); i++ ) {
+		if( static_cast<HWND>(m_aRealWindow[i]) == hChildWnd ) {
+			if( m_aRealWindow.Remove(i) ) {
+				m_aRealWindowControl.Remove(i);
+				return true;
+			}
+			return false;
 		}
 	}
 	return false;
@@ -1981,10 +2014,10 @@ void CPaintManagerUI::AddDelayedCleanup(CControlUI* pControl)
 {
     pControl->SetManager(this, NULL, false);
     m_aDelayedCleanup.Add(pControl);
-    ::PostMessage(m_hWndPaint, WM_APP + 1, 0, 0L);
+	PostAsyncNotify();
 }
 
-void CPaintManagerUI::SendNotify(CControlUI* pControl, LPCTSTR pstrMessage, WPARAM wParam /*= 0*/, LPARAM lParam /*= 0*/, bool bAsync /*= false*/)
+void CPaintManagerUI::SendNotify(CControlUI* pControl, LPCTSTR pstrMessage, WPARAM wParam /*= 0*/, LPARAM lParam /*= 0*/, bool bAsync /*= false*/, bool bEnableRepeat /*= true*/)
 {
     TNotifyUI Msg;
     Msg.pSender = pControl;
@@ -1994,7 +2027,7 @@ void CPaintManagerUI::SendNotify(CControlUI* pControl, LPCTSTR pstrMessage, WPAR
     SendNotify(Msg, bAsync);
 }
 
-void CPaintManagerUI::SendNotify(TNotifyUI& Msg, bool bAsync /*= false*/)
+void CPaintManagerUI::SendNotify(TNotifyUI& Msg, bool bAsync /*= false*/, bool bEnableRepeat /*= true*/)
 {
     Msg.ptMouse = m_ptLastMousePos;
     Msg.dwTimestamp = ::GetTickCount();
@@ -2013,15 +2046,29 @@ void CPaintManagerUI::SendNotify(TNotifyUI& Msg, bool bAsync /*= false*/)
         }
     }
     else {
-        TNotifyUI *pMsg = new TNotifyUI;
-        pMsg->pSender = Msg.pSender;
-        pMsg->sType = Msg.sType;
-        pMsg->wParam = Msg.wParam;
-        pMsg->lParam = Msg.lParam;
-        pMsg->ptMouse = Msg.ptMouse;
-        pMsg->dwTimestamp = Msg.dwTimestamp;
-        m_aAsyncNotify.Add(pMsg);
-		::PostMessage(m_hWndPaint, WM_APP + 1, 0, 0L);
+		if( !bEnableRepeat ) {
+			for( int i = 0; i < m_aAsyncNotify.GetSize(); i++ ) {
+				TNotifyUI* pMsg = static_cast<TNotifyUI*>(m_aAsyncNotify[i]);
+				if( pMsg->pSender == Msg.pSender && pMsg->sType == Msg.sType) {
+					pMsg->wParam = Msg.wParam;
+					pMsg->lParam = Msg.lParam;
+					pMsg->ptMouse = Msg.ptMouse;
+					pMsg->dwTimestamp = Msg.dwTimestamp;
+					return;
+				}
+			}
+		}
+
+		TNotifyUI *pMsg = new TNotifyUI;
+		pMsg->pSender = Msg.pSender;
+		pMsg->sType = Msg.sType;
+		pMsg->wParam = Msg.wParam;
+		pMsg->lParam = Msg.lParam;
+		pMsg->ptMouse = Msg.ptMouse;
+		pMsg->dwTimestamp = Msg.dwTimestamp;
+		m_aAsyncNotify.Add(pMsg);
+
+		PostAsyncNotify();
     }
 }
 
@@ -2708,6 +2755,14 @@ void CPaintManagerUI::AdjustImagesHSL()
 		}
 	}
 	Invalidate();
+}
+
+void CPaintManagerUI::PostAsyncNotify()
+{
+	if (!m_bAsyncNotifyPosted) {
+		::PostMessage(m_hWndPaint, WM_APP + 1, 0, 0L);
+		m_bAsyncNotifyPosted = true;
+	}
 }
 
 void CPaintManagerUI::ReloadSharedImages()

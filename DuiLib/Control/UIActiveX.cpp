@@ -778,9 +778,7 @@ LPCTSTR CActiveXWnd::GetWindowClassName() const
 
 void CActiveXWnd::OnFinalMessage(HWND hWnd)
 {
-	if( m_pOwner->m_pOwner->GetManager()->IsLayered() ) {
-		m_pOwner->m_pOwner->GetManager()->RemovePaintChildWnd(hWnd);
-	}
+	m_pOwner->m_pOwner->GetManager()->RemoveRealWindow(hWnd);
     //delete this; // 这里不需要清理，CActiveXUI会清理的
 }
 
@@ -821,6 +819,7 @@ LRESULT CActiveXWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 LRESULT CActiveXWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	m_pOwner->m_pOwner->GetManager()->AddRealWindow(m_pOwner->m_pOwner, m_hWnd);
 	if( m_pOwner->m_pOwner->GetManager()->IsLayered() ) {
 		::SetTimer(m_hWnd, DEFAULT_TIMERID, 50, NULL);
 	}
@@ -831,7 +830,7 @@ LRESULT CActiveXWnd::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 {
 	if (wParam == DEFAULT_TIMERID) {
 		if (m_pOwner->m_pOwner->GetManager()->IsLayered()) {
-			m_pOwner->m_pOwner->GetManager()->AddPaintChildWnd(m_hWnd);
+			m_pOwner->m_pOwner->GetManager()->AddRealWindow(m_pOwner->m_pOwner, m_hWnd);
 			m_iLayeredTick += 1;
 			if (m_iLayeredTick >= 10) {
 				m_iLayeredTick = 0;
@@ -943,7 +942,12 @@ LPVOID CActiveXUI::GetInterface(LPCTSTR pstrName)
 	return CControlUI::GetInterface(pstrName);
 }
 
-HWND CActiveXUI::GetHostWindow() const
+UINT CActiveXUI::GetControlFlags() const
+{
+	return UIFLAG_TABSTOP;
+}
+
+HWND CActiveXUI::GetRealWindow() const
 {
     return m_hwndHost;
 }
