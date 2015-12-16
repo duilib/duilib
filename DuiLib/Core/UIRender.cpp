@@ -153,7 +153,6 @@ static COLORREF PixelAlpha(COLORREF clrSrc, double src_darken, COLORREF clrDest,
     return RGB (GetRValue (clrSrc) * src_darken + GetRValue (clrDest) * dest_darken, 
         GetGValue (clrSrc) * src_darken + GetGValue (clrDest) * dest_darken, 
         GetBValue (clrSrc) * src_darken + GetBValue (clrDest) * dest_darken);
-
 }
 
 static BOOL WINAPI AlphaBitBlt(HDC hDC, int nDestX, int nDestY, int dwWidth, int dwHeight, HDC hSrcDC, \
@@ -283,6 +282,29 @@ DWORD CRenderEngine::AdjustColor(DWORD dwColor, short H, short S, short L)
     fL *= L1;
     HSLtoRGB(&dwColor, fH, fS, fL);
     return dwColor;
+}
+
+HBITMAP CRenderEngine::CreateARGB32Bitmap(HDC hDC, int cx, int cy, COLORREF** pBits)
+{
+	LPBITMAPINFO lpbiSrc = NULL;
+	lpbiSrc = (LPBITMAPINFO) new BYTE[sizeof(BITMAPINFOHEADER)];
+	if (lpbiSrc == NULL) return NULL;
+
+	lpbiSrc->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	lpbiSrc->bmiHeader.biWidth = cx;
+	lpbiSrc->bmiHeader.biHeight = cy;
+	lpbiSrc->bmiHeader.biPlanes = 1;
+	lpbiSrc->bmiHeader.biBitCount = 32;
+	lpbiSrc->bmiHeader.biCompression = BI_RGB;
+	lpbiSrc->bmiHeader.biSizeImage = cx * cy;
+	lpbiSrc->bmiHeader.biXPelsPerMeter = 0;
+	lpbiSrc->bmiHeader.biYPelsPerMeter = 0;
+	lpbiSrc->bmiHeader.biClrUsed = 0;
+	lpbiSrc->bmiHeader.biClrImportant = 0;
+
+	HBITMAP hBitmap = CreateDIBSection (hDC, lpbiSrc, DIB_RGB_COLORS, (void **)pBits, NULL, NULL);
+	delete [] lpbiSrc;
+	return hBitmap;
 }
 
 void CRenderEngine::AdjustImage(bool bUseHSL, TImageInfo* imageInfo, short H, short S, short L)
@@ -461,7 +483,7 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
 	data->pBits = pDest;
 	data->nX = x;
 	data->nY = y;
-	data->alphaChannel = bAlphaChannel;
+	data->bAlpha = bAlphaChannel;
 	data->bUseHSL = false;
 	data->pSrcBits = NULL;
 	return data;
@@ -1024,6 +1046,7 @@ bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc
 			}
 			if( *pstrImage++ != _T(' ') ) break;
 		}
+		drawInfo.sImageName = sImageName;
 
 		const TImageInfo* data = NULL;
 		if( bUseRes == false ) {
@@ -1061,7 +1084,7 @@ bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc
 	if( !::IntersectRect(&rcTemp, &rcDest, &rcItem) ) return true;
 	if( !::IntersectRect(&rcTemp, &rcDest, &rcPaint) ) return true;
 	DrawImage(hDC, drawInfo.pImageInfo->hBitmap, rcDest, rcPaint, drawInfo.rcBmpPart, drawInfo.rcCorner,
-		drawInfo.pImageInfo->alphaChannel, drawInfo.uFade, drawInfo.bHole, drawInfo.bTiledX, drawInfo.bTiledY);
+		drawInfo.pImageInfo->bAlpha, drawInfo.uFade, drawInfo.bHole, drawInfo.bTiledX, drawInfo.bTiledY);
 	return true;
 }
 
@@ -1602,7 +1625,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                                     rcBmpPart.right = iWidth * (iImageListIndex + 1);
                                     CDuiRect rcCorner(0, 0, 0, 0);
                                     DrawImage(hDC, pImageInfo->hBitmap, rcImage, rcImage, rcBmpPart, rcCorner, \
-                                        pImageInfo->alphaChannel, 255);
+                                        pImageInfo->bAlpha, 255);
                                 }
 
                                 cyLine = MAX(iHeight, cyLine);
@@ -1937,7 +1960,7 @@ HBITMAP CRenderEngine::GenerateBitmap(CPaintManagerUI* pManager, CControlUI* pCo
     ASSERT(hPaintDC);
     ASSERT(hPaintBitmap);
     HBITMAP hOldPaintBitmap = (HBITMAP) ::SelectObject(hPaintDC, hPaintBitmap);
-    pControl->DoPaint(hPaintDC, rc);
+    pControl->Paint(hPaintDC, rc);
 
     BITMAPINFO bmi = { 0 };
     bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);

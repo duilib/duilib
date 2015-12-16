@@ -442,10 +442,6 @@
 				RelativePath=".\UIlib.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\Utils\WinImplBase.cpp"
-				>
-			</File>
 			<Filter
 				Name="Utils"
 				>
@@ -491,6 +487,10 @@
 				</File>
 				<File
 					RelativePath=".\Utils\Utils.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\WinImplBase.cpp"
 					>
 				</File>
 				<File
@@ -614,6 +614,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Control\UIGifAnim.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Control\UILabel.cpp"
 					>
 				</File>
@@ -676,6 +680,10 @@
 				</File>
 				<File
 					RelativePath=".\Utils\FlashEventHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\stb_image.h"
 					>
 				</File>
 				<File
@@ -780,6 +788,10 @@
 				</File>
 				<File
 					RelativePath=".\Control\UIEdit.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Control\UIGifAnim.h"
 					>
 				</File>
 				<File

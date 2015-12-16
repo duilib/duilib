@@ -344,7 +344,7 @@ namespace DuiLib
 			CControlUI* pControl = static_cast<CControlUI*>(m_items[it2]);
 			if( !pControl->IsVisible() ) continue;
 			if( pControl->IsFloat() ) continue;
-			pControl->Move(CSize(-cx, -cy), false);
+			pControl->Move(CDuiSize(-cx, -cy), false);
 		}
 
 		Invalidate();
@@ -518,6 +518,29 @@ namespace DuiLib
 			}
 			return FindSelectable(0, true);
 		}
+	}
+
+	RECT CContainerUI::GetClientPos() const
+	{
+		RECT rc = m_rcItem;
+		rc.left += m_rcInset.left;
+		rc.top += m_rcInset.top;
+		rc.right -= m_rcInset.right;
+		rc.bottom -= m_rcInset.bottom;
+
+		if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) {
+			rc.top -= m_pVerticalScrollBar->GetScrollPos();
+			rc.bottom -= m_pVerticalScrollBar->GetScrollPos();
+			rc.bottom += m_pVerticalScrollBar->GetScrollRange();
+			rc.right -= m_pVerticalScrollBar->GetFixedWidth();
+		}
+		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) {
+			rc.left -= m_pHorizontalScrollBar->GetScrollPos();
+			rc.right -= m_pHorizontalScrollBar->GetScrollPos();
+			rc.right += m_pHorizontalScrollBar->GetScrollRange();
+			rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
+		}
+		return rc;
 	}
 
 	void CContainerUI::SetPos(RECT rc, bool bNeedInvalidate)
@@ -698,7 +721,7 @@ namespace DuiLib
 					if( !::IntersectRect(&rcTemp, &rcPaint, &pControl->GetPos()) ) continue;
 					if( pControl ->IsFloat() ) {
 						if( !::IntersectRect(&rcTemp, &m_rcItem, &pControl->GetPos()) ) continue;
-						pControl->DoPaint(hDC, rcPaint);
+						pControl->Paint(hDC, rcPaint);
 					}
 				}
 			}
@@ -712,12 +735,12 @@ namespace DuiLib
 					if( pControl ->IsFloat() ) {
 						if( !::IntersectRect(&rcTemp, &m_rcItem, &pControl->GetPos()) ) continue;
 						CRenderClip::UseOldClipBegin(hDC, childClip);
-						pControl->DoPaint(hDC, rcPaint);
+						pControl->Paint(hDC, rcPaint);
 						CRenderClip::UseOldClipEnd(hDC, childClip);
 					}
 					else {
 						if( !::IntersectRect(&rcTemp, &rc, &pControl->GetPos()) ) continue;
-						pControl->DoPaint(hDC, rcPaint);
+						pControl->Paint(hDC, rcPaint);
 					}
 				}
 			}
@@ -725,13 +748,13 @@ namespace DuiLib
 
 		if( m_pVerticalScrollBar != NULL && m_pVerticalScrollBar->IsVisible() ) {
 			if( ::IntersectRect(&rcTemp, &rcPaint, &m_pVerticalScrollBar->GetPos()) ) {
-				m_pVerticalScrollBar->DoPaint(hDC, rcPaint);
+				m_pVerticalScrollBar->Paint(hDC, rcPaint);
 			}
 		}
 
 		if( m_pHorizontalScrollBar != NULL && m_pHorizontalScrollBar->IsVisible() ) {
 			if( ::IntersectRect(&rcTemp, &rcPaint, &m_pHorizontalScrollBar->GetPos()) ) {
-				m_pHorizontalScrollBar->DoPaint(hDC, rcPaint);
+				m_pHorizontalScrollBar->Paint(hDC, rcPaint);
 			}
 		}
 	}
@@ -752,10 +775,10 @@ namespace DuiLib
 		LONG width = m_rcItem.right - m_rcItem.left;
 		LONG height = m_rcItem.bottom - m_rcItem.top;
 		RECT rcCtrl = { 0 };
-		rcCtrl.left = m_rcItem.left + (LONG)(width*rcPercent.left) + szXY.cx;
-		rcCtrl.right = m_rcItem.left + (LONG)(width*rcPercent.right) + szXY.cx + sz.cx;
-		rcCtrl.top = m_rcItem.top + (LONG)(height*rcPercent.top) + szXY.cy;
-		rcCtrl.bottom = m_rcItem.top + (LONG)(height*rcPercent.bottom) + szXY.cy + sz.cy;
+		rcCtrl.left = (LONG)(width*rcPercent.left) + szXY.cx;
+		rcCtrl.top = (LONG)(height*rcPercent.top) + szXY.cy;
+		rcCtrl.right = (LONG)(width*rcPercent.right) + szXY.cx + sz.cx;
+		rcCtrl.bottom = (LONG)(height*rcPercent.bottom) + szXY.cy + sz.cy;
 		pControl->SetPos(rcCtrl, false);
 	}
 
@@ -773,7 +796,8 @@ namespace DuiLib
 			m_pVerticalScrollBar->SetScrollRange(cyRequired - (rc.bottom - rc.top));
 			m_pVerticalScrollBar->SetScrollPos(0);
 			m_bScrollProcess = true;
-			SetPos(m_rcItem);
+			if( !IsFloat() ) SetPos(GetPos());
+			else SetPos(GetRelativePos());
 			m_bScrollProcess = false;
 			return;
 		}
@@ -786,7 +810,8 @@ namespace DuiLib
 			m_pVerticalScrollBar->SetVisible(false);
 			m_pVerticalScrollBar->SetScrollPos(0);
 			m_pVerticalScrollBar->SetScrollRange(0);
-			SetPos(m_rcItem);
+			if( !IsFloat() ) SetPos(GetPos());
+			else SetPos(GetRelativePos());
 		}
 		else
 		{
@@ -801,7 +826,8 @@ namespace DuiLib
 					m_pVerticalScrollBar->SetScrollPos(0);
 				}
 				if( iScrollPos > m_pVerticalScrollBar->GetScrollPos() ) {
-					SetPos(m_rcItem, false);
+					if( !IsFloat() ) SetPos(GetPos(), false);
+					else SetPos(GetRelativePos(), false);
 				}
 			}
 		}
@@ -859,7 +885,7 @@ namespace DuiLib
 			return FALSE;
 	}
 
-	DuiLib::CDuiString CContainerUI::GetSubControlText( LPCTSTR pstrSubControlName )
+	CDuiString CContainerUI::GetSubControlText( LPCTSTR pstrSubControlName )
 	{
 		CControlUI* pSubControl=NULL;
 		pSubControl=this->FindSubControl(pstrSubControlName);

@@ -116,17 +116,13 @@ namespace DuiLib
 
 					RECT rcPadding = pLineControl->GetPadding();
 					SIZE szAvailable = { rcTile.right - rcTile.left - rcPadding.left - rcPadding.right, 9999 };
-					if( iIndex == iCount || (iIndex + 1) % m_nColumns == 0 ) {
-						szAvailable.cx -= m_iChildPadding / 2;
-					}
-					else {
-						szAvailable.cx -= m_iChildPadding;
-					}
 
 					if( szAvailable.cx < pControl->GetMinWidth() ) szAvailable.cx = pControl->GetMinWidth();
 					if( szAvailable.cx > pControl->GetMaxWidth() ) szAvailable.cx = pControl->GetMaxWidth();
 
 					SIZE szTile = pLineControl->EstimateSize(szAvailable);
+					if( szTile.cx == 0 ) szTile.cx = m_szItem.cx;
+					if( szTile.cy == 0 ) szTile.cy = m_szItem.cy;
 					if( szTile.cx < pControl->GetMinWidth() ) szTile.cx = pControl->GetMinWidth();
 					if( szTile.cx > pControl->GetMaxWidth() ) szTile.cx = pControl->GetMaxWidth();
 					if( szTile.cy < pControl->GetMinHeight() ) szTile.cy = pControl->GetMinHeight();
@@ -139,15 +135,8 @@ namespace DuiLib
 
 			RECT rcPadding = pControl->GetPadding();
 
-			rcTile.left += rcPadding.left + m_iChildPadding / 2;
-			rcTile.right -= rcPadding.right + m_iChildPadding / 2;
-			if( (iCount % m_nColumns) == 0 ) {
-				rcTile.left -= m_iChildPadding / 2;
-			}
-
-			if( ( (iCount + 1) % m_nColumns) == 0 ) {
-				rcTile.right += m_iChildPadding / 2;
-			}
+			rcTile.left += rcPadding.left;
+			rcTile.right -= rcPadding.right;
 
 			// Set position
 			rcTile.top = ptTile.y + rcPadding.top;
@@ -155,6 +144,8 @@ namespace DuiLib
 
 			SIZE szAvailable = { rcTile.right - rcTile.left, rcTile.bottom - rcTile.top };
 			SIZE szTile = pControl->EstimateSize(szAvailable);
+			if( szTile.cx == 0 ) szTile.cx = m_szItem.cx;
+			if( szTile.cy == 0 ) szTile.cy = m_szItem.cy;
 			if( szTile.cx == 0 ) szTile.cx = szAvailable.cx;
 			if( szTile.cy == 0 ) szTile.cy = szAvailable.cy;
 			if( szTile.cx < pControl->GetMinWidth() ) szTile.cx = pControl->GetMinWidth();

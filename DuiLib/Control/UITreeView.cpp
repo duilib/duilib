@@ -198,9 +198,9 @@ namespace DuiLib
 	// 参数信息: bool bSelect
 	// 函数说明: 
 	//************************************
-	bool CTreeNodeUI::Select( bool bSelect /*= true*/ )
+	bool CTreeNodeUI::Select( bool bSelect /*= true*/,  bool bTriggerEvent)
 	{
-		bool nRet = CListContainerElementUI::Select(bSelect);
+		bool nRet = CListContainerElementUI::Select(bSelect, bTriggerEvent);
 		if(m_bSelected)
 			pItemButton->SetTextColor(GetSelItemTextColor());
 		else 

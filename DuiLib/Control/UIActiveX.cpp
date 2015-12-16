@@ -16,6 +16,7 @@ class CActiveXCtrl;
 class CActiveXWnd : public CWindowWnd
 {
 public:
+	CActiveXWnd() : m_iLayeredTick(0), m_bDrawCaret(false) {}
     HWND Init(CActiveXCtrl* pOwner, HWND hWndParent);
 
     LPCTSTR GetWindowClassName() const;
@@ -26,14 +27,23 @@ public:
 protected:
     void DoVerb(LONG iVerb);
 
+	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnMouseActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnEraseBkgnd(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnPrint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 protected:
+	enum { 
+		DEFAULT_TIMERID = 20,
+	};
+
     CActiveXCtrl* m_pOwner;
+	int m_iLayeredTick;
+	bool m_bDrawCaret;
 };
 
 
@@ -768,6 +778,9 @@ LPCTSTR CActiveXWnd::GetWindowClassName() const
 
 void CActiveXWnd::OnFinalMessage(HWND hWnd)
 {
+	if( m_pOwner->m_pOwner->GetManager()->IsLayered() ) {
+		m_pOwner->m_pOwner->GetManager()->RemovePaintChildWnd(hWnd);
+	}
     //delete this; // 这里不需要清理，CActiveXUI会清理的
 }
 
@@ -790,7 +803,10 @@ LRESULT CActiveXWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     LRESULT lRes=0;
     BOOL bHandled = TRUE;
     switch( uMsg ) {
+	case WM_CREATE:        lRes = OnCreate(uMsg, wParam, lParam, bHandled); break;
+	case WM_TIMER:         lRes = OnTimer(uMsg, wParam, lParam, bHandled); break;
     case WM_PAINT:         lRes = OnPaint(uMsg, wParam, lParam, bHandled); break;
+	case WM_PRINT:		   lRes = OnPrint(uMsg, wParam, lParam, bHandled); break;
     case WM_SETFOCUS:      lRes = OnSetFocus(uMsg, wParam, lParam, bHandled); break;
     case WM_KILLFOCUS:     lRes = OnKillFocus(uMsg, wParam, lParam, bHandled); break;
     case WM_ERASEBKGND:    lRes = OnEraseBkgnd(uMsg, wParam, lParam, bHandled); break;
@@ -801,6 +817,31 @@ LRESULT CActiveXWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     }
     if( !bHandled ) return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
     return lRes;
+}
+
+LRESULT CActiveXWnd::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	if( m_pOwner->m_pOwner->GetManager()->IsLayered() ) {
+		::SetTimer(m_hWnd, DEFAULT_TIMERID, 50, NULL);
+	}
+	return 0;
+}
+
+LRESULT CActiveXWnd::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	if (wParam == DEFAULT_TIMERID) {
+		if (m_pOwner->m_pOwner->GetManager()->IsLayered()) {
+			m_pOwner->m_pOwner->GetManager()->AddPaintChildWnd(m_hWnd);
+			m_iLayeredTick += 1;
+			if (m_iLayeredTick >= 10) {
+				m_iLayeredTick = 0;
+				m_bDrawCaret = !m_bDrawCaret;
+			}
+		}
+		return 0;
+	}
+	bHandled = FALSE;
+	return 0;
 }
 
 LRESULT CActiveXWnd::OnEraseBkgnd(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -846,6 +887,34 @@ LRESULT CActiveXWnd::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
     return 1;
 }
 
+LRESULT CActiveXWnd::OnPrint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	RECT rcClient;
+	::GetClientRect(m_hWnd, &rcClient);
+	m_pOwner->m_pViewObject->Draw(DVASPECT_CONTENT, -1, NULL, NULL, NULL, (HDC)wParam, (RECTL*) &rcClient, NULL, NULL, NULL); 
+	
+	if (m_bDrawCaret ) {
+		RECT rcPos = m_pOwner->m_pOwner->GetPos();
+		GUITHREADINFO guiThreadInfo;
+		guiThreadInfo.cbSize = sizeof(GUITHREADINFO);
+		::GetGUIThreadInfo(NULL, &guiThreadInfo);
+		if (guiThreadInfo.hwndCaret) {
+			POINT ptCaret;
+			ptCaret.x = guiThreadInfo.rcCaret.left;
+			ptCaret.y = guiThreadInfo.rcCaret.top;
+			::ClientToScreen(guiThreadInfo.hwndCaret, &ptCaret);
+			::ScreenToClient(m_pOwner->m_pOwner->GetManager()->GetPaintWindow(), &ptCaret);
+			if( ::PtInRect(&rcPos, ptCaret) ) {
+				RECT rcCaret;
+				rcCaret = guiThreadInfo.rcCaret;
+				rcCaret.right = rcCaret.left;
+				CRenderEngine::DrawLine((HDC)wParam, rcCaret, 1, 0xFF000000);
+			}
+		}
+	}
+
+	return 1;
+}
 
 /////////////////////////////////////////////////////////////////////////////////////
 //
@@ -854,11 +923,13 @@ LRESULT CActiveXWnd::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 CActiveXUI::CActiveXUI() : m_pUnk(NULL), m_pControl(NULL), m_hwndHost(NULL), m_bCreated(false), m_bDelayCreate(true)
 {
     m_clsid = IID_NULL;
+	::CoInitialize(NULL);
 }
 
 CActiveXUI::~CActiveXUI()
 {
     ReleaseControl();
+	::CoUninitialize();
 }
 
 LPCTSTR CActiveXUI::GetClass() const

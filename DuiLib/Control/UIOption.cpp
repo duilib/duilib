@@ -63,7 +63,7 @@ namespace DuiLib
 		return m_bSelected;
 	}
 
-	void COptionUI::Selected(bool bSelected)
+	void COptionUI::Selected(bool bSelected, bool bTriggerEvent)
 	{
 		if( m_bSelected == bSelected ) return;
 		m_bSelected = bSelected;
@@ -77,14 +77,14 @@ namespace DuiLib
 					for( int i = 0; i < aOptionGroup->GetSize(); i++ ) {
 						COptionUI* pControl = static_cast<COptionUI*>(aOptionGroup->GetAt(i));
 						if( pControl != this ) {
-							pControl->Selected(false);
+							pControl->Selected(false, bTriggerEvent);
 						}
 					}
-					m_pManager->SendNotify(this, DUI_MSGTYPE_SELECTCHANGED);
+					if (bTriggerEvent) m_pManager->SendNotify(this, DUI_MSGTYPE_SELECTCHANGED);
 				}
 			}
 			else {
-				m_pManager->SendNotify(this, DUI_MSGTYPE_SELECTCHANGED);
+				if (bTriggerEvent) m_pManager->SendNotify(this, DUI_MSGTYPE_SELECTCHANGED);
 			}
 		}
 
@@ -171,7 +171,7 @@ namespace DuiLib
 
 	SIZE COptionUI::EstimateSize(SIZE szAvailable)
 	{
-		if( m_cxyFixed.cy == 0 ) return CSize(m_cxyFixed.cx, m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 8);
+		if( m_cxyFixed.cy == 0 ) return CDuiSize(m_cxyFixed.cx, m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 8);
 		return CControlUI::EstimateSize(szAvailable);
 	}
 
@@ -199,8 +199,6 @@ namespace DuiLib
 
 	void COptionUI::PaintStatusImage(HDC hDC)
 	{
-		m_uButtonState &= ~UISTATE_PUSHED;
-
 		if( (m_uButtonState & UISTATE_SELECTED) != 0 ) {
 			if ((m_uButtonState & UISTATE_HOT) != 0)
 			{
@@ -214,7 +212,10 @@ namespace DuiLib
 			}	
 		}
 
+		UINT uSavedState = m_uButtonState;
+		m_uButtonState &= ~UISTATE_PUSHED;
 		CButtonUI::PaintStatusImage(hDC);
+		m_uButtonState = uSavedState;
 
 Label_ForeImage:
 		DrawImage(hDC, m_diFore);
@@ -248,6 +249,11 @@ Label_ForeImage:
 			m_dwTextColor = oldTextColor;
 		}
 		else
+		{
+			UINT uSavedState = m_uButtonState;
+			m_uButtonState &= ~UISTATE_PUSHED;
 			CButtonUI::PaintText(hDC);
+			m_uButtonState = uSavedState;
+		}
 	}
 }

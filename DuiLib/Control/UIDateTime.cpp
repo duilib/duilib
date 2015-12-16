@@ -61,6 +61,21 @@ namespace DuiLib
 	RECT CDateTimeWnd::CalPos()
 	{
 		CDuiRect rcPos = m_pOwner->GetPos();
+
+		CControlUI* pParent = m_pOwner;
+		RECT rcParent;
+		while( pParent = pParent->GetParent() ) {
+			if( !pParent->IsVisible() ) {
+				rcPos.left = rcPos.top = rcPos.right = rcPos.bottom = 0;
+				break;
+			}
+			rcParent = pParent->GetClientPos();
+			if( !::IntersectRect(&rcPos, &rcPos, &rcParent) ) {
+				rcPos.left = rcPos.top = rcPos.right = rcPos.bottom = 0;
+				break;
+			}
+		}
+
 		return rcPos;
 	}
 
@@ -74,10 +89,13 @@ namespace DuiLib
 		return DATETIMEPICK_CLASS;
 	}
 
-	void CDateTimeWnd::OnFinalMessage(HWND /*hWnd*/)
+	void CDateTimeWnd::OnFinalMessage(HWND hWnd)
 	{
 		// Clear reference and die
 		if( m_hBkBrush != NULL ) ::DeleteObject(m_hBkBrush);
+		if( m_pOwner->GetManager()->IsLayered() ) {
+			m_pOwner->GetManager()->RemovePaintChildWnd(hWnd);
+		} 
 		m_pOwner->m_pWindow = NULL;
 		delete this;
 	}
@@ -127,6 +145,12 @@ namespace DuiLib
 		// 			}
 		// 			return (LRESULT)m_hBkBrush;
 		// 		}
+		else if( uMsg == WM_PAINT) {
+			if (m_pOwner->GetManager()->IsLayered()) {
+				m_pOwner->GetManager()->AddPaintChildWnd(m_hWnd);
+			}
+			bHandled = FALSE;
+		}
 		else bHandled = FALSE;
 		if( !bHandled ) return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
 		return lRes;
@@ -141,7 +165,7 @@ namespace DuiLib
 			m_pOwner->m_nDTUpdateFlag = DT_UPDATE;
 			m_pOwner->UpdateText();
 		}
-		PostMessage(WM_CLOSE);
+		SendMessage(WM_CLOSE);
 		return lRes;
 	}
 

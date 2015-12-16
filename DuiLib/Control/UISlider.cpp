@@ -113,9 +113,30 @@ namespace DuiLib
 		if( event.Type == UIEVENT_BUTTONDOWN || event.Type == UIEVENT_DBLCLICK )
 		{
 			if( IsEnabled() ) {
-				RECT rcThumb = GetThumbRect();
+				/*RECT rcThumb = GetThumbRect();
 				if( ::PtInRect(&rcThumb, event.ptMouse) ) {
-					m_uButtonState |= UISTATE_CAPTURED;
+				m_uButtonState |= UISTATE_CAPTURED;
+				}
+				}
+				return;*/
+				m_uButtonState |= UISTATE_CAPTURED;
+
+				int nValue;
+
+				if (m_bHorizontal) {
+					if (event.ptMouse.x >= m_rcItem.right - m_szThumb.cx / 2) nValue = m_nMax;
+					else if (event.ptMouse.x <= m_rcItem.left + m_szThumb.cx / 2) nValue = m_nMin;
+					else nValue = m_nMin + (m_nMax - m_nMin) * (event.ptMouse.x - m_rcItem.left - m_szThumb.cx / 2) / (m_rcItem.right - m_rcItem.left - m_szThumb.cx);
+				}
+				else {
+					if (event.ptMouse.y >= m_rcItem.bottom - m_szThumb.cy / 2) nValue = m_nMin;
+					else if (event.ptMouse.y <= m_rcItem.top + m_szThumb.cy / 2) nValue = m_nMax;
+					else nValue = m_nMin + (m_nMax - m_nMin) * (m_rcItem.bottom - event.ptMouse.y - m_szThumb.cy / 2) / (m_rcItem.bottom - m_rcItem.top - m_szThumb.cy);
+				}
+				if (m_nValue != nValue && nValue >= m_nMin && nValue <= m_nMax)
+				{
+					m_nValue = nValue;
+					Invalidate();
 				}
 			}
 			return;
@@ -123,20 +144,20 @@ namespace DuiLib
 		if( event.Type == UIEVENT_BUTTONUP )
 		{
 			if( (m_uButtonState & UISTATE_CAPTURED) != 0 ) {
+				if( m_bHorizontal ) {
+					if( event.ptMouse.x >= m_rcItem.right - m_szThumb.cx / 2 ) m_nValue = m_nMax;
+					else if( event.ptMouse.x <= m_rcItem.left + m_szThumb.cx / 2 ) m_nValue = m_nMin;
+					else m_nValue = m_nMin + (m_nMax - m_nMin) * (event.ptMouse.x - m_rcItem.left - m_szThumb.cx / 2 ) / (m_rcItem.right - m_rcItem.left - m_szThumb.cx);
+				}
+				else {
+					if( event.ptMouse.y >= m_rcItem.bottom - m_szThumb.cy / 2 ) m_nValue = m_nMin;
+					else if( event.ptMouse.y <= m_rcItem.top + m_szThumb.cy / 2  ) m_nValue = m_nMax;
+					else m_nValue = m_nMin + (m_nMax - m_nMin) * (m_rcItem.bottom - event.ptMouse.y - m_szThumb.cy / 2 ) / (m_rcItem.bottom - m_rcItem.top - m_szThumb.cy);
+				}
+				m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED);
 				m_uButtonState &= ~UISTATE_CAPTURED;
+				Invalidate();
 			}
-			if( m_bHorizontal ) {
-				if( event.ptMouse.x >= m_rcItem.right - m_szThumb.cx / 2 ) m_nValue = m_nMax;
-				else if( event.ptMouse.x <= m_rcItem.left + m_szThumb.cx / 2 ) m_nValue = m_nMin;
-				else m_nValue = m_nMin + (m_nMax - m_nMin) * (event.ptMouse.x - m_rcItem.left - m_szThumb.cx / 2 ) / (m_rcItem.right - m_rcItem.left - m_szThumb.cx);
-			}
-			else {
-				if( event.ptMouse.y >= m_rcItem.bottom - m_szThumb.cy / 2 ) m_nValue = m_nMin;
-				else if( event.ptMouse.y <= m_rcItem.top + m_szThumb.cy / 2  ) m_nValue = m_nMax;
-				else m_nValue = m_nMin + (m_nMax - m_nMin) * (m_rcItem.bottom - event.ptMouse.y - m_szThumb.cy / 2 ) / (m_rcItem.bottom - m_rcItem.top - m_szThumb.cy);
-			}
-			m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED);
-			Invalidate();
 			return;
 		}
 		if( event.Type == UIEVENT_CONTEXTMENU )

@@ -23,6 +23,8 @@ public:
     void SetWantReturn(bool bWantReturn = true);
     bool IsWantCtrlReturn();
     void SetWantCtrlReturn(bool bWantCtrlReturn = true);
+    bool IsTransparent();
+    void SetTransparent(bool bTransparent = true);
     bool IsRich();
     void SetRich(bool bRich = true);
     bool IsReadOnly();
@@ -83,10 +85,10 @@ public:
     int LineIndex(int nLine = -1) const;
     int LineLength(int nLine = -1) const;
     bool LineScroll(int nLines, int nChars = 0);
-	CPoint GetCharPos(long lChar) const;
+	CDuiPoint GetCharPos(long lChar) const;
     long LineFromChar(long nIndex) const;
-    CPoint PosFromChar(UINT nChar) const;
-    int CharFromPos(CPoint pt) const;
+    CDuiPoint PosFromChar(UINT nChar) const;
+    int CharFromPos(CDuiPoint pt) const;
     void EmptyUndoBuffer();
     UINT SetUndoLimit(UINT nLimit);
     long StreamIn(int nFormat, EDITSTREAM &es);
@@ -126,11 +128,16 @@ public:
     LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool& bHandled);
 
 protected:
+	enum { 
+		DEFAULT_TIMERID = 20,
+	};
+
     CTxtWinHost* m_pTwh;
     bool m_bVScrollBarFixing;
     bool m_bWantTab;
     bool m_bWantReturn;
     bool m_bWantCtrlReturn;
+    bool m_bTransparent;
     bool m_bRich;
     bool m_bReadOnly;
     bool m_bWordWrap;
@@ -138,6 +145,7 @@ protected:
     int m_iFont;
     int m_iLimitText;
     LONG m_lTwhStyle;
+	bool m_bDrawCaret;
 	bool m_bInited;
 };
 

@@ -8,24 +8,24 @@ namespace DuiLib
 	//
 	//
 
-	CPoint::CPoint()
+	CDuiPoint::CDuiPoint()
 	{
 		x = y = 0;
 	}
 
-	CPoint::CPoint(const POINT& src)
+	CDuiPoint::CDuiPoint(const POINT& src)
 	{
 		x = src.x;
 		y = src.y;
 	}
 
-	CPoint::CPoint(int _x, int _y)
+	CDuiPoint::CDuiPoint(int _x, int _y)
 	{
 		x = _x;
 		y = _y;
 	}
 
-	CPoint::CPoint(LPARAM lParam)
+	CDuiPoint::CDuiPoint(LPARAM lParam)
 	{
 		x = GET_X_LPARAM(lParam);
 		y = GET_Y_LPARAM(lParam);
@@ -36,24 +36,24 @@ namespace DuiLib
 	//
 	//
 
-	CSize::CSize()
+	CDuiSize::CDuiSize()
 	{
 		cx = cy = 0;
 	}
 
-	CSize::CSize(const SIZE& src)
+	CDuiSize::CDuiSize(const SIZE& src)
 	{
 		cx = src.cx;
 		cy = src.cy;
 	}
 
-	CSize::CSize(const RECT rc)
+	CDuiSize::CDuiSize(const RECT rc)
 	{
 		cx = rc.right - rc.left;
 		cy = rc.bottom - rc.top;
 	}
 
-	CSize::CSize(int _cx, int _cy)
+	CDuiSize::CDuiSize(int _cx, int _cy)
 	{
 		cx = _cx;
 		cy = _cy;

@@ -42,6 +42,7 @@ m_nTooltipWidth(300)
 
 CControlUI::~CControlUI()
 {
+	RemoveAllCustomAttribute();
     if( OnDestroy ) OnDestroy(this);
     if( m_pManager != NULL ) m_pManager->ReapObjects(this);
 }
@@ -158,6 +159,11 @@ void CControlUI::SetBkImage(LPCTSTR pStrImage)
 	if( m_diBk.sDrawString == pStrImage && m_diBk.pImageInfo != NULL ) return;
 	m_diBk.Clear();
 	m_diBk.sDrawString = pStrImage;
+	DrawImage(NULL, m_diBk);
+	if( m_bFloat && m_cxyFixed.cx == 0 && m_cxyFixed.cy == 0 && m_diBk.pImageInfo ) {
+		m_cxyFixed.cx = m_diBk.pImageInfo->nX;
+		m_cxyFixed.cy = m_diBk.pImageInfo->nY;
+	}
 	Invalidate();
 }
 
@@ -240,6 +246,25 @@ const RECT& CControlUI::GetPos() const
     return m_rcItem;
 }
 
+RECT CControlUI::GetRelativePos() const
+{
+	CControlUI* pParent = GetParent();
+	if( pParent != NULL ) {
+		RECT rcParentPos = pParent->GetPos();
+		CDuiRect rcRelativePos(m_rcItem);
+		rcRelativePos.Offset(-rcParentPos.left, -rcParentPos.top);
+		return rcRelativePos;
+	}
+	else {
+		return CDuiRect(0, 0, 0, 0);
+	}
+}
+
+RECT CControlUI::GetClientPos() const 
+{
+	return m_rcItem;
+}
+
 void CControlUI::SetPos(RECT rc, bool bNeedInvalidate)
 {
     if( rc.right < rc.left ) rc.right = rc.left;
@@ -248,7 +273,27 @@ void CControlUI::SetPos(RECT rc, bool bNeedInvalidate)
     CDuiRect invalidateRc = m_rcItem;
     if( ::IsRectEmpty(&invalidateRc) ) invalidateRc = rc;
 
-    m_rcItem = rc;
+	if( m_bFloat ) {
+		CControlUI* pParent = GetParent();
+		if( pParent != NULL ) {
+			RECT rcParentPos = pParent->GetPos();
+			RECT rcCtrl = {rcParentPos.left + rc.left, rcParentPos.top + rc.top, 
+				rcParentPos.left + rc.right, rcParentPos.top + rc.bottom};
+			m_rcItem = rcCtrl;
+
+			LONG width = rcParentPos.right - rcParentPos.left;
+			LONG height = rcParentPos.bottom - rcParentPos.top;
+			RECT rcPercent = {(LONG)(width*m_piFloatPercent.left), (LONG)(height*m_piFloatPercent.top),
+				(LONG)(width*m_piFloatPercent.right), (LONG)(height*m_piFloatPercent.bottom)};
+			m_cXY.cx = rc.left - rcPercent.left;
+			m_cXY.cy = rc.top - rcPercent.top;
+			m_cxyFixed.cx = rc.right - rcPercent.right - m_cXY.cx;
+			m_cxyFixed.cy = rc.bottom - rcPercent.bottom - m_cXY.cy;
+		}
+	}
+	else {
+		m_rcItem = rc;
+	}
     if( m_pManager == NULL ) return;
 
     if( !m_bSetPos ) {
@@ -257,18 +302,6 @@ void CControlUI::SetPos(RECT rc, bool bNeedInvalidate)
         m_bSetPos = false;
     }
     
-    if( m_bFloat ) {
-        CControlUI* pParent = GetParent();
-        if( pParent != NULL ) {
-            RECT rcParentPos = pParent->GetPos();
-            //m_cXY.cx = m_rcItem.left - rcParentPos.left;
-            //if( m_cXY.cy >= 0 ) m_cXY.cy = m_rcItem.top - rcParentPos.top;
-            //else m_cXY.cy = m_rcItem.bottom - rcParentPos.bottom;
-            //m_cxyFixed.cx = m_rcItem.right - m_rcItem.left;
-            //m_cxyFixed.cy = m_rcItem.bottom - m_rcItem.top;
-        }
-    }
-
     m_bUpdateNeeded = false;
 
 	if( bNeedInvalidate && IsVisible() ) {
@@ -596,6 +629,48 @@ void CControlUI::SetFloat(bool bFloat)
     NeedParentUpdate();
 }
 
+void CControlUI::AddCustomAttribute(LPCTSTR pstrName, LPCTSTR pstrAttr)
+{
+	if( pstrName == NULL || pstrName[0] == _T('\0') || pstrAttr == NULL || pstrAttr[0] == _T('\0') ) return;
+	CDuiString* pCostomAttr = new CDuiString(pstrAttr);
+	if (pCostomAttr != NULL) {
+		if (m_mCustomAttrHash.Find(pstrName) == NULL)
+			m_mCustomAttrHash.Set(pstrName, (LPVOID)pCostomAttr);
+		else
+			delete pCostomAttr;
+	}
+}
+
+LPCTSTR CControlUI::GetCustomAttribute(LPCTSTR pstrName) const
+{
+	if( pstrName == NULL || pstrName[0] == _T('\0') ) return NULL;
+	CDuiString* pCostomAttr = static_cast<CDuiString*>(m_mCustomAttrHash.Find(pstrName));
+	if( pCostomAttr ) return pCostomAttr->GetData();
+	return NULL;
+}
+
+bool CControlUI::RemoveCustomAttribute(LPCTSTR pstrName)
+{
+	if( pstrName == NULL || pstrName[0] == _T('\0') ) return NULL;
+	CDuiString* pCostomAttr = static_cast<CDuiString*>(m_mCustomAttrHash.Find(pstrName));
+	if( !pCostomAttr ) return false;
+
+	delete pCostomAttr;
+	return m_mCustomAttrHash.Remove(pstrName);
+}
+
+void CControlUI::RemoveAllCustomAttribute()
+{
+	CDuiString* pCostomAttr;
+	for( int i = 0; i< m_mCustomAttrHash.GetSize(); i++ ) {
+		if(LPCTSTR key = m_mCustomAttrHash.GetAt(i)) {
+			pCostomAttr = static_cast<CDuiString*>(m_mCustomAttrHash.Find(key));
+			delete pCostomAttr;
+		}
+	}
+	m_mCustomAttrHash.Resize();
+}
+
 CControlUI* CControlUI::FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags)
 {
     if( (uFlags & UIFIND_VISIBLE) != 0 && !IsVisible() ) return NULL;
@@ -748,8 +823,8 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         rcPos.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
         SIZE szXY = {rcPos.left, rcPos.top};
         SetFixedXY(szXY);
-		ASSERT(rcPos.right - rcPos.left >= 0);
-		ASSERT(rcPos.bottom - rcPos.top >= 0);
+		//ASSERT(rcPos.right - rcPos.left >= 0);
+		//ASSERT(rcPos.bottom - rcPos.top >= 0);
         SetFixedWidth(rcPos.right - rcPos.left);
         SetFixedHeight(rcPos.bottom - rcPos.top);
     }
@@ -861,6 +936,9 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else if( _tcscmp(pstrName, _T("shortcut")) == 0 ) SetShortcut(pstrValue[0]);
     else if( _tcscmp(pstrName, _T("menu")) == 0 ) SetContextMenuUsed(_tcscmp(pstrValue, _T("true")) == 0);
 	else if( _tcscmp(pstrName, _T("virtualwnd")) == 0 ) SetVirtualWnd(pstrValue);
+	else {
+		AddCustomAttribute(pstrName, pstrValue);
+	}
 }
 
 CControlUI* CControlUI::ApplyAttributeList(LPCTSTR pstrList)
@@ -897,6 +975,15 @@ CControlUI* CControlUI::ApplyAttributeList(LPCTSTR pstrList)
 SIZE CControlUI::EstimateSize(SIZE szAvailable)
 {
     return m_cxyFixed;
+}
+
+void CControlUI::Paint(HDC hDC, const RECT& rcPaint)
+{
+	if( !::IntersectRect(&m_rcPaint, &rcPaint, &m_rcItem) ) return;
+	if( OnPaint ) {
+		if( !OnPaint(this) ) return;
+	}
+	DoPaint(hDC, rcPaint);
 }
 
 void CControlUI::DoPaint(HDC hDC, const RECT& rcPaint)
@@ -1005,113 +1092,58 @@ void CControlUI::PaintBorder(HDC hDC)
 
 void CControlUI::DoPostPaint(HDC hDC, const RECT& rcPaint)
 {
-    return;
+	if( OnPostPaint ) OnPostPaint(this);
 }
 
-//************************************
-// 函数名称: GetLeftBorderSize
-// 返回类型: int
-// 函数说明: 
-//************************************
 int CControlUI::GetLeftBorderSize() const
 {
 	return m_rcBorderSize.left;
 }
 
-//************************************
-// 函数名称: SetLeftBorderSize
-// 返回类型: void
-// 参数信息: int nSize
-// 函数说明: 
-//************************************
 void CControlUI::SetLeftBorderSize( int nSize )
 {
 	m_rcBorderSize.left = nSize;
 	Invalidate();
 }
 
-//************************************
-// 函数名称: GetTopBorderSize
-// 返回类型: int
-// 函数说明: 
-//************************************
 int CControlUI::GetTopBorderSize() const
 {
 	return m_rcBorderSize.top;
 }
 
-//************************************
-// 函数名称: SetTopBorderSize
-// 返回类型: void
-// 参数信息: int nSize
-// 函数说明: 
-//************************************
 void CControlUI::SetTopBorderSize( int nSize )
 {
 	m_rcBorderSize.top = nSize;
 	Invalidate();
 }
 
-//************************************
-// 函数名称: GetRightBorderSize
-// 返回类型: int
-// 函数说明: 
-//************************************
 int CControlUI::GetRightBorderSize() const
 {
 	return m_rcBorderSize.right;
 }
 
-//************************************
-// 函数名称: SetRightBorderSize
-// 返回类型: void
-// 参数信息: int nSize
-// 函数说明: 
-//************************************
 void CControlUI::SetRightBorderSize( int nSize )
 {
 	m_rcBorderSize.right = nSize;
 	Invalidate();
 }
 
-//************************************
-// 函数名称: GetBottomBorderSize
-// 返回类型: int
-// 函数说明: 
-//************************************
 int CControlUI::GetBottomBorderSize() const
 {
 	return m_rcBorderSize.bottom;
 }
 
-//************************************
-// 函数名称: SetBottomBorderSize
-// 返回类型: void
-// 参数信息: int nSize
-// 函数说明: 
-//************************************
 void CControlUI::SetBottomBorderSize( int nSize )
 {
 	m_rcBorderSize.bottom = nSize;
 	Invalidate();
 }
 
-//************************************
-// 函数名称: GetBorderStyle
-// 返回类型: int
-// 函数说明: 
-//************************************
 int CControlUI::GetBorderStyle() const
 {
 	return m_nBorderStyle;
 }
 
-//************************************
-// 函数名称: SetBorderStyle
-// 返回类型: void
-// 参数信息: int nStyle
-// 函数说明: 
-//************************************
 void CControlUI::SetBorderStyle( int nStyle )
 {
 	m_nBorderStyle = nStyle;

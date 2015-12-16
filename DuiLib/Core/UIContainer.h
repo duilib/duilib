@@ -64,6 +64,7 @@ public:
 
     virtual int FindSelectable(int iIndex, bool bForward = true) const;
 
+	RECT GetClientPos() const;
 	void SetPos(RECT rc, bool bNeedInvalidate = true);
 	void Move(SIZE szOffset, bool bNeedInvalidate = true);
     void DoPaint(HDC hDC, const RECT& rcPaint);

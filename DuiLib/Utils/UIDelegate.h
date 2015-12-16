@@ -46,19 +46,24 @@ class CDelegate : public CDelegateBase
 {
     typedef bool (T::* Fn)(void*);
 public:
-    CDelegate(O* pObj, Fn pFn) : CDelegateBase(pObj, &pFn), m_pFn(pFn) { }
-    CDelegate(const CDelegate& rhs) : CDelegateBase(rhs) { m_pFn = rhs.m_pFn; } 
+    CDelegate(O* pObj, Fn pFn) : CDelegateBase(pObj, *(void**)&pFn) { }
+    CDelegate(const CDelegate& rhs) : CDelegateBase(rhs) { } 
     virtual CDelegateBase* Copy() const { return new CDelegate(*this); }
 
 protected:
     virtual bool Invoke(void* param)
     {
-        O* pObject = (O*) GetObject();
-        return (pObject->*m_pFn)(param); 
+		O* pObject = (O*) GetObject();
+		union
+		{
+			void* ptr;
+			Fn fn;
+		} func = { GetFn() };
+		return (pObject->*func.fn)(param);
     }  
 
 private:
-    Fn m_pFn;
+	Fn m_pFn;
 };
 
 template <class O, class T>
