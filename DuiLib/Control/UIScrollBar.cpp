@@ -733,10 +733,34 @@ void CScrollBarUI::DoEvent(TEventUI& event)
 					Invalidate();
 				}
 			}
+			else if (0 != (m_uButton1State & UISTATE_HOT))
+			{
+				if( !::PtInRect(&m_rcButton1, event.ptMouse) ) {
+					m_uButton1State &= ~UISTATE_HOT;
+					Invalidate();
+				}
+			}
+			else if (0 != (m_uButton2State & UISTATE_HOT))
+			{
+				if( !::PtInRect(&m_rcButton2, event.ptMouse) ) {
+					m_uButton2State &= ~UISTATE_HOT;
+					Invalidate();
+				}
+			}
 			else {
 				if( !IsEnabled() ) return;
 				if( ::PtInRect(&m_rcThumb, event.ptMouse) ) {
 					m_uThumbState |= UISTATE_HOT;
+					Invalidate();
+				}
+				if( ::PtInRect(&m_rcButton1, event.ptMouse) ) 
+				{
+					m_uButton1State |= UISTATE_HOT;
+					Invalidate();
+				}
+				if( ::PtInRect(&m_rcButton2, event.ptMouse) ) 
+				{
+					m_uButton2State |= UISTATE_HOT;
 					Invalidate();
 				}
 			}
@@ -817,8 +841,8 @@ void CScrollBarUI::DoEvent(TEventUI& event)
 	if( event.Type == UIEVENT_MOUSEENTER )
 	{
 		if( IsEnabled() ) {
-			m_uButton1State |= UISTATE_HOT;
-			m_uButton2State |= UISTATE_HOT;
+			if( ::PtInRect(&m_rcButton1, event.ptMouse) ) m_uButton1State |= UISTATE_HOT;
+			if( ::PtInRect(&m_rcButton2, event.ptMouse) ) m_uButton2State |= UISTATE_HOT;
 			if( ::PtInRect(&m_rcThumb, event.ptMouse) ) m_uThumbState |= UISTATE_HOT;
 			Invalidate();
 		}
