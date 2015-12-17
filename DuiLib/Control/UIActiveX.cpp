@@ -1059,6 +1059,10 @@ LRESULT CActiveXUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool
         }
         if( dwHitResult != HITRESULT_HIT ) return 0;
         if( uMsg == WM_SETCURSOR ) bWasHandled = false;
+        else if( uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONDBLCLK || uMsg == WM_RBUTTONDOWN ) {
+            ::SetFocus(GetManager()->GetPaintWindow());
+            SetFocus();
+        }
     }
     else if( uMsg >= WM_KEYFIRST && uMsg <= WM_KEYLAST ) {
         // Keyboard messages just go when we have focus
