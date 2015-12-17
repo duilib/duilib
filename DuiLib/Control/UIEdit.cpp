@@ -110,7 +110,7 @@ namespace DuiLib
 		m_pOwner->Invalidate();
 		// Clear reference and die
 		if( m_hBkBrush != NULL ) ::DeleteObject(m_hBkBrush);
-		m_pOwner->GetManager()->RemoveRealWindow(hWnd);
+		m_pOwner->GetManager()->RemoveNativeWindow(hWnd);
 		m_pOwner->m_pWindow = NULL;
 		delete this;
 	}
@@ -120,7 +120,7 @@ namespace DuiLib
 		LRESULT lRes = 0;
 		BOOL bHandled = TRUE;
 		if( uMsg == WM_CREATE ) {
-			m_pOwner->GetManager()->AddRealWindow(m_pOwner, m_hWnd);
+			m_pOwner->GetManager()->AddNativeWindow(m_pOwner, m_hWnd);
 			if( m_pOwner->GetManager()->IsLayered() ) {
 				::SetTimer(m_hWnd, DEFAULT_TIMERID, ::GetCaretBlinkTime(), NULL);
 			}
@@ -140,7 +140,7 @@ namespace DuiLib
 		}
 		else if( uMsg == OCM__BASE + WM_CTLCOLOREDIT  || uMsg == OCM__BASE + WM_CTLCOLORSTATIC ) {
 			if (m_pOwner->GetManager()->IsLayered() && !m_pOwner->GetManager()->IsPainting()) {
-				m_pOwner->GetManager()->AddRealWindow(m_pOwner, m_hWnd);
+				m_pOwner->GetManager()->AddNativeWindow(m_pOwner, m_hWnd);
 			}
 			if( m_pOwner->GetNativeEditBkColor() == 0xFFFFFFFF ) return NULL;
 			::SetBkMode((HDC)wParam, TRANSPARENT);
@@ -154,7 +154,7 @@ namespace DuiLib
 		}
 		else if( uMsg == WM_PAINT) {
 			if (m_pOwner->GetManager()->IsLayered()) {
-				m_pOwner->GetManager()->AddRealWindow(m_pOwner, m_hWnd);
+				m_pOwner->GetManager()->AddNativeWindow(m_pOwner, m_hWnd);
 			}
 			bHandled = FALSE;
 		}
@@ -245,7 +245,7 @@ namespace DuiLib
 		return UIFLAG_SETCURSOR | UIFLAG_TABSTOP;
 	}
 
-	HWND CEditUI::GetRealWindow() const
+	HWND CEditUI::GetNativeWindow() const
 	{
 		if (m_pWindow) return m_pWindow->GetHWND();
 		return NULL;

@@ -16,7 +16,7 @@ namespace DuiLib
 		LPCTSTR GetClass() const;
 		LPVOID GetInterface(LPCTSTR pstrName);
 		UINT GetControlFlags() const;
-		HWND GetRealWindow() const;
+		HWND GetNativeWindow() const;
 
 		SYSTEMTIME& GetTime();
 		void SetTime(SYSTEMTIME* pst);

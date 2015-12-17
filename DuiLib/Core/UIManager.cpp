@@ -949,11 +949,11 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
                 m_pRoot->Paint(m_hDcOffscreen, rcPaint);
 
 				if( m_bLayered ) {
-					for( int i = 0; i < m_aRealWindow.GetSize(); ) {
-						HWND hChildWnd = static_cast<HWND>(m_aRealWindow[i]);
+					for( int i = 0; i < m_aNativeWindow.GetSize(); ) {
+						HWND hChildWnd = static_cast<HWND>(m_aNativeWindow[i]);
 						if (!::IsWindow(hChildWnd)) {
-							m_aRealWindow.Remove(i);
-							m_aRealWindowControl.Remove(i);
+							m_aNativeWindow.Remove(i);
+							m_aNativeWindowControl.Remove(i);
 							continue;
 						}
 						++i;
@@ -1485,10 +1485,10 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 				HWND hParentWnd = NULL;
 				while( hParentWnd = ::GetParent(hWnd) ) {
 					if( m_hWndPaint == hParentWnd ) {
-						for( int i = 0; i < m_aRealWindow.GetSize(); i++ ) {
-							if( static_cast<HWND>(m_aRealWindow[i]) == hWnd ) {
-								if( static_cast<CControlUI*>(m_aRealWindowControl[i]) != m_pFocus ) {
-									SetFocus(static_cast<CControlUI*>(m_aRealWindowControl[i]), false);
+						for( int i = 0; i < m_aNativeWindow.GetSize(); i++ ) {
+							if( static_cast<HWND>(m_aNativeWindow[i]) == hWnd ) {
+								if( static_cast<CControlUI*>(m_aNativeWindowControl[i]) != m_pFocus ) {
+									SetFocus(static_cast<CControlUI*>(m_aNativeWindowControl[i]), false);
 								}
 								break;
 							}
@@ -1576,7 +1576,7 @@ bool CPaintManagerUI::AttachDialog(CControlUI* pControl)
     // pull the internal memory of the calling code. We'll delay the cleanup.
     if( m_pRoot != NULL ) {
         m_aPostPaintControls.Empty();
-		m_aRealWindow.Empty();
+		m_aNativeWindow.Empty();
         AddDelayedCleanup(m_pRoot);
     }
     // Set the dialog root element
@@ -1977,31 +1977,31 @@ bool CPaintManagerUI::SetPostPaintIndex(CControlUI* pControl, int iIndex)
     return m_aPostPaintControls.InsertAt(iIndex, pControl);
 }
 
-int CPaintManagerUI::GetRealWindowCount() const
+int CPaintManagerUI::GetNativeWindowCount() const
 {
-	return m_aRealWindow.GetSize();
+	return m_aNativeWindow.GetSize();
 }
 
-bool CPaintManagerUI::AddRealWindow(CControlUI* pControl, HWND hChildWnd)
+bool CPaintManagerUI::AddNativeWindow(CControlUI* pControl, HWND hChildWnd)
 {
 	RECT rcChildWnd;
 	GetChildWndRect(m_hWndPaint, hChildWnd, rcChildWnd);
 	Invalidate(rcChildWnd);
 
-	if (m_aRealWindow.Find(hChildWnd) >= 0) return false;
-	if (m_aRealWindow.Add(hChildWnd)) {
-		m_aRealWindowControl.Add(pControl);
+	if (m_aNativeWindow.Find(hChildWnd) >= 0) return false;
+	if (m_aNativeWindow.Add(hChildWnd)) {
+		m_aNativeWindowControl.Add(pControl);
 		return true;
 	}
 	return false;
 }
 
-bool CPaintManagerUI::RemoveRealWindow(HWND hChildWnd)
+bool CPaintManagerUI::RemoveNativeWindow(HWND hChildWnd)
 {
-	for( int i = 0; i < m_aRealWindow.GetSize(); i++ ) {
-		if( static_cast<HWND>(m_aRealWindow[i]) == hChildWnd ) {
-			if( m_aRealWindow.Remove(i) ) {
-				m_aRealWindowControl.Remove(i);
+	for( int i = 0; i < m_aNativeWindow.GetSize(); i++ ) {
+		if( static_cast<HWND>(m_aNativeWindow[i]) == hChildWnd ) {
+			if( m_aNativeWindow.Remove(i) ) {
+				m_aNativeWindowControl.Remove(i);
 				return true;
 			}
 			return false;

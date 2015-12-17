@@ -22,7 +22,7 @@ public:
     virtual LPCTSTR GetClass() const;
     virtual LPVOID GetInterface(LPCTSTR pstrName);
     virtual UINT GetControlFlags() const;
-	virtual HWND GetRealWindow() const;
+	virtual HWND GetNativeWindow() const;
 
     virtual bool Activate();
     virtual CPaintManagerUI* GetManager() const;
@@ -51,20 +51,11 @@ public:
     bool DrawImage(HDC hDC, TDrawInfo& drawInfo);
 
 	//±ß¿òÏà¹Ø
-	int GetBorderSize() const;
-	void SetBorderSize(int nSize);
 	DWORD GetBorderColor() const;
 	void SetBorderColor(DWORD dwBorderColor);
-
+	RECT GetBorderSize() const;
 	void SetBorderSize(RECT rc);
-	int GetLeftBorderSize() const;
-	void SetLeftBorderSize(int nSize);
-	int GetTopBorderSize() const;
-	void SetTopBorderSize(int nSize);
-	int GetRightBorderSize() const;
-	void SetRightBorderSize(int nSize);
-	int GetBottomBorderSize() const;
-	void SetBottomBorderSize(int nSize);
+	void SetBorderSize(int iSize);
 	int GetBorderStyle() const;
 	void SetBorderStyle(int nStyle);
 
@@ -218,7 +209,6 @@ protected:
     DWORD m_dwBorderColor;
 	DWORD m_dwFocusBorderColor;
     bool m_bColorHSL;
-    int m_nBorderSize;
 	int m_nBorderStyle;
 	int m_nTooltipWidth;
     SIZE m_cxyBorderRound;

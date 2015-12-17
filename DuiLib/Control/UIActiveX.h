@@ -35,7 +35,7 @@ public:
     LPCTSTR GetClass() const;
 	LPVOID GetInterface(LPCTSTR pstrName);
 	UINT GetControlFlags() const;
-	HWND GetRealWindow() const;
+	HWND GetNativeWindow() const;
 
     bool IsDelayCreate() const;
     void SetDelayCreate(bool bDelayCreate = true);

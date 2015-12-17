@@ -355,9 +355,9 @@ public:
     bool RemovePostPaint(CControlUI* pControl);
     bool SetPostPaintIndex(CControlUI* pControl, int iIndex);
 
-	int GetRealWindowCount() const;
-	bool AddRealWindow(CControlUI* pControl, HWND hChildWnd);
-	bool RemoveRealWindow(HWND hChildWnd);
+	int GetNativeWindowCount() const;
+	bool AddNativeWindow(CControlUI* pControl, HWND hChildWnd);
+	bool RemoveNativeWindow(HWND hChildWnd);
 
     void AddDelayedCleanup(CControlUI* pControl);
 
@@ -451,8 +451,8 @@ private:
     CStdPtrArray m_aPreMessageFilters;
     CStdPtrArray m_aMessageFilters;
     CStdPtrArray m_aPostPaintControls;
-	CStdPtrArray m_aRealWindow;
-	CStdPtrArray m_aRealWindowControl;
+	CStdPtrArray m_aNativeWindow;
+	CStdPtrArray m_aNativeWindowControl;
     CStdPtrArray m_aDelayedCleanup;
     CStdPtrArray m_aAsyncNotify;
     CStdPtrArray m_aFoundControls;

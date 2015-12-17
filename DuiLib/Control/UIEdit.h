@@ -16,7 +16,7 @@ namespace DuiLib
 		LPCTSTR GetClass() const;
 		LPVOID GetInterface(LPCTSTR pstrName);
 		UINT GetControlFlags() const;
-		HWND GetRealWindow() const;
+		HWND GetNativeWindow() const;
 
 		void SetEnabled(bool bEnable = true);
 		void SetText(LPCTSTR pstrText);
