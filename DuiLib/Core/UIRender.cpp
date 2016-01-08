@@ -578,6 +578,7 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 							lDrawWidth -= lDestRight - rcDest.right;
 							lDestRight = rcDest.right;
 						}
+						rcDest.bottom -= rcDest.top;
 						lpAlphaBlend(hDC, lDestLeft, rcDest.top, lDestRight - lDestLeft, rcDest.bottom, 
 							hCloneDC, rcBmpPart.left + rcCorners.left, rcBmpPart.top + rcCorners.top, \
 							lDrawWidth, rcBmpPart.bottom - rcBmpPart.top - rcCorners.top - rcCorners.bottom, bf);
@@ -594,6 +595,7 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 							lDrawHeight -= lDestBottom - rcDest.bottom;
 							lDestBottom = rcDest.bottom;
 						}
+						rcDest.right -= rcDest.left;
 						lpAlphaBlend(hDC, rcDest.left, rcDest.top + lHeight * i, rcDest.right, lDestBottom - lDestTop, 
 							hCloneDC, rcBmpPart.left + rcCorners.left, rcBmpPart.top + rcCorners.top, \
 							rcBmpPart.right - rcBmpPart.left - rcCorners.left - rcCorners.right, lDrawHeight, bf);                    
@@ -796,6 +798,7 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 								lDrawWidth -= lDestRight - rcDest.right;
 								lDestRight = rcDest.right;
 							}
+							rcDest.bottom -= rcDest.top;
 							::StretchBlt(hDC, lDestLeft, rcDest.top, lDestRight - lDestLeft, rcDest.bottom, 
 								hCloneDC, rcBmpPart.left + rcCorners.left, rcBmpPart.top + rcCorners.top, \
 								lDrawWidth, rcBmpPart.bottom - rcBmpPart.top - rcCorners.top - rcCorners.bottom, SRCCOPY);
@@ -812,6 +815,7 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 								lDrawHeight -= lDestBottom - rcDest.bottom;
 								lDestBottom = rcDest.bottom;
 							}
+							rcDest.right -= rcDest.left;
 							::StretchBlt(hDC, rcDest.left, rcDest.top + lHeight * i, rcDest.right, lDestBottom - lDestTop, 
 								hCloneDC, rcBmpPart.left + rcCorners.left, rcBmpPart.top + rcCorners.top, \
 								rcBmpPart.right - rcBmpPart.left - rcCorners.left - rcCorners.right, lDrawHeight, SRCCOPY);                    
