@@ -58,9 +58,20 @@ namespace DuiLib
 		SendMessage(EM_SETMARGINS, EC_LEFTMARGIN | EC_RIGHTMARGIN, MAKELPARAM(0, 0));
 		Edit_Enable(m_hWnd, m_pOwner->IsEnabled() == true);
 		Edit_SetReadOnly(m_hWnd, m_pOwner->IsReadOnly() == true);
+
 		//Styls
 		::ShowWindow(m_hWnd, SW_SHOWNOACTIVATE);
 		::SetFocus(m_hWnd);
+		if (m_pOwner->IsAutoSelAll()) {
+			int nSize = GetWindowTextLength(m_hWnd);
+			if( nSize == 0 ) nSize = 1;
+			Edit_SetSel(m_hWnd, 0, nSize);
+		}
+		else {
+			int nSize = GetWindowTextLength(m_hWnd);
+			Edit_SetSel(m_hWnd, nSize, nSize);
+		}
+
 		m_bInit = true;    
 	}
 
@@ -220,7 +231,7 @@ namespace DuiLib
 	//
 
 	CEditUI::CEditUI() : m_pWindow(NULL), m_uMaxChar(255), m_bReadOnly(false), 
-		m_bPasswordMode(false), m_cPasswordChar(_T('*')), m_uButtonState(0), 
+		m_bPasswordMode(false), m_cPasswordChar(_T('*')), m_bAutoSelAll(false), m_uButtonState(0), 
 		m_dwEditbkColor(0xFFFFFFFF), m_iWindowStyls(0)
 	{
 		SetTextPadding(CDuiRect(4, 3, 4, 3));
@@ -293,30 +304,15 @@ namespace DuiLib
 					m_pWindow = new CEditWnd();
 					ASSERT(m_pWindow);
 					m_pWindow->Init(this);
-
-					if( PtInRect(&m_rcItem, event.ptMouse) )
-					{
-						int nSize = GetWindowTextLength(*m_pWindow);
-						if( nSize == 0 )
-							nSize = 1;
-
-						Edit_SetSel(*m_pWindow, 0, nSize);
-					}
 				}
 				else if( m_pWindow != NULL )
 				{
-#if 1
-					int nSize = GetWindowTextLength(*m_pWindow);
-					if( nSize == 0 )
-						nSize = 1;
-
-					Edit_SetSel(*m_pWindow, 0, nSize);
-#else
-					POINT pt = event.ptMouse;
-					pt.x -= m_rcItem.left + m_rcTextPadding.left;
-					pt.y -= m_rcItem.top + m_rcTextPadding.top;
-					::SendMessage(*m_pWindow, WM_LBUTTONDOWN, event.wParam, MAKELPARAM(pt.x, pt.y));
-#endif
+					if (!m_bAutoSelAll) {
+						POINT pt = event.ptMouse;
+						pt.x -= m_rcItem.left + m_rcTextPadding.left;
+						pt.y -= m_rcItem.top + m_rcTextPadding.top;
+						::SendMessage(*m_pWindow, WM_LBUTTONDOWN, event.wParam, MAKELPARAM(pt.x, pt.y));
+					}
 				}
 			}
 			return;
@@ -445,6 +441,16 @@ namespace DuiLib
 		return m_cPasswordChar;
 	}
 
+	bool CEditUI::IsAutoSelAll()
+	{
+		return m_bAutoSelAll;
+	}
+
+	void CEditUI::SetAutoSelAll(bool bAutoSelAll)
+	{
+		m_bAutoSelAll = bAutoSelAll;
+	}
+
 	LPCTSTR CEditUI::GetNormalImage()
 	{
 		return m_diNormal.sDrawString;
@@ -564,6 +570,7 @@ namespace DuiLib
 		if( _tcscmp(pstrName, _T("readonly")) == 0 ) SetReadOnly(_tcscmp(pstrValue, _T("true")) == 0);
 		else if( _tcscmp(pstrName, _T("numberonly")) == 0 ) SetNumberOnly(_tcscmp(pstrValue, _T("true")) == 0);
 		else if( _tcscmp(pstrName, _T("password")) == 0 ) SetPasswordMode(_tcscmp(pstrValue, _T("true")) == 0);
+		else if( _tcscmp(pstrName, _T("autoselall")) == 0 ) SetAutoSelAll(_tcscmp(pstrValue, _T("true")) == 0);	
 		else if( _tcscmp(pstrName, _T("maxchar")) == 0 ) SetMaxChar(_ttoi(pstrValue));
 		else if( _tcscmp(pstrName, _T("normalimage")) == 0 ) SetNormalImage(pstrValue);
 		else if( _tcscmp(pstrName, _T("hotimage")) == 0 ) SetHotImage(pstrValue);
