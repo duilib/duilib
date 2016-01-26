@@ -23,7 +23,6 @@ m_dwBackColor3(0),
 m_dwBorderColor(0),
 m_dwFocusBorderColor(0),
 m_bColorHSL(false),
-m_nBorderSize(0),
 m_nBorderStyle(PS_SOLID),
 m_nTooltipWidth(300)
 {
@@ -42,6 +41,7 @@ m_nTooltipWidth(300)
 
 CControlUI::~CControlUI()
 {
+	RemoveAllCustomAttribute();
     if( OnDestroy ) OnDestroy(this);
     if( m_pManager != NULL ) m_pManager->ReapObjects(this);
 }
@@ -70,6 +70,11 @@ LPCTSTR CControlUI::GetClass() const
 UINT CControlUI::GetControlFlags() const
 {
     return 0;
+}
+
+HWND CControlUI::GetNativeWindow() const
+{
+	return NULL;
 }
 
 bool CControlUI::Activate()
@@ -205,22 +210,20 @@ void CControlUI::SetColorHSL(bool bColorHSL)
     Invalidate();
 }
 
-int CControlUI::GetBorderSize() const
+RECT CControlUI::GetBorderSize() const
 {
-    return m_nBorderSize;
-}
-
-void CControlUI::SetBorderSize(int nSize)
-{
-    if( m_nBorderSize == nSize ) return;
-
-    m_nBorderSize = nSize;
-    Invalidate();
+    return m_rcBorderSize;
 }
 
 void CControlUI::SetBorderSize( RECT rc )
 {
 	m_rcBorderSize = rc;
+	Invalidate();
+}
+
+void CControlUI::SetBorderSize(int iSize)
+{
+	m_rcBorderSize.left = m_rcBorderSize.top = m_rcBorderSize.right = m_rcBorderSize.bottom = iSize;
 	Invalidate();
 }
 
@@ -257,6 +260,11 @@ RECT CControlUI::GetRelativePos() const
 	else {
 		return CDuiRect(0, 0, 0, 0);
 	}
+}
+
+RECT CControlUI::GetClientPos() const 
+{
+	return m_rcItem;
 }
 
 void CControlUI::SetPos(RECT rc, bool bNeedInvalidate)
@@ -607,7 +615,7 @@ bool CControlUI::IsFocused() const
 
 void CControlUI::SetFocus()
 {
-    if( m_pManager != NULL ) m_pManager->SetFocus(this);
+    if( m_pManager != NULL ) m_pManager->SetFocus(this, false);
 }
 
 bool CControlUI::IsFloat() const
@@ -621,6 +629,48 @@ void CControlUI::SetFloat(bool bFloat)
 
     m_bFloat = bFloat;
     NeedParentUpdate();
+}
+
+void CControlUI::AddCustomAttribute(LPCTSTR pstrName, LPCTSTR pstrAttr)
+{
+	if( pstrName == NULL || pstrName[0] == _T('\0') || pstrAttr == NULL || pstrAttr[0] == _T('\0') ) return;
+	CDuiString* pCostomAttr = new CDuiString(pstrAttr);
+	if (pCostomAttr != NULL) {
+		if (m_mCustomAttrHash.Find(pstrName) == NULL)
+			m_mCustomAttrHash.Set(pstrName, (LPVOID)pCostomAttr);
+		else
+			delete pCostomAttr;
+	}
+}
+
+LPCTSTR CControlUI::GetCustomAttribute(LPCTSTR pstrName) const
+{
+	if( pstrName == NULL || pstrName[0] == _T('\0') ) return NULL;
+	CDuiString* pCostomAttr = static_cast<CDuiString*>(m_mCustomAttrHash.Find(pstrName));
+	if( pCostomAttr ) return pCostomAttr->GetData();
+	return NULL;
+}
+
+bool CControlUI::RemoveCustomAttribute(LPCTSTR pstrName)
+{
+	if( pstrName == NULL || pstrName[0] == _T('\0') ) return NULL;
+	CDuiString* pCostomAttr = static_cast<CDuiString*>(m_mCustomAttrHash.Find(pstrName));
+	if( !pCostomAttr ) return false;
+
+	delete pCostomAttr;
+	return m_mCustomAttrHash.Remove(pstrName);
+}
+
+void CControlUI::RemoveAllCustomAttribute()
+{
+	CDuiString* pCostomAttr;
+	for( int i = 0; i< m_mCustomAttrHash.GetSize(); i++ ) {
+		if(LPCTSTR key = m_mCustomAttrHash.GetAt(i)) {
+			pCostomAttr = static_cast<CDuiString*>(m_mCustomAttrHash.Find(key));
+			delete pCostomAttr;
+		}
+	}
+	m_mCustomAttrHash.Resize();
 }
 
 CControlUI* CControlUI::FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags)
@@ -828,24 +878,18 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 		if(nValue.Find(',') < 0)
 		{
 			SetBorderSize(_ttoi(pstrValue));
-			RECT rcPadding = {0};
-			SetBorderSize(rcPadding);
 		}
 		else
 		{
-			RECT rcPadding = { 0 };
+			RECT rcBorder = { 0 };
 			LPTSTR pstr = NULL;
-			rcPadding.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);
-			rcPadding.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);
-			rcPadding.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);
-			rcPadding.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
-			SetBorderSize(rcPadding);
+			rcBorder.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);
+			rcBorder.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);
+			rcBorder.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);
+			rcBorder.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+			SetBorderSize(rcBorder);
 		}
 	}
-	else if( _tcscmp(pstrName, _T("leftbordersize")) == 0 ) SetLeftBorderSize(_ttoi(pstrValue));
-	else if( _tcscmp(pstrName, _T("topbordersize")) == 0 ) SetTopBorderSize(_ttoi(pstrValue));
-	else if( _tcscmp(pstrName, _T("rightbordersize")) == 0 ) SetRightBorderSize(_ttoi(pstrValue));
-	else if( _tcscmp(pstrName, _T("bottombordersize")) == 0 ) SetBottomBorderSize(_ttoi(pstrValue));
 	else if( _tcscmp(pstrName, _T("borderstyle")) == 0 ) SetBorderStyle(_ttoi(pstrValue));
     else if( _tcscmp(pstrName, _T("borderround")) == 0 ) {
         SIZE cxyRound = { 0 };
@@ -888,6 +932,9 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else if( _tcscmp(pstrName, _T("shortcut")) == 0 ) SetShortcut(pstrValue[0]);
     else if( _tcscmp(pstrName, _T("menu")) == 0 ) SetContextMenuUsed(_tcscmp(pstrValue, _T("true")) == 0);
 	else if( _tcscmp(pstrName, _T("virtualwnd")) == 0 ) SetVirtualWnd(pstrValue);
+	else {
+		AddCustomAttribute(pstrName, pstrValue);
+	}
 }
 
 CControlUI* CControlUI::ApplyAttributeList(LPCTSTR pstrList)
@@ -924,6 +971,15 @@ CControlUI* CControlUI::ApplyAttributeList(LPCTSTR pstrList)
 SIZE CControlUI::EstimateSize(SIZE szAvailable)
 {
     return m_cxyFixed;
+}
+
+void CControlUI::Paint(HDC hDC, const RECT& rcPaint)
+{
+	if( !::IntersectRect(&m_rcPaint, &rcPaint, &m_rcItem) ) return;
+	if( OnPaint ) {
+		if( !OnPaint(this) ) return;
+	}
+	DoPaint(hDC, rcPaint);
 }
 
 void CControlUI::DoPaint(HDC hDC, const RECT& rcPaint)
@@ -986,159 +1042,70 @@ void CControlUI::PaintText(HDC hDC)
 
 void CControlUI::PaintBorder(HDC hDC)
 {
-	if(m_dwBorderColor != 0 || m_dwFocusBorderColor != 0)
-	{
-		if(m_nBorderSize > 0 && ( m_cxyBorderRound.cx > 0 || m_cxyBorderRound.cy > 0 ))//画圆角边框
+	if(m_rcBorderSize.left > 0 && (m_dwBorderColor != 0 || m_dwFocusBorderColor != 0)) {
+		if( m_cxyBorderRound.cx > 0 || m_cxyBorderRound.cy > 0 )//画圆角边框
 		{
 			if (IsFocused() && m_dwFocusBorderColor != 0)
-				CRenderEngine::DrawRoundRect(hDC, m_rcItem, m_nBorderSize, m_cxyBorderRound.cx, m_cxyBorderRound.cy, GetAdjustColor(m_dwFocusBorderColor));
+				CRenderEngine::DrawRoundRect(hDC, m_rcItem, m_rcBorderSize.left, m_cxyBorderRound.cx, m_cxyBorderRound.cy, GetAdjustColor(m_dwFocusBorderColor), m_nBorderStyle);
 			else
-				CRenderEngine::DrawRoundRect(hDC, m_rcItem, m_nBorderSize, m_cxyBorderRound.cx, m_cxyBorderRound.cy, GetAdjustColor(m_dwBorderColor));
+				CRenderEngine::DrawRoundRect(hDC, m_rcItem, m_rcBorderSize.left, m_cxyBorderRound.cx, m_cxyBorderRound.cy, GetAdjustColor(m_dwBorderColor), m_nBorderStyle);
 		}
-		else
-		{
-			if (IsFocused() && m_dwFocusBorderColor != 0 && m_nBorderSize > 0)
-				CRenderEngine::DrawRect(hDC, m_rcItem, m_nBorderSize, GetAdjustColor(m_dwFocusBorderColor));
-			else if(m_rcBorderSize.left > 0 || m_rcBorderSize.top > 0 || m_rcBorderSize.right > 0 || m_rcBorderSize.bottom > 0)
-			{
+		else {
+			if (m_rcBorderSize.right == m_rcBorderSize.left && m_rcBorderSize.top == m_rcBorderSize.left && m_rcBorderSize.bottom == m_rcBorderSize.left) {
+				if (IsFocused() && m_dwFocusBorderColor != 0)
+					CRenderEngine::DrawRect(hDC, m_rcItem, m_rcBorderSize.left, GetAdjustColor(m_dwFocusBorderColor), m_nBorderStyle);
+				else
+					CRenderEngine::DrawRect(hDC, m_rcItem, m_rcBorderSize.left, GetAdjustColor(m_dwBorderColor), m_nBorderStyle);
+			}
+			else {
 				RECT rcBorder;
-
 				if(m_rcBorderSize.left > 0){
 					rcBorder		= m_rcItem;
 					rcBorder.right	= m_rcItem.left;
-					CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.left,GetAdjustColor(m_dwBorderColor),m_nBorderStyle);
+					if (IsFocused() && m_dwFocusBorderColor != 0)
+						CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.left,GetAdjustColor(m_dwFocusBorderColor),m_nBorderStyle);
+					else
+						CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.left,GetAdjustColor(m_dwBorderColor),m_nBorderStyle);
 				}
-				if(m_rcBorderSize.top > 0){
+				if(m_rcBorderSize.top > 0) {
 					rcBorder		= m_rcItem;
 					rcBorder.bottom	= m_rcItem.top;
-					CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.top,GetAdjustColor(m_dwBorderColor),m_nBorderStyle);
+					if (IsFocused() && m_dwFocusBorderColor != 0)
+						CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.top,GetAdjustColor(m_dwFocusBorderColor),m_nBorderStyle);
+					else
+						CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.top,GetAdjustColor(m_dwBorderColor),m_nBorderStyle);
 				}
-				if(m_rcBorderSize.right > 0){
+				if(m_rcBorderSize.right > 0) {
 					rcBorder		= m_rcItem;
 					rcBorder.left	= m_rcItem.right;
-					CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.right,GetAdjustColor(m_dwBorderColor),m_nBorderStyle);
+					if (IsFocused() && m_dwFocusBorderColor != 0)
+						CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.right,GetAdjustColor(m_dwFocusBorderColor),m_nBorderStyle);
+					else
+						CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.right,GetAdjustColor(m_dwBorderColor),m_nBorderStyle);
 				}
-				if(m_rcBorderSize.bottom > 0){
+				if(m_rcBorderSize.bottom > 0) {
 					rcBorder		= m_rcItem;
 					rcBorder.top	= m_rcItem.bottom;
-					CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.bottom,GetAdjustColor(m_dwBorderColor),m_nBorderStyle);
+					if (IsFocused() && m_dwFocusBorderColor != 0)
+						CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.bottom,GetAdjustColor(m_dwFocusBorderColor),m_nBorderStyle);
+					else
+						CRenderEngine::DrawLine(hDC,rcBorder,m_rcBorderSize.bottom,GetAdjustColor(m_dwBorderColor),m_nBorderStyle);
 				}
 			}
-			else if(m_nBorderSize > 0)
-				CRenderEngine::DrawRect(hDC, m_rcItem, m_nBorderSize, GetAdjustColor(m_dwBorderColor));
 		}
 	}
 }
 
 void CControlUI::DoPostPaint(HDC hDC, const RECT& rcPaint)
 {
-    return;
+	if( OnPostPaint ) OnPostPaint(this);
 }
 
-//************************************
-// 函数名称: GetLeftBorderSize
-// 返回类型: int
-// 函数说明: 
-//************************************
-int CControlUI::GetLeftBorderSize() const
-{
-	return m_rcBorderSize.left;
-}
-
-//************************************
-// 函数名称: SetLeftBorderSize
-// 返回类型: void
-// 参数信息: int nSize
-// 函数说明: 
-//************************************
-void CControlUI::SetLeftBorderSize( int nSize )
-{
-	m_rcBorderSize.left = nSize;
-	Invalidate();
-}
-
-//************************************
-// 函数名称: GetTopBorderSize
-// 返回类型: int
-// 函数说明: 
-//************************************
-int CControlUI::GetTopBorderSize() const
-{
-	return m_rcBorderSize.top;
-}
-
-//************************************
-// 函数名称: SetTopBorderSize
-// 返回类型: void
-// 参数信息: int nSize
-// 函数说明: 
-//************************************
-void CControlUI::SetTopBorderSize( int nSize )
-{
-	m_rcBorderSize.top = nSize;
-	Invalidate();
-}
-
-//************************************
-// 函数名称: GetRightBorderSize
-// 返回类型: int
-// 函数说明: 
-//************************************
-int CControlUI::GetRightBorderSize() const
-{
-	return m_rcBorderSize.right;
-}
-
-//************************************
-// 函数名称: SetRightBorderSize
-// 返回类型: void
-// 参数信息: int nSize
-// 函数说明: 
-//************************************
-void CControlUI::SetRightBorderSize( int nSize )
-{
-	m_rcBorderSize.right = nSize;
-	Invalidate();
-}
-
-//************************************
-// 函数名称: GetBottomBorderSize
-// 返回类型: int
-// 函数说明: 
-//************************************
-int CControlUI::GetBottomBorderSize() const
-{
-	return m_rcBorderSize.bottom;
-}
-
-//************************************
-// 函数名称: SetBottomBorderSize
-// 返回类型: void
-// 参数信息: int nSize
-// 函数说明: 
-//************************************
-void CControlUI::SetBottomBorderSize( int nSize )
-{
-	m_rcBorderSize.bottom = nSize;
-	Invalidate();
-}
-
-//************************************
-// 函数名称: GetBorderStyle
-// 返回类型: int
-// 函数说明: 
-//************************************
 int CControlUI::GetBorderStyle() const
 {
 	return m_nBorderStyle;
 }
 
-//************************************
-// 函数名称: SetBorderStyle
-// 返回类型: void
-// 参数信息: int nStyle
-// 函数说明: 
-//************************************
 void CControlUI::SetBorderStyle( int nStyle )
 {
 	m_nBorderStyle = nStyle;

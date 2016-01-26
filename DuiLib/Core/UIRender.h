@@ -29,6 +29,7 @@ class UILIB_API CRenderEngine
 {
 public:
     static DWORD AdjustColor(DWORD dwColor, short H, short S, short L);
+	static HBITMAP CreateARGB32Bitmap(HDC hDC, int cx, int cy, COLORREF** pBits);
 	static void AdjustImage(bool bUseHSL, TImageInfo* imageInfo, short H, short S, short L);
     static TImageInfo* LoadImage(STRINGorID bitmap, LPCTSTR type = NULL, DWORD mask = 0);
     static void FreeImage(TImageInfo* bitmap, bool bDelete = true);
@@ -41,9 +42,9 @@ public:
     static void DrawGradient(HDC hDC, const RECT& rc, DWORD dwFirst, DWORD dwSecond, bool bVertical, int nSteps);
 
     // 以下函数中的颜色参数alpha值无效
-    static void DrawLine(HDC hDC, const RECT& rc, int nSize, DWORD dwPenColor,int nStyle = PS_SOLID);
-    static void DrawRect(HDC hDC, const RECT& rc, int nSize, DWORD dwPenColor);
-    static void DrawRoundRect(HDC hDC, const RECT& rc, int width, int height, int nSize, DWORD dwPenColor);
+    static void DrawLine(HDC hDC, const RECT& rc, int nSize, DWORD dwPenColor, int nStyle = PS_SOLID);
+    static void DrawRect(HDC hDC, const RECT& rc, int nSize, DWORD dwPenColor, int nStyle = PS_SOLID);
+    static void DrawRoundRect(HDC hDC, const RECT& rc, int width, int height, int nSize, DWORD dwPenColor, int nStyle = PS_SOLID);
     static void DrawText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTSTR pstrText, \
         DWORD dwTextColor, int iFont, UINT uStyle);
     static void DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTSTR pstrText, 

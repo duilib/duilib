@@ -260,6 +260,9 @@ public:
     static bool LoadPlugin(LPCTSTR pstrModuleName);
     static CStdPtrArray* GetPlugins();
 
+	bool IsForceUseSharedRes() const;
+	void SetForceUseSharedRes(bool bForce);
+
     DWORD GetDefaultDisabledColor() const;
     void SetDefaultDisabledColor(DWORD dwColor, bool bShared = false);
     DWORD GetDefaultFontColor() const;
@@ -319,7 +322,7 @@ public:
     void RemoveAllOptionGroups();
 
     CControlUI* GetFocus() const;
-    void SetFocus(CControlUI* pControl);
+    void SetFocus(CControlUI* pControl, bool bFocusWnd=true);
     void SetFocusNeeded(CControlUI* pControl);
 
     bool SetNextTabControl(bool bForward = true);
@@ -333,10 +336,13 @@ public:
     void ReleaseCapture();
     bool IsCaptured();
 
+	bool IsPainting();
+	void SetPainting(bool bIsPainting);
+
     bool AddNotifier(INotifyUI* pControl);
     bool RemoveNotifier(INotifyUI* pControl);   
-    void SendNotify(TNotifyUI& Msg, bool bAsync = false);
-    void SendNotify(CControlUI* pControl, LPCTSTR pstrMessage, WPARAM wParam = 0, LPARAM lParam = 0, bool bAsync = false);
+    void SendNotify(TNotifyUI& Msg, bool bAsync = false, bool bEnableRepeat = true);
+    void SendNotify(CControlUI* pControl, LPCTSTR pstrMessage, WPARAM wParam = 0, LPARAM lParam = 0, bool bAsync = false, bool bEnableRepeat = true);
 
     bool AddPreMessageFilter(IMessageFilterUI* pFilter);
     bool RemovePreMessageFilter(IMessageFilterUI* pFilter);
@@ -348,6 +354,10 @@ public:
     bool AddPostPaint(CControlUI* pControl);
     bool RemovePostPaint(CControlUI* pControl);
     bool SetPostPaintIndex(CControlUI* pControl, int iIndex);
+
+	int GetNativeWindowCount() const;
+	bool AddNativeWindow(CControlUI* pControl, HWND hChildWnd);
+	bool RemoveNativeWindow(HWND hChildWnd);
 
     void AddDelayedCleanup(CControlUI* pControl);
 
@@ -385,6 +395,7 @@ private:
 
 	static void AdjustSharedImagesHSL();
 	void AdjustImagesHSL();
+	void PostAsyncNotify();
 
 private:
 	CDuiString m_sName;
@@ -430,7 +441,9 @@ private:
 
     bool m_bMouseTracking;
     bool m_bMouseCapture;
+	bool m_bIsPainting;
 	bool m_bUsedVirtualWnd;
+	bool m_bAsyncNotifyPosted;
 
     //
     CStdPtrArray m_aNotifiers;
@@ -438,6 +451,8 @@ private:
     CStdPtrArray m_aPreMessageFilters;
     CStdPtrArray m_aMessageFilters;
     CStdPtrArray m_aPostPaintControls;
+	CStdPtrArray m_aNativeWindow;
+	CStdPtrArray m_aNativeWindowControl;
     CStdPtrArray m_aDelayedCleanup;
     CStdPtrArray m_aAsyncNotify;
     CStdPtrArray m_aFoundControls;
@@ -446,6 +461,7 @@ private:
     CStdStringPtrMap m_mOptionGroup;
 
     //
+	bool m_bForceUseSharedRes;
 	TResInfo m_ResInfo;
 
     //

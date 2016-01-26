@@ -22,6 +22,7 @@ public:
     virtual LPCTSTR GetClass() const;
     virtual LPVOID GetInterface(LPCTSTR pstrName);
     virtual UINT GetControlFlags() const;
+	virtual HWND GetNativeWindow() const;
 
     virtual bool Activate();
     virtual CPaintManagerUI* GetManager() const;
@@ -50,26 +51,18 @@ public:
     bool DrawImage(HDC hDC, TDrawInfo& drawInfo);
 
 	//边框相关
-	int GetBorderSize() const;
-	void SetBorderSize(int nSize);
 	DWORD GetBorderColor() const;
 	void SetBorderColor(DWORD dwBorderColor);
-
+	RECT GetBorderSize() const;
 	void SetBorderSize(RECT rc);
-	int GetLeftBorderSize() const;
-	void SetLeftBorderSize(int nSize);
-	int GetTopBorderSize() const;
-	void SetTopBorderSize(int nSize);
-	int GetRightBorderSize() const;
-	void SetRightBorderSize(int nSize);
-	int GetBottomBorderSize() const;
-	void SetBottomBorderSize(int nSize);
+	void SetBorderSize(int iSize);
 	int GetBorderStyle() const;
 	void SetBorderStyle(int nStyle);
 
     // 位置相关
     virtual const RECT& GetPos() const;
 	virtual RECT GetRelativePos() const; // 相对(父控件)位置
+	virtual RECT GetClientPos() const; // 客户区域（除去scrollbar和inset）
 	// 只有控件为float的时候，外部调用SetPos和Move才是有效的，位置参数是相对父控件的位置
     virtual void SetPos(RECT rc, bool bNeedInvalidate = true);
 	virtual void Move(SIZE szOffset, bool bNeedInvalidate = true);
@@ -131,6 +124,12 @@ public:
     virtual bool IsFloat() const;
     virtual void SetFloat(bool bFloat = true);
 
+	// 自定义(未处理的)属性
+	void AddCustomAttribute(LPCTSTR pstrName, LPCTSTR pstrAttr);
+	LPCTSTR GetCustomAttribute(LPCTSTR pstrName) const;
+	bool RemoveCustomAttribute(LPCTSTR pstrName);
+	void RemoveAllCustomAttribute();
+
     virtual CControlUI* FindControl(FINDCONTROLPROC Proc, LPVOID pData, UINT uFlags);
 
     void Invalidate();
@@ -150,6 +149,7 @@ public:
 
     virtual SIZE EstimateSize(SIZE szAvailable);
 
+	virtual void Paint(HDC hDC, const RECT& rcPaint);
     virtual void DoPaint(HDC hDC, const RECT& rcPaint);
     virtual void PaintBkColor(HDC hDC);
     virtual void PaintBkImage(HDC hDC);
@@ -169,6 +169,8 @@ public:
     CEventSource OnSize;
     CEventSource OnEvent;
     CEventSource OnNotify;
+	CEventSource OnPaint;
+	CEventSource OnPostPaint;
 
 protected:
     CPaintManagerUI* m_pManager;
@@ -207,12 +209,12 @@ protected:
     DWORD m_dwBorderColor;
 	DWORD m_dwFocusBorderColor;
     bool m_bColorHSL;
-    int m_nBorderSize;
 	int m_nBorderStyle;
 	int m_nTooltipWidth;
     SIZE m_cxyBorderRound;
     RECT m_rcPaint;
 	RECT m_rcBorderSize;
+	CStdStringPtrMap m_mCustomAttrHash;
 };
 
 } // namespace DuiLib

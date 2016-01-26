@@ -20,6 +20,8 @@ namespace DuiLib
 		LPCTSTR GetClass() const;
 		LPVOID GetInterface(LPCTSTR pstrName);
 
+		void SetText(LPCTSTR pstrText);
+
 		void SetTextStyle(UINT uStyle);
 		UINT GetTextStyle() const;
 		void SetTextColor(DWORD dwTextColor);
@@ -41,22 +43,12 @@ namespace DuiLib
 
 		void		SetEnabledEffect(bool _EnabledEffect);
 		bool		GetEnabledEffect();
-		void		SetText(LPCTSTR pstrText);
-		CDuiString	GetText() const;
-		void		SetTransShadow(int _TransShadow);
-		int			GetTransShadow();
-		void		SetTransShadow1(int _TransShadow);
-		int			GetTransShadow1();
-		void		SetTransText(int _TransText);
-		int			GetTransText();
-		void		SetTransText1(int _TransText);
-		int			GetTransText1();
-		void		SetTransStroke(int _TransStroke);
-		int			GetTransStroke();
+		void		SetEnabledLuminous(bool bEnableLuminous);
+		bool		GetEnabledLuminous();
+		void		SetLuminousFuzzy(float fFuzzy);
+		float		GetLuminousFuzzy();
 		void		SetGradientLength(int _GradientLength);
 		int			GetGradientLength();
-		void		SetTextRenderingHintAntiAlias(int _TextRenderingHintAntiAlias);
-		int			GetTextRenderingHintAntiAlias();
 		void		SetShadowOffset(int _offset,int _angle);
 		RectF		GetShadowOffset();
 		void		SetTextColor1(DWORD _TextColor1);
@@ -75,6 +67,7 @@ namespace DuiLib
 		bool		GetEnabledShadow();
 		
 	protected:
+		LPWSTR  m_pWideText;
 		DWORD	m_dwTextColor;
 		DWORD	m_dwDisabledTextColor;
 		int		m_iFont;
@@ -82,14 +75,11 @@ namespace DuiLib
 		RECT	m_rcTextPadding;
 		bool	m_bShowHtml;
 
-		int						m_TransShadow;
-		int						m_TransShadow1;
-		int						m_TransText;
-		int						m_TransText1;
-		int						m_TransStroke;
+		float					m_fLuminousFuzzy;
 		int						m_GradientLength;
 		int						m_GradientAngle;
 		bool					m_EnableEffect;
+		bool					m_bEnableLuminous;
 		bool					m_EnabledStroke;
 		bool					m_EnabledShadow;
 		DWORD					m_dwTextColor1;
@@ -97,10 +87,8 @@ namespace DuiLib
 		DWORD					m_dwTextShadowColorB;
 		DWORD					m_dwStrokeColor;
 		RectF					m_ShadowOffset;
-		CDuiString				m_TextValue;
 		ULONG_PTR				m_gdiplusToken;
 		GdiplusStartupInput		m_gdiplusStartupInput;
-		TextRenderingHint		m_TextRenderingHintAntiAlias;
 	};
 }
 

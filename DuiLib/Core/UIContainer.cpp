@@ -520,6 +520,29 @@ namespace DuiLib
 		}
 	}
 
+	RECT CContainerUI::GetClientPos() const
+	{
+		RECT rc = m_rcItem;
+		rc.left += m_rcInset.left;
+		rc.top += m_rcInset.top;
+		rc.right -= m_rcInset.right;
+		rc.bottom -= m_rcInset.bottom;
+
+		if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) {
+			rc.top -= m_pVerticalScrollBar->GetScrollPos();
+			rc.bottom -= m_pVerticalScrollBar->GetScrollPos();
+			rc.bottom += m_pVerticalScrollBar->GetScrollRange();
+			rc.right -= m_pVerticalScrollBar->GetFixedWidth();
+		}
+		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) {
+			rc.left -= m_pHorizontalScrollBar->GetScrollPos();
+			rc.right -= m_pHorizontalScrollBar->GetScrollPos();
+			rc.right += m_pHorizontalScrollBar->GetScrollRange();
+			rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
+		}
+		return rc;
+	}
+
 	void CContainerUI::SetPos(RECT rc, bool bNeedInvalidate)
 	{
 		CControlUI::SetPos(rc, bNeedInvalidate);
@@ -698,7 +721,7 @@ namespace DuiLib
 					if( !::IntersectRect(&rcTemp, &rcPaint, &pControl->GetPos()) ) continue;
 					if( pControl ->IsFloat() ) {
 						if( !::IntersectRect(&rcTemp, &m_rcItem, &pControl->GetPos()) ) continue;
-						pControl->DoPaint(hDC, rcPaint);
+						pControl->Paint(hDC, rcPaint);
 					}
 				}
 			}
@@ -712,12 +735,12 @@ namespace DuiLib
 					if( pControl ->IsFloat() ) {
 						if( !::IntersectRect(&rcTemp, &m_rcItem, &pControl->GetPos()) ) continue;
 						CRenderClip::UseOldClipBegin(hDC, childClip);
-						pControl->DoPaint(hDC, rcPaint);
+						pControl->Paint(hDC, rcPaint);
 						CRenderClip::UseOldClipEnd(hDC, childClip);
 					}
 					else {
 						if( !::IntersectRect(&rcTemp, &rc, &pControl->GetPos()) ) continue;
-						pControl->DoPaint(hDC, rcPaint);
+						pControl->Paint(hDC, rcPaint);
 					}
 				}
 			}
@@ -725,13 +748,13 @@ namespace DuiLib
 
 		if( m_pVerticalScrollBar != NULL && m_pVerticalScrollBar->IsVisible() ) {
 			if( ::IntersectRect(&rcTemp, &rcPaint, &m_pVerticalScrollBar->GetPos()) ) {
-				m_pVerticalScrollBar->DoPaint(hDC, rcPaint);
+				m_pVerticalScrollBar->Paint(hDC, rcPaint);
 			}
 		}
 
 		if( m_pHorizontalScrollBar != NULL && m_pHorizontalScrollBar->IsVisible() ) {
 			if( ::IntersectRect(&rcTemp, &rcPaint, &m_pHorizontalScrollBar->GetPos()) ) {
-				m_pHorizontalScrollBar->DoPaint(hDC, rcPaint);
+				m_pHorizontalScrollBar->Paint(hDC, rcPaint);
 			}
 		}
 	}

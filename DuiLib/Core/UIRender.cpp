@@ -153,7 +153,6 @@ static COLORREF PixelAlpha(COLORREF clrSrc, double src_darken, COLORREF clrDest,
     return RGB (GetRValue (clrSrc) * src_darken + GetRValue (clrDest) * dest_darken, 
         GetGValue (clrSrc) * src_darken + GetGValue (clrDest) * dest_darken, 
         GetBValue (clrSrc) * src_darken + GetBValue (clrDest) * dest_darken);
-
 }
 
 static BOOL WINAPI AlphaBitBlt(HDC hDC, int nDestX, int nDestY, int dwWidth, int dwHeight, HDC hSrcDC, \
@@ -283,6 +282,29 @@ DWORD CRenderEngine::AdjustColor(DWORD dwColor, short H, short S, short L)
     fL *= L1;
     HSLtoRGB(&dwColor, fH, fS, fL);
     return dwColor;
+}
+
+HBITMAP CRenderEngine::CreateARGB32Bitmap(HDC hDC, int cx, int cy, COLORREF** pBits)
+{
+	LPBITMAPINFO lpbiSrc = NULL;
+	lpbiSrc = (LPBITMAPINFO) new BYTE[sizeof(BITMAPINFOHEADER)];
+	if (lpbiSrc == NULL) return NULL;
+
+	lpbiSrc->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	lpbiSrc->bmiHeader.biWidth = cx;
+	lpbiSrc->bmiHeader.biHeight = cy;
+	lpbiSrc->bmiHeader.biPlanes = 1;
+	lpbiSrc->bmiHeader.biBitCount = 32;
+	lpbiSrc->bmiHeader.biCompression = BI_RGB;
+	lpbiSrc->bmiHeader.biSizeImage = cx * cy;
+	lpbiSrc->bmiHeader.biXPelsPerMeter = 0;
+	lpbiSrc->bmiHeader.biYPelsPerMeter = 0;
+	lpbiSrc->bmiHeader.biClrUsed = 0;
+	lpbiSrc->bmiHeader.biClrImportant = 0;
+
+	HBITMAP hBitmap = CreateDIBSection (hDC, lpbiSrc, DIB_RGB_COLORS, (void **)pBits, NULL, NULL);
+	delete [] lpbiSrc;
+	return hBitmap;
 }
 
 void CRenderEngine::AdjustImage(bool bUseHSL, TImageInfo* imageInfo, short H, short S, short L)
@@ -556,6 +578,7 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 							lDrawWidth -= lDestRight - rcDest.right;
 							lDestRight = rcDest.right;
 						}
+						rcDest.bottom -= rcDest.top;
 						lpAlphaBlend(hDC, lDestLeft, rcDest.top, lDestRight - lDestLeft, rcDest.bottom, 
 							hCloneDC, rcBmpPart.left + rcCorners.left, rcBmpPart.top + rcCorners.top, \
 							lDrawWidth, rcBmpPart.bottom - rcBmpPart.top - rcCorners.top - rcCorners.bottom, bf);
@@ -572,6 +595,7 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 							lDrawHeight -= lDestBottom - rcDest.bottom;
 							lDestBottom = rcDest.bottom;
 						}
+						rcDest.right -= rcDest.left;
 						lpAlphaBlend(hDC, rcDest.left, rcDest.top + lHeight * i, rcDest.right, lDestBottom - lDestTop, 
 							hCloneDC, rcBmpPart.left + rcCorners.left, rcBmpPart.top + rcCorners.top, \
 							rcBmpPart.right - rcBmpPart.left - rcCorners.left - rcCorners.right, lDrawHeight, bf);                    
@@ -774,6 +798,7 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 								lDrawWidth -= lDestRight - rcDest.right;
 								lDestRight = rcDest.right;
 							}
+							rcDest.bottom -= rcDest.top;
 							::StretchBlt(hDC, lDestLeft, rcDest.top, lDestRight - lDestLeft, rcDest.bottom, 
 								hCloneDC, rcBmpPart.left + rcCorners.left, rcBmpPart.top + rcCorners.top, \
 								lDrawWidth, rcBmpPart.bottom - rcBmpPart.top - rcCorners.top - rcCorners.bottom, SRCCOPY);
@@ -790,6 +815,7 @@ void CRenderEngine::DrawImage(HDC hDC, HBITMAP hBitmap, const RECT& rc, const RE
 								lDrawHeight -= lDestBottom - rcDest.bottom;
 								lDestBottom = rcDest.bottom;
 							}
+							rcDest.right -= rcDest.left;
 							::StretchBlt(hDC, rcDest.left, rcDest.top + lHeight * i, rcDest.right, lDestBottom - lDestTop, 
 								hCloneDC, rcBmpPart.left + rcCorners.left, rcBmpPart.top + rcCorners.top, \
 								rcBmpPart.right - rcBmpPart.left - rcCorners.left - rcCorners.right, lDrawHeight, SRCCOPY);                    
@@ -1174,7 +1200,7 @@ void CRenderEngine::DrawGradient(HDC hDC, const RECT& rc, DWORD dwFirst, DWORD d
     }
 }
 
-void CRenderEngine::DrawLine( HDC hDC, const RECT& rc, int nSize, DWORD dwPenColor,int nStyle /*= PS_SOLID*/ )
+void CRenderEngine::DrawLine( HDC hDC, const RECT& rc, int nSize, DWORD dwPenColor, int nStyle)
 {
 	ASSERT(::GetObjectType(hDC)==OBJ_DC || ::GetObjectType(hDC)==OBJ_MEMDC);
 
@@ -1191,10 +1217,10 @@ void CRenderEngine::DrawLine( HDC hDC, const RECT& rc, int nSize, DWORD dwPenCol
 	::DeleteObject(hPen);
 }
 
-void CRenderEngine::DrawRect(HDC hDC, const RECT& rc, int nSize, DWORD dwPenColor)
+void CRenderEngine::DrawRect(HDC hDC, const RECT& rc, int nSize, DWORD dwPenColor, int nStyle)
 {
     ASSERT(::GetObjectType(hDC)==OBJ_DC || ::GetObjectType(hDC)==OBJ_MEMDC);
-    HPEN hPen = ::CreatePen(PS_SOLID | PS_INSIDEFRAME, nSize, RGB(GetBValue(dwPenColor), GetGValue(dwPenColor), GetRValue(dwPenColor)));
+    HPEN hPen = ::CreatePen(nStyle | PS_INSIDEFRAME, nSize, RGB(GetBValue(dwPenColor), GetGValue(dwPenColor), GetRValue(dwPenColor)));
     HPEN hOldPen = (HPEN)::SelectObject(hDC, hPen);
     ::SelectObject(hDC, ::GetStockObject(HOLLOW_BRUSH));
     ::Rectangle(hDC, rc.left, rc.top, rc.right, rc.bottom);
@@ -1202,10 +1228,10 @@ void CRenderEngine::DrawRect(HDC hDC, const RECT& rc, int nSize, DWORD dwPenColo
     ::DeleteObject(hPen);
 }
 
-void CRenderEngine::DrawRoundRect(HDC hDC, const RECT& rc, int nSize, int width, int height, DWORD dwPenColor)
+void CRenderEngine::DrawRoundRect(HDC hDC, const RECT& rc, int nSize, int width, int height, DWORD dwPenColor, int nStyle)
 {
     ASSERT(::GetObjectType(hDC)==OBJ_DC || ::GetObjectType(hDC)==OBJ_MEMDC);
-    HPEN hPen = ::CreatePen(PS_SOLID | PS_INSIDEFRAME, nSize, RGB(GetBValue(dwPenColor), GetGValue(dwPenColor), GetRValue(dwPenColor)));
+    HPEN hPen = ::CreatePen(nStyle | PS_INSIDEFRAME, nSize, RGB(GetBValue(dwPenColor), GetGValue(dwPenColor), GetRValue(dwPenColor)));
     HPEN hOldPen = (HPEN)::SelectObject(hDC, hPen);
     ::SelectObject(hDC, ::GetStockObject(HOLLOW_BRUSH));
     ::RoundRect(hDC, rc.left, rc.top, rc.right, rc.bottom, width, height);
@@ -1938,7 +1964,7 @@ HBITMAP CRenderEngine::GenerateBitmap(CPaintManagerUI* pManager, CControlUI* pCo
     ASSERT(hPaintDC);
     ASSERT(hPaintBitmap);
     HBITMAP hOldPaintBitmap = (HBITMAP) ::SelectObject(hPaintDC, hPaintBitmap);
-    pControl->DoPaint(hPaintDC, rc);
+    pControl->Paint(hPaintDC, rc);
 
     BITMAPINFO bmi = { 0 };
     bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
