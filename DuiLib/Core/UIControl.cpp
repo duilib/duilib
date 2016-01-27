@@ -384,8 +384,18 @@ void CControlUI::SetFixedXY(SIZE szXY)
 {
     m_cXY.cx = szXY.cx;
     m_cXY.cy = szXY.cy;
-    if( !m_bFloat ) NeedParentUpdate();
-    else NeedUpdate();
+    NeedParentUpdate();
+}
+
+TPercentInfo CControlUI::GetFloatPercent() const
+{
+	return m_piFloatPercent;
+}
+
+void CControlUI::SetFloatPercent(TPercentInfo piFloatPercent)
+{
+	m_piFloatPercent = piFloatPercent;
+	NeedParentUpdate();
 }
 
 int CControlUI::GetFixedWidth() const
@@ -397,8 +407,7 @@ void CControlUI::SetFixedWidth(int cx)
 {
     if( cx < 0 ) return; 
     m_cxyFixed.cx = cx;
-    if( !m_bFloat ) NeedParentUpdate();
-    else NeedUpdate();
+    NeedParentUpdate();
 }
 
 int CControlUI::GetFixedHeight() const
@@ -410,8 +419,7 @@ void CControlUI::SetFixedHeight(int cy)
 {
     if( cy < 0 ) return; 
     m_cxyFixed.cy = cy;
-    if( !m_bFloat ) NeedParentUpdate();
-    else NeedUpdate();
+    NeedParentUpdate();
 }
 
 int CControlUI::GetMinWidth() const
@@ -425,8 +433,7 @@ void CControlUI::SetMinWidth(int cx)
 
     if( cx < 0 ) return; 
     m_cxyMin.cx = cx;
-    if( !m_bFloat ) NeedParentUpdate();
-    else NeedUpdate();
+    NeedParentUpdate();
 }
 
 int CControlUI::GetMaxWidth() const
@@ -440,8 +447,7 @@ void CControlUI::SetMaxWidth(int cx)
 
     if( cx < 0 ) return; 
     m_cxyMax.cx = cx;
-    if( !m_bFloat ) NeedParentUpdate();
-    else NeedUpdate();
+    NeedParentUpdate();
 }
 
 int CControlUI::GetMinHeight() const
@@ -455,8 +461,7 @@ void CControlUI::SetMinHeight(int cy)
 
     if( cy < 0 ) return; 
     m_cxyMin.cy = cy;
-    if( !m_bFloat ) NeedParentUpdate();
-    else NeedUpdate();
+    NeedParentUpdate();
 }
 
 int CControlUI::GetMaxHeight() const
@@ -470,19 +475,7 @@ void CControlUI::SetMaxHeight(int cy)
 
     if( cy < 0 ) return; 
     m_cxyMax.cy = cy;
-    if( !m_bFloat ) NeedParentUpdate();
-    else NeedUpdate();
-}
-
-TPercentInfo CControlUI::GetFloatPercent() const
-{
-	return m_piFloatPercent;
-}
-
-void CControlUI::SetFloatPercent(TPercentInfo piFloatPercent)
-{
-	m_piFloatPercent = piFloatPercent;
-	NeedParentUpdate();
+    NeedParentUpdate();
 }
 
 CDuiString CControlUI::GetToolTip() const
@@ -909,6 +902,7 @@ void CControlUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else if( _tcscmp(pstrName, _T("text")) == 0 ) SetText(pstrValue);
     else if( _tcscmp(pstrName, _T("tooltip")) == 0 ) SetToolTip(pstrValue);
     else if( _tcscmp(pstrName, _T("userdata")) == 0 ) SetUserData(pstrValue);
+    else if( _tcscmp(pstrName, _T("tag")) == 0 ) SetTag(_ttoi(pstrValue));
     else if( _tcscmp(pstrName, _T("enabled")) == 0 ) SetEnabled(_tcscmp(pstrValue, _T("true")) == 0);
     else if( _tcscmp(pstrName, _T("mouse")) == 0 ) SetMouseEnabled(_tcscmp(pstrValue, _T("true")) == 0);
 	else if( _tcscmp(pstrName, _T("keyboard")) == 0 ) SetKeyboardEnabled(_tcscmp(pstrValue, _T("true")) == 0);

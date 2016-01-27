@@ -344,7 +344,7 @@ namespace DuiLib
 		m_uFadeAlphaDelta = uDelta;
 	}
 
-	bool CButtonUI::GetFadeAlphaDelta()
+	BYTE CButtonUI::GetFadeAlphaDelta()
 	{
 		return m_uFadeAlphaDelta;
 	}

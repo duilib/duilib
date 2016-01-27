@@ -74,6 +74,8 @@ public:
     virtual void SetPadding(RECT rcPadding); // 设置外边距，由上层窗口绘制
     virtual SIZE GetFixedXY() const;         // 实际大小位置使用GetPos获取，这里得到的是预设的参考值
     virtual void SetFixedXY(SIZE szXY);      // 仅float为true时有效
+	virtual TPercentInfo GetFloatPercent() const;
+	virtual void SetFloatPercent(TPercentInfo piFloatPercent);
     virtual int GetFixedWidth() const;       // 实际大小位置使用GetPos获取，这里得到的是预设的参考值
     virtual void SetFixedWidth(int cx);      // 预设的参考值
     virtual int GetFixedHeight() const;      // 实际大小位置使用GetPos获取，这里得到的是预设的参考值
@@ -86,8 +88,6 @@ public:
     virtual void SetMinHeight(int cy);
     virtual int GetMaxHeight() const;
     virtual void SetMaxHeight(int cy);
-	virtual TPercentInfo GetFloatPercent() const;
-	virtual void SetFloatPercent(TPercentInfo piFloatPercent);
 
     // 鼠标提示
     virtual CDuiString GetToolTip() const;
