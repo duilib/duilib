@@ -153,13 +153,22 @@ namespace DuiLib
 			if (m_pOwner->GetManager()->IsLayered() && !m_pOwner->GetManager()->IsPainting()) {
 				m_pOwner->GetManager()->AddNativeWindow(m_pOwner, m_hWnd);
 			}
-			if( m_pOwner->GetNativeEditBkColor() == 0xFFFFFFFF ) return NULL;
+			DWORD clrColor = m_pOwner->GetNativeEditBkColor();
+			if( clrColor == 0xFFFFFFFF ) return 0;
 			::SetBkMode((HDC)wParam, TRANSPARENT);
 			DWORD dwTextColor = m_pOwner->GetTextColor();
 			::SetTextColor((HDC)wParam, RGB(GetBValue(dwTextColor),GetGValue(dwTextColor),GetRValue(dwTextColor)));
-			if( m_hBkBrush == NULL ) {
-				DWORD clrColor = m_pOwner->GetNativeEditBkColor();
-				m_hBkBrush = ::CreateSolidBrush(RGB(GetBValue(clrColor), GetGValue(clrColor), GetRValue(clrColor)));
+			if (clrColor < 0xFF000000) {
+				if (m_hBkBrush != NULL) ::DeleteObject(m_hBkBrush);
+				RECT rcWnd = m_pOwner->GetManager()->GetNativeWindowRect(m_hWnd);
+				HBITMAP hBmpEditBk = CRenderEngine::GenerateBitmap(m_pOwner->GetManager(), rcWnd, clrColor);
+				m_hBkBrush = ::CreatePatternBrush(hBmpEditBk);
+				::DeleteObject(hBmpEditBk);
+			}
+			else {
+				if (m_hBkBrush == NULL) {
+					m_hBkBrush = ::CreateSolidBrush(RGB(GetBValue(clrColor), GetGValue(clrColor), GetRValue(clrColor)));
+				}
 			}
 			return (LRESULT)m_hBkBrush;
 		}

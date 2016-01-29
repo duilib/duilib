@@ -202,6 +202,7 @@ public:
 
 	LPCTSTR GetName() const;
     HDC GetPaintDC() const;
+	HBITMAP GetPaintOffscreenBitmap();
     HWND GetPaintWindow() const;
     HWND GetTooltipWindow() const;
 	int GetTooltipWindowWidth() const;
@@ -356,6 +357,7 @@ public:
     bool SetPostPaintIndex(CControlUI* pControl, int iIndex);
 
 	int GetNativeWindowCount() const;
+	RECT GetNativeWindowRect(HWND hChildWnd);
 	bool AddNativeWindow(CControlUI* pControl, HWND hChildWnd);
 	bool RemoveNativeWindow(HWND hChildWnd);
 

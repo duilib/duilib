@@ -71,26 +71,6 @@ void tagTDrawInfo::Clear()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
-
-static void GetChildWndRect(HWND hWnd, HWND hChildWnd, RECT& rcChildWnd)
-{
-	::GetWindowRect(hChildWnd, &rcChildWnd);
-
-	POINT pt;
-	pt.x = rcChildWnd.left;
-	pt.y = rcChildWnd.top;
-	::ScreenToClient(hWnd, &pt);
-	rcChildWnd.left = pt.x;
-	rcChildWnd.top = pt.y;
-
-	pt.x = rcChildWnd.right;
-	pt.y = rcChildWnd.bottom;
-	::ScreenToClient(hWnd, &pt);
-	rcChildWnd.right = pt.x;
-	rcChildWnd.bottom = pt.y;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////
 typedef BOOL (__stdcall *PFUNCUPDATELAYEREDWINDOW)(HWND, HDC, POINT*, SIZE*, HDC, POINT*, COLORREF, BLENDFUNCTION*, DWORD);
 PFUNCUPDATELAYEREDWINDOW g_fUpdateLayeredWindow = NULL;
 
@@ -458,6 +438,11 @@ LPCTSTR CPaintManagerUI::GetName() const
 HDC CPaintManagerUI::GetPaintDC() const
 {
     return m_hDcPaint;
+}
+
+HBITMAP CPaintManagerUI::GetPaintOffscreenBitmap()
+{
+	return m_hbmpOffscreen;
 }
 
 POINT CPaintManagerUI::GetMousePos() const
@@ -958,9 +943,7 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 						}
 						++i;
 						if (!::IsWindowVisible(hChildWnd)) continue;
-						RECT rcChildWnd;
-						GetChildWndRect(m_hWndPaint, hChildWnd, rcChildWnd);
-
+						RECT rcChildWnd = GetNativeWindowRect(hChildWnd);
 						RECT rcTemp = { 0 };
 						if( !::IntersectRect(&rcTemp, &rcPaint, &rcChildWnd) ) continue;
 
@@ -1982,10 +1965,18 @@ int CPaintManagerUI::GetNativeWindowCount() const
 	return m_aNativeWindow.GetSize();
 }
 
-bool CPaintManagerUI::AddNativeWindow(CControlUI* pControl, HWND hChildWnd)
+RECT CPaintManagerUI::GetNativeWindowRect(HWND hChildWnd)
 {
 	RECT rcChildWnd;
-	GetChildWndRect(m_hWndPaint, hChildWnd, rcChildWnd);
+	::GetWindowRect(hChildWnd, &rcChildWnd);
+	::ScreenToClient(m_hWndPaint, (LPPOINT)(&rcChildWnd));
+	::ScreenToClient(m_hWndPaint, (LPPOINT)(&rcChildWnd)+1);
+	return rcChildWnd;
+}
+
+bool CPaintManagerUI::AddNativeWindow(CControlUI* pControl, HWND hChildWnd)
+{
+	RECT rcChildWnd = GetNativeWindowRect(hChildWnd);
 	Invalidate(rcChildWnd);
 
 	if (m_aNativeWindow.Find(hChildWnd) >= 0) return false;
