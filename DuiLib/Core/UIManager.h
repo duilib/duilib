@@ -118,7 +118,7 @@ typedef struct UILIB_API tagTDrawInfo
 	const TImageInfo* pImageInfo;
 	RECT rcDestOffset;
 	RECT rcBmpPart;
-	RECT rcCorner;
+	RECT rcScale9;
 	BYTE uFade;
 	bool bHole;
 	bool bTiledX;
