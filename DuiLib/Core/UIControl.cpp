@@ -438,6 +438,7 @@ void CControlUI::SetMinWidth(int cx)
 
 int CControlUI::GetMaxWidth() const
 {
+	if (m_cxyMax.cx < m_cxyMin.cx) return m_cxyMin.cx;
     return m_cxyMax.cx;
 }
 
@@ -466,6 +467,7 @@ void CControlUI::SetMinHeight(int cy)
 
 int CControlUI::GetMaxHeight() const
 {
+	if (m_cxyMax.cy < m_cxyMin.cy) return m_cxyMin.cy;
     return m_cxyMax.cy;
 }
 
@@ -542,7 +544,6 @@ void CControlUI::SetTag(UINT_PTR pTag)
 
 bool CControlUI::IsVisible() const
 {
-
     return m_bVisible && m_bInternVisible;
 }
 

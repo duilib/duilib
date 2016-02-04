@@ -1359,7 +1359,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
     bool bLineInRaw = false;
     bool bLineInLink = false;
     bool bLineInSelected = false;
-	int iVAlign = 0;
+	UINT iVAlign = DT_BOTTOM;
     int cyLineHeight = 0;
     bool bLineDraw = false; // 行的第二阶段：绘制
     while( *pstrText != _T('\0') ) {
@@ -1624,14 +1624,14 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                                 pstrNextStart = NULL;
                                 if( bDraw && bLineDraw ) {
                                     CDuiRect rcImage(pt.x, pt.y + cyLineHeight - iHeight, pt.x + iWidth, pt.y + cyLineHeight);
-									iVAlign = (int)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
-									if (iVAlign == 1) { // 1: center
+									iVAlign = (UINT)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
+									if (iVAlign == DT_VCENTER) {
 										if( iHeight < cyLineHeight ) { 
 											rcImage.bottom -= (cyLineHeight - iHeight) / 2;
 											rcImage.top = rcImage.bottom -  iHeight;
 										}
 									}
-									else if (iVAlign == 2) { // 2:top
+									else if (iVAlign == DT_TOP) {
 										if( iHeight < cyLineHeight ) { 
 											rcImage.bottom = pt.y + iHeight;
 											rcImage.top = pt.y;
@@ -1685,9 +1685,9 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
 						}
 					}
 
-					int iVAlign = 0; // 0: bottom, 1: center, 2:top, 默认是bottom
-					if (sVAlignStyle.CompareNoCase(_T("center")) == 0) iVAlign = 1;
-					else if (sVAlignStyle.CompareNoCase(_T("top")) == 0) iVAlign = 2;
+					UINT iVAlign = DT_BOTTOM;
+					if (sVAlignStyle.CompareNoCase(_T("center")) == 0) iVAlign = DT_VCENTER;
+					else if (sVAlignStyle.CompareNoCase(_T("top")) == 0) iVAlign = DT_TOP;
 					aVAlignArray.Add((LPVOID)iVAlign);
 				}
 				break;
@@ -1824,9 +1824,9 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
             SIZE szSpace = { 0 };
             ::GetTextExtentPoint32(hDC, &pstrText[1], 1, &szSpace);
             if( bDraw && bLineDraw ) {
-				iVAlign = (int)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
-				if (iVAlign == 1) ::TextOut(hDC, pt.x, pt.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, &pstrText[1], 1);
-				else if (iVAlign == 2) ::TextOut(hDC, pt.x, pt.y, &pstrText[1], 1);
+				iVAlign = (UINT)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
+				if (iVAlign == DT_VCENTER) ::TextOut(hDC, pt.x, pt.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, &pstrText[1], 1);
+				else if (iVAlign == DT_TOP) ::TextOut(hDC, pt.x, pt.y, &pstrText[1], 1);
 				else ::TextOut(hDC, pt.x, pt.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, &pstrText[1], 1);
 			}
 			pt.x += szSpace.cx;
@@ -1838,9 +1838,9 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
             SIZE szSpace = { 0 };
             ::GetTextExtentPoint32(hDC, &pstrText[1], 1, &szSpace);
             if( bDraw && bLineDraw ) {
-				iVAlign = (int)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
-				if (iVAlign == 1) ::TextOut(hDC, pt.x, pt.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, &pstrText[1], 1);
-				else if (iVAlign == 2) ::TextOut(hDC, pt.x, pt.y, &pstrText[1], 1);
+				iVAlign = (UINT)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
+				if (iVAlign == DT_VCENTER) ::TextOut(hDC, pt.x, pt.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, &pstrText[1], 1);
+				else if (iVAlign == DT_TOP) ::TextOut(hDC, pt.x, pt.y, &pstrText[1], 1);
 				else ::TextOut(hDC, pt.x, pt.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, &pstrText[1], 1);
 			}
 			pt.x += szSpace.cx;
@@ -1854,9 +1854,9 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
             // Still need to paint the space because the font might have
             // underline formatting.
             if( bDraw && bLineDraw ) {
-				iVAlign = (int)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
-				if (iVAlign == 1) ::TextOut(hDC, pt.x, pt.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, _T(" "), 1);
-				else if (iVAlign == 2) ::TextOut(hDC, pt.x, pt.y, _T(" "), 1);
+				iVAlign = (UINT)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
+				if (iVAlign == DT_VCENTER) ::TextOut(hDC, pt.x, pt.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, _T(" "), 1);
+				else if (iVAlign == DT_TOP) ::TextOut(hDC, pt.x, pt.y, _T(" "), 1);
 				else ::TextOut(hDC, pt.x, pt.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, _T(" "), 1);
 			}
             pt.x += szSpace.cx;
@@ -1941,14 +1941,14 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
 				else if( (uStyle & DT_SINGLELINE) == 0 && (uStyle & DT_RIGHT) != 0) {
 					ptPos.x += (rc.right - rc.left - szText.cx);
 				}
-				iVAlign = (int)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
-				if (iVAlign == 1) ::TextOut(hDC, ptPos.x, ptPos.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, pstrText, cchSize);
-				else if (iVAlign == 2) ::TextOut(hDC, ptPos.x, ptPos.y, pstrText, cchSize);
+				iVAlign = (UINT)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
+				if (iVAlign == DT_VCENTER) ::TextOut(hDC, ptPos.x, ptPos.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, pstrText, cchSize);
+				else if (iVAlign == DT_TOP) ::TextOut(hDC, ptPos.x, ptPos.y, pstrText, cchSize);
 				else ::TextOut(hDC, ptPos.x, ptPos.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, pstrText, cchSize);
 
 				if( pt.x >= rc.right && (uStyle & DT_END_ELLIPSIS) != 0 ) {
-					if (iVAlign == 1) ::TextOut(hDC, ptPos.x + szText.cx, ptPos.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, _T("..."), 3);
-					else if (iVAlign == 2) ::TextOut(hDC, ptPos.x + szText.cx, ptPos.y, _T("..."), 3);
+					if (iVAlign == DT_VCENTER) ::TextOut(hDC, ptPos.x + szText.cx, ptPos.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, _T("..."), 3);
+					else if (iVAlign == DT_TOP) ::TextOut(hDC, ptPos.x + szText.cx, ptPos.y, _T("..."), 3);
 					else ::TextOut(hDC, ptPos.x + szText.cx, ptPos.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, _T("..."), 3);
 				}
             }

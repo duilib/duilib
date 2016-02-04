@@ -1053,7 +1053,6 @@ void CListBodyUI::SetPos(RECT rc, bool bNeedInvalidate)
         }
         cyFixed += sz.cy + pControl->GetPadding().top + pControl->GetPadding().bottom;
 
-        RECT rcPadding = pControl->GetPadding();
         sz.cx = MAX(sz.cx, 0);
         if( sz.cx < pControl->GetMinWidth() ) sz.cx = pControl->GetMinWidth();
         if( sz.cx > pControl->GetMaxWidth() ) sz.cx = pControl->GetMaxWidth();
@@ -1126,28 +1125,6 @@ void CListBodyUI::SetPos(RECT rc, bool bNeedInvalidate)
     }
     cyNeeded += (nEstimateNum - 1) * m_iChildPadding;
 
-    if( m_pHorizontalScrollBar != NULL ) {
-        if( cxNeeded > rc.right - rc.left ) {
-            if( m_pHorizontalScrollBar->IsVisible() ) {
-                m_pHorizontalScrollBar->SetScrollRange(cxNeeded - (rc.right - rc.left));
-            }
-            else {
-                m_pHorizontalScrollBar->SetVisible(true);
-                m_pHorizontalScrollBar->SetScrollRange(cxNeeded - (rc.right - rc.left));
-                m_pHorizontalScrollBar->SetScrollPos(0);
-                rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
-            }
-        }
-        else {
-            if( m_pHorizontalScrollBar->IsVisible() ) {
-                m_pHorizontalScrollBar->SetVisible(false);
-                m_pHorizontalScrollBar->SetScrollRange(0);
-                m_pHorizontalScrollBar->SetScrollPos(0);
-                rc.bottom += m_pHorizontalScrollBar->GetFixedHeight();
-            }
-        }
-    }
-
     // Process the scrollbar
     ProcessScrollBar(rc, cxNeeded, cyNeeded);
 }
@@ -1160,7 +1137,27 @@ void CListBodyUI::DoEvent(TEventUI& event)
         return;
     }
 
-    if( m_pOwner != NULL ) m_pOwner->DoEvent(event); else CControlUI::DoEvent(event);
+    if( m_pOwner != NULL ) {
+		if (event.Type == UIEVENT_SCROLLWHEEL) {
+			if (m_pHorizontalScrollBar != NULL && m_pHorizontalScrollBar->IsVisible() && m_pHorizontalScrollBar->IsEnabled()) {
+				RECT rcHorizontalScrollBar = m_pHorizontalScrollBar->GetPos();
+				if( ::PtInRect(&rcHorizontalScrollBar, event.ptMouse) ) 
+				{
+					switch( LOWORD(event.wParam) ) {
+					case SB_LINEUP:
+						m_pOwner->LineLeft();
+						return;
+					case SB_LINEDOWN:
+						m_pOwner->LineRight();
+						return;
+					}
+				}
+			}
+		}
+		m_pOwner->DoEvent(event); }
+	else {
+		CControlUI::DoEvent(event);
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
