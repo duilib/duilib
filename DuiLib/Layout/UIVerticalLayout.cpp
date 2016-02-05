@@ -146,8 +146,9 @@ namespace DuiLib
 
 			UINT iChildAlign = GetChildAlign(); 
 			if (iChildAlign == DT_CENTER) {
-				int iPosX = (rc.right - rc.left + m_pHorizontalScrollBar->GetScrollRange()) / 2;
+				int iPosX = (rc.right + rc.left) / 2;
 				if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) {
+					iPosX += m_pHorizontalScrollBar->GetScrollRange() / 2;
 					iPosX -= m_pHorizontalScrollBar->GetScrollPos();
 				}
 				RECT rcCtrl = { iPosX - sz.cx/2, iPosY + rcPadding.top, iPosX + sz.cx - sz.cx/2, iPosY + sz.cy + rcPadding.top };

@@ -24,6 +24,8 @@ namespace DuiLib
 
 		void SetTextStyle(UINT uStyle);
 		UINT GetTextStyle() const;
+		bool IsMultiLine();
+		void SetMultiLine(bool bMultiLine = true);
 		void SetTextColor(DWORD dwTextColor);
 		DWORD GetTextColor() const;
 		void SetDisabledTextColor(DWORD dwTextColor);

@@ -145,8 +145,9 @@ namespace DuiLib
 
 			UINT iChildAlign = GetChildVAlign(); 
 			if (iChildAlign == DT_VCENTER) {
-				int iPosY = (rc.bottom - rc.top + m_pVerticalScrollBar->GetScrollRange()) / 2;
+				int iPosY = (rc.bottom + rc.top) / 2;
 				if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) {
+					iPosY += m_pVerticalScrollBar->GetScrollRange() / 2;
 					iPosY -= m_pVerticalScrollBar->GetScrollPos();
 				}
 				RECT rcCtrl = { iPosX + rcPadding.left, iPosY - sz.cy/2, iPosX + sz.cx + rcPadding.left, iPosY + sz.cy - sz.cy/2 };

@@ -10,7 +10,7 @@ namespace DuiLib
 
 	CLabelUI::CLabelUI() : 
 		m_pWideText(0),
-		m_uTextStyle(DT_VCENTER), 
+		m_uTextStyle(DT_VCENTER|DT_SINGLELINE), 
 		m_dwTextColor(0), 
 		m_dwDisabledTextColor(0),
 		m_iFont(-1),
@@ -83,6 +83,17 @@ namespace DuiLib
 	UINT CLabelUI::GetTextStyle() const
 	{
 		return m_uTextStyle;
+	}
+
+	bool CLabelUI::IsMultiLine()
+	{
+		return (m_uTextStyle & DT_SINGLELINE) == 0;
+	}
+
+	void CLabelUI::SetMultiLine(bool bMultiLine)
+	{
+		if (bMultiLine)	m_uTextStyle  &= ~DT_SINGLELINE;
+		else m_uTextStyle |= DT_SINGLELINE;
 	}
 
 	void CLabelUI::SetTextColor(DWORD dwTextColor)
@@ -175,15 +186,15 @@ namespace DuiLib
 	{
 		if( _tcscmp(pstrName, _T("align")) == 0 ) {
 			if( _tcsstr(pstrValue, _T("left")) != NULL ) {
-				m_uTextStyle &= ~(DT_CENTER | DT_RIGHT | DT_SINGLELINE);
+				m_uTextStyle &= ~(DT_CENTER | DT_RIGHT);
 				m_uTextStyle |= DT_LEFT;
 			}
 			if( _tcsstr(pstrValue, _T("center")) != NULL ) {
-				m_uTextStyle &= ~(DT_LEFT | DT_RIGHT );
+				m_uTextStyle &= ~(DT_LEFT | DT_RIGHT);
 				m_uTextStyle |= DT_CENTER;
 			}
 			if( _tcsstr(pstrValue, _T("right")) != NULL ) {
-				m_uTextStyle &= ~(DT_LEFT | DT_CENTER | DT_SINGLELINE);
+				m_uTextStyle &= ~(DT_LEFT | DT_CENTER);
 				m_uTextStyle |= DT_RIGHT;
 			}
 		}
@@ -191,15 +202,15 @@ namespace DuiLib
 		{
 		    if (_tcsstr(pstrValue, _T("top")) != NULL) {
 		        m_uTextStyle &= ~(DT_BOTTOM | DT_VCENTER);
-		        m_uTextStyle |= (DT_TOP | DT_SINGLELINE);
+		        m_uTextStyle |= DT_TOP;
 		    }
 		    if (_tcsstr(pstrValue, _T("vcenter")) != NULL) {
 		        m_uTextStyle &= ~(DT_TOP | DT_BOTTOM);
-		        m_uTextStyle |= (DT_VCENTER | DT_SINGLELINE);
+		        m_uTextStyle |= DT_VCENTER;
 		    }
 		    if (_tcsstr(pstrValue, _T("bottom")) != NULL) {
 		        m_uTextStyle &= ~(DT_TOP | DT_VCENTER);
-		        m_uTextStyle |= (DT_BOTTOM | DT_SINGLELINE);
+		        m_uTextStyle |= DT_BOTTOM;
 		    }
 		}
 		else if( _tcscmp(pstrName, _T("endellipsis")) == 0 ) {
@@ -228,6 +239,7 @@ namespace DuiLib
 			rcTextPadding.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
 			SetTextPadding(rcTextPadding);
 		}
+		else if( _tcscmp(pstrName, _T("multiline")) == 0 ) SetMultiLine(_tcscmp(pstrValue, _T("true")) == 0);
 		else if( _tcscmp(pstrName, _T("showhtml")) == 0 ) SetShowHtml(_tcscmp(pstrValue, _T("true")) == 0);
 		else if( _tcscmp(pstrName, _T("enabledeffect")) == 0 ) SetEnabledEffect(_tcscmp(pstrValue, _T("true")) == 0);
 		else if( _tcscmp(pstrName, _T("enabledluminous")) == 0 ) SetEnabledLuminous(_tcscmp(pstrValue, _T("true")) == 0);
@@ -287,10 +299,10 @@ namespace DuiLib
 			if( IsEnabled() ) {
 				if( m_bShowHtml )
 					CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText, m_dwTextColor, \
-					NULL, NULL, nLinks, DT_SINGLELINE | m_uTextStyle);
+					NULL, NULL, nLinks, m_uTextStyle);
 				else
 					CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, m_dwTextColor, \
-					m_iFont, DT_SINGLELINE | m_uTextStyle);
+					m_iFont, m_uTextStyle);
 			}
 			else {
 				if( m_bShowHtml )

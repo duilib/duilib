@@ -1308,8 +1308,12 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
     // we can draw it at the correct position...
 	if( ((uStyle & DT_CENTER) != 0 || (uStyle & DT_RIGHT) != 0 || (uStyle & DT_VCENTER) != 0 || (uStyle & DT_BOTTOM) != 0) && (uStyle & DT_CALCRECT) == 0 ) {
 		RECT rcText = { 0, 0, 9999, 100 };
+		if ((uStyle & DT_SINGLELINE) == 0) {
+			rcText.right = rc.right - rc.left;
+			rcText.bottom = rc.bottom - rc.top;
+		}
 		int nLinks = 0;
-		DrawHtmlText(hDC, pManager, rcText, pstrText, dwTextColor, NULL, NULL, nLinks, uStyle | DT_CALCRECT);
+		DrawHtmlText(hDC, pManager, rcText, pstrText, dwTextColor, NULL, NULL, nLinks, uStyle | DT_CALCRECT & ~DT_CENTER & ~DT_RIGHT & ~DT_VCENTER & ~DT_BOTTOM);
 		if( (uStyle & DT_SINGLELINE) != 0 ){
 			if( (uStyle & DT_CENTER) != 0 ) {
 				rc.left = rc.left + ((rc.right - rc.left) / 2) - ((rcText.right - rcText.left) / 2);
@@ -1340,6 +1344,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
 
     POINT pt = { rc.left, rc.top };
     int iLinkIndex = 0;
+	int cxLine = 0;
     int cyLine = pTm->tmHeight + pTm->tmExternalLeading + (int)aPIndentArray.GetAt(aPIndentArray.GetSize() - 1);
     int cyMinHeight = 0;
     int cxMaxWidth = 0;
@@ -1360,7 +1365,9 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
     bool bLineInLink = false;
     bool bLineInSelected = false;
 	UINT iVAlign = DT_BOTTOM;
+	int cxLineWidth = 0;
     int cyLineHeight = 0;
+	int cxOffset = 0;
     bool bLineDraw = false; // 行的第二阶段：绘制
     while( *pstrText != _T('\0') ) {
         if( pt.x >= rc.right || *pstrText == _T('\n') || bLineEnd ) {
@@ -1386,14 +1393,28 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                 bLineInLink = bInLink;
                 iLineLinkIndex = iLinkIndex;
             }
-            if( (uStyle & DT_SINGLELINE) != 0 && (!bDraw || bLineDraw) ) break;
+            if( (uStyle & DT_SINGLELINE) != 0 && (!bDraw || bLineDraw) ) 
+				break;
             if( bDraw ) bLineDraw = !bLineDraw; // !
             pt.x = rc.left;
-            if( !bLineDraw ) pt.y += cyLine;
-            if( pt.y > rc.bottom && bDraw ) break;
+			cxOffset = 0;
+			if (bLineDraw) {
+				if( (uStyle & DT_SINGLELINE) == 0 && (uStyle & DT_CENTER) != 0 ) {
+					cxOffset = (rc.right - rc.left - cxLineWidth)/2;
+				}
+				else if( (uStyle & DT_SINGLELINE) == 0 && (uStyle & DT_RIGHT) != 0) {
+					cxOffset = rc.right - rc.left - cxLineWidth;
+				}
+			}
+            else {
+				pt.y += cyLine;
+			}
+            if( pt.y > rc.bottom && bDraw ) 
+				break;
             ptLinkStart = pt;
             cyLine = pTm->tmHeight + pTm->tmExternalLeading + (int)aPIndentArray.GetAt(aPIndentArray.GetSize() - 1);
-            if( pt.x >= rc.right ) break;
+            if( pt.x >= rc.right )
+				break;
         }
         else if( !bInRaw && ( *pstrText == _T('<') || *pstrText == _T('{') )
             && ( pstrText[1] >= _T('a') && pstrText[1] <= _T('z') )
@@ -1619,11 +1640,12 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
 
                             if( pt.x + iWidth > rc.right && pt.x > rc.left && (uStyle & DT_SINGLELINE) == 0 ) {
                                 bLineEnd = true;
+								cxLine = pt.x - rc.left;
                             }
                             else {
                                 pstrNextStart = NULL;
                                 if( bDraw && bLineDraw ) {
-                                    CDuiRect rcImage(pt.x, pt.y + cyLineHeight - iHeight, pt.x + iWidth, pt.y + cyLineHeight);
+                                    CDuiRect rcImage(pt.x + cxOffset, pt.y + cyLineHeight - iHeight, pt.x + + cxOffset + iWidth, pt.y + cyLineHeight);
 									iVAlign = DT_BOTTOM;
 									if (aVAlignArray.GetSize() > 0) iVAlign = (UINT)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
 									if (iVAlign == DT_VCENTER) {
@@ -1649,8 +1671,9 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
 
                                 cyLine = MAX(iHeight, cyLine);
                                 pt.x += iWidth;
+								cxMaxWidth = MAX(cxMaxWidth, pt.x);
+								cxLine = pt.x - rc.left;
                                 cyMinHeight = pt.y + iHeight;
-                                cxMaxWidth = MAX(cxMaxWidth, pt.x);
                             }
                         }
                         else pstrNextStart = NULL;
@@ -1733,7 +1756,6 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                     while( *pstrText > _T('\0') && *pstrText <= _T(' ') ) pstrText = ::CharNext(pstrText);
                     int iWidth = (int) _tcstol(pstrText, const_cast<LPTSTR*>(&pstrText), 10);
                     pt.x += iWidth;
-                    cxMaxWidth = MAX(cxMaxWidth, pt.x);
                 }
                 break;
             case _T('y'):  // Y Indent
@@ -1744,11 +1766,11 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                 }
                 break;
                 }
-                if( pstrNextStart != NULL ) pstrText = pstrNextStart;
-                else {
-                    while( *pstrText != _T('\0') && *pstrText != _T('>') && *pstrText != _T('}') ) pstrText = ::CharNext(pstrText);
-                    pstrText = ::CharNext(pstrText);
-                }
+            if( pstrNextStart != NULL ) pstrText = pstrNextStart;
+            else {
+                while( *pstrText != _T('\0') && *pstrText != _T('>') && *pstrText != _T('}') ) pstrText = ::CharNext(pstrText);
+                pstrText = ::CharNext(pstrText);
+            }
         }
         else if( !bInRaw && ( *pstrText == _T('<') || *pstrText == _T('{') ) && pstrText[1] == _T('/') )
         {
@@ -1810,7 +1832,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                         ABC abc;
                         ::GetCharABCWidths(hDC, _T(' '), _T(' '), &abc);
                         pt.x += abc.abcC / 2; // 简单修正一下斜体混排的问题, 正确做法应该是http://support.microsoft.com/kb/244798/en-us
-                    }
+					}
                     pTm = &pFontInfo->tm;
                     ::SelectObject(hDC, pFontInfo->hFont);
                     cyLine = MAX(cyLine, pTm->tmHeight + pTm->tmExternalLeading + (int)aPIndentArray.GetAt(aPIndentArray.GetSize() - 1));
@@ -1827,12 +1849,13 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
             if( bDraw && bLineDraw ) {
 				iVAlign = DT_BOTTOM;
 				if (aVAlignArray.GetSize() > 0) iVAlign = (UINT)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
-				if (iVAlign == DT_VCENTER) ::TextOut(hDC, pt.x, pt.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, &pstrText[1], 1);
-				else if (iVAlign == DT_TOP) ::TextOut(hDC, pt.x, pt.y, &pstrText[1], 1);
-				else ::TextOut(hDC, pt.x, pt.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, &pstrText[1], 1);
+				if (iVAlign == DT_VCENTER) ::TextOut(hDC, pt.x + cxOffset, pt.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, &pstrText[1], 1);
+				else if (iVAlign == DT_TOP) ::TextOut(hDC, pt.x + cxOffset, pt.y, &pstrText[1], 1);
+				else ::TextOut(hDC, pt.x + cxOffset, pt.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, &pstrText[1], 1);
 			}
 			pt.x += szSpace.cx;
-            cxMaxWidth = MAX(cxMaxWidth, pt.x);
+			cxMaxWidth = MAX(cxMaxWidth, pt.x);
+            cxLine = pt.x - rc.left;
             pstrText++;pstrText++;pstrText++;
         }
         else if( !bInRaw &&  *pstrText == _T('{') && pstrText[2] == _T('}') && (pstrText[1] == _T('<')  || pstrText[1] == _T('>')) )
@@ -1842,12 +1865,13 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
             if( bDraw && bLineDraw ) {
 				iVAlign = DT_BOTTOM;
 				if (aVAlignArray.GetSize() > 0) iVAlign = (UINT)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
-				if (iVAlign == DT_VCENTER) ::TextOut(hDC, pt.x, pt.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, &pstrText[1], 1);
-				else if (iVAlign == DT_TOP) ::TextOut(hDC, pt.x, pt.y, &pstrText[1], 1);
-				else ::TextOut(hDC, pt.x, pt.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, &pstrText[1], 1);
+				if (iVAlign == DT_VCENTER) ::TextOut(hDC, pt.x + cxOffset, pt.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, &pstrText[1], 1);
+				else if (iVAlign == DT_TOP) ::TextOut(hDC, pt.x + cxOffset, pt.y, &pstrText[1], 1);
+				else ::TextOut(hDC, pt.x + cxOffset, pt.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, &pstrText[1], 1);
 			}
 			pt.x += szSpace.cx;
-            cxMaxWidth = MAX(cxMaxWidth, pt.x);
+			cxMaxWidth = MAX(cxMaxWidth, pt.x);
+            cxLine = pt.x - rc.left;
             pstrText++;pstrText++;pstrText++;
         }
         else if( !bInRaw &&  *pstrText == _T(' ') )
@@ -1859,17 +1883,17 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
             if( bDraw && bLineDraw ) {
 				iVAlign = DT_BOTTOM;
 				if (aVAlignArray.GetSize() > 0) iVAlign = (UINT)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
-				if (iVAlign == DT_VCENTER) ::TextOut(hDC, pt.x, pt.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, _T(" "), 1);
-				else if (iVAlign == DT_TOP) ::TextOut(hDC, pt.x, pt.y, _T(" "), 1);
-				else ::TextOut(hDC, pt.x, pt.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, _T(" "), 1);
+				if (iVAlign == DT_VCENTER) ::TextOut(hDC, pt.x + cxOffset, pt.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, _T(" "), 1);
+				else if (iVAlign == DT_TOP) ::TextOut(hDC, pt.x + cxOffset, pt.y, _T(" "), 1);
+				else ::TextOut(hDC, pt.x + cxOffset, pt.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, _T(" "), 1);
 			}
             pt.x += szSpace.cx;
-            cxMaxWidth = MAX(cxMaxWidth, pt.x);
+			cxMaxWidth = MAX(cxMaxWidth, pt.x);
+            cxLine = pt.x - rc.left;
             pstrText++;
         }
         else
         {
-            POINT ptPos = pt;
             int cchChars = 0;
             int cchSize = 0;
             int cchLastGoodWord = 0;
@@ -1923,7 +1947,8 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                         pt.x = rc.right;
                     }
                     bLineEnd = true;
-                    cxMaxWidth = MAX(cxMaxWidth, pt.x);
+					cxMaxWidth = MAX(cxMaxWidth, pt.x);
+                    cxLine = pt.x - rc.left;
                     break;
                 }
                 if (!( ( p[0] >= _T('a') && p[0] <= _T('z') ) || ( p[0] >= _T('A') && p[0] <= _T('Z') ) )) {
@@ -1939,26 +1964,21 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
             
             ::GetTextExtentPoint32(hDC, pstrText, cchSize, &szText);
             if( bDraw && bLineDraw ) {
-				if( (uStyle & DT_SINGLELINE) == 0 && (uStyle & DT_CENTER) != 0 ) {
-					ptPos.x += (rc.right - rc.left - szText.cx)/2;
-				}
-				else if( (uStyle & DT_SINGLELINE) == 0 && (uStyle & DT_RIGHT) != 0) {
-					ptPos.x += (rc.right - rc.left - szText.cx);
-				}
 				iVAlign = DT_BOTTOM;
 				if (aVAlignArray.GetSize() > 0) iVAlign = (UINT)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
-				if (iVAlign == DT_VCENTER) ::TextOut(hDC, ptPos.x, ptPos.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, pstrText, cchSize);
-				else if (iVAlign == DT_TOP) ::TextOut(hDC, ptPos.x, ptPos.y, pstrText, cchSize);
-				else ::TextOut(hDC, ptPos.x, ptPos.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, pstrText, cchSize);
+				if (iVAlign == DT_VCENTER) ::TextOut(hDC, pt.x + cxOffset, pt.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, pstrText, cchSize);
+				else if (iVAlign == DT_TOP) ::TextOut(hDC, pt.x + cxOffset, pt.y, pstrText, cchSize);
+				else ::TextOut(hDC, pt.x + cxOffset, pt.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, pstrText, cchSize);
 
 				if( pt.x >= rc.right && (uStyle & DT_END_ELLIPSIS) != 0 ) {
-					if (iVAlign == DT_VCENTER) ::TextOut(hDC, ptPos.x + szText.cx, ptPos.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, _T("..."), 3);
-					else if (iVAlign == DT_TOP) ::TextOut(hDC, ptPos.x + szText.cx, ptPos.y, _T("..."), 3);
-					else ::TextOut(hDC, ptPos.x + szText.cx, ptPos.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, _T("..."), 3);
+					if (iVAlign == DT_VCENTER) ::TextOut(hDC, pt.x + cxOffset + szText.cx, pt.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, _T("..."), 3);
+					else if (iVAlign == DT_TOP) ::TextOut(hDC, pt.x + cxOffset + szText.cx, pt.y, _T("..."), 3);
+					else ::TextOut(hDC, pt.x + cxOffset + szText.cx, pt.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, _T("..."), 3);
 				}
             }
             pt.x += szText.cx;
-            cxMaxWidth = MAX(cxMaxWidth, pt.x);
+			cxMaxWidth = MAX(cxMaxWidth, pt.x);
+            cxLine = pt.x - rc.left;
             pstrText += cchSize;
         }
 
@@ -1974,6 +1994,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
 				aVAlignArray.Resize(aLineVAlignArray.GetSize());
 				::CopyMemory(aVAlignArray.GetData(), aLineVAlignArray.GetData(), aLineVAlignArray.GetSize() * sizeof(LPVOID));
 
+				cxLineWidth = cxLine;
                 cyLineHeight = cyLine;
                 pstrText = pstrLineBegin;
                 bInRaw = bLineInRaw;
