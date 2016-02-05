@@ -1624,7 +1624,8 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
                                 pstrNextStart = NULL;
                                 if( bDraw && bLineDraw ) {
                                     CDuiRect rcImage(pt.x, pt.y + cyLineHeight - iHeight, pt.x + iWidth, pt.y + cyLineHeight);
-									iVAlign = (UINT)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
+									iVAlign = DT_BOTTOM;
+									if (aVAlignArray.GetSize() > 0) iVAlign = (UINT)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
 									if (iVAlign == DT_VCENTER) {
 										if( iHeight < cyLineHeight ) { 
 											rcImage.bottom -= (cyLineHeight - iHeight) / 2;
@@ -1824,7 +1825,8 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
             SIZE szSpace = { 0 };
             ::GetTextExtentPoint32(hDC, &pstrText[1], 1, &szSpace);
             if( bDraw && bLineDraw ) {
-				iVAlign = (UINT)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
+				iVAlign = DT_BOTTOM;
+				if (aVAlignArray.GetSize() > 0) iVAlign = (UINT)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
 				if (iVAlign == DT_VCENTER) ::TextOut(hDC, pt.x, pt.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, &pstrText[1], 1);
 				else if (iVAlign == DT_TOP) ::TextOut(hDC, pt.x, pt.y, &pstrText[1], 1);
 				else ::TextOut(hDC, pt.x, pt.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, &pstrText[1], 1);
@@ -1838,7 +1840,8 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
             SIZE szSpace = { 0 };
             ::GetTextExtentPoint32(hDC, &pstrText[1], 1, &szSpace);
             if( bDraw && bLineDraw ) {
-				iVAlign = (UINT)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
+				iVAlign = DT_BOTTOM;
+				if (aVAlignArray.GetSize() > 0) iVAlign = (UINT)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
 				if (iVAlign == DT_VCENTER) ::TextOut(hDC, pt.x, pt.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, &pstrText[1], 1);
 				else if (iVAlign == DT_TOP) ::TextOut(hDC, pt.x, pt.y, &pstrText[1], 1);
 				else ::TextOut(hDC, pt.x, pt.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, &pstrText[1], 1);
@@ -1854,7 +1857,8 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
             // Still need to paint the space because the font might have
             // underline formatting.
             if( bDraw && bLineDraw ) {
-				iVAlign = (UINT)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
+				iVAlign = DT_BOTTOM;
+				if (aVAlignArray.GetSize() > 0) iVAlign = (UINT)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
 				if (iVAlign == DT_VCENTER) ::TextOut(hDC, pt.x, pt.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, _T(" "), 1);
 				else if (iVAlign == DT_TOP) ::TextOut(hDC, pt.x, pt.y, _T(" "), 1);
 				else ::TextOut(hDC, pt.x, pt.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, _T(" "), 1);
@@ -1941,7 +1945,8 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
 				else if( (uStyle & DT_SINGLELINE) == 0 && (uStyle & DT_RIGHT) != 0) {
 					ptPos.x += (rc.right - rc.left - szText.cx);
 				}
-				iVAlign = (UINT)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
+				iVAlign = DT_BOTTOM;
+				if (aVAlignArray.GetSize() > 0) iVAlign = (UINT)aVAlignArray.GetAt(aVAlignArray.GetSize() - 1); 
 				if (iVAlign == DT_VCENTER) ::TextOut(hDC, ptPos.x, ptPos.y + (cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading)/2, pstrText, cchSize);
 				else if (iVAlign == DT_TOP) ::TextOut(hDC, ptPos.x, ptPos.y, pstrText, cchSize);
 				else ::TextOut(hDC, ptPos.x, ptPos.y + cyLineHeight - pTm->tmHeight - pTm->tmExternalLeading, pstrText, cchSize);
