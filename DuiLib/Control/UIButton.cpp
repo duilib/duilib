@@ -8,7 +8,9 @@ namespace DuiLib
 		, m_dwHotTextColor(0)
 		, m_dwPushedTextColor(0)
 		, m_dwFocusedTextColor(0)
-		,m_dwHotBkColor(0)
+		, m_dwHotBkColor(0)
+		, m_uFadeAlphaDelta(0)
+		, m_uFadeAlpha(255)
 	{
 		m_uTextStyle = DT_SINGLELINE | DT_VCENTER | DT_CENTER;
 	}
@@ -73,12 +75,10 @@ namespace DuiLib
 		}
 		if( event.Type == UIEVENT_BUTTONUP )
 		{
-			if( (m_uButtonState & UISTATE_CAPTURED) != 0 )
-			{
+			if( (m_uButtonState & UISTATE_CAPTURED) != 0 ) {
+				if( ::PtInRect(&m_rcItem, event.ptMouse) ) Activate();
 				m_uButtonState &= ~(UISTATE_PUSHED | UISTATE_CAPTURED);
 				Invalidate();
-				if( ::PtInRect(&m_rcItem, event.ptMouse) )
-					Activate();
 			}
 			return;
 		}
@@ -95,6 +95,9 @@ namespace DuiLib
 				m_uButtonState |= UISTATE_HOT;
 				Invalidate();
 			}
+			if ( GetFadeAlphaDelta() > 0 ) {
+				m_pManager->SetTimer(this, FADE_TIMERID, FADE_ELLAPSE);
+			}
 			// return;
 		}
 		if( event.Type == UIEVENT_MOUSELEAVE )
@@ -103,10 +106,34 @@ namespace DuiLib
 				m_uButtonState &= ~UISTATE_HOT;
 				Invalidate();
 			}
+
+			if ( GetFadeAlphaDelta() > 0 ) {
+				m_pManager->SetTimer(this, FADE_TIMERID, FADE_ELLAPSE);
+			}
 			// return;
 		}
-		if( event.Type == UIEVENT_SETCURSOR ) {
+		if( event.Type == UIEVENT_SETCURSOR )
+		{
 			::SetCursor(::LoadCursor(NULL, MAKEINTRESOURCE(IDC_HAND)));
+			return;
+		}
+		if( event.Type == UIEVENT_TIMER  && event.wParam == FADE_TIMERID ) 
+		{
+			if( (m_uButtonState & UISTATE_HOT) != 0 ) {
+				if( m_uFadeAlpha > m_uFadeAlphaDelta ) m_uFadeAlpha -= m_uFadeAlphaDelta;
+				else {
+					m_uFadeAlpha = 0;
+					m_pManager->KillTimer(this, FADE_TIMERID);
+				}
+			}
+			else {
+				if( m_uFadeAlpha < 255-m_uFadeAlphaDelta ) m_uFadeAlpha += m_uFadeAlphaDelta;
+				else {
+					m_uFadeAlpha = 255;
+					m_pManager->KillTimer(this, FADE_TIMERID);
+				}
+			}
+			Invalidate();
 			return;
 		}
 		CLabelUI::DoEvent(event);
@@ -127,28 +154,11 @@ namespace DuiLib
 		}
 	}
 
-	//************************************
-	// Method:    SetHotBkColor
-	// FullName:  CButtonUI::SetHotBkColor
-	// Access:    public 
-	// Returns:   void
-	// Qualifier:
-	// Parameter: DWORD dwColor
-	// Note:	  
-	//************************************
 	void CButtonUI::SetHotBkColor( DWORD dwColor )
 	{
 		m_dwHotBkColor = dwColor;
 	}
 
-	//************************************
-	// Method:    GetHotBkColor
-	// FullName:  CButtonUI::GetHotBkColor
-	// Access:    public 
-	// Returns:   DWORD
-	// Qualifier: const
-	// Note:	  
-	//************************************
 	DWORD CButtonUI::GetHotBkColor() const
 	{
 		return m_dwHotBkColor;
@@ -249,28 +259,11 @@ namespace DuiLib
 		Invalidate();
 	}
 
-	//************************************
-	// Method:    GetForeImage
-	// FullName:  CButtonUI::GetForeImage
-	// Access:    public 
-	// Returns:   LPCTSTR
-	// Qualifier:
-	// Note:	  
-	//************************************
 	LPCTSTR CButtonUI::GetForeImage()
 	{
 		return m_diFore.sDrawString;
 	}
 
-	//************************************
-	// Method:    SetForeImage
-	// FullName:  CButtonUI::SetForeImage
-	// Access:    public 
-	// Returns:   void
-	// Qualifier:
-	// Parameter: LPCTSTR pStrImage
-	// Note:	  
-	//************************************
 	void CButtonUI::SetForeImage( LPCTSTR pStrImage )
 	{
 		if( m_diFore.sDrawString == pStrImage && m_diFore.pImageInfo != NULL ) return;
@@ -279,34 +272,81 @@ namespace DuiLib
 		Invalidate();
 	}
 
-	//************************************
-	// Method:    GetHotForeImage
-	// FullName:  CButtonUI::GetHotForeImage
-	// Access:    public 
-	// Returns:   LPCTSTR
-	// Qualifier:
-	// Note:	  
-	//************************************
 	LPCTSTR CButtonUI::GetHotForeImage()
 	{
 		return m_diHotFore.sDrawString;
 	}
 
-	//************************************
-	// Method:    SetHotForeImage
-	// FullName:  CButtonUI::SetHotForeImage
-	// Access:    public 
-	// Returns:   void
-	// Qualifier:
-	// Parameter: LPCTSTR pStrImage
-	// Note:	  
-	//************************************
 	void CButtonUI::SetHotForeImage( LPCTSTR pStrImage )
 	{
 		if( m_diHotFore.sDrawString == pStrImage && m_diHotFore.pImageInfo != NULL ) return;
 		m_diHotFore.Clear();
 		m_diHotFore.sDrawString = pStrImage;
 		Invalidate();
+	}
+
+	void CButtonUI::SetFiveStatusImage(LPCTSTR pStrImage)
+	{
+		m_diNormal.Clear();
+		m_diNormal.sDrawString = pStrImage;
+		DrawImage(NULL, m_diNormal);
+		if (m_diNormal.pImageInfo) {
+			LONG width = m_diNormal.pImageInfo->nX / 5;
+			LONG height = m_diNormal.pImageInfo->nY;
+			m_diNormal.rcBmpPart = CDuiRect(0, 0, width, height);
+			if( m_bFloat && m_cxyFixed.cx == 0 && m_cxyFixed.cy == 0 ) {
+				m_cxyFixed.cx = width;
+				m_cxyFixed.cy = height;
+			}
+		}
+
+		m_diPushed.Clear();
+		m_diPushed.sDrawString = pStrImage;
+		DrawImage(NULL, m_diPushed);
+		if (m_diPushed.pImageInfo) {
+			LONG width = m_diPushed.pImageInfo->nX / 5;
+			LONG height = m_diPushed.pImageInfo->nY;
+			m_diPushed.rcBmpPart = CDuiRect(width, 0, width*2, height);
+		}
+
+		m_diHot.Clear();
+		m_diHot.sDrawString = pStrImage;
+		DrawImage(NULL, m_diHot);
+		if (m_diHot.pImageInfo) {
+			LONG width = m_diHot.pImageInfo->nX / 5;
+			LONG height = m_diHot.pImageInfo->nY;
+			m_diHot.rcBmpPart = CDuiRect(width*2, 0, width*3, height);
+		}
+
+		m_diFocused.Clear();
+		m_diFocused.sDrawString = pStrImage;
+		DrawImage(NULL, m_diFocused);
+		if (m_diFocused.pImageInfo) {
+			LONG width = m_diFocused.pImageInfo->nX / 5;
+			LONG height = m_diFocused.pImageInfo->nY;
+			m_diFocused.rcBmpPart = CDuiRect(width*3, 0, width*4, height);
+		}
+
+		m_diDisabled.Clear();
+		m_diDisabled.sDrawString = pStrImage;
+		DrawImage(NULL, m_diDisabled);
+		if (m_diDisabled.pImageInfo) {
+			LONG width = m_diDisabled.pImageInfo->nX / 5;
+			LONG height = m_diDisabled.pImageInfo->nY;
+			m_diDisabled.rcBmpPart = CDuiRect(width*4, 0, width*5, height);
+		}
+
+		Invalidate();
+	}
+
+	void CButtonUI::SetFadeAlphaDelta(BYTE uDelta)
+	{
+		m_uFadeAlphaDelta = uDelta;
+	}
+
+	BYTE CButtonUI::GetFadeAlphaDelta()
+	{
+		return m_uFadeAlphaDelta;
 	}
 
 	SIZE CButtonUI::EstimateSize(SIZE szAvailable)
@@ -324,6 +364,8 @@ namespace DuiLib
 		else if( _tcscmp(pstrName, _T("disabledimage")) == 0 ) SetDisabledImage(pstrValue);
 		else if( _tcscmp(pstrName, _T("foreimage")) == 0 ) SetForeImage(pstrValue);
 		else if( _tcscmp(pstrName, _T("hotforeimage")) == 0 ) SetHotForeImage(pstrValue);
+		else if( _tcscmp(pstrName, _T("fivestatusimage")) == 0 ) SetFiveStatusImage(pstrValue);
+		else if( _tcscmp(pstrName, _T("fadedelta")) == 0 ) SetFadeAlphaDelta((BYTE)_ttoi(pstrValue));
 		else if( _tcscmp(pstrName, _T("hotbkcolor")) == 0 )
 		{
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
@@ -407,8 +449,23 @@ namespace DuiLib
 			else goto Label_ForeImage;
 		}
 		else if( (m_uButtonState & UISTATE_HOT) != 0 ) {
-			if (!DrawImage(hDC, m_diHot))
-				DrawImage(hDC, m_diNormal);
+			if( GetFadeAlphaDelta() > 0 ) {
+				if( m_uFadeAlpha == 0 ) {
+					m_diHot.uFade = 255;
+					DrawImage(hDC, m_diHot);
+				}
+				else {
+					m_diNormal.uFade = m_uFadeAlpha;
+					DrawImage(hDC, m_diNormal);
+					m_diHot.uFade = 255 - m_uFadeAlpha;
+					DrawImage(hDC, m_diHot);
+				}
+			}
+			else {
+				if (!DrawImage(hDC, m_diHot))
+					DrawImage(hDC, m_diNormal);
+			}
+
 			if (DrawImage(hDC, m_diHotFore)) return;
 			else if(m_dwHotBkColor != 0) {
 				CRenderEngine::DrawColor(hDC, m_rcPaint, GetAdjustColor(m_dwHotBkColor));
@@ -420,7 +477,21 @@ namespace DuiLib
 			if (DrawImage(hDC, m_diFocused)) goto Label_ForeImage;;
 		}
 
-		DrawImage(hDC, m_diNormal);
+		if ( GetFadeAlphaDelta() > 0 ) {
+			if( m_uFadeAlpha == 255 ) {
+				m_diNormal.uFade = 255;
+				DrawImage(hDC, m_diNormal);
+			}
+			else {
+				m_diHot.uFade = 255 - m_uFadeAlpha;
+				DrawImage(hDC, m_diHot);
+				m_diNormal.uFade = m_uFadeAlpha;
+				DrawImage(hDC, m_diNormal);
+			}
+		}
+		else {
+			DrawImage(hDC, m_diNormal);
+		}
 
 Label_ForeImage:
 		DrawImage(hDC, m_diFore);

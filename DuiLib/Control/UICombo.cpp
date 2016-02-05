@@ -94,6 +94,7 @@ void CComboWnd::OnFinalMessage(HWND hWnd)
 LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     if( uMsg == WM_CREATE ) {
+		m_pm.SetForceUseSharedRes(true);
         m_pm.Init(m_hWnd);
         // The trick is to add the items to the new container. Their owner gets
         // reassigned by this operation - which is why it is important to reassign
@@ -264,7 +265,7 @@ void CComboUI::SetSelectCloseFlag(bool flag)
 	m_bSelectCloseFlag = flag;
 }
 
-bool CComboUI::SelectItem(int iIndex, bool bTakeFocus)
+bool CComboUI::SelectItem(int iIndex, bool bTakeFocus, bool bTriggerEvent)
 {
     if( m_bSelectCloseFlag && m_pWindow != NULL ) m_pWindow->Close();
     if( iIndex == m_iCurSel ) return true;
@@ -273,7 +274,7 @@ bool CComboUI::SelectItem(int iIndex, bool bTakeFocus)
         CControlUI* pControl = static_cast<CControlUI*>(m_items[m_iCurSel]);
         if( !pControl ) return false;
         IListItemUI* pListItem = static_cast<IListItemUI*>(pControl->GetInterface(_T("ListItem")));
-        if( pListItem != NULL ) pListItem->Select(false);
+        if( pListItem != NULL ) pListItem->Select(false, bTriggerEvent);
         m_iCurSel = -1;
     }
     if( iIndex < 0 ) return false;
@@ -285,8 +286,8 @@ bool CComboUI::SelectItem(int iIndex, bool bTakeFocus)
     if( pListItem == NULL ) return false;
     m_iCurSel = iIndex;
     if( m_pWindow != NULL || bTakeFocus ) pControl->SetFocus();
-    pListItem->Select(true);
-    if( m_pManager != NULL ) m_pManager->SendNotify(this, DUI_MSGTYPE_ITEMSELECT, m_iCurSel, iOldSel);
+    pListItem->Select(true, bTriggerEvent);
+    if( m_pManager != NULL && bTriggerEvent) m_pManager->SendNotify(this, DUI_MSGTYPE_ITEMSELECT, m_iCurSel, iOldSel);
     Invalidate();
 
     return true;
@@ -1004,7 +1005,7 @@ void CComboUI::PaintText(HDC hDC)
         else {
             RECT rcOldPos = pControl->GetPos();
             pControl->SetPos(rcText, false);
-            pControl->DoPaint(hDC, rcText);
+            pControl->Paint(hDC, rcText);
             pControl->SetPos(rcOldPos, false);
         }
     }

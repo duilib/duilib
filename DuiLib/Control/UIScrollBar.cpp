@@ -120,14 +120,18 @@ int CScrollBarUI::GetScrollPos() const
 	return m_nScrollPos;
 }
 
-void CScrollBarUI::SetScrollPos(int nPos)
+void CScrollBarUI::SetScrollPos(int nPos, bool bTriggerEvent)
 {
 	if( m_nScrollPos == nPos ) return;
 
+	int iOldScrollPos = m_nScrollPos;
 	m_nScrollPos = nPos;
 	if( m_nScrollPos < 0 ) m_nScrollPos = 0;
 	if( m_nScrollPos > m_nRange ) m_nScrollPos = m_nRange;
 	SetPos(m_rcItem, true);
+
+	if(bTriggerEvent && m_pManager != NULL) 
+		m_pManager->SendNotify(this, DUI_MSGTYPE_SCROLL, m_nScrollPos, iOldScrollPos, true, false);
 }
 
 int CScrollBarUI::GetLineSize() const
@@ -684,7 +688,6 @@ void CScrollBarUI::DoEvent(TEventUI& event)
 				}
 			}
 		}
-		if( m_pManager != NULL && m_pOwner == NULL ) m_pManager->SendNotify(this, DUI_MSGTYPE_SCROLL);
 		return;
 	}
 	if( event.Type == UIEVENT_BUTTONUP )
@@ -811,7 +814,6 @@ void CScrollBarUI::DoEvent(TEventUI& event)
 				}
 			}
 		}
-		if( m_pManager != NULL && m_pOwner == NULL ) m_pManager->SendNotify(this, DUI_MSGTYPE_SCROLL);
 		return;
 	}
 	if( event.Type == UIEVENT_MOUSEENTER )

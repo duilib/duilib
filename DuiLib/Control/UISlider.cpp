@@ -3,7 +3,7 @@
 
 namespace DuiLib
 {
-	CSliderUI::CSliderUI() : m_uButtonState(0), m_nStep(1)
+	CSliderUI::CSliderUI() : m_uButtonState(0), m_nStep(1), m_bImmMode(false)
 	{
 		m_uTextStyle = DT_SINGLELINE | DT_CENTER;
 		m_szThumb.cx = m_szThumb.cy = 10;
@@ -16,7 +16,7 @@ namespace DuiLib
 
 	UINT CSliderUI::GetControlFlags() const
 	{
-		if( IsEnabled() ) return UIFLAG_SETCURSOR;
+		if( IsEnabled() ) return UIFLAG_SETCURSOR | UIFLAG_TABSTOP;
 		else return 0;
 	}
 
@@ -61,6 +61,16 @@ namespace DuiLib
 			int top = m_rcItem.bottom - m_szThumb.cy - (m_rcItem.bottom - m_rcItem.top - m_szThumb.cy) * (m_nValue - m_nMin) / (m_nMax - m_nMin);
 			return CDuiRect(left, top, left + m_szThumb.cx, top + m_szThumb.cy); 
 		}
+	}
+
+	bool CSliderUI::IsImmMode() const
+	{
+		return m_bImmMode;
+	}
+
+	void CSliderUI::SetImmMode(bool bImmMode)
+	{
+		m_bImmMode = bImmMode;
 	}
 
 	LPCTSTR CSliderUI::GetThumbImage() const
@@ -113,9 +123,30 @@ namespace DuiLib
 		if( event.Type == UIEVENT_BUTTONDOWN || event.Type == UIEVENT_DBLCLICK )
 		{
 			if( IsEnabled() ) {
-				RECT rcThumb = GetThumbRect();
+				/*RECT rcThumb = GetThumbRect();
 				if( ::PtInRect(&rcThumb, event.ptMouse) ) {
-					m_uButtonState |= UISTATE_CAPTURED;
+				m_uButtonState |= UISTATE_CAPTURED;
+				}
+				}
+				return;*/
+				m_uButtonState |= UISTATE_CAPTURED;
+
+				int nValue;
+
+				if (m_bHorizontal) {
+					if (event.ptMouse.x >= m_rcItem.right - m_szThumb.cx / 2) nValue = m_nMax;
+					else if (event.ptMouse.x <= m_rcItem.left + m_szThumb.cx / 2) nValue = m_nMin;
+					else nValue = m_nMin + (m_nMax - m_nMin) * (event.ptMouse.x - m_rcItem.left - m_szThumb.cx / 2) / (m_rcItem.right - m_rcItem.left - m_szThumb.cx);
+				}
+				else {
+					if (event.ptMouse.y >= m_rcItem.bottom - m_szThumb.cy / 2) nValue = m_nMin;
+					else if (event.ptMouse.y <= m_rcItem.top + m_szThumb.cy / 2) nValue = m_nMax;
+					else nValue = m_nMin + (m_nMax - m_nMin) * (m_rcItem.bottom - event.ptMouse.y - m_szThumb.cy / 2) / (m_rcItem.bottom - m_rcItem.top - m_szThumb.cy);
+				}
+				if (m_nValue != nValue && nValue >= m_nMin && nValue <= m_nMax)
+				{
+					m_nValue = nValue;
+					Invalidate();
 				}
 			}
 			return;
@@ -146,13 +177,13 @@ namespace DuiLib
 		if( event.Type == UIEVENT_SCROLLWHEEL ) 
 		{
 			switch( LOWORD(event.wParam) ) {
-		case SB_LINEUP:
-			SetValue(GetValue() + GetChangeStep());
-			m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED);
-			return;
-		case SB_LINEDOWN:
-			SetValue(GetValue() - GetChangeStep());
-			m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED);
+			case SB_LINEUP:
+				SetValue(GetValue() + GetChangeStep());
+				m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED);
+				return;
+			case SB_LINEDOWN:
+				SetValue(GetValue() - GetChangeStep());
+				m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED);
 			return;
 			}
 		}
@@ -169,6 +200,7 @@ namespace DuiLib
 					else if( event.ptMouse.y <= m_rcItem.top + m_szThumb.cy / 2  ) m_nValue = m_nMax;
 					else m_nValue = m_nMin + (m_nMax - m_nMin) * (m_rcItem.bottom - event.ptMouse.y - m_szThumb.cy / 2 ) / (m_rcItem.bottom - m_rcItem.top - m_szThumb.cy);
 				}
+				if( m_bImmMode ) m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED);
 				Invalidate();
 			}
 			return;
@@ -216,6 +248,7 @@ namespace DuiLib
 		else if( _tcscmp(pstrName, _T("step")) == 0 ) {
 			SetChangeStep(_ttoi(pstrValue));
 		}
+		else if( _tcscmp(pstrName, _T("imm")) == 0 ) SetImmMode(_tcscmp(pstrValue, _T("true")) == 0);
 		else CProgressUI::SetAttribute(pstrName, pstrValue);
 	}
 

@@ -23,6 +23,8 @@ public:
     void SetWantReturn(bool bWantReturn = true);
     bool IsWantCtrlReturn();
     void SetWantCtrlReturn(bool bWantCtrlReturn = true);
+    bool IsTransparent();
+    void SetTransparent(bool bTransparent = true);
     bool IsRich();
     void SetRich(bool bRich = true);
     bool IsReadOnly();
@@ -126,11 +128,16 @@ public:
     LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool& bHandled);
 
 protected:
+	enum { 
+		DEFAULT_TIMERID = 20,
+	};
+
     CTxtWinHost* m_pTwh;
     bool m_bVScrollBarFixing;
     bool m_bWantTab;
     bool m_bWantReturn;
     bool m_bWantCtrlReturn;
+    bool m_bTransparent;
     bool m_bRich;
     bool m_bReadOnly;
     bool m_bWordWrap;
@@ -138,6 +145,7 @@ protected:
     int m_iFont;
     int m_iLimitText;
     LONG m_lTwhStyle;
+	bool m_bDrawCaret;
 	bool m_bInited;
 };
 

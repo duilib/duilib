@@ -497,7 +497,7 @@ void CMenuElementUI::DoPaint(HDC hDC, const RECT& rcPaint)
 	for (int i = 0; i < GetCount(); ++i)
 	{
 		if (GetItemAt(i)->GetInterface(kMenuElementUIInterfaceName) == NULL)
-			GetItemAt(i)->DoPaint(hDC, rcPaint);
+			GetItemAt(i)->Paint(hDC, rcPaint);
 	}
 }
 

@@ -6,6 +6,7 @@ namespace DuiLib
 {
 
 #define MAX_FONT_ID		30000
+#define LAYEREDUPDATE_TIMERID	0x2000
 
 enum DuiSig
 {
@@ -222,6 +223,8 @@ protected:                                                                \
 #define  DUI_CTR_EDIT                            (_T("Edit"))
 #define  DUI_CTR_LIST                            (_T("List"))
 #define  DUI_CTR_TEXT                            (_T("Text"))
+#define  DUI_CTR_HBOX                            (_T("HBox"))
+#define  DUI_CTR_VBOX                            (_T("VBox"))
 
 #define  DUI_CTR_COMBO                           (_T("Combo"))
 #define  DUI_CTR_LABEL                           (_T("Label"))
@@ -233,6 +236,7 @@ protected:                                                                \
 
 #define  DUI_CTR_CONTROL                         (_T("Control"))
 #define  DUI_CTR_ACTIVEX                         (_T("ActiveX"))
+#define  DUI_CTR_GIFANIM                         (_T("GifAnim"))
 
 #define  DUI_CTR_LISTITEM                        (_T("ListItem"))
 #define  DUI_CTR_PROGRESS                        (_T("Progress"))
@@ -253,8 +257,6 @@ protected:                                                                \
 
 #define  DUI_CTR_CHILDLAYOUT                     (_T("ChildLayout"))
 #define  DUI_CTR_LISTELEMENT                     (_T("ListElement"))
-
-#define  DUI_CTR_DIALOGLAYOUT                    (_T("DialogLayout"))
 
 #define  DUI_CTR_VERTICALLAYOUT                  (_T("VerticalLayout"))
 #define  DUI_CTR_LISTHEADERITEM                  (_T("ListHeaderItem"))

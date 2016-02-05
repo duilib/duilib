@@ -55,6 +55,10 @@ public:
     virtual void SetInset(RECT rcInset); // 设置内边距，相当于设置客户区
     virtual int GetChildPadding() const;
     virtual void SetChildPadding(int iPadding);
+	virtual UINT GetChildAlign() const;
+	virtual void SetChildAlign(UINT iAlign);
+	virtual UINT GetChildVAlign() const;
+	virtual void SetChildVAlign(UINT iVAlign);
     virtual bool IsAutoDestroy() const;
     virtual void SetAutoDestroy(bool bAuto);
     virtual bool IsDelayedDestroy() const;
@@ -64,6 +68,7 @@ public:
 
     virtual int FindSelectable(int iIndex, bool bForward = true) const;
 
+	RECT GetClientPos() const;
 	void SetPos(RECT rc, bool bNeedInvalidate = true);
 	void Move(SIZE szOffset, bool bNeedInvalidate = true);
     void DoPaint(HDC hDC, const RECT& rcPaint);
@@ -111,6 +116,8 @@ protected:
     CStdPtrArray m_items;
     RECT m_rcInset;
     int m_iChildPadding;
+	UINT m_iChildAlign;
+	UINT m_iChildVAlign;
     bool m_bAutoDestroy;
     bool m_bDelayedDestroy;
     bool m_bMouseChildEnabled;

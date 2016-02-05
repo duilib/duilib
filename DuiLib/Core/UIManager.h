@@ -101,7 +101,7 @@ typedef struct UILIB_API tagTImageInfo
 	LPBYTE pSrcBits;
     int nX;
     int nY;
-    bool alphaChannel;
+    bool bAlpha;
     bool bUseHSL;
     CDuiString sResType;
     DWORD dwMask;
@@ -113,12 +113,12 @@ typedef struct UILIB_API tagTDrawInfo
 	tagTDrawInfo(LPCTSTR lpsz);
 	void Clear();
 	CDuiString sDrawString;
+    CDuiString sImageName;
 	bool bLoaded;
-	CDuiString sImageName;
 	const TImageInfo* pImageInfo;
 	RECT rcDestOffset;
 	RECT rcBmpPart;
-	RECT rcCorner;
+	RECT rcScale9;
 	BYTE uFade;
 	bool bHole;
 	bool bTiledX;
@@ -194,15 +194,21 @@ public:
     ~CPaintManagerUI();
 
 public:
-    void Init(HWND hWnd);
+    void Init(HWND hWnd, LPCTSTR pstrName = NULL);
 	bool IsUpdateNeeded() const;
     void NeedUpdate();
 	void Invalidate();
     void Invalidate(RECT& rcItem);
 
+	LPCTSTR GetName() const;
     HDC GetPaintDC() const;
+	HBITMAP GetPaintOffscreenBitmap();
     HWND GetPaintWindow() const;
     HWND GetTooltipWindow() const;
+	int GetTooltipWindowWidth() const;
+	void SetTooltipWindowWidth(int iWidth);
+	int GetHoverTime() const;
+	void SetHoverTime(int iTime);
 
     POINT GetMousePos() const;
     SIZE GetClientSize() const;
@@ -218,11 +224,20 @@ public:
     void SetMinInfo(int cx, int cy);
     SIZE GetMaxInfo() const;
     void SetMaxInfo(int cx, int cy);
-	int GetTransparent() const;
-    void SetTransparent(int nOpacity);
-    void SetBackgroundTransparent(bool bTrans);
     bool IsShowUpdateRect() const;
     void SetShowUpdateRect(bool show);
+
+	BYTE GetOpacity() const;
+	void SetOpacity(BYTE nOpacity);
+
+	bool IsLayered();
+	void SetLayered(bool bLayered);
+	RECT& GetLayeredInset();
+	void SetLayeredInset(RECT& rcLayeredInset);
+	BYTE GetLayeredOpacity();
+	void SetLayeredOpacity(BYTE nOpacity);
+	LPCTSTR GetLayeredImage();
+	void SetLayeredImage(LPCTSTR pstrImage);
 
     static HINSTANCE GetInstance();
     static CDuiString GetInstancePath();
@@ -241,8 +256,13 @@ public:
     static bool GetHSL(short* H, short* S, short* L);
     static void SetHSL(bool bUseHSL, short H, short S, short L); // H:0~360, S:0~200, L:0~200 
     static void ReloadSkin();
+	static CPaintManagerUI* GetPaintManager(LPCTSTR pstrName);
+	static CStdPtrArray* GetPaintManagers();
     static bool LoadPlugin(LPCTSTR pstrModuleName);
     static CStdPtrArray* GetPlugins();
+
+	bool IsForceUseSharedRes() const;
+	void SetForceUseSharedRes(bool bForce);
 
     DWORD GetDefaultDisabledColor() const;
     void SetDefaultDisabledColor(DWORD dwColor, bool bShared = false);
@@ -282,6 +302,11 @@ public:
     bool RemoveDefaultAttributeList(LPCTSTR pStrControlName, bool bShared = false);
     void RemoveAllDefaultAttributeList(bool bShared = false);
 
+	void AddWindowCustomAttribute(LPCTSTR pstrName, LPCTSTR pstrAttr);
+	LPCTSTR GetWindowCustomAttribute(LPCTSTR pstrName) const;
+	bool RemoveWindowCustomAttribute(LPCTSTR pstrName);
+	void RemoveAllWindowCustomAttribute();
+
 	static void AddMultiLanguageString(int id, LPCTSTR pStrMultiLanguage);
 	static LPCTSTR GetMultiLanguageString(int id);
 	static bool RemoveMultiLanguageString(int id);
@@ -298,7 +323,7 @@ public:
     void RemoveAllOptionGroups();
 
     CControlUI* GetFocus() const;
-    void SetFocus(CControlUI* pControl);
+    void SetFocus(CControlUI* pControl, bool bFocusWnd=true);
     void SetFocusNeeded(CControlUI* pControl);
 
     bool SetNextTabControl(bool bForward = true);
@@ -312,10 +337,13 @@ public:
     void ReleaseCapture();
     bool IsCaptured();
 
+	bool IsPainting();
+	void SetPainting(bool bIsPainting);
+
     bool AddNotifier(INotifyUI* pControl);
     bool RemoveNotifier(INotifyUI* pControl);   
-    void SendNotify(TNotifyUI& Msg, bool bAsync = false);
-    void SendNotify(CControlUI* pControl, LPCTSTR pstrMessage, WPARAM wParam = 0, LPARAM lParam = 0, bool bAsync = false);
+    void SendNotify(TNotifyUI& Msg, bool bAsync = false, bool bEnableRepeat = true);
+    void SendNotify(CControlUI* pControl, LPCTSTR pstrMessage, WPARAM wParam = 0, LPARAM lParam = 0, bool bAsync = false, bool bEnableRepeat = true);
 
     bool AddPreMessageFilter(IMessageFilterUI* pFilter);
     bool RemovePreMessageFilter(IMessageFilterUI* pFilter);
@@ -327,6 +355,11 @@ public:
     bool AddPostPaint(CControlUI* pControl);
     bool RemovePostPaint(CControlUI* pControl);
     bool SetPostPaintIndex(CControlUI* pControl, int iIndex);
+
+	int GetNativeWindowCount() const;
+	RECT GetNativeWindowRect(HWND hChildWnd);
+	bool AddNativeWindow(CControlUI* pControl, HWND hChildWnd);
+	bool RemoveNativeWindow(HWND hChildWnd);
 
     void AddDelayedCleanup(CControlUI* pControl);
 
@@ -364,17 +397,22 @@ private:
 
 	static void AdjustSharedImagesHSL();
 	void AdjustImagesHSL();
+	void PostAsyncNotify();
 
 private:
+	CDuiString m_sName;
     HWND m_hWndPaint;
-	int m_nOpacity;
     HDC m_hDcPaint;
     HDC m_hDcOffscreen;
     HDC m_hDcBackground;
     HBITMAP m_hbmpOffscreen;
+	COLORREF* m_pOffscreenBits;
     HBITMAP m_hbmpBackground;
-    HWND m_hwndTooltip;
-    TOOLINFO m_ToolTip;
+	COLORREF* m_pBackgroundBits;
+	int m_iTooltipWidth;
+	HWND m_hwndTooltip;
+	TOOLINFO m_ToolTip;
+	int m_iHoverTime;
     bool m_bShowUpdateRect;
     //
     CControlUI* m_pRoot;
@@ -395,10 +433,19 @@ private:
     bool m_bUpdateNeeded;
     bool m_bFocusNeeded;
     bool m_bOffscreenPaint;
-    bool m_bAlphaBackground;
+
+	BYTE m_nOpacity;
+	bool m_bLayered;
+	RECT m_rcLayeredInset;
+	bool m_bLayeredChanged;
+	RECT m_rcLayeredUpdate;
+	TDrawInfo m_diLayered;
+
     bool m_bMouseTracking;
     bool m_bMouseCapture;
+	bool m_bIsPainting;
 	bool m_bUsedVirtualWnd;
+	bool m_bAsyncNotifyPosted;
 
     //
     CStdPtrArray m_aNotifiers;
@@ -406,13 +453,17 @@ private:
     CStdPtrArray m_aPreMessageFilters;
     CStdPtrArray m_aMessageFilters;
     CStdPtrArray m_aPostPaintControls;
+	CStdPtrArray m_aNativeWindow;
+	CStdPtrArray m_aNativeWindowControl;
     CStdPtrArray m_aDelayedCleanup;
     CStdPtrArray m_aAsyncNotify;
     CStdPtrArray m_aFoundControls;
     CStdStringPtrMap m_mNameHash;
+	CStdStringPtrMap m_mWindowCustomAttrHash;
     CStdStringPtrMap m_mOptionGroup;
 
     //
+	bool m_bForceUseSharedRes;
 	TResInfo m_ResInfo;
 
     //

@@ -15,6 +15,8 @@ namespace DuiLib
 		CDateTimeUI();
 		LPCTSTR GetClass() const;
 		LPVOID GetInterface(LPCTSTR pstrName);
+		UINT GetControlFlags() const;
+		HWND GetNativeWindow() const;
 
 		SYSTEMTIME& GetTime();
 		void SetTime(SYSTEMTIME* pst);

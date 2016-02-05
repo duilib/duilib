@@ -61,6 +61,21 @@ namespace DuiLib
 	RECT CDateTimeWnd::CalPos()
 	{
 		CDuiRect rcPos = m_pOwner->GetPos();
+
+		CControlUI* pParent = m_pOwner;
+		RECT rcParent;
+		while( pParent = pParent->GetParent() ) {
+			if( !pParent->IsVisible() ) {
+				rcPos.left = rcPos.top = rcPos.right = rcPos.bottom = 0;
+				break;
+			}
+			rcParent = pParent->GetClientPos();
+			if( !::IntersectRect(&rcPos, &rcPos, &rcParent) ) {
+				rcPos.left = rcPos.top = rcPos.right = rcPos.bottom = 0;
+				break;
+			}
+		}
+
 		return rcPos;
 	}
 
@@ -74,10 +89,11 @@ namespace DuiLib
 		return DATETIMEPICK_CLASS;
 	}
 
-	void CDateTimeWnd::OnFinalMessage(HWND /*hWnd*/)
+	void CDateTimeWnd::OnFinalMessage(HWND hWnd)
 	{
 		// Clear reference and die
 		if( m_hBkBrush != NULL ) ::DeleteObject(m_hBkBrush);
+		m_pOwner->GetManager()->RemoveNativeWindow(hWnd);
 		m_pOwner->m_pWindow = NULL;
 		delete this;
 	}
@@ -86,7 +102,11 @@ namespace DuiLib
 	{
 		LRESULT lRes = 0;
 		BOOL bHandled = TRUE;
-		if( uMsg == WM_KILLFOCUS )
+		if( uMsg == WM_CREATE ) {
+			m_pOwner->GetManager()->AddNativeWindow(m_pOwner, m_hWnd);
+			bHandled = FALSE;
+		}
+		else if( uMsg == WM_KILLFOCUS )
 		{
 			lRes = OnKillFocus(uMsg, wParam, lParam, bHandled);
 		}
@@ -127,6 +147,12 @@ namespace DuiLib
 		// 			}
 		// 			return (LRESULT)m_hBkBrush;
 		// 		}
+		else if( uMsg == WM_PAINT) {
+			if (m_pOwner->GetManager()->IsLayered()) {
+				m_pOwner->GetManager()->AddNativeWindow(m_pOwner, m_hWnd);
+			}
+			bHandled = FALSE;
+		}
 		else bHandled = FALSE;
 		if( !bHandled ) return CWindowWnd::HandleMessage(uMsg, wParam, lParam);
 		return lRes;
@@ -141,7 +167,10 @@ namespace DuiLib
 			m_pOwner->m_nDTUpdateFlag = DT_UPDATE;
 			m_pOwner->UpdateText();
 		}
-		PostMessage(WM_CLOSE);
+		if ((HWND)wParam != m_pOwner->GetManager()->GetPaintWindow()) {
+			::SendMessage(m_pOwner->GetManager()->GetPaintWindow(), WM_KILLFOCUS, wParam, lParam);
+		}
+		SendMessage(WM_CLOSE);
 		return lRes;
 	}
 
@@ -181,6 +210,17 @@ namespace DuiLib
 	{
 		if( _tcscmp(pstrName, DUI_CTR_DATETIME) == 0 ) return static_cast<CDateTimeUI*>(this);
 		return CLabelUI::GetInterface(pstrName);
+	}
+
+	UINT CDateTimeUI::GetControlFlags() const
+	{
+		return UIFLAG_TABSTOP;
+	}
+
+	HWND CDateTimeUI::GetNativeWindow() const
+	{
+		if (m_pWindow) return m_pWindow->GetHWND();
+		return NULL;
 	}
 
 	SYSTEMTIME& CDateTimeUI::GetTime()

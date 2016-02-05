@@ -32,7 +32,7 @@ public:
     int GetCurSel() const;
 	bool GetSelectCloseFlag();
 	void SetSelectCloseFlag(bool flag);
-    bool SelectItem(int iIndex, bool bTakeFocus = false);
+    bool SelectItem(int iIndex, bool bTakeFocus = false, bool bTriggerEvent=true);
 
     bool SetItemIndex(CControlUI* pControl, int iIndex);
     bool Add(CControlUI* pControl);
