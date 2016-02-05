@@ -59,7 +59,7 @@
     				</VerticalLayout>	
     				<HorizontalLayout width="300" minwidth="200" maxwidth="600" inset="4,0,0,0" sepwidth="-4" bkcolor="#FF60B1FE">
     					<VerticalLayout >
-    						<List name="userlist" height="260" bkcolor="#FFE0F0FE" inset="1,0,1,0" bordercolor="#FF1B4876" bordersize="1" itemshowhtml="true" itemalign="center" itemhotimage="file='tree_hot.bmp' corner='2,1,2,1'" itemselectedimage="file='tree_select.bmp' corner='2,1,2,1'" itemshowhtml="true" vscrollbar="true" hscrollbar="true" headerbkimage="headerctrl_normal.bmp" >
+    						<List name="userlist" height="260" bkcolor="#FFE0F0FE" inset="1,1,1,1" bordercolor="#FF1B4876" bordersize="1" itemshowhtml="true" itemalign="center" itemhotimage="file='tree_hot.bmp' corner='2,1,2,1'" itemselectedimage="file='tree_select.bmp' corner='2,1,2,1'" itemshowhtml="true" vscrollbar="true" hscrollbar="true" headerbkimage="headerctrl_normal.bmp" >
 								<ListHeader />
 								<ListHeaderItem text="" width="20" enabled="false" dragable="false" normalimage="headerctrl_normal.bmp" hotimage="headerctrl_hot.bmp" pushedimage="headerctrl_down.bmp" sepimage="Headerctrl_Sperator.bmp" />
 								<ListHeaderItem text="" width="20" enabled="false" dragable="false" normalimage="headerctrl_normal.bmp" hotimage="headerctrl_hot.bmp" pushedimage="headerctrl_down.bmp" sepimage="Headerctrl_Sperator.bmp" />
