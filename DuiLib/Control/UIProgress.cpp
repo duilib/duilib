@@ -63,6 +63,8 @@ namespace DuiLib
 	void CProgressUI::SetValue(int nValue)
 	{
 		m_nValue = nValue;
+		if (m_nValue > m_nMax) m_nValue = m_nMax;
+		if (m_nValue < m_nMin) m_nValue = m_nMin;
 		Invalidate();
 	}
 
