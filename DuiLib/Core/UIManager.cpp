@@ -562,6 +562,9 @@ void CPaintManagerUI::SetOpacity(BYTE nOpacity)
 		else dwNewStyle &= ~WS_EX_LAYERED;
 		if(dwStyle != dwNewStyle) ::SetWindowLong(m_hWndPaint, GWL_EXSTYLE, dwNewStyle);
 		fSetLayeredWindowAttributes(m_hWndPaint, 0, nOpacity, LWA_ALPHA);
+
+		m_bLayered = false;
+		Invalidate();
 	}
 }
 

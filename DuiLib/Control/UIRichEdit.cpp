@@ -1,5 +1,8 @@
 #include "stdafx.h"
-
+#ifdef _USEIMM
+#include <imm.h>
+#pragma comment(lib, "imm32.lib")
+#endif
 // These constants are for backward compatibility. They are the 
 // sizes used for initialization and reset in RichEdit 1.0
 
@@ -2315,6 +2318,29 @@ LRESULT CRichEditUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, boo
 #endif
         if( !IsFocused() ) return 0;
     }
+#ifdef _USEIMM
+	else if( uMsg == WM_IME_STARTCOMPOSITION ) {
+		if( IsFocused() ) {
+			POINT ptCaret;
+			::GetCaretPos(&ptCaret);
+			HIMC hMic = ::ImmGetContext(GetManager()->GetPaintWindow());
+			COMPOSITIONFORM cpf;
+			cpf.dwStyle = CFS_FORCE_POSITION;
+			cpf.ptCurrentPos.x = ptCaret.x + m_pTwh->GetCaretWidth();
+			cpf.ptCurrentPos.y = ptCaret.y;
+			::ImmSetCompositionWindow(hMic, &cpf);
+
+			HFONT hFont = GetManager()->GetFont(m_iFont);
+			LOGFONT lf;
+			::GetObject(hFont, sizeof(LOGFONT), &lf);
+			::ImmSetCompositionFont(hMic, &lf);
+
+			::ImmReleaseContext(GetManager()->GetPaintWindow(), hMic);
+		}
+		bWasHandled = false;
+		return 0;
+	}
+#endif
     else if( uMsg == WM_CONTEXTMENU ) {
         POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
         ::ScreenToClient(GetManager()->GetPaintWindow(), &pt);
