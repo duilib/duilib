@@ -931,7 +931,7 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 						}
 					}
 				}
-                m_pRoot->Paint(m_hDcOffscreen, rcPaint);
+                m_pRoot->Paint(m_hDcOffscreen, rcPaint, NULL);
 
 				if( m_bLayered ) {
 					for( int i = 0; i < m_aNativeWindow.GetSize(); ) {
@@ -1044,7 +1044,7 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             {
                 // A standard paint job
                 int iSaveDC = ::SaveDC(m_hDcPaint);
-                m_pRoot->Paint(m_hDcPaint, rcPaint);
+                m_pRoot->Paint(m_hDcPaint, rcPaint, NULL);
                 ::RestoreDC(m_hDcPaint, iSaveDC);
             }
             // All Done!
@@ -1062,7 +1062,7 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             ::GetClientRect(m_hWndPaint, &rcClient);
             HDC hDC = (HDC) wParam;
             int save = ::SaveDC(hDC);
-            m_pRoot->Paint(hDC, rcClient);
+            m_pRoot->Paint(hDC, rcClient, NULL);
             // Check for traversing children. The crux is that WM_PRINT will assume
             // that the DC is positioned at frame coordinates and will paint the child
             // control at the wrong position. We'll simulate the entire thing instead.
@@ -1580,6 +1580,18 @@ bool CPaintManagerUI::InitControls(CControlUI* pControl, CControlUI* pParent /*=
     pControl->SetManager(this, pParent != NULL ? pParent : pControl->GetParent(), true);
     pControl->FindControl(__FindControlFromNameHash, this, UIFIND_ALL);
     return true;
+}
+
+bool CPaintManagerUI::RenameControl(CControlUI* pControl, LPCTSTR pstrName)
+{
+	ASSERT(pControl);
+	if( pControl == NULL || pControl->GetManager() != this || pstrName == NULL || *pstrName == _T('\0')) return false;
+	if (pControl->GetName() == pstrName) return true;
+	if (NULL != FindControl(pstrName)) return false;
+	m_mNameHash.Remove(pControl->GetName());
+	bool bResult = m_mNameHash.Insert(pstrName, pControl);
+	if (bResult) pControl->SetName(pstrName);
+	return bResult;
 }
 
 void CPaintManagerUI::ReapObjects(CControlUI* pControl)

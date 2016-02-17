@@ -146,11 +146,12 @@ public:
 
     virtual void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
     CControlUI* ApplyAttributeList(LPCTSTR pstrList);
+	CDuiString GetAttributeList();
 
     virtual SIZE EstimateSize(SIZE szAvailable);
 
-	virtual void Paint(HDC hDC, const RECT& rcPaint);
-    virtual void DoPaint(HDC hDC, const RECT& rcPaint);
+	virtual void Paint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl=NULL);
+    virtual void DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl);
     virtual void PaintBkColor(HDC hDC);
     virtual void PaintBkImage(HDC hDC);
     virtual void PaintStatusImage(HDC hDC);
@@ -179,6 +180,7 @@ protected:
     CDuiString m_sName;
     bool m_bUpdateNeeded;
     bool m_bMenuUsed;
+	bool m_bAsyncNotify;
     RECT m_rcItem;
     RECT m_rcPadding;
     SIZE m_cXY;

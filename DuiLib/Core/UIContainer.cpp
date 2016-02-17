@@ -749,14 +749,14 @@ namespace DuiLib
 		return pResult;
 	}
 
-	void CContainerUI::DoPaint(HDC hDC, const RECT& rcPaint)
+	void CContainerUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl)
 	{
 		RECT rcTemp = { 0 };
 		if( !::IntersectRect(&rcTemp, &rcPaint, &m_rcItem) ) return;
 
 		CRenderClip clip;
 		CRenderClip::GenerateClip(hDC, rcTemp, clip);
-		CControlUI::DoPaint(hDC, rcPaint);
+		CControlUI::DoPaint(hDC, rcPaint, pStopControl);
 
 		if( m_items.GetSize() > 0 ) {
 			RECT rc = m_rcItem;
@@ -770,11 +770,12 @@ namespace DuiLib
 			if( !::IntersectRect(&rcTemp, &rcPaint, &rc) ) {
 				for( int it = 0; it < m_items.GetSize(); it++ ) {
 					CControlUI* pControl = static_cast<CControlUI*>(m_items[it]);
+					if( pControl == pStopControl ) break;
 					if( !pControl->IsVisible() ) continue;
 					if( !::IntersectRect(&rcTemp, &rcPaint, &pControl->GetPos()) ) continue;
-					if( pControl ->IsFloat() ) {
+					if( pControl->IsFloat() ) {
 						if( !::IntersectRect(&rcTemp, &m_rcItem, &pControl->GetPos()) ) continue;
-						pControl->Paint(hDC, rcPaint);
+						pControl->Paint(hDC, rcPaint, pStopControl);
 					}
 				}
 			}
@@ -783,17 +784,18 @@ namespace DuiLib
 				CRenderClip::GenerateClip(hDC, rcTemp, childClip);
 				for( int it = 0; it < m_items.GetSize(); it++ ) {
 					CControlUI* pControl = static_cast<CControlUI*>(m_items[it]);
+					if( pControl == pStopControl ) break;
 					if( !pControl->IsVisible() ) continue;
 					if( !::IntersectRect(&rcTemp, &rcPaint, &pControl->GetPos()) ) continue;
-					if( pControl ->IsFloat() ) {
+					if( pControl->IsFloat() ) {
 						if( !::IntersectRect(&rcTemp, &m_rcItem, &pControl->GetPos()) ) continue;
 						CRenderClip::UseOldClipBegin(hDC, childClip);
-						pControl->Paint(hDC, rcPaint);
+						pControl->Paint(hDC, rcPaint, pStopControl);
 						CRenderClip::UseOldClipEnd(hDC, childClip);
 					}
 					else {
 						if( !::IntersectRect(&rcTemp, &rc, &pControl->GetPos()) ) continue;
-						pControl->Paint(hDC, rcPaint);
+						pControl->Paint(hDC, rcPaint, pStopControl);
 					}
 				}
 			}
@@ -801,13 +803,13 @@ namespace DuiLib
 
 		if( m_pVerticalScrollBar != NULL && m_pVerticalScrollBar->IsVisible() ) {
 			if( ::IntersectRect(&rcTemp, &rcPaint, &m_pVerticalScrollBar->GetPos()) ) {
-				m_pVerticalScrollBar->Paint(hDC, rcPaint);
+				m_pVerticalScrollBar->Paint(hDC, rcPaint, pStopControl);
 			}
 		}
 
 		if( m_pHorizontalScrollBar != NULL && m_pHorizontalScrollBar->IsVisible() ) {
 			if( ::IntersectRect(&rcTemp, &rcPaint, &m_pHorizontalScrollBar->GetPos()) ) {
-				m_pHorizontalScrollBar->Paint(hDC, rcPaint);
+				m_pHorizontalScrollBar->Paint(hDC, rcPaint, pStopControl);
 			}
 		}
 	}

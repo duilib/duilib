@@ -161,7 +161,7 @@ namespace DuiLib
 			if (clrColor < 0xFF000000) {
 				if (m_hBkBrush != NULL) ::DeleteObject(m_hBkBrush);
 				RECT rcWnd = m_pOwner->GetManager()->GetNativeWindowRect(m_hWnd);
-				HBITMAP hBmpEditBk = CRenderEngine::GenerateBitmap(m_pOwner->GetManager(), rcWnd, clrColor);
+				HBITMAP hBmpEditBk = CRenderEngine::GenerateBitmap(m_pOwner->GetManager(), rcWnd, m_pOwner, clrColor);
 				m_hBkBrush = ::CreatePatternBrush(hBmpEditBk);
 				::DeleteObject(hBmpEditBk);
 			}
@@ -320,6 +320,7 @@ namespace DuiLib
 						POINT pt = event.ptMouse;
 						pt.x -= m_rcItem.left + m_rcTextPadding.left;
 						pt.y -= m_rcItem.top + m_rcTextPadding.top;
+						Edit_SetSel(*m_pWindow, 0, 0);
 						::SendMessage(*m_pWindow, WM_LBUTTONDOWN, event.wParam, MAKELPARAM(pt.x, pt.y));
 					}
 				}

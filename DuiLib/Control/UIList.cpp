@@ -1895,9 +1895,8 @@ SIZE CListLabelElementUI::EstimateSize(SIZE szAvailable)
     return cXY;
 }
 
-void CListLabelElementUI::DoPaint(HDC hDC, const RECT& rcPaint)
+void CListLabelElementUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl)
 {
-    if( !::IntersectRect(&m_rcPaint, &rcPaint, &m_rcItem) ) return;
     DrawItemBk(hDC, m_rcItem);
     DrawItemText(hDC, m_rcItem);
 }
@@ -2333,11 +2332,10 @@ void CListContainerElementUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else CContainerUI::SetAttribute(pstrName, pstrValue);
 }
 
-void CListContainerElementUI::DoPaint(HDC hDC, const RECT& rcPaint)
+void CListContainerElementUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl)
 {
-    if( !::IntersectRect(&m_rcPaint, &rcPaint, &m_rcItem) ) return;
     DrawItemBk(hDC, m_rcItem);
-    CContainerUI::DoPaint(hDC, rcPaint);
+    CContainerUI::DoPaint(hDC, rcPaint, pStopControl);
 }
 
 void CListContainerElementUI::DrawItemText(HDC hDC, const RECT& rcItem)

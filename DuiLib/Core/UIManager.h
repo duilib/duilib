@@ -315,6 +315,7 @@ public:
 
     bool AttachDialog(CControlUI* pControl);
     bool InitControls(CControlUI* pControl, CControlUI* pParent = NULL);
+	bool RenameControl(CControlUI* pControl, LPCTSTR pstrName);
     void ReapObjects(CControlUI* pControl);
 
     bool AddOptionGroup(LPCTSTR pStrGroupName, CControlUI* pControl);

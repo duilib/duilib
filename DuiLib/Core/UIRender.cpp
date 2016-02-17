@@ -2043,7 +2043,7 @@ void CRenderEngine::DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, L
     ::SelectObject(hDC, hOldFont);
 }
 
-HBITMAP CRenderEngine::GenerateBitmap(CPaintManagerUI* pManager, RECT rc, DWORD dwFilterColor)
+HBITMAP CRenderEngine::GenerateBitmap(CPaintManagerUI* pManager, RECT rc, CControlUI* pStopControl, DWORD dwFilterColor)
 {
 	if (pManager == NULL) return NULL;
 	int cx = rc.right - rc.left;
@@ -2053,7 +2053,7 @@ HBITMAP CRenderEngine::GenerateBitmap(CPaintManagerUI* pManager, RECT rc, DWORD 
 	HDC hPaintDC = ::CreateCompatibleDC(pManager->GetPaintDC());
 	ASSERT(hPaintDC);
 	HBITMAP hPaintBitmap = NULL;
-	if (!pManager->IsLayered()) hPaintBitmap = pManager->GetPaintOffscreenBitmap();
+	if (pStopControl == NULL && !pManager->IsLayered()) hPaintBitmap = pManager->GetPaintOffscreenBitmap();
 	if( hPaintBitmap == NULL ) {
 		bUseOffscreenBitmap = false;
 		hPaintBitmap = ::CreateCompatibleBitmap(pManager->GetPaintDC(), rc.right, rc.bottom);
@@ -2062,7 +2062,7 @@ HBITMAP CRenderEngine::GenerateBitmap(CPaintManagerUI* pManager, RECT rc, DWORD 
 	HBITMAP hOldPaintBitmap = (HBITMAP) ::SelectObject(hPaintDC, hPaintBitmap);
 	if (!bUseOffscreenBitmap) {
 		CControlUI* pRoot = pManager->GetRoot();
-		pRoot->Paint(hPaintDC, rc);
+		pRoot->Paint(hPaintDC, rc, pStopControl);
 	}
 
 	BITMAPINFO bmi = { 0 };
@@ -2108,7 +2108,7 @@ HBITMAP CRenderEngine::GenerateBitmap(CPaintManagerUI* pManager, CControlUI* pCo
     ASSERT(hPaintDC);
     ASSERT(hPaintBitmap);
     HBITMAP hOldPaintBitmap = (HBITMAP) ::SelectObject(hPaintDC, hPaintBitmap);
-    pControl->Paint(hPaintDC, rc);
+    pControl->Paint(hPaintDC, rc, NULL);
 
     BITMAPINFO bmi = { 0 };
     bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);

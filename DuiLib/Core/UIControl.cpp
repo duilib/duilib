@@ -7,6 +7,7 @@ m_pManager(NULL),
 m_pParent(NULL), 
 m_bUpdateNeeded(true),
 m_bMenuUsed(false),
+m_bAsyncNotify(false),
 m_bVisible(true), 
 m_bInternVisible(true),
 m_bFocused(false),
@@ -53,7 +54,10 @@ CDuiString CControlUI::GetName() const
 
 void CControlUI::SetName(LPCTSTR pstrName)
 {
-    m_sName = pstrName;
+	if (m_sName != pstrName) {
+		m_sName = pstrName;
+		if (m_pManager != NULL) m_pManager->RenameControl(this, pstrName);
+	}
 }
 
 LPVOID CControlUI::GetInterface(LPCTSTR pstrName)
@@ -963,24 +967,28 @@ CControlUI* CControlUI::ApplyAttributeList(LPCTSTR pstrList)
     return this;
 }
 
+CDuiString CControlUI::GetAttributeList()
+{
+	return "";
+}
+
 SIZE CControlUI::EstimateSize(SIZE szAvailable)
 {
     return m_cxyFixed;
 }
 
-void CControlUI::Paint(HDC hDC, const RECT& rcPaint)
+void CControlUI::Paint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl)
 {
+	if (pStopControl == this) return;
 	if( !::IntersectRect(&m_rcPaint, &rcPaint, &m_rcItem) ) return;
 	if( OnPaint ) {
 		if( !OnPaint(this) ) return;
 	}
-	DoPaint(hDC, rcPaint);
+	DoPaint(hDC, rcPaint, pStopControl);
 }
 
-void CControlUI::DoPaint(HDC hDC, const RECT& rcPaint)
+void CControlUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl)
 {
-    if( !::IntersectRect(&m_rcPaint, &rcPaint, &m_rcItem) ) return;
-
     // »æÖÆÑ­Ðò£º±³¾°ÑÕÉ«->±³¾°Í¼->×´Ì¬Í¼->ÎÄ±¾->±ß¿ò
     if( m_cxyBorderRound.cx > 0 || m_cxyBorderRound.cy > 0 ) {
         CRenderClip roundClip;

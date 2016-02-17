@@ -1019,10 +1019,8 @@ void CActiveXUI::Move(SIZE szOffset, bool bNeedInvalidate)
 	}
 }
 
-void CActiveXUI::DoPaint(HDC hDC, const RECT& rcPaint)
+void CActiveXUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl)
 {
-    if( !::IntersectRect(&m_rcPaint, &rcPaint, &m_rcItem) ) return;
-
     if( m_pControl != NULL && m_pControl->m_bWindowless && m_pControl->m_pViewObject != NULL )
     {
         m_pControl->m_pViewObject->Draw(DVASPECT_CONTENT, -1, NULL, NULL, NULL, hDC, (RECTL*) &m_rcItem, (RECTL*) &m_rcItem, NULL, NULL); 

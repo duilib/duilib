@@ -958,9 +958,9 @@ void CComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
     else CContainerUI::SetAttribute(pstrName, pstrValue);
 }
 
-void CComboUI::DoPaint(HDC hDC, const RECT& rcPaint)
+void CComboUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl)
 {
-    CControlUI::DoPaint(hDC, rcPaint);
+    CControlUI::DoPaint(hDC, rcPaint, pStopControl);
 }
 
 void CComboUI::PaintStatusImage(HDC hDC)
@@ -1005,7 +1005,7 @@ void CComboUI::PaintText(HDC hDC)
         else {
             RECT rcOldPos = pControl->GetPos();
             pControl->SetPos(rcText, false);
-            pControl->Paint(hDC, rcText);
+            pControl->Paint(hDC, rcText, NULL);
             pControl->SetPos(rcOldPos, false);
         }
     }

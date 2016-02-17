@@ -100,7 +100,7 @@ public:
     void DoEvent(TEventUI& event);
     void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
     
-    void DoPaint(HDC hDC, const RECT& rcPaint);
+    void DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl);
     void PaintText(HDC hDC);
     void PaintStatusImage(HDC hDC);
 

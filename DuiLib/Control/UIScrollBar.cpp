@@ -892,9 +892,8 @@ void CScrollBarUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
 	else CControlUI::SetAttribute(pstrName, pstrValue);
 }
 
-void CScrollBarUI::DoPaint(HDC hDC, const RECT& rcPaint)
+void CScrollBarUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl)
 {
-	if( !::IntersectRect(&m_rcPaint, &rcPaint, &m_rcItem) ) return;
 	PaintBkColor(hDC);
 	PaintBkImage(hDC);
 	PaintBk(hDC);
