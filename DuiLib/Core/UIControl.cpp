@@ -969,7 +969,7 @@ CControlUI* CControlUI::ApplyAttributeList(LPCTSTR pstrList)
 
 CDuiString CControlUI::GetAttributeList()
 {
-	return "";
+	return _T("");
 }
 
 SIZE CControlUI::EstimateSize(SIZE szAvailable)
@@ -989,7 +989,7 @@ void CControlUI::Paint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl)
 
 void CControlUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl)
 {
-    // »æÖÆÑ­Ðò£º±³¾°ÑÕÉ«->±³¾°Í¼->×´Ì¬Í¼->ÎÄ±¾->±ß¿ò
+    // ç»˜åˆ¶å¾ªåºï¼šèƒŒæ™¯é¢œè‰²->èƒŒæ™¯å›¾->çŠ¶æ€å›¾->æ–‡æœ¬->è¾¹æ¡†
     if( m_cxyBorderRound.cx > 0 || m_cxyBorderRound.cy > 0 ) {
         CRenderClip roundClip;
         CRenderClip::GenerateRoundClip(hDC, m_rcPaint,  m_rcItem, m_cxyBorderRound.cx, m_cxyBorderRound.cy, roundClip);
@@ -1046,7 +1046,7 @@ void CControlUI::PaintText(HDC hDC)
 void CControlUI::PaintBorder(HDC hDC)
 {
 	if(m_rcBorderSize.left > 0 && (m_dwBorderColor != 0 || m_dwFocusBorderColor != 0)) {
-		if( m_cxyBorderRound.cx > 0 || m_cxyBorderRound.cy > 0 )//»­Ô²½Ç±ß¿ò
+		if( m_cxyBorderRound.cx > 0 || m_cxyBorderRound.cy > 0 )//ç”»åœ†è§’è¾¹æ¡†
 		{
 			if (IsFocused() && m_dwFocusBorderColor != 0)
 				CRenderEngine::DrawRoundRect(hDC, m_rcItem, m_rcBorderSize.left, m_cxyBorderRound.cx, m_cxyBorderRound.cy, GetAdjustColor(m_dwFocusBorderColor), m_nBorderStyle);
