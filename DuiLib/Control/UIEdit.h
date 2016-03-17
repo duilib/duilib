@@ -7,7 +7,7 @@ namespace DuiLib
 {
 	class CEditWnd;
 
-	class UILIB_API CEditUI : public CLabelUI
+	class DUILIB_API CEditUI : public CLabelUI
 	{
 		friend class CEditWnd;
 	public:

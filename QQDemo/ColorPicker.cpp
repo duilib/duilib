@@ -50,7 +50,7 @@ void CColorPicker::Notify(TNotifyUI& msg)
 	if (_tcsicmp(msg.sType, _T("click")) == 0)
 	{
 		CControlUI* pOne = static_cast<CControlUI*>(m_PaintManager.FindControl(msg.ptMouse));
-		if (_tcsicmp(pOne->GetClass(), _T("ButtonUI")) == 0)
+		if (_tcsicmp(pOne->GetClass(), DUI_CTR_BUTTON) == 0)
 		{
 			DWORD nColor = pOne->GetBkColor();
 			CVerticalLayoutUI* pColorContiner = static_cast<CVerticalLayoutUI*>(m_PaintManager.FindControl(_T("color")));
@@ -73,7 +73,7 @@ void CColorPicker::InitWindow()
 		for (int j = 0; j < 8; j++)
 		{
 			CButtonUI* pOne = new CButtonUI();
-			pOne->ApplyAttributeList(_T("bordersize=\"1\" bordercolor=\"#FF000000\" width=\"10\" height=\"10\""));
+			pOne->SetAttributeList(_T("bordersize=\"1\" bordercolor=\"#FF000000\" width=\"10\" height=\"10\""));
 			pOne->SetBkColor(Colors[i][j]);
 			pLine->Add(pOne);
 			if (i < 7)

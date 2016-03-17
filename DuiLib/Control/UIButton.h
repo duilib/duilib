@@ -5,7 +5,7 @@
 
 namespace DuiLib
 {
-	class UILIB_API CButtonUI : public CLabelUI
+	class DUILIB_API CButtonUI : public CLabelUI
 	{
 	public:
 		CButtonUI();

@@ -11,7 +11,7 @@ namespace DuiLib
 
 	LPCTSTR CHorizontalLayoutUI::GetClass() const
 	{
-		return _T("HorizontalLayoutUI");
+		return DUI_CTR_HORIZONTALLAYOUT;
 	}
 
 	LPVOID CHorizontalLayoutUI::GetInterface(LPCTSTR pstrName)
@@ -179,7 +179,6 @@ namespace DuiLib
 
 		// Process the scrollbar
 		ProcessScrollBar(rc, cxNeeded, cyNeeded);
-
 	}
 
 	void CHorizontalLayoutUI::DoPostPaint(HDC hDC, const RECT& rcPaint)

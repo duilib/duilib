@@ -203,7 +203,7 @@ namespace DuiLib
 
 	LPCTSTR CDateTimeUI::GetClass() const
 	{
-		return _T("DateTimeUI");
+		return DUI_CTR_DATETIME;
 	}
 
 	LPVOID CDateTimeUI::GetInterface(LPCTSTR pstrName)
@@ -257,6 +257,32 @@ namespace DuiLib
 			SetText(sText);
 		}
 	}
+
+    void CDateTimeUI::SetPos(RECT rc, bool bNeedInvalidate)
+    {
+        CControlUI::SetPos(rc, bNeedInvalidate);
+        if( m_pWindow != NULL ) {
+            RECT rcPos = m_pWindow->CalPos();
+            if (::IsRectEmpty(&rcPos)) ::ShowWindow(m_pWindow->GetHWND(), SW_HIDE);
+            else {
+                ::SetWindowPos(m_pWindow->GetHWND(), NULL, rcPos.left, rcPos.top, rcPos.right - rcPos.left, 
+                    rcPos.bottom - rcPos.top, SWP_NOZORDER | SWP_NOACTIVATE | SWP_SHOWWINDOW); 
+            }
+        }
+    }
+
+    void CDateTimeUI::Move(SIZE szOffset, bool bNeedInvalidate)
+    {
+        CControlUI::Move(szOffset, bNeedInvalidate);
+        if( m_pWindow != NULL ) {
+            RECT rcPos = m_pWindow->CalPos();
+            if (::IsRectEmpty(&rcPos)) ::ShowWindow(m_pWindow->GetHWND(), SW_HIDE);
+            else {
+                ::SetWindowPos(m_pWindow->GetHWND(), NULL, rcPos.left, rcPos.top, rcPos.right - rcPos.left, 
+                    rcPos.bottom - rcPos.top, SWP_NOZORDER | SWP_NOACTIVATE | SWP_SHOWWINDOW); 
+            }      
+        }
+    }
 
 	void CDateTimeUI::DoEvent(TEventUI& event)
 	{
@@ -317,14 +343,6 @@ namespace DuiLib
 			return;
 		}
 		if( event.Type == UIEVENT_CONTEXTMENU )
-		{
-			return;
-		}
-		if( event.Type == UIEVENT_MOUSEENTER )
-		{
-			return;
-		}
-		if( event.Type == UIEVENT_MOUSELEAVE )
 		{
 			return;
 		}

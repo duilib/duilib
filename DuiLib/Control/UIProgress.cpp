@@ -11,7 +11,7 @@ namespace DuiLib
 
 	LPCTSTR CProgressUI::GetClass() const
 	{
-		return _T("ProgressUI");
+		return DUI_CTR_PROGRESS;
 	}
 
 	LPVOID CProgressUI::GetInterface(LPCTSTR pstrName)

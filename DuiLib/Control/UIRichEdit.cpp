@@ -44,10 +44,11 @@ public:
     ITextServices* GetTextServices(void) { return pserv; }
     void SetClientRect(RECT *prc);
     RECT* GetClientRect() { return &rcClient; }
-    BOOL GetWordWrap(void) { return fWordWrap; }
+    BOOL IsWordWrap(void) { return fWordWrap; }
     void SetWordWrap(BOOL fWordWrap);
-    BOOL GetReadOnly();
+    BOOL IsReadOnly();
     void SetReadOnly(BOOL fReadOnly);
+
     void SetFont(HFONT hFont);
     void SetColor(DWORD dwColor);
     SIZEL* GetExtent();
@@ -765,7 +766,7 @@ void CTxtWinHost::SetWordWrap(BOOL fWordWrap)
     pserv->OnTxPropertyBitsChange(TXTBIT_WORDWRAP, fWordWrap ? TXTBIT_WORDWRAP : 0);
 }
 
-BOOL CTxtWinHost::GetReadOnly()
+BOOL CTxtWinHost::IsReadOnly()
 {
     return (dwStyle & ES_READONLY) != 0;
 }
@@ -1090,7 +1091,7 @@ CRichEditUI::~CRichEditUI()
 
 LPCTSTR CRichEditUI::GetClass() const
 {
-    return _T("RichEditUI");
+    return DUI_CTR_RICHEDIT;
 }
 
 LPVOID CRichEditUI::GetInterface(LPCTSTR pstrName)
@@ -1169,7 +1170,7 @@ void CRichEditUI::SetReadOnly(bool bReadOnly)
     if( m_pTwh ) m_pTwh->SetReadOnly(bReadOnly);
 }
 
-bool CRichEditUI::GetWordWrap()
+bool CRichEditUI::IsWordWrap()
 {
     return m_bWordWrap;
 }
@@ -1294,7 +1295,7 @@ void CRichEditUI::SetText(LPCTSTR pstrText)
     ReplaceSel(pstrText, FALSE);
 }
 
-bool CRichEditUI::GetModify() const
+bool CRichEditUI::IsModify() const
 { 
     if( !m_pTwh ) return false;
     LRESULT lResult;
@@ -1967,14 +1968,6 @@ void CRichEditUI::DoEvent(TEventUI& event)
     {
         return;
     }
-    if( event.Type == UIEVENT_MOUSEENTER )
-    {
-        return;
-    }
-    if( event.Type == UIEVENT_MOUSELEAVE )
-    {
-        return;
-    }
     if( event.Type > UIEVENT__KEYBEGIN && event.Type < UIEVENT__KEYEND )
     {
         return;
@@ -2091,10 +2084,10 @@ void CRichEditUI::Move(SIZE szOffset, bool bNeedInvalidate)
 	}
 }
 
-void CRichEditUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl)
+bool CRichEditUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl)
 {
     RECT rcTemp = { 0 };
-    if( !::IntersectRect(&rcTemp, &rcPaint, &m_rcItem) ) return;
+    if( !::IntersectRect(&rcTemp, &rcPaint, &m_rcItem) ) return true;
 
     CRenderClip clip;
     CRenderClip::GenerateClip(hDC, rcTemp, clip);
@@ -2149,12 +2142,12 @@ void CRichEditUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl
         if( !::IntersectRect(&rcTemp, &rcPaint, &rc) ) {
             for( int it = 0; it < m_items.GetSize(); it++ ) {
                 CControlUI* pControl = static_cast<CControlUI*>(m_items[it]);
-				if( pControl == pStopControl ) break;
+				if( pControl == pStopControl ) return false;
                 if( !pControl->IsVisible() ) continue;
                 if( !::IntersectRect(&rcTemp, &rcPaint, &pControl->GetPos()) ) continue;
                 if( pControl->IsFloat() ) {
                     if( !::IntersectRect(&rcTemp, &m_rcItem, &pControl->GetPos()) ) continue;
-                    pControl->Paint(hDC, rcPaint, pStopControl);
+                    if( !pControl->Paint(hDC, rcPaint, pStopControl) ) return false;
                 }
             }
         }
@@ -2163,18 +2156,18 @@ void CRichEditUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl
             CRenderClip::GenerateClip(hDC, rcTemp, childClip);
             for( int it = 0; it < m_items.GetSize(); it++ ) {
                 CControlUI* pControl = static_cast<CControlUI*>(m_items[it]);
-				if( pControl == pStopControl ) break;
+				if( pControl == pStopControl ) return false;
                 if( !pControl->IsVisible() ) continue;
                 if( !::IntersectRect(&rcTemp, &rcPaint, &pControl->GetPos()) ) continue;
                 if( pControl->IsFloat() ) {
                     if( !::IntersectRect(&rcTemp, &m_rcItem, &pControl->GetPos()) ) continue;
                     CRenderClip::UseOldClipBegin(hDC, childClip);
-                    pControl->Paint(hDC, rcPaint, pStopControl);
+                    if( !pControl->Paint(hDC, rcPaint, pStopControl) ) return false;
                     CRenderClip::UseOldClipEnd(hDC, childClip);
                 }
                 else {
                     if( !::IntersectRect(&rcTemp, &rc, &pControl->GetPos()) ) continue;
-                    pControl->Paint(hDC, rcPaint, pStopControl);
+                    if( !pControl->Paint(hDC, rcPaint, pStopControl) ) return false;
                 }
             }
         }
@@ -2189,17 +2182,24 @@ void CRichEditUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl
 		}
 	}
 
-    if( m_pVerticalScrollBar != NULL && m_pVerticalScrollBar->IsVisible() ) {
-        if( ::IntersectRect(&rcTemp, &rcPaint, &m_pVerticalScrollBar->GetPos()) ) {
-            m_pVerticalScrollBar->Paint(hDC, rcPaint, pStopControl);
+    if( m_pVerticalScrollBar != NULL ) {
+        if( m_pVerticalScrollBar == pStopControl ) return false;
+        if (m_pVerticalScrollBar->IsVisible()) {
+            if( ::IntersectRect(&rcTemp, &rcPaint, &m_pVerticalScrollBar->GetPos()) ) {
+                if( !m_pVerticalScrollBar->Paint(hDC, rcPaint, pStopControl) ) return false;
+            }
         }
     }
 
-    if( m_pHorizontalScrollBar != NULL && m_pHorizontalScrollBar->IsVisible() ) {
-        if( ::IntersectRect(&rcTemp, &rcPaint, &m_pHorizontalScrollBar->GetPos()) ) {
-            m_pHorizontalScrollBar->Paint(hDC, rcPaint, pStopControl);
+    if( m_pHorizontalScrollBar != NULL ) {
+        if( m_pHorizontalScrollBar == pStopControl ) return false;
+        if (m_pHorizontalScrollBar->IsVisible()) {
+            if( ::IntersectRect(&rcTemp, &rcPaint, &m_pHorizontalScrollBar->GetPos()) ) {
+                if( !m_pHorizontalScrollBar->Paint(hDC, rcPaint, pStopControl) ) return false;
+            }
         }
     }
+    return true;
 }
 
 void CRichEditUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
@@ -2307,7 +2307,7 @@ LRESULT CRichEditUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, boo
         if( dwHitResult != HITRESULT_HIT ) return 0;
         if( uMsg == WM_SETCURSOR ) bWasHandled = false;
         else if( uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONDBLCLK || uMsg == WM_RBUTTONDOWN ) {
-			::SetFocus(GetManager()->GetPaintWindow());
+			if (!GetManager()->IsNoActivate()) ::SetFocus(GetManager()->GetPaintWindow());
             SetFocus();
         }
     }

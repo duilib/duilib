@@ -17,7 +17,7 @@ namespace DuiLib
 
 	LPCTSTR CButtonUI::GetClass() const
 	{
-		return _T("ButtonUI");
+		return DUI_CTR_BUTTON;
 	}
 
 	LPVOID CButtonUI::GetInterface(LPCTSTR pstrName)
@@ -49,7 +49,7 @@ namespace DuiLib
 		}
 		if( event.Type == UIEVENT_KEYDOWN )
 		{
-			if (IsKeyboardEnabled()) {
+			if (IsKeyboardEnabled() && IsEnabled()) {
 				if( event.chKey == VK_SPACE || event.chKey == VK_RETURN ) {
 					Activate();
 					return;
@@ -76,7 +76,7 @@ namespace DuiLib
 		if( event.Type == UIEVENT_BUTTONUP )
 		{
 			if( (m_uButtonState & UISTATE_CAPTURED) != 0 ) {
-				if( ::PtInRect(&m_rcItem, event.ptMouse) ) Activate();
+				if( ::PtInRect(&m_rcItem, event.ptMouse) && IsEnabled()) Activate();
 				m_uButtonState &= ~(UISTATE_PUSHED | UISTATE_CAPTURED);
 				Invalidate();
 			}
@@ -84,33 +84,43 @@ namespace DuiLib
 		}
 		if( event.Type == UIEVENT_CONTEXTMENU )
 		{
-			if( IsContextMenuUsed() ) {
+			if( IsContextMenuUsed() && IsEnabled()) {
 				m_pManager->SendNotify(this, DUI_MSGTYPE_MENU, event.wParam, event.lParam);
 			}
 			return;
 		}
 		if( event.Type == UIEVENT_MOUSEENTER )
 		{
-			if( IsEnabled() ) {
-				m_uButtonState |= UISTATE_HOT;
-				Invalidate();
-			}
+            if( ::PtInRect(&m_rcItem, event.ptMouse ) ) {
+                if( IsEnabled() ) {
+                    if( (m_uButtonState & UISTATE_HOT) == 0  ) {
+                        m_uButtonState |= UISTATE_HOT;
+                        Invalidate();
+                    }
+                }
+            }
 			if ( GetFadeAlphaDelta() > 0 ) {
 				m_pManager->SetTimer(this, FADE_TIMERID, FADE_ELLAPSE);
 			}
-			// return;
 		}
 		if( event.Type == UIEVENT_MOUSELEAVE )
 		{
-			if( IsEnabled() ) {
-				m_uButtonState &= ~UISTATE_HOT;
-				Invalidate();
-			}
-
-			if ( GetFadeAlphaDelta() > 0 ) {
-				m_pManager->SetTimer(this, FADE_TIMERID, FADE_ELLAPSE);
-			}
-			// return;
+            if( !::PtInRect(&m_rcItem, event.ptMouse ) ) {
+                if( IsEnabled() ) {
+                    if( (m_uButtonState & UISTATE_HOT) != 0  ) {
+                        m_uButtonState &= ~UISTATE_HOT;
+                        Invalidate();
+                    }
+                }
+                if (m_pManager) m_pManager->RemoveMouseLeaveNeeded(this);
+                if ( GetFadeAlphaDelta() > 0 ) {
+                    m_pManager->SetTimer(this, FADE_TIMERID, FADE_ELLAPSE);
+                }
+            }
+            else {
+                if (m_pManager) m_pManager->AddMouseLeaveNeeded(this);
+                return;
+            }
 		}
 		if( event.Type == UIEVENT_SETCURSOR )
 		{
@@ -426,7 +436,7 @@ namespace DuiLib
 
 		if( m_bShowHtml )
 			CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText, clrColor, \
-			NULL, NULL, nLinks, m_uTextStyle);
+			NULL, NULL, nLinks, m_iFont, m_uTextStyle);
 		else
 			CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, clrColor, \
 			m_iFont, m_uTextStyle);

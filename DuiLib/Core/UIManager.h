@@ -83,7 +83,7 @@ typedef enum EVENTTYPE_UI
 /////////////////////////////////////////////////////////////////////////////////////
 //
 
-typedef struct UILIB_API tagTFontInfo
+typedef struct DUILIB_API tagTFontInfo
 {
     HFONT hFont;
     CDuiString sFontName;
@@ -94,7 +94,7 @@ typedef struct UILIB_API tagTFontInfo
     TEXTMETRIC tm;
 } TFontInfo;
 
-typedef struct UILIB_API tagTImageInfo
+typedef struct DUILIB_API tagTImageInfo
 {
     HBITMAP hBitmap;
     LPBYTE pBits;
@@ -107,7 +107,7 @@ typedef struct UILIB_API tagTImageInfo
     DWORD dwMask;
 } TImageInfo;
 
-typedef struct UILIB_API tagTDrawInfo
+typedef struct DUILIB_API tagTDrawInfo
 {
 	tagTDrawInfo();
 	tagTDrawInfo(LPCTSTR lpsz);
@@ -125,7 +125,7 @@ typedef struct UILIB_API tagTDrawInfo
 	bool bTiledY;
 } TDrawInfo;
 
-typedef struct UILIB_API tagTPercentInfo
+typedef struct DUILIB_API tagTPercentInfo
 {
 	double left;
 	double top;
@@ -133,7 +133,7 @@ typedef struct UILIB_API tagTPercentInfo
 	double bottom;
 } TPercentInfo;
 
-typedef struct UILIB_API tagTResInfo
+typedef struct DUILIB_API tagTResInfo
 {
 	DWORD m_dwDefaultDisabledColor;
 	DWORD m_dwDefaultFontColor;
@@ -141,15 +141,15 @@ typedef struct UILIB_API tagTResInfo
 	DWORD m_dwDefaultLinkHoverFontColor;
 	DWORD m_dwDefaultSelectedBkColor;
 	TFontInfo m_DefaultFontInfo;
-	CStdStringPtrMap m_CustomFonts;
-	CStdStringPtrMap m_ImageHash;
-	CStdStringPtrMap m_AttrHash;
-	CStdStringPtrMap m_MultiLanguageHash;
+	CDuiStringPtrMap m_CustomFonts;
+	CDuiStringPtrMap m_ImageHash;
+	CDuiStringPtrMap m_AttrHash;
+	CDuiStringPtrMap m_MultiLanguageHash;
 } TResInfo;
 
 // Structure for notifications from the system
 // to the control implementation.
-typedef struct UILIB_API tagTEventUI
+typedef struct DUILIB_API tagTEventUI
 {
     int Type;
     CControlUI* pSender;
@@ -162,20 +162,20 @@ typedef struct UILIB_API tagTEventUI
 } TEventUI;
 
 // Listener interface
-class UILIB_API INotifyUI
+class DUILIB_API INotifyUI
 {
 public:
     virtual void Notify(TNotifyUI& msg) = 0;
 };
 
 // MessageFilter interface
-class UILIB_API IMessageFilterUI
+class DUILIB_API IMessageFilterUI
 {
 public:
     virtual LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool& bHandled) = 0;
 };
 
-class UILIB_API ITranslateAccelerator
+class DUILIB_API ITranslateAccelerator
 {
 public:
 	virtual LRESULT TranslateAccelerator(MSG *pMsg) = 0;
@@ -187,7 +187,7 @@ public:
 typedef CControlUI* (*LPCREATECONTROL)(LPCTSTR pstrType);
 
 
-class UILIB_API CPaintManagerUI
+class DUILIB_API CPaintManagerUI
 {
 public:
     CPaintManagerUI();
@@ -226,6 +226,8 @@ public:
     void SetMaxInfo(int cx, int cy);
     bool IsShowUpdateRect() const;
     void SetShowUpdateRect(bool show);
+    bool IsNoActivate();
+    void SetNoActivate(bool bNoActivate);
 
 	BYTE GetOpacity() const;
 	void SetOpacity(BYTE nOpacity);
@@ -257,9 +259,9 @@ public:
     static void SetHSL(bool bUseHSL, short H, short S, short L); // H:0~360, S:0~200, L:0~200 
     static void ReloadSkin();
 	static CPaintManagerUI* GetPaintManager(LPCTSTR pstrName);
-	static CStdPtrArray* GetPaintManagers();
+	static CDuiPtrArray* GetPaintManagers();
     static bool LoadPlugin(LPCTSTR pstrModuleName);
-    static CStdPtrArray* GetPlugins();
+    static CDuiPtrArray* GetPlugins();
 
 	bool IsForceUseSharedRes() const;
 	void SetForceUseSharedRes(bool bForce);
@@ -274,6 +276,7 @@ public:
     void SetDefaultLinkHoverFontColor(DWORD dwColor, bool bShared = false);
     DWORD GetDefaultSelectedBkColor() const;
     void SetDefaultSelectedBkColor(DWORD dwColor, bool bShared = false);
+
     TFontInfo* GetDefaultFontInfo();
     void SetDefaultFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic, bool bShared = false);
     DWORD GetCustomFontCount(bool bShared = false) const;
@@ -302,10 +305,18 @@ public:
     bool RemoveDefaultAttributeList(LPCTSTR pStrControlName, bool bShared = false);
     void RemoveAllDefaultAttributeList(bool bShared = false);
 
-	void AddWindowCustomAttribute(LPCTSTR pstrName, LPCTSTR pstrAttr);
-	LPCTSTR GetWindowCustomAttribute(LPCTSTR pstrName) const;
-	bool RemoveWindowCustomAttribute(LPCTSTR pstrName);
-	void RemoveAllWindowCustomAttribute();
+    void AddWindowCustomAttribute(LPCTSTR pstrName, LPCTSTR pstrAttr);
+    LPCTSTR GetWindowCustomAttribute(LPCTSTR pstrName) const;
+    bool RemoveWindowCustomAttribute(LPCTSTR pstrName);
+    void RemoveAllWindowCustomAttribute();
+
+    CDuiString GetWindowAttribute(LPCTSTR pstrName);
+    void SetWindowAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
+    CDuiString GetWindowAttributeList(bool bIgnoreDefault = true);
+    void SetWindowAttributeList(LPCTSTR pstrList);
+    bool RemoveWindowAttribute(LPCTSTR pstrName);
+
+    CDuiString GetWindowXML();
 
 	static void AddMultiLanguageString(int id, LPCTSTR pStrMultiLanguage);
 	static LPCTSTR GetMultiLanguageString(int id);
@@ -319,7 +330,7 @@ public:
     void ReapObjects(CControlUI* pControl);
 
     bool AddOptionGroup(LPCTSTR pStrGroupName, CControlUI* pControl);
-    CStdPtrArray* GetOptionGroup(LPCTSTR pStrGroupName);
+    CDuiPtrArray* GetOptionGroup(LPCTSTR pStrGroupName);
     void RemoveOptionGroup(LPCTSTR pStrGroupName, CControlUI* pControl);
     void RemoveAllOptionGroups();
 
@@ -363,6 +374,8 @@ public:
 	bool RemoveNativeWindow(HWND hChildWnd);
 
     void AddDelayedCleanup(CControlUI* pControl);
+    void AddMouseLeaveNeeded(CControlUI* pControl);
+    bool RemoveMouseLeaveNeeded(CControlUI* pControl);
 
 	bool AddTranslateAccelerator(ITranslateAccelerator *pTranslateAccelerator);
 	bool RemoveTranslateAccelerator(ITranslateAccelerator *pTranslateAccelerator);
@@ -374,7 +387,7 @@ public:
     CControlUI* FindSubControlByPoint(CControlUI* pParent, POINT pt) const;
     CControlUI* FindSubControlByName(CControlUI* pParent, LPCTSTR pstrName) const;
     CControlUI* FindSubControlByClass(CControlUI* pParent, LPCTSTR pstrClass, int iIndex = 0);
-    CStdPtrArray* FindSubControlsByClass(CControlUI* pParent, LPCTSTR pstrClass);
+    CDuiPtrArray* FindSubControlsByClass(CControlUI* pParent, LPCTSTR pstrClass);
 
     static void MessageLoop();
     static bool TranslateMessage(const LPMSG pMsg);
@@ -385,7 +398,7 @@ public:
 	void UsedVirtualWnd(bool bUsed);
 
 private:
-	CStdPtrArray* GetFoundControls();
+	CDuiPtrArray* GetFoundControls();
     static CControlUI* CALLBACK __FindControlFromNameHash(CControlUI* pThis, LPVOID pData);
     static CControlUI* CALLBACK __FindControlFromCount(CControlUI* pThis, LPVOID pData);
     static CControlUI* CALLBACK __FindControlFromPoint(CControlUI* pThis, LPVOID pData);
@@ -414,6 +427,7 @@ private:
 	HWND m_hwndTooltip;
 	TOOLINFO m_ToolTip;
 	int m_iHoverTime;
+    bool m_bNoActivate;
     bool m_bShowUpdateRect;
     //
     CControlUI* m_pRoot;
@@ -449,19 +463,20 @@ private:
 	bool m_bAsyncNotifyPosted;
 
     //
-    CStdPtrArray m_aNotifiers;
-    CStdPtrArray m_aTimers;
-    CStdPtrArray m_aPreMessageFilters;
-    CStdPtrArray m_aMessageFilters;
-    CStdPtrArray m_aPostPaintControls;
-	CStdPtrArray m_aNativeWindow;
-	CStdPtrArray m_aNativeWindowControl;
-    CStdPtrArray m_aDelayedCleanup;
-    CStdPtrArray m_aAsyncNotify;
-    CStdPtrArray m_aFoundControls;
-    CStdStringPtrMap m_mNameHash;
-	CStdStringPtrMap m_mWindowCustomAttrHash;
-    CStdStringPtrMap m_mOptionGroup;
+    CDuiPtrArray m_aNotifiers;
+    CDuiPtrArray m_aTimers;
+    CDuiPtrArray m_aPreMessageFilters;
+    CDuiPtrArray m_aMessageFilters;
+    CDuiPtrArray m_aPostPaintControls;
+	CDuiPtrArray m_aNativeWindow;
+	CDuiPtrArray m_aNativeWindowControl;
+    CDuiPtrArray m_aDelayedCleanup;
+    CDuiPtrArray m_aAsyncNotify;
+    CDuiPtrArray m_aFoundControls;
+    CDuiPtrArray m_aNeedMouseLeaveNeeded;
+    CDuiStringPtrMap m_mNameHash;
+	CDuiStringPtrMap m_mWindowAttrHash;
+    CDuiStringPtrMap m_mOptionGroup;
 
     //
 	bool m_bForceUseSharedRes;
@@ -480,11 +495,11 @@ private:
     static short m_H;
     static short m_S;
     static short m_L;
-    static CStdPtrArray m_aPreMessages;
-    static CStdPtrArray m_aPlugins;
+    static CDuiPtrArray m_aPreMessages;
+    static CDuiPtrArray m_aPlugins;
 
 public:
-	CStdPtrArray m_aTranslateAccelerator;
+	CDuiPtrArray m_aTranslateAccelerator;
 };
 
 } // namespace DuiLib

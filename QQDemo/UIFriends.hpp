@@ -29,9 +29,9 @@ public:
 
 	bool AddAt(CControlUI* pControl, int iIndex);
 
-	bool Remove(CControlUI* pControl);
+	bool Remove(CControlUI* pControl, bool bDoNotDestroy=false);
 
-	bool RemoveAt(int iIndex);
+	bool RemoveAt(int iIndex, bool bDoNotDestroy);
 
 	void RemoveAll();
 

@@ -164,9 +164,9 @@ LRESULT WindowImplBase::OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	if( pt.x >= rcClient.left + rcCaption.left && pt.x < rcClient.right - rcCaption.right \
 		&& pt.y >= rcCaption.top && pt.y < rcCaption.bottom ) {
 			CControlUI* pControl = static_cast<CControlUI*>(m_PaintManager.FindControl(pt));
-			if( pControl && _tcsicmp(pControl->GetClass(), _T("ButtonUI")) != 0 && 
-				_tcsicmp(pControl->GetClass(), _T("OptionUI")) != 0 &&
-				_tcsicmp(pControl->GetClass(), _T("TextUI")) != 0 )
+			if( pControl && _tcsicmp(pControl->GetClass(), DUI_CTR_BUTTON) != 0 && 
+				_tcsicmp(pControl->GetClass(), DUI_CTR_OPTION) != 0 &&
+				_tcsicmp(pControl->GetClass(), DUI_CTR_TEXT) != 0 )
 				return HTCAPTION;
 	}
 

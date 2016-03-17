@@ -15,6 +15,7 @@ namespace DuiLib
 		m_dwDisabledTextColor(0),
 		m_iFont(-1),
 		m_bShowHtml(false),
+        m_bNeedEstimateSize(true),
 		m_EnableEffect(false),
 		m_bEnableLuminous(false),
 		m_fLuminousFuzzy(3),
@@ -32,9 +33,14 @@ namespace DuiLib
 		m_ShadowOffset.Y		= 0.0f;
 		m_ShadowOffset.Width	= 0.0f;
 		m_ShadowOffset.Height	= 0.0f;
-		GdiplusStartup( &m_gdiplusToken,&m_gdiplusStartupInput, NULL);
 
+        m_cxyFixedLast.cx = m_cxyFixedLast.cy = 0;
+        m_szAvailableLast.cx = m_szAvailableLast.cy = 0;
 		::ZeroMemory(&m_rcTextPadding, sizeof(m_rcTextPadding));
+
+#ifdef _USE_GDIPLUS
+        GdiplusStartup( &m_gdiplusToken,&m_gdiplusStartupInput, NULL);
+#endif
 	}
 
 	CLabelUI::~CLabelUI()
@@ -44,23 +50,39 @@ namespace DuiLib
 #else
 		if( m_pWideText ) delete[] m_pWideText;
 #endif
+
+#ifdef _USE_GDIPLUS
 		GdiplusShutdown( m_gdiplusToken );
+#endif
 	}
 
 	LPCTSTR CLabelUI::GetClass() const
 	{
-		return _T("LabelUI");
+		return DUI_CTR_LABEL;
 	}
 
 	LPVOID CLabelUI::GetInterface(LPCTSTR pstrName)
 	{
-		if( _tcscmp(pstrName, _T("Label")) == 0 ) return static_cast<CLabelUI*>(this);
+		if( _tcscmp(pstrName, DUI_CTR_LABEL) == 0 ) return static_cast<CLabelUI*>(this);
 		return CControlUI::GetInterface(pstrName);
 	}
+
+    void CLabelUI::SetFixedWidth(int cx)
+    {
+        m_bNeedEstimateSize = true;
+        CControlUI::SetFixedWidth(cx);
+    }
+
+    void CLabelUI::SetFixedHeight(int cy)
+    {
+        m_bNeedEstimateSize = true;
+        CControlUI::SetFixedHeight(cy);
+    }
 
 	void CLabelUI::SetText(LPCTSTR pstrText)
 	{
 		CControlUI::SetText(pstrText);
+        m_bNeedEstimateSize = true;
 		if( m_EnableEffect) {
 #ifdef _UNICODE
 			m_pWideText = (LPWSTR)m_sText.GetData();
@@ -77,6 +99,7 @@ namespace DuiLib
 	void CLabelUI::SetTextStyle(UINT uStyle)
 	{
 		m_uTextStyle = uStyle;
+        m_bNeedEstimateSize = true;
 		Invalidate();
 	}
 
@@ -92,8 +115,12 @@ namespace DuiLib
 
 	void CLabelUI::SetMultiLine(bool bMultiLine)
 	{
-		if (bMultiLine)	m_uTextStyle  &= ~DT_SINGLELINE;
+		if (bMultiLine)	{
+            m_uTextStyle  &= ~DT_SINGLELINE;
+            m_uTextStyle |= DT_WORDBREAK;
+        }
 		else m_uTextStyle |= DT_SINGLELINE;
+        m_bNeedEstimateSize = true;
 	}
 
 	void CLabelUI::SetTextColor(DWORD dwTextColor)
@@ -121,6 +148,7 @@ namespace DuiLib
 	void CLabelUI::SetFont(int index)
 	{
 		m_iFont = index;
+        m_bNeedEstimateSize = true;
 		Invalidate();
 	}
 
@@ -137,6 +165,7 @@ namespace DuiLib
 	void CLabelUI::SetTextPadding(RECT rc)
 	{
 		m_rcTextPadding = rc;
+        m_bNeedEstimateSize = true;
 		Invalidate();
 	}
 
@@ -150,13 +179,58 @@ namespace DuiLib
 		if( m_bShowHtml == bShowHtml ) return;
 
 		m_bShowHtml = bShowHtml;
+        m_bNeedEstimateSize = true;
 		Invalidate();
 	}
 
 	SIZE CLabelUI::EstimateSize(SIZE szAvailable)
 	{
-		if( m_cxyFixed.cy == 0 ) return CDuiSize(m_cxyFixed.cx, m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 4);
-		return CControlUI::EstimateSize(szAvailable);
+        if (m_cxyFixed.cx > 0 && m_cxyFixed.cy > 0) return m_cxyFixed;
+
+        if ((m_uTextStyle & DT_SINGLELINE) == 0 && 
+            (szAvailable.cx != m_szAvailableLast.cx || szAvailable.cy != m_szAvailableLast.cy)) {
+            m_bNeedEstimateSize = true;
+        }
+
+        if (m_bNeedEstimateSize) {
+            m_bNeedEstimateSize = false;
+            m_szAvailableLast = szAvailable;
+            m_cxyFixedLast = m_cxyFixed;
+            if ((m_uTextStyle & DT_SINGLELINE) != 0) {
+                if (m_cxyFixedLast.cy == 0) {
+                    m_cxyFixedLast.cy = m_pManager->GetFontInfo(m_iFont)->tm.tmHeight + 8;
+                    m_cxyFixedLast.cy += m_rcTextPadding.top + m_rcTextPadding.bottom;
+                }
+                if (m_cxyFixedLast.cx == 0) {
+                    RECT rcText = { 0, 0, 9999, m_cxyFixedLast.cy };
+                    if( m_bShowHtml ) {
+                        int nLinks = 0;
+                        CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, NULL, NULL, nLinks, m_iFont, DT_CALCRECT | m_uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+                    }
+                    else {
+                        CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, m_iFont, DT_CALCRECT | m_uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+                    }
+                    m_cxyFixedLast.cx = rcText.right - rcText.left + m_rcTextPadding.left + m_rcTextPadding.right;
+                }
+            }
+            else {
+                if( m_cxyFixedLast.cx == 0 ) {
+                    m_cxyFixedLast.cx = szAvailable.cx;
+                }
+                RECT rcText = { 0, 0, m_cxyFixedLast.cx, 9999 };
+                rcText.left += m_rcTextPadding.left;
+                rcText.right -= m_rcTextPadding.right;
+                if( m_bShowHtml ) {
+                    int nLinks = 0;
+                    CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, NULL, NULL, nLinks, m_iFont, DT_CALCRECT | m_uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+                }
+                else {
+                    CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, m_iFont, DT_CALCRECT | m_uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+                }
+                m_cxyFixedLast.cy = rcText.bottom - rcText.top + m_rcTextPadding.top + m_rcTextPadding.bottom;
+            }
+        }
+        return m_cxyFixedLast;
 	}
 
 	void CLabelUI::DoEvent(TEventUI& event)
@@ -170,14 +244,6 @@ namespace DuiLib
 		{
 			m_bFocused = false;
 			return;
-		}
-		if( event.Type == UIEVENT_MOUSEENTER )
-		{
-			// return;
-		}
-		if( event.Type == UIEVENT_MOUSELEAVE )
-		{
-			// return;
 		}
 		CControlUI::DoEvent(event);
 	}
@@ -299,7 +365,7 @@ namespace DuiLib
 			if( IsEnabled() ) {
 				if( m_bShowHtml )
 					CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText, m_dwTextColor, \
-					NULL, NULL, nLinks, m_uTextStyle);
+					NULL, NULL, nLinks, m_iFont, m_uTextStyle);
 				else
 					CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, m_dwTextColor, \
 					m_iFont, m_uTextStyle);
@@ -307,14 +373,15 @@ namespace DuiLib
 			else {
 				if( m_bShowHtml )
 					CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText, m_dwDisabledTextColor, \
-					NULL, NULL, nLinks, DT_SINGLELINE | m_uTextStyle);
+					NULL, NULL, nLinks, m_iFont, m_uTextStyle);
 				else
 					CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, m_dwDisabledTextColor, \
-					m_iFont, DT_SINGLELINE | m_uTextStyle);
+					m_iFont, m_uTextStyle);
 			}
 		}
 		else
 		{
+#ifdef _USE_GDIPLUS
 			Font	nFont(hDC,m_pManager->GetFont(GetFont()));
 			Graphics nGraphics(hDC);
 			nGraphics.SetTextRenderingHint(TextRenderingHintAntiAlias);
@@ -323,11 +390,11 @@ namespace DuiLib
 			StringAlignment sa = StringAlignment::StringAlignmentNear;
 			if ((m_uTextStyle & DT_VCENTER) != 0) sa = StringAlignment::StringAlignmentCenter;
 			else if( (m_uTextStyle & DT_BOTTOM) != 0) sa = StringAlignment::StringAlignmentFar;
-			format.SetAlignment((StringAlignment)sa);
+			format.SetLineAlignment((StringAlignment)sa);
 			sa = StringAlignment::StringAlignmentNear;
 			if ((m_uTextStyle & DT_CENTER) != 0) sa = StringAlignment::StringAlignmentCenter;
 			else if( (m_uTextStyle & DT_RIGHT) != 0) sa = StringAlignment::StringAlignmentFar;
-			format.SetLineAlignment((StringAlignment)sa);
+			format.SetAlignment((StringAlignment)sa);
 
 			RectF nRc((float)rc.left,(float)rc.top,(float)rc.right-rc.left,(float)rc.bottom-rc.top);
 			RectF nShadowRc = nRc;
@@ -411,6 +478,7 @@ namespace DuiLib
 				nGraphics.DrawString(m_pWideText,iLen,&nFont,nShadowRc,&format,&nLineGrBrushA);
 
 			nGraphics.DrawString(m_pWideText,iLen,&nFont,nRc,&format,&nLineGrBrushB);
+#endif
 #endif
 		}
 	}

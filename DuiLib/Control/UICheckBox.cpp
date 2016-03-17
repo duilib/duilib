@@ -5,7 +5,7 @@ namespace DuiLib
 {
 	LPCTSTR CCheckBoxUI::GetClass() const
 	{
-		return _T("CheckBoxUI");
+		return DUI_CTR_CHECKBOX;
 	}
 
 	LPVOID CCheckBoxUI::GetInterface(LPCTSTR pstrName)

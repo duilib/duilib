@@ -40,6 +40,10 @@ namespace DuiLib
 		m_pOwner = pOwner;
 		RECT rcPos = CalPos();
 		UINT uStyle = WS_CHILD | ES_AUTOHSCROLL | pOwner->GetWindowStyls();
+        UINT uTextStyle = m_pOwner->GetTextStyle();
+        if(uTextStyle & DT_LEFT) uStyle |= ES_LEFT;
+        else if(uTextStyle & DT_CENTER) uStyle |= ES_CENTER;
+        else if(uTextStyle & DT_RIGHT) uStyle |= ES_RIGHT;
 		if( m_pOwner->IsPasswordMode() ) uStyle |= ES_PASSWORD;
 		Create(m_pOwner->GetManager()->GetPaintWindow(), NULL, uStyle, 0, rcPos);
 
@@ -249,7 +253,7 @@ namespace DuiLib
 
 	LPCTSTR CEditUI::GetClass() const
 	{
-		return _T("EditUI");
+		return DUI_CTR_EDIT;
 	}
 
 	LPVOID CEditUI::GetInterface(LPCTSTR pstrName)
@@ -339,22 +343,33 @@ namespace DuiLib
 		{
 			return;
 		}
-		if( event.Type == UIEVENT_MOUSEENTER )
-		{
-			if( IsEnabled() ) {
-				m_uButtonState |= UISTATE_HOT;
-				Invalidate();
-			}
-			return;
-		}
-		if( event.Type == UIEVENT_MOUSELEAVE )
-		{
-			if( IsEnabled() ) {
-				m_uButtonState &= ~UISTATE_HOT;
-				Invalidate();
-			}
-			return;
-		}
+        if( event.Type == UIEVENT_MOUSEENTER )
+        {
+            if( ::PtInRect(&m_rcItem, event.ptMouse ) ) {
+                if( IsEnabled() ) {
+                    if( (m_uButtonState & UISTATE_HOT) == 0  ) {
+                        m_uButtonState |= UISTATE_HOT;
+                        Invalidate();
+                    }
+                }
+            }
+        }
+        if( event.Type == UIEVENT_MOUSELEAVE )
+        {
+            if( !::PtInRect(&m_rcItem, event.ptMouse ) ) {
+                if( IsEnabled() ) {
+                    if( (m_uButtonState & UISTATE_HOT) != 0  ) {
+                        m_uButtonState &= ~UISTATE_HOT;
+                        Invalidate();
+                    }
+                }
+                if (m_pManager) m_pManager->RemoveMouseLeaveNeeded(this);
+            }
+            else {
+                if (m_pManager) m_pManager->AddMouseLeaveNeeded(this);
+                return;
+            }
+        }
 		CLabelUI::DoEvent(event);
 	}
 
@@ -543,8 +558,11 @@ namespace DuiLib
 		CControlUI::SetPos(rc, bNeedInvalidate);
 		if( m_pWindow != NULL ) {
 			RECT rcPos = m_pWindow->CalPos();
-			::SetWindowPos(m_pWindow->GetHWND(), NULL, rcPos.left, rcPos.top, rcPos.right - rcPos.left, 
-				rcPos.bottom - rcPos.top, SWP_NOZORDER | SWP_NOACTIVATE);        
+            if (::IsRectEmpty(&rcPos)) ::ShowWindow(m_pWindow->GetHWND(), SW_HIDE);
+            else {
+                ::SetWindowPos(m_pWindow->GetHWND(), NULL, rcPos.left, rcPos.top, rcPos.right - rcPos.left, 
+				rcPos.bottom - rcPos.top, SWP_NOZORDER | SWP_NOACTIVATE | SWP_SHOWWINDOW); 
+            }
 		}
 	}
 
@@ -552,9 +570,12 @@ namespace DuiLib
 	{
 		CControlUI::Move(szOffset, bNeedInvalidate);
 		if( m_pWindow != NULL ) {
-			RECT rcPos = m_pWindow->CalPos();
-			::SetWindowPos(m_pWindow->GetHWND(), NULL, rcPos.left, rcPos.top, rcPos.right - rcPos.left, 
-				rcPos.bottom - rcPos.top, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);        
+            RECT rcPos = m_pWindow->CalPos();
+            if (::IsRectEmpty(&rcPos)) ::ShowWindow(m_pWindow->GetHWND(), SW_HIDE);
+            else {
+                ::SetWindowPos(m_pWindow->GetHWND(), NULL, rcPos.left, rcPos.top, rcPos.right - rcPos.left, 
+                    rcPos.bottom - rcPos.top, SWP_NOZORDER | SWP_NOACTIVATE | SWP_SHOWWINDOW); 
+            }      
 		}
 	}
 
@@ -571,7 +592,7 @@ namespace DuiLib
 
 	SIZE CEditUI::EstimateSize(SIZE szAvailable)
 	{
-		if( m_cxyFixed.cy == 0 ) return CDuiSize(m_cxyFixed.cx, m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 6);
+		if( m_cxyFixed.cy == 0 ) return CDuiSize(m_cxyFixed.cx, m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 8);
 		return CControlUI::EstimateSize(szAvailable);
 	}
 

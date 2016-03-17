@@ -45,9 +45,6 @@
     <ClCompile Include="UIlib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Utils\WinImplBase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Utils\stb_image.c">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
@@ -138,13 +135,19 @@
     <ClCompile Include="Control\UIText.cpp">
       <Filter>Source Files\Control</Filter>
     </ClCompile>
-    <ClCompile Include="Control\UITreeView.cpp">
-      <Filter>Source Files\Control</Filter>
-    </ClCompile>
     <ClCompile Include="Control\UIWebBrowser.cpp">
       <Filter>Source Files\Control</Filter>
     </ClCompile>
     <ClCompile Include="Control\UIGifAnim.cpp">
+      <Filter>Source Files\Control</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\WndShadow.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\WinImplBase.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Control\UITreeView.cpp">
       <Filter>Source Files\Control</Filter>
     </ClCompile>
   </ItemGroup>
@@ -257,13 +260,16 @@
     <ClInclude Include="Control\UIText.h">
       <Filter>Header Files\Control</Filter>
     </ClInclude>
-    <ClInclude Include="Control\UITreeView.h">
-      <Filter>Header Files\Control</Filter>
-    </ClInclude>
     <ClInclude Include="Control\UIWebBrowser.h">
       <Filter>Header Files\Control</Filter>
     </ClInclude>
     <ClInclude Include="Control\UIGifAnim.h">
+      <Filter>Header Files\Control</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\WndShadow.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Control\UITreeView.h">
       <Filter>Header Files\Control</Filter>
     </ClInclude>
   </ItemGroup>

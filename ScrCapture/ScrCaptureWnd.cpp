@@ -89,7 +89,6 @@ void CScrCaptureWnd::Init()
 
 void CScrCaptureWnd::OnPrepare() 
 {
-	::SetFocus(m_hWnd);
 }
 
 void CScrCaptureWnd::Notify(TNotifyUI& msg)
@@ -169,14 +168,6 @@ LRESULT CScrCaptureWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 	else if( uMsg == WM_DESTROY ) {
 		::PostQuitMessage(0L);
-	}
-	else if( uMsg == WM_SETFOCUS) {
-		int i = 0;
-		++i;
-	}
-	else if( uMsg == WM_KILLFOCUS) {
-		int i = 0;
-		++i;
 	}
 	else if(uMsg == WM_LBUTTONDOWN) {
 		if (!m_bClipChoiced) {

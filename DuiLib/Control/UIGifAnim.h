@@ -9,7 +9,7 @@ namespace DuiLib
 
 #define EVENT_TIEM_ID	100
 
-	class UILIB_API CGifAnimUI : public CControlUI
+	class DUILIB_API CGifAnimUI : public CControlUI
 	{
 	public:
 		CGifAnimUI(void);
@@ -18,7 +18,7 @@ namespace DuiLib
 		LPCTSTR	GetClass() const;
 		LPVOID	GetInterface(LPCTSTR pstrName);
 		void	DoInit() override;
-		void	DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl);
+		bool	DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl);
 		void	DoEvent(TEventUI& event);
 		void	SetVisible(bool bVisible = true );
 		void	SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);

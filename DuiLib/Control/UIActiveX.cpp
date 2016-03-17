@@ -933,7 +933,7 @@ CActiveXUI::~CActiveXUI()
 
 LPCTSTR CActiveXUI::GetClass() const
 {
-    return _T("ActiveXUI");
+    return DUI_CTR_ACTIVEX;
 }
 
 LPVOID CActiveXUI::GetInterface(LPCTSTR pstrName)
@@ -1019,12 +1019,13 @@ void CActiveXUI::Move(SIZE szOffset, bool bNeedInvalidate)
 	}
 }
 
-void CActiveXUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl)
+bool CActiveXUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl)
 {
     if( m_pControl != NULL && m_pControl->m_bWindowless && m_pControl->m_pViewObject != NULL )
     {
         m_pControl->m_pViewObject->Draw(DVASPECT_CONTENT, -1, NULL, NULL, NULL, hDC, (RECTL*) &m_rcItem, (RECTL*) &m_rcItem, NULL, NULL); 
     }
+    return true;
 }
 
 void CActiveXUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
@@ -1058,7 +1059,7 @@ LRESULT CActiveXUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, bool
         if( dwHitResult != HITRESULT_HIT ) return 0;
         if( uMsg == WM_SETCURSOR ) bWasHandled = false;
         else if( uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONDBLCLK || uMsg == WM_RBUTTONDOWN ) {
-            ::SetFocus(GetManager()->GetPaintWindow());
+            if (!GetManager()->IsNoActivate()) ::SetFocus(GetManager()->GetPaintWindow());
             SetFocus();
         }
     }

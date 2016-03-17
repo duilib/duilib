@@ -11,7 +11,7 @@ namespace DuiLib
 
 	LPCTSTR CSliderUI::GetClass() const
 	{
-		return _T("SliderUI");
+		return DUI_CTR_SLIDER;
 	}
 
 	UINT CSliderUI::GetControlFlags() const
@@ -184,7 +184,7 @@ namespace DuiLib
 			case SB_LINEDOWN:
 				SetValue(GetValue() - GetChangeStep());
 				m_pManager->SendNotify(this, DUI_MSGTYPE_VALUECHANGED);
-			return;
+			    return;
 			}
 		}
 		if( event.Type == UIEVENT_MOUSEMOVE )
@@ -213,22 +213,33 @@ namespace DuiLib
 				return;
 			}
 		}
-		if( event.Type == UIEVENT_MOUSEENTER )
-		{
-			if( IsEnabled() ) {
-				m_uButtonState |= UISTATE_HOT;
-				Invalidate();
-			}
-			return;
-		}
-		if( event.Type == UIEVENT_MOUSELEAVE )
-		{
-			if( IsEnabled() ) {
-				m_uButtonState &= ~UISTATE_HOT;
-				Invalidate();
-			}
-			return;
-		}
+        if( event.Type == UIEVENT_MOUSEENTER )
+        {
+            if( ::PtInRect(&m_rcItem, event.ptMouse ) ) {
+                if( IsEnabled() ) {
+                    if( (m_uButtonState & UISTATE_HOT) == 0  ) {
+                        m_uButtonState |= UISTATE_HOT;
+                        Invalidate();
+                    }
+                }
+            }
+        }
+        if( event.Type == UIEVENT_MOUSELEAVE )
+        {
+            if( !::PtInRect(&m_rcItem, event.ptMouse ) ) {
+                if( IsEnabled() ) {
+                    if( (m_uButtonState & UISTATE_HOT) != 0  ) {
+                        m_uButtonState &= ~UISTATE_HOT;
+                        Invalidate();
+                    }
+                }
+                if (m_pManager) m_pManager->RemoveMouseLeaveNeeded(this);
+            }
+            else {
+                if (m_pManager) m_pManager->AddMouseLeaveNeeded(this);
+                return;
+            }
+        }
 		CControlUI::DoEvent(event);
 	}
 

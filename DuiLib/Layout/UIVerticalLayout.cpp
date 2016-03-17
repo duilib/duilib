@@ -11,7 +11,7 @@ namespace DuiLib
 
 	LPCTSTR CVerticalLayoutUI::GetClass() const
 	{
-		return _T("VerticalLayoutUI");
+		return DUI_CTR_VERTICALLAYOUT;
 	}
 
 	LPVOID CVerticalLayoutUI::GetInterface(LPCTSTR pstrName)

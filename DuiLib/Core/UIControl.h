@@ -10,10 +10,13 @@ namespace DuiLib {
 
 typedef CControlUI* (CALLBACK* FINDCONTROLPROC)(CControlUI*, LPVOID);
 
-class UILIB_API CControlUI
+class DUILIB_API CControlUI
 {
 public:
     CControlUI();
+    virtual void Delete();
+
+protected:
     virtual ~CControlUI();
 
 public:
@@ -28,6 +31,8 @@ public:
     virtual CPaintManagerUI* GetManager() const;
     virtual void SetManager(CPaintManagerUI* pManager, CControlUI* pParent, bool bInit = true);
     virtual CControlUI* GetParent() const;
+    virtual CControlUI* GetCover() const;
+    virtual void SetCover(CControlUI *pControl);
 
     // 文本相关
     virtual CDuiString GetText() const;
@@ -144,14 +149,15 @@ public:
     virtual void Event(TEventUI& event);
     virtual void DoEvent(TEventUI& event);
 
+    virtual CDuiString GetAttribute(LPCTSTR pstrName);
     virtual void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
-    CControlUI* ApplyAttributeList(LPCTSTR pstrList);
-	CDuiString GetAttributeList();
+	virtual CDuiString GetAttributeList(bool bIgnoreDefault = true);
+    virtual void SetAttributeList(LPCTSTR pstrList);
 
     virtual SIZE EstimateSize(SIZE szAvailable);
 
-	virtual void Paint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl=NULL);
-    virtual void DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl);
+	virtual bool Paint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl=NULL); // 返回要不要继续绘制
+    virtual bool DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl);
     virtual void PaintBkColor(HDC hDC);
     virtual void PaintBkImage(HDC hDC);
     virtual void PaintStatusImage(HDC hDC);
@@ -176,6 +182,7 @@ public:
 protected:
     CPaintManagerUI* m_pManager;
     CControlUI* m_pParent;
+    CControlUI* m_pCover;
 	CDuiString m_sVirtualWnd;
     CDuiString m_sName;
     bool m_bUpdateNeeded;
@@ -216,7 +223,7 @@ protected:
     SIZE m_cxyBorderRound;
     RECT m_rcPaint;
 	RECT m_rcBorderSize;
-	CStdStringPtrMap m_mCustomAttrHash;
+	CDuiStringPtrMap m_mCustomAttrHash;
 };
 
 } // namespace DuiLib
