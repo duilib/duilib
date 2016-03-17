@@ -489,15 +489,16 @@ LPVOID CMenuElementUI::GetInterface(LPCTSTR pstrName)
     return CListContainerElementUI::GetInterface(pstrName);
 }
 
-void CMenuElementUI::DoPaint(HDC hDC, const RECT& rcPaint)
+void CMenuElementUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl)
 {
-    if( !::IntersectRect(&m_rcPaint, &rcPaint, &m_rcItem) ) return;
 	CMenuElementUI::DrawItemBk(hDC, m_rcItem);
 	DrawItemText(hDC, m_rcItem);
-	for (int i = 0; i < GetCount(); ++i)
-	{
-		if (GetItemAt(i)->GetInterface(kMenuElementUIInterfaceName) == NULL)
-			GetItemAt(i)->Paint(hDC, rcPaint);
+	for (int i = 0; i < GetCount(); ++i) {
+		CControlUI* pControl = static_cast<CControlUI*>(m_items[i]);
+		if( pControl == pStopControl ) break;
+		if( !pControl->IsVisible() ) continue;
+		if( pControl->GetInterface(kMenuElementUIInterfaceName) != NULL) continue;
+		pControl->Paint(hDC, rcPaint, pStopControl);
 	}
 }
 

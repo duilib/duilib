@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Window>
+	<Font shared="true" id="0" name="幼圆" size="12" default="true" />
+	<Font shared="true" id="1" name="微软雅黑" size="18" />
+	
+	<Container>
+		<Control name="desktopimage"/>
+		<Control name="desktopmask"/>
+		<Control name="desktopmaskborder" float="true" pos="0,0,0,0" bordersize="4" bordercolor="#FF00A2E8"/>
+		<CanvasContainer name="desktopcanvascontainer" float="true" inset="2,2,2,2" bordersize="1" bordercolor="#FF000080" >
+			<Control name="desktopcanvas" mouse="false"/>
+		</CanvasContainer>
+	    <VBox name="toolbar" float="true" pos="0,0,0,0"/>
+	</Container>
+
+</Window>

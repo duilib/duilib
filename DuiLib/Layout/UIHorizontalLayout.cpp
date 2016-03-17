@@ -5,7 +5,7 @@ namespace DuiLib
 {
 	CHorizontalLayoutUI::CHorizontalLayoutUI() : m_iSepWidth(0), m_uButtonState(0), m_bImmMode(false)
 	{
-		ptLastMouse.x = ptLastMouse.y = 0;
+		m_ptLastMouse.x = m_ptLastMouse.y = 0;
 		::ZeroMemory(&m_rcNewPos, sizeof(m_rcNewPos));
 	}
 
@@ -230,7 +230,7 @@ namespace DuiLib
 				RECT rcSeparator = GetThumbRect(false);
 				if( ::PtInRect(&rcSeparator, event.ptMouse) ) {
 					m_uButtonState |= UISTATE_CAPTURED;
-					ptLastMouse = event.ptMouse;
+					m_ptLastMouse = event.ptMouse;
 					m_rcNewPos = m_rcItem;
 					if( !m_bImmMode && m_pManager ) m_pManager->AddPostPaint(this);
 					return;
@@ -249,8 +249,8 @@ namespace DuiLib
 			if( event.Type == UIEVENT_MOUSEMOVE )
 			{
 				if( (m_uButtonState & UISTATE_CAPTURED) != 0 ) {
-					LONG cx = event.ptMouse.x - ptLastMouse.x;
-					ptLastMouse = event.ptMouse;
+					LONG cx = event.ptMouse.x - m_ptLastMouse.x;
+					m_ptLastMouse = event.ptMouse;
 					RECT rc = m_rcNewPos;
 					if( m_iSepWidth >= 0 ) {
 						if( cx > 0 && event.ptMouse.x < m_rcNewPos.right - m_iSepWidth ) return;

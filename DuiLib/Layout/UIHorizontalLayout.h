@@ -29,7 +29,7 @@ namespace DuiLib
 	protected:
 		int m_iSepWidth;
 		UINT m_uButtonState;
-		POINT ptLastMouse;
+		POINT m_ptLastMouse;
 		RECT m_rcNewPos;
 		bool m_bImmMode;
 	};

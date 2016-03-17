@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{11A20D10-E0D7-447F-A546-8E4662C115C5}</ProjectGuid>
+    <ProjectGuid>{41B017E7-7805-40D5-9D96-AABF572F57D2}</ProjectGuid>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnicodeRelease|Win32'" Label="Configuration">
@@ -95,7 +95,7 @@
       <MkTypLibCompatible>true</MkTypLibCompatible>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>.\Release/MenuDemo.tlb</TypeLibraryName>
+      <TypeLibraryName>.\Release/ScrCapture.tlb</TypeLibraryName>
       <HeaderFileName />
     </Midl>
     <ClCompile>
@@ -105,9 +105,9 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PrecompiledHeader />
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>.\Release/MenuDemo.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>.\Release/ScrCapture.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
       <ObjectFileName>.\Release/</ObjectFileName>
       <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
@@ -119,15 +119,15 @@
       <Culture>0x0406</Culture>
     </ResourceCompile>
     <Link>
-      <OutputFile>../bin/MenuDemo.exe</OutputFile>
+      <OutputFile>../bin/ScrCapture.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <ProgramDatabaseFile>.\Release/MenuDemo.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>.\Release/ScrCapture.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\Release/MenuDemo.bsc</OutputFile>
+      <OutputFile>.\Release/ScrCapture.bsc</OutputFile>
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -136,7 +136,7 @@
       <MkTypLibCompatible>true</MkTypLibCompatible>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>.\Debug/MenuDemo.tlb</TypeLibraryName>
+      <TypeLibraryName>.\Debug/ScrCapture.tlb</TypeLibraryName>
       <HeaderFileName />
     </Midl>
     <ClCompile>
@@ -145,9 +145,9 @@
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PrecompiledHeader />
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>.\Debug/MenuDemo.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>.\Debug/ScrCapture.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
       <ObjectFileName>.\Debug/</ObjectFileName>
       <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
@@ -161,18 +161,18 @@
       <Culture>0x0406</Culture>
     </ResourceCompile>
     <Link>
-      <OutputFile>../bin/MenuDemo_d.exe</OutputFile>
+      <OutputFile>../bin/ScrCapture_d.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>.\Debug/MenuDemo.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>.\Debug/ScrCapture.pdb</ProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MapFileName>.\Debug/MenuDemo.map</MapFileName>
+      <MapFileName>.\Debug/ScrCapture.map</MapFileName>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\Debug/MenuDemo.bsc</OutputFile>
+      <OutputFile>.\Debug/ScrCapture.bsc</OutputFile>
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='UnicodeDebug|Win32'">
@@ -181,7 +181,7 @@
       <MkTypLibCompatible>true</MkTypLibCompatible>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>.\Debug/MenuDemo.tlb</TypeLibraryName>
+      <TypeLibraryName>.\Debug/ScrCapture.tlb</TypeLibraryName>
       <HeaderFileName />
     </Midl>
     <ClCompile>
@@ -190,9 +190,9 @@
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PrecompiledHeader />
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>.\Debug_u/MenuDemo.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>.\Debug_u/ScrCapture.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>.\Debug_u/</AssemblerListingLocation>
       <ObjectFileName>.\Debug_u/</ObjectFileName>
       <ProgramDataBaseFileName>.\Debug_u/</ProgramDataBaseFileName>
@@ -206,18 +206,18 @@
       <Culture>0x0406</Culture>
     </ResourceCompile>
     <Link>
-      <OutputFile>../bin/MenuDemo_ud.exe</OutputFile>
+      <OutputFile>../bin/ScrCapture_ud.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>.\Debug_u/MenuDemo.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>.\Debug_u/ScrCapture.pdb</ProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MapFileName>.\Debug_u/MenuDemo.map</MapFileName>
+      <MapFileName>.\Debug_u/ScrCapture.map</MapFileName>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\Debug/MenuDemo.bsc</OutputFile>
+      <OutputFile>.\Debug/ScrCapture.bsc</OutputFile>
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='UnicodeRelease|Win32'">
@@ -226,7 +226,7 @@
       <MkTypLibCompatible>true</MkTypLibCompatible>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>.\Release/MenuDemo.tlb</TypeLibraryName>
+      <TypeLibraryName>.\Release/ScrCapture.tlb</TypeLibraryName>
       <HeaderFileName />
     </Midl>
     <ClCompile>
@@ -236,9 +236,9 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PrecompiledHeader />
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>.\Release_u/MenuDemo.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>.\Release_u/ScrCapture.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>.\Release_u/</AssemblerListingLocation>
       <ObjectFileName>.\Release_u/</ObjectFileName>
       <ProgramDataBaseFileName>.\Release_u/</ProgramDataBaseFileName>
@@ -250,40 +250,36 @@
       <Culture>0x0406</Culture>
     </ResourceCompile>
     <Link>
-      <OutputFile>../bin/MenuDemo_u.exe</OutputFile>
+      <OutputFile>../bin/ScrCapture_u.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <ProgramDatabaseFile>.\Release_u/MenuDemo.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>.\Release_u/ScrCapture.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\Release/MenuDemo.bsc</OutputFile>
+      <OutputFile>.\Release/ScrCapture.bsc</OutputFile>
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="debug.cpp" />
-    <ClCompile Include="main_frame.cpp" />
-    <ClCompile Include="StdAfx.cpp" />
-    <ClCompile Include="UICrack.cpp" />
-    <ClCompile Include="UIMenu.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="App.cpp" />
+    <ClCompile Include="Canvas.cpp" />
+    <ClCompile Include="CanvasContainer.cpp" />
+    <ClCompile Include="ScrCaptureWnd.cpp" />
+    <ClCompile Include="StdAfx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='UnicodeDebug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='UnicodeRelease|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="debug.hpp" />
-    <ClInclude Include="main_frame.hpp" />
-    <ClInclude Include="observer_impl_base.hpp" />
+    <ClInclude Include="Canvas.h" />
+    <ClInclude Include="CanvasContainer.h" />
+    <ClInclude Include="ScrCaptureWnd.h" />
     <ClInclude Include="StdAfx.h" />
-    <ClInclude Include="UICrack.h" />
-    <ClInclude Include="UIMenu.h" />
-    <ClInclude Include="resource.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="MenuDemo.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="res\menutest.xml" />
-    <Xml Include="res\skin.xml" />
+    <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DuiLib\DuiLib.vcxproj">
