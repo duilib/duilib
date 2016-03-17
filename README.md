@@ -6,6 +6,13 @@ Duilib是个人开源项目，没有公司支持也没有全职员工，她的�
 
 欢迎为Duilib提供功能改进、代码修补、bug反馈、使用文档和献计献策，让我们一起把Duilib做的更好！
 
+# Todo：
+完善属性设置和保存
+
+重写Tree
+
+支持dpi
+
 ### 支付宝扫码
 ![支付宝扫码](https://github.com/wangchyz/privatedata/blob/master/alipay.png)
 
