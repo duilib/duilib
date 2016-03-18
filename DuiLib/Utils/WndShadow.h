@@ -29,8 +29,6 @@
 
 #pragma once
 
-#include <map>
-
 class DUILIB_API CWndShadow
 {
 public:
@@ -44,7 +42,7 @@ protected:
 	static HINSTANCE s_hInstance;
 
 	// Parent HWND and CWndShadow object pares, in order to find CWndShadow in ParentProc()
-	static std::map<HWND, CWndShadow *> s_Shadowmap;
+	static DuiLib::CDuiValArray s_ShadowArray;
 
 	// 
 	typedef BOOL (WINAPI *pfnUpdateLayeredWindow)(HWND hWnd, HDC hdcDst, POINT *pptDst,
@@ -105,6 +103,8 @@ public:
 protected:
 	static LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	static LRESULT CALLBACK ParentProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    static CWndShadow* FindShadowWindow(HWND hWnd);
+    static int GetShadowWindowIndex(HWND hWnd);
 
 	// Redraw, resize and move the shadow
 	// called when window resized or shadow properties changed, but not only moved without resizing
@@ -112,6 +112,7 @@ protected:
 
 	// Fill in the shadow window alpha blend bitmap with shadow image pixels
 	void MakeShadow(UINT32 *pShadBits, HWND hParent, RECT *rcParent);
+
 
 	// Helper to calculate the alpha-premultiled value for a pixel
 	inline DWORD PreMultiply(COLORREF cl, unsigned char nAlpha)

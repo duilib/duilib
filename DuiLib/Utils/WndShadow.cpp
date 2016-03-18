@@ -60,7 +60,13 @@ const TCHAR *strWndClassName = _T("DuiShadowWnd");
 
 HINSTANCE CWndShadow::s_hInstance = (HINSTANCE)INVALID_HANDLE_VALUE;
 
-std::map<HWND, CWndShadow *> CWndShadow::s_Shadowmap;
+typedef struct HWNDSHADOW
+{
+    HWND hWnd;
+    CWndShadow *pWndShadow;
+} HwndShadow;
+
+DuiLib::CDuiValArray CWndShadow::s_ShadowArray(sizeof(HwndShadow), 10);
 
 CWndShadow::CWndShadow(void)
 : m_hWnd((HWND)INVALID_HANDLE_VALUE)
@@ -149,8 +155,10 @@ void CWndShadow::Create(HWND hParentWnd)
 	_ASSERT(s_hInstance != INVALID_HANDLE_VALUE);
 
 	// Add parent window - shadow pair to the map
-	_ASSERT(s_Shadowmap.find(hParentWnd) == s_Shadowmap.end());	// Only one shadow for each window
-	s_Shadowmap[hParentWnd] = this;
+	_ASSERT(FindShadowWindow(hParentWnd) == NULL);	// Only one shadow for each window
+
+    HwndShadow hs = {hParentWnd, this};
+	s_ShadowArray.Add(&hs);
 
 	// Create the shadow window
 	m_hWnd = CreateWindowEx(WS_EX_LAYERED | WS_EX_TRANSPARENT, strWndClassName, NULL,
@@ -188,9 +196,8 @@ LRESULT CALLBACK CWndShadow::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 
 LRESULT CALLBACK CWndShadow::ParentProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	_ASSERT(s_Shadowmap.find(hwnd) != s_Shadowmap.end());	// Shadow must have been attached
-
-	CWndShadow *pThis = s_Shadowmap[hwnd];
+	CWndShadow *pThis = FindShadowWindow(hwnd);
+    _ASSERT (pThis);
 
 	switch(uMsg)
 	{
@@ -283,7 +290,10 @@ LRESULT CALLBACK CWndShadow::ParentProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPA
 		break;
 		
 	case WM_NCDESTROY:
-		s_Shadowmap.erase(hwnd);	// Remove this window and shadow from the map
+        {
+            int iIndex = GetShadowWindowIndex(hwnd);
+            if (iIndex >= 0) s_ShadowArray.Remove(iIndex);
+        }
 		break;
 
 	}
@@ -294,6 +304,26 @@ LRESULT CALLBACK CWndShadow::ParentProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPA
 	return ((WNDPROC)pThis->m_OriParentProc)(hwnd, uMsg, wParam, lParam);
 #pragma warning(default: 4312)
 
+}
+
+CWndShadow* CWndShadow::FindShadowWindow(HWND hWnd)
+{
+    for (int i = 0; i < s_ShadowArray.GetSize(); ++i)
+    {
+        HwndShadow* hwndShadow = (HwndShadow*)s_ShadowArray[i];
+        if (hwndShadow->hWnd == hWnd) return hwndShadow->pWndShadow;
+    }
+    return NULL;
+}
+
+int CWndShadow::GetShadowWindowIndex(HWND hWnd)
+{
+    for (int i = 0; i < s_ShadowArray.GetSize(); ++i)
+    {
+        HwndShadow* hwndShadow = (HwndShadow*)s_ShadowArray[i];
+        if (hwndShadow->hWnd == hWnd) return i;
+    }
+    return -1;
 }
 
 void CWndShadow::Update(HWND hParent)

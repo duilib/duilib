@@ -17,175 +17,10 @@ namespace DuiLib
 		LPCTSTR m_lpstr;
 	};
 
-    /////////////////////////////////////////////////////////////////////////////////////
-    //
-
-    class CDuiString;
-    class DUILIB_API IDuiBaseType
-    {
-    public:
-        void FromString();
-        CDuiString ToString();
-    };
-
-    /////////////////////////////////////////////////////////////////////////////////////
-    //
-
-    class DUILIB_API CDuiChar : public IDuiBaseType
-    {
-    public:
-        CDuiChar();
-        CDuiChar(char cValue);
-        CDuiChar(LPCTSTR pstrValue);
-        CDuiString ToString();
-
-        char m_cValue;
-    };
-
-    /////////////////////////////////////////////////////////////////////////////////////
-    //
-
-    class DUILIB_API CDuiByte : public IDuiBaseType
-    {
-    public:
-        CDuiByte();
-        CDuiByte(byte byValue);
-        CDuiByte(LPCTSTR pstrValue);
-        CDuiString ToString();
-
-        byte m_byValue;
-    };
-
-    /////////////////////////////////////////////////////////////////////////////////////
-    //
-
-    class DUILIB_API CDuiTChar : public IDuiBaseType
-    {
-    public:
-        CDuiTChar();
-        CDuiTChar(TCHAR tValue);
-        CDuiTChar(LPCTSTR pstrValue);
-        CDuiString ToString();
-
-        TCHAR m_tValue;
-    };
-
-    /////////////////////////////////////////////////////////////////////////////////////
-    //
-
-    class DUILIB_API CDuiWord : public IDuiBaseType
-    {
-    public:
-        CDuiWord();
-        CDuiWord(WORD wValue);
-        CDuiWord(LPCTSTR pstrValue);
-        CDuiString ToString();
-
-        WORD m_wValue;
-    };
-
-    /////////////////////////////////////////////////////////////////////////////////////
-    //
-
-    class DUILIB_API CDuiDWord : public IDuiBaseType
-    {
-    public:
-        CDuiDWord();
-        CDuiDWord(DWORD dwValue);
-        CDuiDWord(LPCTSTR pstrValue);
-        CDuiString ToString();
-
-        DWORD m_dwValue;
-    };
-
-    /////////////////////////////////////////////////////////////////////////////////////
-    //
-
-    class DUILIB_API CDuiInt : public IDuiBaseType
-    {
-    public:
-        CDuiInt();
-        CDuiInt(int iValue);
-        CDuiInt(LPCTSTR pstrValue);
-        CDuiString ToString();
-
-        int m_iValue;
-    };
-
-    /////////////////////////////////////////////////////////////////////////////////////
-    //
-
-    class DUILIB_API CDuiUInt : public IDuiBaseType
-    {
-    public:
-        CDuiUInt();
-        CDuiUInt(unsigned int uValue);
-        CDuiUInt(LPCTSTR pstrValue);
-        CDuiString ToString();
-
-        unsigned int m_uValue;
-    };
-
-    /////////////////////////////////////////////////////////////////////////////////////
-    //
-
-    class DUILIB_API CDuiLong : public IDuiBaseType
-    {
-    public:
-        CDuiLong();
-        CDuiLong(long lValue);
-        CDuiLong(LPCTSTR pstrValue);
-        CDuiString ToString();
-
-        long m_lValue;
-    };
-
-    /////////////////////////////////////////////////////////////////////////////////////
-    //
-
-    class DUILIB_API CDuiULong : public IDuiBaseType
-    {
-    public:
-        CDuiULong();
-        CDuiULong(unsigned long ulValue);
-        CDuiULong(LPCTSTR pstrValue);
-        CDuiString ToString();
-
-        unsigned long m_ulValue;
-    };
-
-    /////////////////////////////////////////////////////////////////////////////////////
-    //
-
-    class DUILIB_API CDuiInt64 : public IDuiBaseType
-    {
-    public:
-        CDuiInt64();
-        CDuiInt64(__int64 iiValue);
-        CDuiInt64(LPCTSTR pstrValue);
-        CDuiString ToString();
-
-        __int64 m_iiValue;
-    };
-
-    /////////////////////////////////////////////////////////////////////////////////////
-    //
-
-    class DUILIB_API CDuiBool : public IDuiBaseType
-    {
-    public:
-        CDuiBool();
-        CDuiBool(bool bValue);
-        CDuiBool(LPCTSTR pstrValue);
-        CDuiString ToString();
-
-        bool m_bValue;
-    };
-
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
-
-	class DUILIB_API CDuiPoint : public tagPOINT, public IDuiBaseType
+    class CDuiString;
+	class DUILIB_API CDuiPoint : public tagPOINT
 	{
 	public:
 		CDuiPoint();
@@ -199,7 +34,7 @@ namespace DuiLib
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
 
-	class DUILIB_API CDuiSize : public tagSIZE, public IDuiBaseType
+	class DUILIB_API CDuiSize : public tagSIZE
 	{
 	public:
 		CDuiSize();
@@ -213,7 +48,7 @@ namespace DuiLib
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
 
-	class DUILIB_API CDuiRect : public tagRECT, public IDuiBaseType
+	class DUILIB_API CDuiRect : public tagRECT
 	{
 	public:
 		CDuiRect();
@@ -238,7 +73,7 @@ namespace DuiLib
     /////////////////////////////////////////////////////////////////////////////////////
     //
 
-    class DUILIB_API CDuiString : public IDuiBaseType
+    class DUILIB_API CDuiString
     {
     public:
         enum { MAX_LOCAL_STRING_LEN = 63 };
