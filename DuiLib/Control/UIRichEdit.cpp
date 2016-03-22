@@ -1079,6 +1079,7 @@ CRichEditUI::CRichEditUI() : m_pTwh(NULL), m_bVScrollBarFixing(false), m_bWantTa
     m_bWantCtrlReturn(true), m_bTransparent(true), m_bRich(true), m_bReadOnly(false), m_bWordWrap(false), m_dwTextColor(0), m_iFont(-1), 
 	m_iLimitText(cInitTextMax), m_lTwhStyle(ES_MULTILINE), m_bDrawCaret(true), m_bInited(false)
 {
+	::ZeroMemory(&m_rcTextPadding, sizeof(m_rcTextPadding));
 }
 
 CRichEditUI::~CRichEditUI()
@@ -1690,6 +1691,17 @@ long CRichEditUI::StreamOut(int nFormat, EDITSTREAM &es)
     return (long)lResult; 
 }
 
+RECT CRichEditUI::GetTextPadding() const
+{
+	return m_rcTextPadding;
+}
+
+void CRichEditUI::SetTextPadding(RECT rc)
+{
+	m_rcTextPadding = rc;
+	Invalidate();
+}
+
 void CRichEditUI::DoInit()
 {
 	if(m_bInited)
@@ -2011,9 +2023,19 @@ void CRichEditUI::SetPos(RECT rc, bool bNeedInvalidate)
     }
 
     if( m_pTwh != NULL ) {
-        m_pTwh->SetClientRect(&rcScrollView);
+		RECT rcScrollTextView = rcScrollView;
+		rcScrollTextView.left += m_rcTextPadding.left;
+		rcScrollTextView.right -= m_rcTextPadding.right;
+		rcScrollTextView.top += m_rcTextPadding.top;
+		rcScrollTextView.bottom -= m_rcTextPadding.bottom;
+		RECT rcText = rc;
+		rcText.left += m_rcTextPadding.left;
+		rcText.right -= m_rcTextPadding.right;
+		rcText.top += m_rcTextPadding.top;
+		rcText.bottom -= m_rcTextPadding.bottom;
+        m_pTwh->SetClientRect(&rcScrollTextView);
         if( bVScrollBarVisiable && (!m_pVerticalScrollBar->IsVisible() || m_bVScrollBarFixing) ) {
-            LONG lWidth = rc.right - rc.left + m_pVerticalScrollBar->GetFixedWidth();
+            LONG lWidth = rcText.right - rcText.left + m_pVerticalScrollBar->GetFixedWidth();
             LONG lHeight = 0;
             SIZEL szExtent = { -1, -1 };
             m_pTwh->GetTextServices()->TxGetNaturalSize(
@@ -2025,7 +2047,7 @@ void CRichEditUI::SetPos(RECT rc, bool bNeedInvalidate)
                 &szExtent,
                 &lWidth,
                 &lHeight);
-            if( lHeight > rc.bottom - rc.top ) {
+            if( lHeight > rcText.bottom - rcText.top ) {
                 m_pVerticalScrollBar->SetVisible(true);
                 m_pVerticalScrollBar->SetScrollPos(0);
                 m_bVScrollBarFixing = true;
@@ -2262,6 +2284,15 @@ void CRichEditUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
         SetTextColor(clrColor);
     }
+	else if( _tcscmp(pstrName, _T("textpadding")) == 0 ) {
+		RECT rcTextPadding = { 0 };
+		LPTSTR pstr = NULL;
+		rcTextPadding.left = _tcstol(pstrValue, &pstr, 10);  ASSERT(pstr);    
+		rcTextPadding.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
+		rcTextPadding.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
+		rcTextPadding.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
+		SetTextPadding(rcTextPadding);
+	}
     else CContainerUI::SetAttribute(pstrName, pstrValue);
 }
 
