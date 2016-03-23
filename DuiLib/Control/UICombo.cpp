@@ -139,6 +139,7 @@ public:
     CComboUI* m_pOwner;
     CVerticalLayoutUI* m_pLayout;
     int m_iOldSel;
+    bool m_bScrollbarClicked;
 };
 
 
@@ -147,6 +148,7 @@ void CComboWnd::Init(CComboUI* pOwner)
     m_pOwner = pOwner;
     m_pLayout = NULL;
     m_iOldSel = m_pOwner->GetCurSel();
+    m_bScrollbarClicked = false;
 
     // Position the popup window in absolute space
     SIZE szDrop = m_pOwner->GetDropBoxSize();
@@ -237,12 +239,26 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		else m_pOwner->SetPos(m_pOwner->GetRelativePos(), false);
         m_pOwner->SetFocus();
     }
-    else if( uMsg == WM_LBUTTONUP ) {
+    else if( uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONDBLCLK ) {
         POINT pt = { 0 };
         ::GetCursorPos(&pt);
         ::ScreenToClient(m_pm.GetPaintWindow(), &pt);
         CControlUI* pControl = m_pm.FindControl(pt);
-        if( pControl && _tcscmp(pControl->GetClass(), DUI_CTR_SCROLLBAR) != 0 ) PostMessage(WM_KILLFOCUS);
+        if( pControl && _tcscmp(pControl->GetClass(), DUI_CTR_SCROLLBAR) == 0 ) {
+            m_bScrollbarClicked = true;
+        }
+    }
+    else if( uMsg == WM_LBUTTONUP ) {
+        if (m_bScrollbarClicked) {
+            m_bScrollbarClicked = false;
+        }
+        else {
+            POINT pt = { 0 };
+            ::GetCursorPos(&pt);
+            ::ScreenToClient(m_pm.GetPaintWindow(), &pt);
+            CControlUI* pControl = m_pm.FindControl(pt);
+            if( pControl && _tcscmp(pControl->GetClass(), DUI_CTR_SCROLLBAR) != 0 ) PostMessage(WM_KILLFOCUS);
+        }
     }
     else if( uMsg == WM_KEYDOWN ) {
         switch( wParam ) {

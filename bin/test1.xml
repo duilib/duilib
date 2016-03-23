@@ -26,10 +26,10 @@
 		<RichEdit name="testrichedit1" bordercolor="#FF0000" bordersize="2" borderround="8,8" inset="4,2,4,2" bkcolor="#FFE2E5EA" bkcolor2="#FF00F5DA" bkcolor3="#FFF2F5FA" font="1" multiline="false" rich="false" hscrollbar="true" autohscroll="true"/>
 		<DateTime name="DateTime" width="200" height="30" bkcolor="#FFE2E5EA" padding="0,5,0,0" />
 		<CheckBox name="CheckBox1" width="20" height="20" bkcolor="#FFEA679F" />
-		<ComboBox name="ComboBox1" width="200" height="30" bkcolor="#FFEA679F" >
+		<ComboBox name="ComboBox1" width="200" height="30" bkcolor="#FFEA679F" bordersize="1" bordercolor="0xFFFF0000">
 			<ListLabelElement text="11111111111111"/>
 			<ListLabelElement text="22222222222222"/>
-			<ListLabelElement text="33333333333333"/>
+			<ListLabelElement text="33333333333333" selected="true"/>
 			<ListLabelElement text="44444444444444"/>
 			<ListLabelElement text="55555555555555"/>
 			<ComboBox height="30" bkcolor="#FF00679F" >
