@@ -8,6 +8,7 @@ ImageObject::ImageObject(void)
 	, m_bHole(false)
 	, m_bXTiled(false)
 	, m_bYTiled(false)
+	, m_pImageData(nullptr)
 {
 }
 
