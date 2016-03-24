@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ticpp">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="tinyXML">
+      <UniqueIdentifier>{1d1be74e-5f19-48ce-87b4-a5101db9fa42}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ticpp.cpp">
+      <Filter>ticpp</Filter>
+    </ClCompile>
+    <ClCompile Include="tinystr.cpp">
+      <Filter>tinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="tinyxml.cpp">
+      <Filter>tinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="tinyxmlerror.cpp">
+      <Filter>tinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="tinyxmlparser.cpp">
+      <Filter>tinyXML</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ticpp.h">
+      <Filter>ticpp</Filter>
+    </ClInclude>
+    <ClInclude Include="ticppapi.h">
+      <Filter>ticpp</Filter>
+    </ClInclude>
+    <ClInclude Include="ticpprc.h">
+      <Filter>ticpp</Filter>
+    </ClInclude>
+    <ClInclude Include="tinystr.h">
+      <Filter>tinyXML</Filter>
+    </ClInclude>
+    <ClInclude Include="tinyxml.h">
+      <Filter>tinyXML</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

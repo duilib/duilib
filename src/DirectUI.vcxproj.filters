@@ -1,0 +1,238 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Base">
+      <UniqueIdentifier>{9345c5cb-c0fd-4230-ae49-d81e4726da21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Control">
+      <UniqueIdentifier>{8646b8d9-00e8-44a3-b4a5-55aba9fe2979}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Layout">
+      <UniqueIdentifier>{7e521e8f-d29d-4c1a-b3e8-d1a8c426d615}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Define">
+      <UniqueIdentifier>{4b0d32a1-5a89-4806-a2b6-f88d277f1a70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dll&amp;Header">
+      <UniqueIdentifier>{c1178bc8-6762-4fb1-851e-c12a06ba9d6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Window">
+      <UniqueIdentifier>{c305e8ae-862e-4407-990d-d96e3b5c21c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render">
+      <UniqueIdentifier>{9aae6b97-d06f-4b48-baa0-692862a9eecc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TinyXml">
+      <UniqueIdentifier>{157253a3-15c1-4a37-92cb-9c78c3608b1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{9bb0433a-aa0d-40a8-a97c-eb49551ba771}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DirectUI.h" />
+    <ClInclude Include="Define\UIDefine.h">
+      <Filter>Define</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Dll&amp;Header</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Dll&amp;Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\UIUtils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\UIDelegate.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\WindowWnd.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Control\ControlUI.h">
+      <Filter>Control</Filter>
+    </ClInclude>
+    <ClInclude Include="Window\WindowUI.h">
+      <Filter>Window</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\ImageObject.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\GDIRender.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\FontObject.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\ResourceManager.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="TinyXml\tinystr.h">
+      <Filter>TinyXml</Filter>
+    </ClInclude>
+    <ClInclude Include="TinyXml\tinyxml.h">
+      <Filter>TinyXml</Filter>
+    </ClInclude>
+    <ClInclude Include="TinyXml\ticppapi.h">
+      <Filter>TinyXml</Filter>
+    </ClInclude>
+    <ClInclude Include="TinyXml\ticpprc.h">
+      <Filter>TinyXml</Filter>
+    </ClInclude>
+    <ClInclude Include="TinyXml\ticpp.h">
+      <Filter>TinyXml</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\TemplateObject.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\BufferPtr.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Layout\ContainerUI.h">
+      <Filter>Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\ObjectUI.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Control\ScrollBarUI.h">
+      <Filter>Control</Filter>
+    </ClInclude>
+    <ClInclude Include="Define\IUIRender.h">
+      <Filter>Define</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\UIEngine.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Control\ButtonUI.h">
+      <Filter>Control</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\UIPaint.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\stb_image.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Layout\HorizontalLayoutUI.h">
+      <Filter>Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="Layout\VerticalLayoutUI.h">
+      <Filter>Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="Layout\ChildLayoutUI.h">
+      <Filter>Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="Layout\TabLayoutUI.h">
+      <Filter>Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="Control\LabelUI.h">
+      <Filter>Control</Filter>
+    </ClInclude>
+    <ClInclude Include="Control\EditUI.h">
+      <Filter>Control</Filter>
+    </ClInclude>
+    <ClInclude Include="Control\RichEditUI.h">
+      <Filter>Control</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Dll&amp;Header</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Dll&amp;Header</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\UIUtils.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\UIDelegate.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\WindowWnd.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Control\ControlUI.cpp">
+      <Filter>Control</Filter>
+    </ClCompile>
+    <ClCompile Include="Window\WindowUI.cpp">
+      <Filter>Window</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\ImageObject.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\GDIRender.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\FontObject.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\ResourceManager.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="TinyXml\tinystr.cpp">
+      <Filter>TinyXml</Filter>
+    </ClCompile>
+    <ClCompile Include="TinyXml\tinyxml.cpp">
+      <Filter>TinyXml</Filter>
+    </ClCompile>
+    <ClCompile Include="TinyXml\tinyxmlerror.cpp">
+      <Filter>TinyXml</Filter>
+    </ClCompile>
+    <ClCompile Include="TinyXml\tinyxmlparser.cpp">
+      <Filter>TinyXml</Filter>
+    </ClCompile>
+    <ClCompile Include="TinyXml\ticpp.cpp">
+      <Filter>TinyXml</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\TemplateObject.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Layout\ContainerUI.cpp">
+      <Filter>Layout</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\ObjectUI.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Control\ScrollBarUI.cpp">
+      <Filter>Control</Filter>
+    </ClCompile>
+    <ClCompile Include="Define\IUIRender.cpp">
+      <Filter>Define</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\UIEngine.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Control\ButtonUI.cpp">
+      <Filter>Control</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\UIPaint.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\stb_image.c">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Layout\HorizontalLayoutUI.cpp">
+      <Filter>Layout</Filter>
+    </ClCompile>
+    <ClCompile Include="Layout\VerticalLayoutUI.cpp">
+      <Filter>Layout</Filter>
+    </ClCompile>
+    <ClCompile Include="Layout\ChildLayoutUI.cpp">
+      <Filter>Layout</Filter>
+    </ClCompile>
+    <ClCompile Include="Layout\TabLayoutUI.cpp">
+      <Filter>Layout</Filter>
+    </ClCompile>
+    <ClCompile Include="Control\LabelUI.cpp">
+      <Filter>Control</Filter>
+    </ClCompile>
+    <ClCompile Include="Control\EditUI.cpp">
+      <Filter>Control</Filter>
+    </ClCompile>
+    <ClCompile Include="Control\RichEditUI.cpp">
+      <Filter>Control</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

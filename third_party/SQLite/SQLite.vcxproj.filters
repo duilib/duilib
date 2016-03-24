@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="SQLite3">
+      <UniqueIdentifier>{e29702bf-6e1f-4038-94e5-53212918200b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CppSQLite3">
+      <UniqueIdentifier>{9ccc7d64-16d8-410b-bd79-f5b51c845a7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DBManager">
+      <UniqueIdentifier>{0393c59b-9e9c-4063-8050-8b25ace772dd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="sqlite3.c">
+      <Filter>SQLite3</Filter>
+    </ClCompile>
+    <ClCompile Include="CppSQLite3U.cpp">
+      <Filter>CppSQLite3</Filter>
+    </ClCompile>
+    <ClCompile Include="DBManager.cpp">
+      <Filter>DBManager</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="sqlite3.h">
+      <Filter>SQLite3</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite3ext.h">
+      <Filter>SQLite3</Filter>
+    </ClInclude>
+    <ClInclude Include="CppSQLite3U.h">
+      <Filter>CppSQLite3</Filter>
+    </ClInclude>
+    <ClInclude Include="DBManager.h">
+      <Filter>DBManager</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
