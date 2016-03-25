@@ -8,10 +8,9 @@
 ├─Release			Release版程序
 ├─Res				程序资源，编译结束后完整拷贝至Debug和Release目录
 ├─Sln				项目
-├─Src				项目源码
-│  └─3rdParty		第三方开源项目源码
-│  ├─Framework		基础App框架
-│  └─Plugin			业务逻辑服务模块
+├─src				duilib项目源码
+|-demos     演示程序源码
+|-third_party 第三方开源项目源码
 └─Tools				使用的工具程序和脚本
 
 VisualStudio设置
