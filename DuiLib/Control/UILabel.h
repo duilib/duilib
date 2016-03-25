@@ -3,15 +3,20 @@
 
 #pragma once
 
+#define _USE_GDIPLUS 1
+
+#ifdef _USE_GDIPLUS
 #include <GdiPlus.h>
 #pragma comment( lib, "GdiPlus.lib" )
 using namespace Gdiplus;
-class UILIB_API Gdiplus::RectF;
-struct UILIB_API Gdiplus::GdiplusStartupInput;
+class DUILIB_API Gdiplus::RectF;
+struct DUILIB_API Gdiplus::GdiplusStartupInput;
+#endif
+
 
 namespace DuiLib
 {
-	class UILIB_API CLabelUI : public CControlUI
+	class DUILIB_API CLabelUI : public CControlUI
 	{
 	public:
 		CLabelUI();
@@ -20,8 +25,14 @@ namespace DuiLib
 		LPCTSTR GetClass() const;
 		LPVOID GetInterface(LPCTSTR pstrName);
 
+        void SetFixedWidth(int cx);
+        void SetFixedHeight(int cy);
+		void SetText(LPCTSTR pstrText);
+
 		void SetTextStyle(UINT uStyle);
 		UINT GetTextStyle() const;
+		bool IsMultiLine();
+		void SetMultiLine(bool bMultiLine = true);
 		void SetTextColor(DWORD dwTextColor);
 		DWORD GetTextColor() const;
 		void SetDisabledTextColor(DWORD dwTextColor);
@@ -39,24 +50,15 @@ namespace DuiLib
 
 		void PaintText(HDC hDC);
 
+#ifdef _USE_GDIPLUS
 		void		SetEnabledEffect(bool _EnabledEffect);
 		bool		GetEnabledEffect();
-		void		SetText(LPCTSTR pstrText);
-		CDuiString	GetText() const;
-		void		SetTransShadow(int _TransShadow);
-		int			GetTransShadow();
-		void		SetTransShadow1(int _TransShadow);
-		int			GetTransShadow1();
-		void		SetTransText(int _TransText);
-		int			GetTransText();
-		void		SetTransText1(int _TransText);
-		int			GetTransText1();
-		void		SetTransStroke(int _TransStroke);
-		int			GetTransStroke();
+		void		SetEnabledLuminous(bool bEnableLuminous);
+		bool		GetEnabledLuminous();
+		void		SetLuminousFuzzy(float fFuzzy);
+		float		GetLuminousFuzzy();
 		void		SetGradientLength(int _GradientLength);
 		int			GetGradientLength();
-		void		SetTextRenderingHintAntiAlias(int _TextRenderingHintAntiAlias);
-		int			GetTextRenderingHintAntiAlias();
 		void		SetShadowOffset(int _offset,int _angle);
 		RectF		GetShadowOffset();
 		void		SetTextColor1(DWORD _TextColor1);
@@ -73,23 +75,25 @@ namespace DuiLib
 		bool		GetEnabledStroke();
 		void		SetEnabledShadow(bool _EnabledShadowe);
 		bool		GetEnabledShadow();
-		
+#endif
+	
 	protected:
+		LPWSTR  m_pWideText;
 		DWORD	m_dwTextColor;
 		DWORD	m_dwDisabledTextColor;
 		int		m_iFont;
 		UINT	m_uTextStyle;
 		RECT	m_rcTextPadding;
 		bool	m_bShowHtml;
+        SIZE    m_szAvailableLast;
+        SIZE    m_cxyFixedLast;
+        bool    m_bNeedEstimateSize;
 
-		int						m_TransShadow;
-		int						m_TransShadow1;
-		int						m_TransText;
-		int						m_TransText1;
-		int						m_TransStroke;
+		float					m_fLuminousFuzzy;
 		int						m_GradientLength;
 		int						m_GradientAngle;
 		bool					m_EnableEffect;
+		bool					m_bEnableLuminous;
 		bool					m_EnabledStroke;
 		bool					m_EnabledShadow;
 		DWORD					m_dwTextColor1;
@@ -97,10 +101,10 @@ namespace DuiLib
 		DWORD					m_dwTextShadowColorB;
 		DWORD					m_dwStrokeColor;
 		RectF					m_ShadowOffset;
-		CDuiString				m_TextValue;
 		ULONG_PTR				m_gdiplusToken;
+#ifdef _USE_GDIPLUS
 		GdiplusStartupInput		m_gdiplusStartupInput;
-		TextRenderingHint		m_TextRenderingHintAntiAlias;
+#endif
 	};
 }
 

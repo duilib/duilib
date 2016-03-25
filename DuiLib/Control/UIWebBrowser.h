@@ -8,7 +8,7 @@
 
 namespace DuiLib
 {
-	class UILIB_API CWebBrowserUI
+	class DUILIB_API CWebBrowserUI
 		: public CActiveXUI
 		, public IDocHostUIHandler
 		, public IServiceProvider

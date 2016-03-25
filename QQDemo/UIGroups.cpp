@@ -40,7 +40,7 @@ bool CGroupsUI::Add(CControlUI* pControl)
 	if (!pControl)
 		return false;
 
-	if (_tcsicmp(pControl->GetClass(), _T("ListContainerElementUI")) != 0)
+	if (_tcsicmp(pControl->GetClass(), DUI_CTR_LISTCONTAINERELEMENT) != 0)
 		return false;
 
 	return CListUI::Add(pControl);
@@ -51,39 +51,39 @@ bool CGroupsUI::AddAt(CControlUI* pControl, int iIndex)
 	if (!pControl)
 		return false;
 
-	if (_tcsicmp(pControl->GetClass(), _T("ListContainerElementUI")) != 0)
+	if (_tcsicmp(pControl->GetClass(), DUI_CTR_LISTCONTAINERELEMENT) != 0)
 		return false;
 
 	return CListUI::AddAt(pControl, iIndex);
 }
 
-bool CGroupsUI::Remove(CControlUI* pControl)
+bool CGroupsUI::Remove(CControlUI* pControl, bool bDoNotDestroy)
 {
 	if (!pControl)
 		return false;
 
-	if (_tcsicmp(pControl->GetClass(), _T("ListContainerElementUI")) != 0)
+	if (_tcsicmp(pControl->GetClass(), DUI_CTR_LISTCONTAINERELEMENT) != 0)
 		return false;
 
-	if (reinterpret_cast<Node*>(static_cast<CListContainerElementUI*>(pControl->GetInterface(_T("ListContainerElement")))->GetTag()) == NULL)
-		return CListUI::Remove(pControl);
+	if (reinterpret_cast<Node*>(static_cast<CListContainerElementUI*>(pControl->GetInterface(DUI_CTR_LISTCONTAINERELEMENT))->GetTag()) == NULL)
+		return CListUI::Remove(pControl, bDoNotDestroy);
 	else
-		return RemoveNode(reinterpret_cast<Node*>(static_cast<CListContainerElementUI*>(pControl->GetInterface(_T("ListContainerElement")))->GetTag()));
+		return RemoveNode(reinterpret_cast<Node*>(static_cast<CListContainerElementUI*>(pControl->GetInterface(DUI_CTR_LISTCONTAINERELEMENT))->GetTag()));
 }
 
-bool CGroupsUI::RemoveAt(int iIndex)
+bool CGroupsUI::RemoveAt(int iIndex, bool bDoNotDestroy)
 {
 	CControlUI* pControl = GetItemAt(iIndex);
 	if (!pControl)
 		return false;
 
-	if (_tcsicmp(pControl->GetClass(), _T("ListContainerElementUI")) != 0)
+	if (_tcsicmp(pControl->GetClass(), DUI_CTR_LISTCONTAINERELEMENT) != 0)
 		return false;
 
-	if (reinterpret_cast<Node*>(static_cast<CListContainerElementUI*>(pControl->GetInterface(_T("ListContainerElement")))->GetTag()) == NULL)
-		return CListUI::RemoveAt(iIndex);
+	if (reinterpret_cast<Node*>(static_cast<CListContainerElementUI*>(pControl->GetInterface(DUI_CTR_LISTCONTAINERELEMENT))->GetTag()) == NULL)
+		return CListUI::RemoveAt(iIndex, bDoNotDestroy);
 	else
-		return RemoveNode(reinterpret_cast<Node*>(static_cast<CListContainerElementUI*>(pControl->GetInterface(_T("ListContainerElement")))->GetTag()));
+		return RemoveNode(reinterpret_cast<Node*>(static_cast<CListContainerElementUI*>(pControl->GetInterface(DUI_CTR_LISTCONTAINERELEMENT))->GetTag()));
 }
 
 void CGroupsUI::RemoveAll()
@@ -402,7 +402,7 @@ void CGroupsUI::SetChildVisible(Node* node, bool visible)
 	for (int i = begin->data().list_elment_->GetIndex(); i <= end->data().list_elment_->GetIndex(); ++i)
 	{
 		CControlUI* control = GetItemAt(i);
-		if (_tcsicmp(control->GetClass(), _T("ListContainerElementUI")) == 0)
+		if (_tcsicmp(control->GetClass(), DUI_CTR_LISTCONTAINERELEMENT) == 0)
 		{
 			if (visible) 
 			{

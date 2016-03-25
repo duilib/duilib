@@ -500,7 +500,7 @@ void CWebBrowserUI::NavigateUrl( LPCTSTR lpszUrl )
 
 LPCTSTR CWebBrowserUI::GetClass() const
 {
-	return _T("WebBrowserUI");
+	return DUI_CTR_WEBBROWSER;
 }
 
 LPVOID CWebBrowserUI::GetInterface( LPCTSTR pstrName )

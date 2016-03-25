@@ -90,7 +90,7 @@ public:
         if( pt.x >= rcClient.left + rcCaption.left && pt.x < rcClient.right - rcCaption.right \
             && pt.y >= rcCaption.top && pt.y < rcCaption.bottom ) {
                 CControlUI* pControl = static_cast<CControlUI*>(m_pm.FindControl(pt));
-                if( pControl && _tcscmp(pControl->GetClass(), _T("ButtonUI")) != 0 )
+                if( pControl && _tcscmp(pControl->GetClass(), DUI_CTR_BUTTON) != 0 )
                     return HTCAPTION;
         }
 
@@ -305,8 +305,8 @@ public:
 
                 COptionUI* pControl = static_cast<COptionUI*>(m_pm.FindControl(_T("hallswitch")));
                 pControl->Activate();
-                CHorizontalLayoutUI* pH = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(_T("roomswitchpanel")));
-                if( pH ) pH->SetVisible(false);
+                pControl = static_cast<COptionUI*>(m_pm.FindControl(_T("roomswitch")));
+                if( pControl ) pControl->SetVisible(false);
             }
             else if( name == _T("fontswitch") ) {
                 TFontInfo* pFontInfo = m_pm.GetDefaultFontInfo();
@@ -326,8 +326,8 @@ public:
                 COptionUI* pControl = static_cast<COptionUI*>(m_pm.FindControl(_T("hallswitch")));
                 if( pControl ) {
                     pControl->Activate();
-                    CHorizontalLayoutUI* pH = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(_T("roomswitchpanel")));
-                    if( pH ) pH->SetVisible(false);
+                    pControl = static_cast<COptionUI*>(m_pm.FindControl(_T("roomswitch")));
+                    if( pControl ) pControl->SetVisible(false);
                 }
             }
             else if( name == _T("sendbtn") ) {
@@ -367,7 +367,7 @@ public:
             GameListUI* pGameList = static_cast<GameListUI*>(m_pm.FindControl(_T("gamelist")));
             if( pGameList->GetItemIndex(msg.pSender) != -1 )
             {
-                if( _tcscmp(msg.pSender->GetClass(), _T("ListLabelElementUI")) == 0 ) {
+                if( _tcscmp(msg.pSender->GetClass(), DUI_CTR_LISTLABELELEMENT) == 0 ) {
                     GameListUI::Node* node = (GameListUI::Node*)msg.pSender->GetTag();
 
                     POINT pt = { 0 };
@@ -384,16 +384,16 @@ public:
             GameListUI* pGameList = static_cast<GameListUI*>(m_pm.FindControl(_T("gamelist")));
             if( pGameList->GetItemIndex(msg.pSender) != -1 )
             {
-                if( _tcscmp(msg.pSender->GetClass(), _T("ListLabelElementUI")) == 0 ) {
+                if( _tcscmp(msg.pSender->GetClass(), DUI_CTR_LISTLABELELEMENT) == 0 ) {
                     GameListUI::Node* node = (GameListUI::Node*)msg.pSender->GetTag();
                     pGameList->ExpandNode(node, !node->data()._expand);
                     if( node->data()._level == 3 ) {
                         COptionUI* pControl = static_cast<COptionUI*>(m_pm.FindControl(_T("roomswitch")));
                         if( pControl ) {
-                            CHorizontalLayoutUI* pH = static_cast<CHorizontalLayoutUI*>(m_pm.FindControl(_T("roomswitchpanel")));
-                            if( pH ) pH->SetVisible(true);
+                            pControl->SetVisible(true);
                             pControl->SetText(node->parent()->parent()->data()._text);
                             pControl->Activate();
+
                         }
                     }
                 }
@@ -504,9 +504,9 @@ public:
         if( pt.x >= rcClient.left + rcCaption.left && pt.x < rcClient.right - rcCaption.right \
             && pt.y >= rcCaption.top && pt.y < rcCaption.bottom ) {
                 CControlUI* pControl = static_cast<CControlUI*>(m_pm.FindControl(pt));
-                if( pControl && _tcscmp(pControl->GetClass(), _T("ButtonUI")) != 0 && 
-                    _tcscmp(pControl->GetClass(), _T("OptionUI")) != 0 &&
-                    _tcscmp(pControl->GetClass(), _T("TextUI")) != 0 )
+                if( pControl && _tcscmp(pControl->GetClass(), DUI_CTR_BUTTON) != 0 && 
+                    _tcscmp(pControl->GetClass(), DUI_CTR_OPTION) != 0 &&
+                    _tcscmp(pControl->GetClass(), DUI_CTR_TEXT) != 0 )
                     return HTCAPTION;
         }
 

@@ -25,7 +25,7 @@ public:
 /////////////////////////////////////////////////////////////////////////////////////
 //
 
-class UILIB_API CActiveXUI : public CControlUI, public IMessageFilterUI
+class DUILIB_API CActiveXUI : public CControlUI, public IMessageFilterUI
 {
     friend class CActiveXCtrl;
 public:
@@ -34,8 +34,8 @@ public:
 
     LPCTSTR GetClass() const;
 	LPVOID GetInterface(LPCTSTR pstrName);
-
-    HWND GetHostWindow() const;
+	UINT GetControlFlags() const;
+	HWND GetNativeWindow() const;
 
     bool IsDelayCreate() const;
     void SetDelayCreate(bool bDelayCreate = true);
@@ -51,7 +51,7 @@ public:
     void SetInternVisible(bool bVisible = true);
 	void SetPos(RECT rc, bool bNeedInvalidate = true);
 	void Move(SIZE szOffset, bool bNeedInvalidate = true);
-    void DoPaint(HDC hDC, const RECT& rcPaint);
+    bool DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl);
 
     void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 

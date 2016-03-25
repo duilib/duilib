@@ -5,7 +5,7 @@
 
 namespace DuiLib
 {
-	class UILIB_API CTextUI : public CLabelUI
+	class DUILIB_API CTextUI : public CLabelUI
 	{
 	public:
 		CTextUI();
@@ -18,7 +18,6 @@ namespace DuiLib
 		CDuiString* GetLinkContent(int iIndex);
 
 		void DoEvent(TEventUI& event);
-		SIZE EstimateSize(SIZE szAvailable);
 
 		void PaintText(HDC hDC);
 

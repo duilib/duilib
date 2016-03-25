@@ -7,7 +7,7 @@ namespace DuiLib
 {
 	class CEditWnd;
 
-	class UILIB_API CEditUI : public CLabelUI
+	class DUILIB_API CEditUI : public CLabelUI
 	{
 		friend class CEditWnd;
 	public:
@@ -16,6 +16,7 @@ namespace DuiLib
 		LPCTSTR GetClass() const;
 		LPVOID GetInterface(LPCTSTR pstrName);
 		UINT GetControlFlags() const;
+		HWND GetNativeWindow() const;
 
 		void SetEnabled(bool bEnable = true);
 		void SetText(LPCTSTR pstrText);
@@ -27,6 +28,8 @@ namespace DuiLib
 		bool IsPasswordMode() const;
 		void SetPasswordChar(TCHAR cPasswordChar);
 		TCHAR GetPasswordChar() const;
+		bool IsAutoSelAll();
+		void SetAutoSelAll(bool bAutoSelAll);
 		void SetNumberOnly(bool bNumberOnly);
 		bool IsNumberOnly() const;
 		int GetWindowStyls() const;
@@ -64,6 +67,7 @@ namespace DuiLib
 		UINT m_uMaxChar;
 		bool m_bReadOnly;
 		bool m_bPasswordMode;
+		bool m_bAutoSelAll;
 		TCHAR m_cPasswordChar;
 		UINT m_uButtonState;
 		DWORD m_dwEditbkColor;

@@ -525,7 +525,7 @@ void MainFrame::Notify(TNotifyUI& msg)
 				CFriendsUI* pFriendsList = static_cast<CFriendsUI*>(m_PaintManager.FindControl(kFriendsListControlName));
 				if ((pFriendsList != NULL) &&  pFriendsList->GetItemIndex(msg.pSender) != -1)
 				{
-					if (_tcsicmp(msg.pSender->GetClass(), _T("ListContainerElementUI")) == 0)
+					if (_tcsicmp(msg.pSender->GetClass(), DUI_CTR_LISTCONTAINERELEMENT) == 0)
 					{
 						Node* node = (Node*)msg.pSender->GetTag();
 
@@ -580,7 +580,7 @@ void MainFrame::Notify(TNotifyUI& msg)
 				CFriendsUI* pFriendsList = static_cast<CFriendsUI*>(m_PaintManager.FindControl(kFriendsListControlName));
 				if ((pFriendsList != NULL) &&  pFriendsList->GetItemIndex(msg.pSender) != -1)
 				{
-					if (_tcsicmp(msg.pSender->GetClass(), _T("ListContainerElementUI")) == 0)
+					if (_tcsicmp(msg.pSender->GetClass(), DUI_CTR_LISTCONTAINERELEMENT) == 0)
 					{
 						Node* node = (Node*)msg.pSender->GetTag();
 
@@ -596,7 +596,7 @@ void MainFrame::Notify(TNotifyUI& msg)
 				CGroupsUI* pGroupsList = static_cast<CGroupsUI*>(m_PaintManager.FindControl(kGroupsListControlName));
 				if ((pGroupsList != NULL) &&  pGroupsList->GetItemIndex(msg.pSender) != -1)
 				{
-					if (_tcsicmp(msg.pSender->GetClass(), _T("ListContainerElementUI")) == 0)
+					if (_tcsicmp(msg.pSender->GetClass(), DUI_CTR_LISTCONTAINERELEMENT) == 0)
 					{
 						Node* node = (Node*)msg.pSender->GetTag();
 

@@ -53,7 +53,7 @@ public:
 
     virtual int GetItemIndex(CControlUI* pControl) const;
     virtual bool SetItemIndex(CControlUI* pControl, int iIndex);
-    virtual bool Remove(CControlUI* pControl);
+    virtual bool Remove(CControlUI* pControl, bool bDoNotDestroy=false);
 
 	SIZE EstimateSize(SIZE szAvailable);
 
@@ -64,7 +64,7 @@ public:
 //
 
 // MenuElementUI
-extern const TCHAR* const kMenuElementUIClassName;// = _T("MenuElementUI");
+extern const TCHAR* const kMenuElementUIClassName;// = _T("MenuElement");
 extern const TCHAR* const kMenuElementUIInterfaceName;// = _T("MenuElement);
 
 class CMenuElementUI;
@@ -101,7 +101,7 @@ public:
     LPCTSTR GetClass() const;
     LPVOID GetInterface(LPCTSTR pstrName);
 
-    void DoPaint(HDC hDC, const RECT& rcPaint);
+    bool DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl);
 
 	void DrawItemText(HDC hDC, const RECT& rcItem);
 

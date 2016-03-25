@@ -135,9 +135,9 @@ public:
 		if( pt.x >= rcClient.left + rcCaption.left && pt.x < rcClient.right - rcCaption.right \
 			&& pt.y >= rcCaption.top && pt.y < rcCaption.bottom ) {
 				CControlUI* pControl = static_cast<CControlUI*>(m_pm.FindControl(pt));
-				if( pControl && _tcscmp(pControl->GetClass(), _T("ButtonUI")) != 0 && 
-					_tcscmp(pControl->GetClass(), _T("OptionUI")) != 0 &&
-					_tcscmp(pControl->GetClass(), _T("TextUI")) != 0 )
+				if( pControl && _tcscmp(pControl->GetClass(), DUI_CTR_BUTTON) != 0 && 
+					_tcscmp(pControl->GetClass(), DUI_CTR_OPTION) != 0 &&
+					_tcscmp(pControl->GetClass(), DUI_CTR_TEXT) != 0 )
 					return HTCAPTION;
 		}
 

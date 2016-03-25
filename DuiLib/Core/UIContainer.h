@@ -12,12 +12,13 @@ class IContainerUI
 public:
     virtual CControlUI* GetItemAt(int iIndex) const = 0;
     virtual int GetItemIndex(CControlUI* pControl) const  = 0;
-    virtual bool SetItemIndex(CControlUI* pControl, int iIndex)  = 0;
+    virtual bool SetItemIndex(CControlUI* pControl, int iNewIndex) = 0;
+    virtual bool SetMultiItemIndex(CControlUI* pStartControl, int iCount, int iNewStartIndex) = 0;
     virtual int GetCount() const = 0;
     virtual bool Add(CControlUI* pControl) = 0;
     virtual bool AddAt(CControlUI* pControl, int iIndex)  = 0;
-    virtual bool Remove(CControlUI* pControl) = 0;
-    virtual bool RemoveAt(int iIndex)  = 0;
+    virtual bool Remove(CControlUI* pControl, bool bDoNotDestroy=false) = 0;
+    virtual bool RemoveAt(int iIndex, bool bDoNotDestroy=false)  = 0;
     virtual void RemoveAll() = 0;
 };
 
@@ -26,7 +27,7 @@ public:
 //
 class CScrollBarUI;
 
-class UILIB_API CContainerUI : public CControlUI, public IContainerUI
+class DUILIB_API CContainerUI : public CControlUI, public IContainerUI
 {
 public:
     CContainerUI();
@@ -38,12 +39,13 @@ public:
 
     CControlUI* GetItemAt(int iIndex) const;
     int GetItemIndex(CControlUI* pControl) const;
-    bool SetItemIndex(CControlUI* pControl, int iIndex);
+    bool SetItemIndex(CControlUI* pControl, int iNewIndex);
+    bool SetMultiItemIndex(CControlUI* pStartControl, int iCount, int iNewStartIndex);
     int GetCount() const;
     bool Add(CControlUI* pControl);
     bool AddAt(CControlUI* pControl, int iIndex);
-    bool Remove(CControlUI* pControl);
-    bool RemoveAt(int iIndex);
+    bool Remove(CControlUI* pControl, bool bDoNotDestroy=false);
+    bool RemoveAt(int iIndex, bool bDoNotDestroy=false);
     void RemoveAll();
 
     void DoEvent(TEventUI& event);
@@ -55,6 +57,10 @@ public:
     virtual void SetInset(RECT rcInset); // 设置内边距，相当于设置客户区
     virtual int GetChildPadding() const;
     virtual void SetChildPadding(int iPadding);
+	virtual UINT GetChildAlign() const;
+	virtual void SetChildAlign(UINT iAlign);
+	virtual UINT GetChildVAlign() const;
+	virtual void SetChildVAlign(UINT iVAlign);
     virtual bool IsAutoDestroy() const;
     virtual void SetAutoDestroy(bool bAuto);
     virtual bool IsDelayedDestroy() const;
@@ -64,9 +70,10 @@ public:
 
     virtual int FindSelectable(int iIndex, bool bForward = true) const;
 
+	RECT GetClientPos() const;
 	void SetPos(RECT rc, bool bNeedInvalidate = true);
 	void Move(SIZE szOffset, bool bNeedInvalidate = true);
-    void DoPaint(HDC hDC, const RECT& rcPaint);
+    bool DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl);
 
     void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 
@@ -108,9 +115,11 @@ protected:
     virtual void ProcessScrollBar(RECT rc, int cxRequired, int cyRequired);
 
 protected:
-    CStdPtrArray m_items;
+    CDuiPtrArray m_items;
     RECT m_rcInset;
     int m_iChildPadding;
+	UINT m_iChildAlign;
+	UINT m_iChildVAlign;
     bool m_bAutoDestroy;
     bool m_bDelayedDestroy;
     bool m_bMouseChildEnabled;

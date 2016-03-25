@@ -30,18 +30,17 @@
     		</HorizontalLayout>
     		<HorizontalLayout height="32" inset="20,4,0,1" childpadding="0" bkimage="tab_back.bmp" >
     			<Option name="hallswitch" showhtml="true" text="{i gamezone.png}游戏大厅" width="160" selected="true" group="swithbar" align="center" normalimage="file='tab_normal.bmp' corner='2,2,2,2'" selectedimage="file='tab_select.bmp' corner='2,2,2,2'" hotimage="file='tab_hot.bmp' corner='2,2,2,2'" hottextcolor="#CC1010"/>
-				<HorizontalLayout name="roomswitchpanel" width="160" visible="false">
-					<Option name="roomswitch" showhtml="true" group="swithbar" align="center" normalimage="file='tab_normal.bmp' corner='2,2,2,2'" selectedimage="file='tab_select.bmp' corner='2,2,2,2'" hotimage="file='tab_hot.bmp' corner='2,2,2,2'" hottextcolor="#CC1010"/>
-					<Button name="roomclosebtn" float="1,0,1,0" pos="-14,2,-2,14" normalimage="file='tab_close.png' source='0,0,12,12'" hotimage="file='tab_close.png' source='12,0,24,12'" pushedimage="file='tab_close.png' source='24,0,36,12'"/>
-				</HorizontalLayout>
-    			<Label padding="40,2,2,2" text="{i gameicons.png 18 0}这里是一条系统消息" showhtml="true" />
+				<Option name="roomswitch" showhtml="true" group="swithbar" align="center" width="160" visible="false" normalimage="file='tab_normal.bmp' corner='2,2,2,2'" selectedimage="file='tab_select.bmp' corner='2,2,2,2'" hotimage="file='tab_hot.bmp' corner='2,2,2,2'" hottextcolor="#CC1010">
+					<Button name="roomclosebtn" cover="true" float="1,0,1,0" pos="-14,2,-2,14" normalimage="file='tab_close.png' source='0,0,12,12'" hotimage="file='tab_close.png' source='12,0,24,12'" pushedimage="file='tab_close.png' source='24,0,36,12'"/>
+    			</Option>
+                <Label padding="40,2,2,2" text="{i gameicons.png 18 0}这里是一条系统消息" showhtml="true" />
     			<Button name="fontswitch" float="1,0,1,0" pos="-82,4,-2,28" text="切换字体"/>
     		</HorizontalLayout>
     		<Control height="2" />
     		<TabLayout name="switch">
     			<HorizontalLayout>
     				<HorizontalLayout width="300" minwidth="200" maxwidth="520" inset="0,0,3,0" sepwidth="6" sepimm="true" bkcolor="#FF60B1FE">
-    					<GameList name="gamelist" bkcolor="#FFF6F9FF" inset="1,1,1,1" bordercolor="#FF1B4876" bordersize="1" header="hidden" itemhotimage="file='tree_hot.bmp' corner='2,1,2,1' " itemselectedimage="file='tree_select.bmp' corner='2,1,2,1'" itemlinecolor="#FFE4EAF2" itemshowhtml="true" vscrollbar="true" hscrollbar="true" vscrollbarstyle="width=&quot;6&quot; showbutton1=&quot;false&quot; showbutton2=&quot;false&quot;">
+    					<GameList name="gamelist" bkcolor="#FFF6F9FF" inset="1,1,1,1" itembkcolor="#FFFF0000" itemaltbk="true" bordercolor="#FF1B4876" bordersize="1" header="hidden" itemhotimage="file='tree_hot.bmp' corner='2,1,2,1' " itemselectedimage="file='tree_select.bmp' corner='2,1,2,1'" itemshowhtml="true" vscrollbar="true" hscrollbar="true" vscrollbarstyle="width=&quot;6&quot; showbutton1=&quot;false&quot; showbutton2=&quot;false&quot;">
     					</GameList>
     				</HorizontalLayout>
                 <ActiveX name="ie" clsid="{8856F961-340A-11D0-A96B-00C04FD705A2}" delaycreate="false"/>
@@ -59,7 +58,7 @@
     				</VerticalLayout>	
     				<HorizontalLayout width="300" minwidth="200" maxwidth="600" inset="4,0,0,0" sepwidth="-4" bkcolor="#FF60B1FE">
     					<VerticalLayout >
-    						<List name="userlist" height="260" bkcolor="#FFE0F0FE" inset="1,0,1,0" bordercolor="#FF1B4876" bordersize="1" itemshowhtml="true" itemalign="center" itemhotimage="file='tree_hot.bmp' corner='2,1,2,1'" itemselectedimage="file='tree_select.bmp' corner='2,1,2,1'" itemshowhtml="true" vscrollbar="true" hscrollbar="true" headerbkimage="headerctrl_normal.bmp" >
+    						<List name="userlist" height="260" itemhlinesize="5" itemhlinecolor="#FFFFC3C3" itemvlinesize="5" itemvlinecolor="#FFFFC3C3"  bkcolor="#FFE0F0FE" inset="1,1,1,1" bordercolor="#FF1B4876" bordersize="1" itemshowhtml="true" itemalign="center" itemhotimage="file='tree_hot.bmp' corner='2,1,2,1'" itemselectedimage="file='tree_select.bmp' corner='2,1,2,1'" itemshowhtml="true" vscrollbar="true" hscrollbar="true" headerbkimage="headerctrl_normal.bmp" >
 								<ListHeader />
 								<ListHeaderItem text="" width="20" enabled="false" dragable="false" normalimage="headerctrl_normal.bmp" hotimage="headerctrl_hot.bmp" pushedimage="headerctrl_down.bmp" sepimage="Headerctrl_Sperator.bmp" />
 								<ListHeaderItem text="" width="20" enabled="false" dragable="false" normalimage="headerctrl_normal.bmp" hotimage="headerctrl_hot.bmp" pushedimage="headerctrl_down.bmp" sepimage="Headerctrl_Sperator.bmp" />

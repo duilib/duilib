@@ -5,7 +5,7 @@
 
 namespace DuiLib
 {
-	class UILIB_API CProgressUI : public CLabelUI
+	class DUILIB_API CProgressUI : public CLabelUI
 	{
 	public:
 		CProgressUI();
@@ -15,8 +15,6 @@ namespace DuiLib
 
 		bool IsHorizontal();
 		void SetHorizontal(bool bHorizontal = true);
-		bool IsStretchForeImage();
-		void SetStretchForeImage(bool bStretchForeImage = true);
 		int GetMinValue() const;
 		void SetMinValue(int nMin);
 		int GetMaxValue() const;
@@ -31,7 +29,6 @@ namespace DuiLib
 
 	protected:
 		bool m_bHorizontal;
-		bool m_bStretchForeImage;
 		int m_nMax;
 		int m_nMin;
 		int m_nValue;

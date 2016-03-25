@@ -40,13 +40,13 @@ namespace DuiLib {
 #define DUITRACEMSG _T("")
 #endif
 
-void UILIB_API DUI__Trace(LPCTSTR pstrFormat, ...);
-LPCTSTR UILIB_API DUI__TraceMsg(UINT uMsg);
+void DUILIB_API DUI__Trace(LPCTSTR pstrFormat, ...);
+LPCTSTR DUILIB_API DUI__TraceMsg(UINT uMsg);
 
 /////////////////////////////////////////////////////////////////////////////////////
 //
 
-class UILIB_API CNotifyPump
+class DUILIB_API CNotifyPump
 {
 public:
 	bool AddVirtualWnd(CDuiString strName,CNotifyPump* pObject);
@@ -55,10 +55,10 @@ public:
 	bool LoopDispatch(TNotifyUI& msg);
 	DUI_DECLARE_MESSAGE_MAP()
 private:
-	CStdStringPtrMap m_VirtualWndMap;
+	CDuiStringPtrMap m_VirtualWndMap;
 };
 
-class UILIB_API CWindowWnd
+class DUILIB_API CWindowWnd
 {
 public:
     CWindowWnd();

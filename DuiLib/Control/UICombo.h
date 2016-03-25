@@ -9,7 +9,7 @@ namespace DuiLib {
 
 class CComboWnd;
 
-class UILIB_API CComboUI : public CContainerUI, public IListOwnerUI
+class DUILIB_API CComboUI : public CContainerUI, public IListOwnerUI
 {
     friend class CComboWnd;
 public:
@@ -32,13 +32,16 @@ public:
     int GetCurSel() const;
 	bool GetSelectCloseFlag();
 	void SetSelectCloseFlag(bool flag);
-    bool SelectItem(int iIndex, bool bTakeFocus = false);
+    bool SelectItem(int iIndex, bool bTakeFocus = false, bool bTriggerEvent=true);
+    bool ExpandItem(int iIndex, bool bExpand = true);
+    int GetExpandedItem() const;
 
-    bool SetItemIndex(CControlUI* pControl, int iIndex);
+    bool SetItemIndex(CControlUI* pControl, int iNewIndex);
+    bool SetMultiItemIndex(CControlUI* pStartControl, int iCount, int iNewStartIndex);
     bool Add(CControlUI* pControl);
     bool AddAt(CControlUI* pControl, int iIndex);
-    bool Remove(CControlUI* pControl);
-    bool RemoveAt(int iIndex);
+    bool Remove(CControlUI* pControl, bool bDoNotDestroy=false);
+    bool RemoveAt(int iIndex, bool bDoNotDestroy=false);
     void RemoveAll();
 
     bool Activate();
@@ -59,7 +62,11 @@ public:
     void SetDisabledImage(LPCTSTR pStrImage);
 
     TListInfoUI* GetListInfo();
+    UINT GetItemFixedHeight();
+    void SetItemFixedHeight(UINT nHeight);
+    int GetItemFont(int index);
     void SetItemFont(int index);
+    UINT GetItemTextStyle();
     void SetItemTextStyle(UINT uStyle);
 	RECT GetItemTextPadding() const;
     void SetItemTextPadding(RECT rc);
@@ -89,8 +96,14 @@ public:
     void SetDisabledItemBkColor(DWORD dwBkColor);
 	LPCTSTR GetDisabledItemImage() const;
     void SetDisabledItemImage(LPCTSTR pStrImage);
-	DWORD GetItemLineColor() const;
-    void SetItemLineColor(DWORD dwLineColor);
+    int GetItemHLineSize() const;
+    void SetItemHLineSize(int iSize);
+    DWORD GetItemHLineColor() const;
+    void SetItemHLineColor(DWORD dwLineColor);
+    int GetItemVLineSize() const;
+    void SetItemVLineSize(int iSize);
+	DWORD GetItemVLineColor() const;
+    void SetItemVLineColor(DWORD dwLineColor);
     bool IsItemShowHtml();
     void SetItemShowHtml(bool bShowHtml = true);
 
@@ -100,7 +113,7 @@ public:
     void DoEvent(TEventUI& event);
     void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
     
-    void DoPaint(HDC hDC, const RECT& rcPaint);
+    bool DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl);
     void PaintText(HDC hDC);
     void PaintStatusImage(HDC hDC);
 

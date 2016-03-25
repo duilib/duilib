@@ -11,7 +11,7 @@ namespace DuiLib {
 //
 //
 
-void UILIB_API DUI__Trace(LPCTSTR pstrFormat, ...)
+void DUILIB_API DUI__Trace(LPCTSTR pstrFormat, ...)
 {
 #ifdef _DEBUG
     TCHAR szBuffer[300] = { 0 };

@@ -40,17 +40,19 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="RichListDemo.ico">
+    <Image Include="RichListDemo.ico">
       <Filter>资源文件</Filter>
-    </None>
-    <None Include="small.ico">
+    </Image>
+    <Image Include="small.ico">
       <Filter>资源文件</Filter>
-    </None>
-    <None Include="ReadMe.txt" />
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="RichListDemo.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
   </ItemGroup>
 </Project>

@@ -52,14 +52,14 @@ void CPage1::OnClick(TNotifyUI& msg)
 			return;
 
 		CListContainerElementUI *new_node = new CListContainerElementUI;
-		new_node->ApplyAttributeList(_T("height=\"45\""));
+		new_node->SetAttributeList(_T("height=\"45\""));
 
 		CHorizontalLayoutUI *new_h_lay = new CHorizontalLayoutUI;
-		new_h_lay->ApplyAttributeList(_T("float=\"false\" ")\
+		new_h_lay->SetAttributeList(_T("float=\"false\" ")\
 			_T("childpadding=\"10\" inset=\"3,5,3,5\""));
 
 		CButtonUI *new_btn_1 = new CButtonUI;
-		new_btn_1->ApplyAttributeList(
+		new_btn_1->SetAttributeList(
 			_T("name=\"down_ico\" float=\"false\" ")\
 			_T("bordersize=\"0\" width=\"32\" maxheight=\"26\" ")\
 			_T("bkimage=\"downlist_app.png\" ")\
@@ -70,7 +70,7 @@ void CPage1::OnClick(TNotifyUI& msg)
 		new_h_lay->Add(new_v_lay);
 
 		CLabelUI *new_label = new CLabelUI;
-		new_label->ApplyAttributeList(_T("textcolor=\"#FFAAAAAA\" showhtml=\"true\""));
+		new_label->SetAttributeList(_T("textcolor=\"#FFAAAAAA\" showhtml=\"true\""));
 		new_label->SetText(_T("new added item.exe"));
 		new_label->SetName(_T("down_name"));
 		CProgressUI *new_progress = new CProgressUI;
@@ -90,9 +90,9 @@ void CPage1::OnClick(TNotifyUI& msg)
 		new_h_lay->Add(new_v_lay2);
 		new_v_lay2->Add(new_label2);
 		new_v_lay2->Add(new_label3);
-		new_label2->ApplyAttributeList(
+		new_label2->SetAttributeList(
 			_T("align=\"right\" text=\"\" textcolor=\"#FFAAAAAA\" showhtml=\"true\""));
-		new_label3->ApplyAttributeList(
+		new_label3->SetAttributeList(
 			_T("align=\"right\" text=\"0.00K/34.33M \" textcolor=\"#FFAAAAAA\" showhtml=\"true\""));
 
 		new_node->Add(new_h_lay);
@@ -347,7 +347,7 @@ LRESULT CRichListWnd::OnMouseHover(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 	if(pHover->GetName() == _T("down_ico"))
 	{
 		MessageBox(NULL, _T("鼠标在某控件例如按钮上悬停后，对目标控件操作，这里改变了状态图标大小"), _T("DUILIB DEMO"), MB_OK);
-		((CButtonUI *)pHover)->ApplyAttributeList(
+		((CButtonUI *)pHover)->SetAttributeList(
 			_T("normalimage=\"file='downlist_pause.png' dest='15,9,32,26'\""));                
 	}
 	return 0;

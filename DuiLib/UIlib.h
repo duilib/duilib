@@ -28,19 +28,19 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef UILIB_STATIC
-#	define UILIB_API 
+#	define DUILIB_API 
 #else
 #	if defined(UILIB_EXPORTS)
 #		if	defined(_MSC_VER)
-#			define UILIB_API __declspec(dllexport)
+#			define DUILIB_API __declspec(dllexport)
 #		else
-#			define UILIB_API 
+#			define DUILIB_API 
 #		endif
 #	else
 #		if defined(_MSC_VER)
-#			define UILIB_API __declspec(dllimport)
+#			define DUILIB_API __declspec(dllimport)
 #		else
-#			define UILIB_API 
+#			define DUILIB_API 
 #		endif
 #	endif
 #endif
@@ -66,6 +66,7 @@
 #include <assert.h>
 #include <crtdbg.h>
 #include <malloc.h>
+#include <stdio.h>
 
 #include "Utils/Utils.h"
 #include "Utils/UIDelegate.h"
@@ -78,6 +79,7 @@
 #include "Core/UIDlgBuilder.h"
 #include "Core/UIRender.h"
 #include "Utils/WinImplBase.h"
+#include "Utils/WndShadow.h"
 
 #include "Layout/UIVerticalLayout.h"
 #include "Layout/UIHorizontalLayout.h"
@@ -106,5 +108,5 @@
 
 #include "Control/UIActiveX.h"
 #include "Control/UIWebBrowser.h"
+#include "Control/UIGifAnim.h"
 //#include "Control/UIFlash.h"
-

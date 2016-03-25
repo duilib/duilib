@@ -5,7 +5,7 @@
 
 namespace DuiLib
 {
-	class UILIB_API CTabLayoutUI : public CContainerUI
+	class DUILIB_API CTabLayoutUI : public CContainerUI
 	{
 	public:
 		CTabLayoutUI();
@@ -15,11 +15,11 @@ namespace DuiLib
 
 		bool Add(CControlUI* pControl);
 		bool AddAt(CControlUI* pControl, int iIndex);
-		bool Remove(CControlUI* pControl);
+		bool Remove(CControlUI* pControl, bool bDoNotDestroy=false);
 		void RemoveAll();
 		int GetCurSel() const;
-		bool SelectItem(int iIndex);
-		bool SelectItem(CControlUI* pControl);
+		bool SelectItem(int iIndex, bool bTriggerEvent=true);
+		bool SelectItem(CControlUI* pControl,  bool bTriggerEvent=true);
 
 		void SetPos(RECT rc, bool bNeedInvalidate = true);
 

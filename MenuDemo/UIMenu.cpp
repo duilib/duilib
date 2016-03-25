@@ -87,13 +87,13 @@ bool CMenuUI::SetItemIndex(CControlUI* pControl, int iIndex)
 	return __super::SetItemIndex(pControl, iIndex);
 }
 
-bool CMenuUI::Remove(CControlUI* pControl)
+bool CMenuUI::Remove(CControlUI* pControl, bool bDoNotDestroy)
 {
 	CMenuElementUI* pMenuItem = static_cast<CMenuElementUI*>(pControl->GetInterface(kMenuElementUIInterfaceName));
 	if (pMenuItem == NULL)
 		return false;
 
-	return __super::Remove(pControl);
+	return __super::Remove(pControl, bDoNotDestroy);
 }
 
 SIZE CMenuUI::EstimateSize(SIZE szAvailable)
@@ -235,7 +235,7 @@ LRESULT CMenuWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 			m_pLayout->SetManager(&m_pm, NULL, true);
 			LPCTSTR pDefaultAttributes = m_pOwner->GetManager()->GetDefaultAttributeList(kMenuUIInterfaceName);
 			if( pDefaultAttributes ) {
-				m_pLayout->ApplyAttributeList(pDefaultAttributes);
+				m_pLayout->SetAttributeList(pDefaultAttributes);
 			}
 			m_pLayout->SetBkColor(0xFFFFFFFF);
 			m_pLayout->SetBorderColor(0xFF85E4FF);
@@ -463,7 +463,7 @@ LRESULT CMenuWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 //
 
 // MenuElementUI
-const TCHAR* const kMenuElementUIClassName = _T("MenuElementUI");
+const TCHAR* const kMenuElementUIClassName = _T("MenuElement");
 const TCHAR* const kMenuElementUIInterfaceName = _T("MenuElement");
 
 CMenuElementUI::CMenuElementUI():
@@ -472,7 +472,7 @@ m_pWindow(NULL)
 	m_cxyFixed.cy = 25;
 	m_bMouseChildEnabled = true;
 
-	SetMouseChildEnabled(false);
+	//SetMouseChildEnabled(false);
 }
 
 CMenuElementUI::~CMenuElementUI()
@@ -489,16 +489,79 @@ LPVOID CMenuElementUI::GetInterface(LPCTSTR pstrName)
     return CListContainerElementUI::GetInterface(pstrName);
 }
 
-void CMenuElementUI::DoPaint(HDC hDC, const RECT& rcPaint)
+bool CMenuElementUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl)
 {
-    if( !::IntersectRect(&m_rcPaint, &rcPaint, &m_rcItem) ) return;
-	CMenuElementUI::DrawItemBk(hDC, m_rcItem);
-	DrawItemText(hDC, m_rcItem);
-	for (int i = 0; i < GetCount(); ++i)
-	{
-		if (GetItemAt(i)->GetInterface(kMenuElementUIInterfaceName) == NULL)
-			GetItemAt(i)->DoPaint(hDC, rcPaint);
-	}
+    RECT rcTemp = { 0 };
+    if( !::IntersectRect(&rcTemp, &rcPaint, &m_rcItem) ) return true;
+
+    CRenderClip clip;
+    CRenderClip::GenerateClip(hDC, rcTemp, clip);
+    CMenuElementUI::DrawItemBk(hDC, m_rcItem);
+    DrawItemText(hDC, m_rcItem);
+
+    if( m_items.GetSize() > 0 ) {
+        RECT rc = m_rcItem;
+        rc.left += m_rcInset.left;
+        rc.top += m_rcInset.top;
+        rc.right -= m_rcInset.right;
+        rc.bottom -= m_rcInset.bottom;
+        if( m_pVerticalScrollBar && m_pVerticalScrollBar->IsVisible() ) rc.right -= m_pVerticalScrollBar->GetFixedWidth();
+        if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) rc.bottom -= m_pHorizontalScrollBar->GetFixedHeight();
+
+        if( !::IntersectRect(&rcTemp, &rcPaint, &rc) ) {
+            for( int it = 0; it < m_items.GetSize(); it++ ) {
+                CControlUI* pControl = static_cast<CControlUI*>(m_items[it]);
+                if( pControl == pStopControl ) return false;
+                if( !pControl->IsVisible() ) continue;
+                if( pControl->GetInterface(kMenuElementUIInterfaceName) != NULL ) continue;
+                if( !::IntersectRect(&rcTemp, &rcPaint, &pControl->GetPos()) ) continue;
+                if( pControl->IsFloat() ) {
+                    if( !::IntersectRect(&rcTemp, &m_rcItem, &pControl->GetPos()) ) continue;
+                    if( !pControl->Paint(hDC, rcPaint, pStopControl) ) return false;
+                }
+            }
+        }
+        else {
+            CRenderClip childClip;
+            CRenderClip::GenerateClip(hDC, rcTemp, childClip);
+            for( int it = 0; it < m_items.GetSize(); it++ ) {
+                CControlUI* pControl = static_cast<CControlUI*>(m_items[it]);
+                if( pControl == pStopControl ) return false;
+                if( !pControl->IsVisible() ) continue;
+                if( pControl->GetInterface(kMenuElementUIInterfaceName) != NULL ) continue;
+                if( !::IntersectRect(&rcTemp, &rcPaint, &pControl->GetPos()) ) continue;
+                if( pControl->IsFloat() ) {
+                    if( !::IntersectRect(&rcTemp, &m_rcItem, &pControl->GetPos()) ) continue;
+                    CRenderClip::UseOldClipBegin(hDC, childClip);
+                    if( !pControl->Paint(hDC, rcPaint, pStopControl) ) return false;
+                    CRenderClip::UseOldClipEnd(hDC, childClip);
+                }
+                else {
+                    if( !::IntersectRect(&rcTemp, &rc, &pControl->GetPos()) ) continue;
+                    if( !pControl->Paint(hDC, rcPaint, pStopControl) ) return false;
+                }
+            }
+        }
+    }
+
+    if( m_pVerticalScrollBar != NULL ) {
+        if( m_pVerticalScrollBar == pStopControl ) return false;
+        if (m_pVerticalScrollBar->IsVisible()) {
+            if( ::IntersectRect(&rcTemp, &rcPaint, &m_pVerticalScrollBar->GetPos()) ) {
+                if( !m_pVerticalScrollBar->Paint(hDC, rcPaint, pStopControl) ) return false;
+            }
+        }
+    }
+
+    if( m_pHorizontalScrollBar != NULL ) {
+        if( m_pHorizontalScrollBar == pStopControl ) return false;
+        if (m_pHorizontalScrollBar->IsVisible()) {
+            if( ::IntersectRect(&rcTemp, &rcPaint, &m_pHorizontalScrollBar->GetPos()) ) {
+                if( !m_pHorizontalScrollBar->Paint(hDC, rcPaint, pStopControl) ) return false;
+            }
+        }
+    }
+    return true;
 }
 
 void CMenuElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
@@ -526,7 +589,7 @@ void CMenuElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
 
     if( pInfo->bShowHtml )
         CRenderEngine::DrawHtmlText(hDC, m_pManager, rcText, m_sText, iTextColor, \
-        NULL, NULL, nLinks, DT_SINGLELINE | pInfo->uTextStyle);
+        NULL, NULL, nLinks, pInfo->nFont, DT_SINGLELINE | pInfo->uTextStyle);
     else
         CRenderEngine::DrawText(hDC, m_pManager, rcText, m_sText, iTextColor, \
         pInfo->nFont, DT_SINGLELINE | pInfo->uTextStyle);
@@ -563,10 +626,10 @@ SIZE CMenuElementUI::EstimateSize(SIZE szAvailable)
 		rcText.right -= pInfo->rcTextPadding.right;
 		if( pInfo->bShowHtml ) {   
 			int nLinks = 0;
-			CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, iTextColor, NULL, NULL, nLinks, DT_CALCRECT | pInfo->uTextStyle);
+			CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, iTextColor, NULL, NULL, nLinks, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
 		}
 		else {
-			CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, iTextColor, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle);
+			CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, iTextColor, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
 		}
 		cXY.cx = rcText.right - rcText.left + pInfo->rcTextPadding.left + pInfo->rcTextPadding.right + 20;
 		cXY.cy = rcText.bottom - rcText.top + pInfo->rcTextPadding.top + pInfo->rcTextPadding.bottom;
@@ -606,7 +669,6 @@ void CMenuElementUI::DoEvent(TEventUI& event)
 			s_context_menu_observer.RBroadcast(param);
 			m_pOwner->SelectItem(GetIndex(), true);
 		}
-		return;
 	}
 
 	if( event.Type == UIEVENT_BUTTONDOWN )

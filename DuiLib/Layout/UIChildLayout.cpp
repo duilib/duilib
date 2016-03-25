@@ -51,6 +51,6 @@ namespace DuiLib
 
 	LPCTSTR CChildLayoutUI::GetClass() const
 	{
-		return _T("ChildLayoutUI");
+		return DUI_CTR_CHILDLAYOUT;
 	}
 } // namespace DuiLib

@@ -3,7 +3,7 @@
 
 namespace DuiLib
 {
-	CProgressUI::CProgressUI() : m_bHorizontal(true), m_nMin(0), m_nMax(100), m_nValue(0), m_bStretchForeImage(true)
+	CProgressUI::CProgressUI() : m_bHorizontal(true), m_nMin(0), m_nMax(100), m_nValue(0)
 	{
 		m_uTextStyle = DT_SINGLELINE | DT_CENTER;
 		SetFixedHeight(12);
@@ -11,7 +11,7 @@ namespace DuiLib
 
 	LPCTSTR CProgressUI::GetClass() const
 	{
-		return _T("ProgressUI");
+		return DUI_CTR_PROGRESS;
 	}
 
 	LPVOID CProgressUI::GetInterface(LPCTSTR pstrName)
@@ -63,6 +63,8 @@ namespace DuiLib
 	void CProgressUI::SetValue(int nValue)
 	{
 		m_nValue = nValue;
+		if (m_nValue > m_nMax) m_nValue = m_nMax;
+		if (m_nValue < m_nMin) m_nValue = m_nMin;
 		Invalidate();
 	}
 
@@ -86,7 +88,6 @@ namespace DuiLib
 		else if( _tcscmp(pstrName, _T("min")) == 0 ) SetMinValue(_ttoi(pstrValue));
 		else if( _tcscmp(pstrName, _T("max")) == 0 ) SetMaxValue(_ttoi(pstrValue));
 		else if( _tcscmp(pstrName, _T("value")) == 0 ) SetValue(_ttoi(pstrValue));
-		else if( _tcscmp(pstrName, _T("isstretchfore"))==0) SetStretchForeImage(_tcscmp(pstrValue, _T("true")) == 0? true : false);
 		else CLabelUI::SetAttribute(pstrName, pstrValue);
 	}
 
@@ -108,17 +109,5 @@ namespace DuiLib
 		}
 		m_diFore.rcDestOffset = rc;
 		if( DrawImage(hDC, m_diFore) ) return;
-	}
-
-	bool CProgressUI::IsStretchForeImage()
-	{
-		return m_bStretchForeImage;
-	}
-
-	void CProgressUI::SetStretchForeImage( bool bStretchForeImage /*= true*/ )
-	{
-		if (m_bStretchForeImage==bStretchForeImage)		return;
-		m_bStretchForeImage=bStretchForeImage;
-		Invalidate();
 	}
 }

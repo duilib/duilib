@@ -5,7 +5,7 @@
 
 namespace DuiLib
 {
-	class UILIB_API CChildLayoutUI : public CContainerUI
+	class DUILIB_API CChildLayoutUI : public CContainerUI
 	{
 	public:
 		CChildLayoutUI();

@@ -5,7 +5,7 @@
 
 namespace DuiLib
 {
-	class UILIB_API CScrollBarUI : public CControlUI
+	class DUILIB_API CScrollBarUI : public CControlUI
 	{
 	public:
 		CScrollBarUI();
@@ -25,9 +25,11 @@ namespace DuiLib
 		int GetScrollRange() const;
 		void SetScrollRange(int nRange);
 		int GetScrollPos() const;
-		void SetScrollPos(int nPos);
+		void SetScrollPos(int nPos, bool bTriggerEvent=true);
 		int GetLineSize() const;
 		void SetLineSize(int nSize);
+        int GetScrollUnit() const;
+        void SetScrollUnit(int iUnit);
 
 		bool GetShowButton1();
 		void SetShowButton1(bool bShow);
@@ -88,7 +90,7 @@ namespace DuiLib
 		void DoEvent(TEventUI& event);
 		void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 
-		void DoPaint(HDC hDC, const RECT& rcPaint);
+		bool DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl);
 
 		void PaintBk(HDC hDC);
 		void PaintButton1(HDC hDC);
@@ -108,6 +110,7 @@ namespace DuiLib
 		int m_nRange;
 		int m_nScrollPos;
 		int m_nLineSize;
+        int m_nScrollUnit;
 		CContainerUI* m_pOwner;
 		POINT ptLastMouse;
 		int m_nLastScrollPos;
