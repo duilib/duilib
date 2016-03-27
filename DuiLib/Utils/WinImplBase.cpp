@@ -1,6 +1,3 @@
-#ifndef WIN_IMPL_BASE_HPP
-#define WIN_IMPL_BASE_HPP
-
 #include "stdafx.h"
 
 namespace DuiLib

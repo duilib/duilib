@@ -46,21 +46,6 @@
 
 #include "debug.hpp"
 
-
-#ifdef _DEBUG
-#   ifdef _UNICODE
-#       pragma comment(lib, "..\\Lib\\DuiLib_ud.lib")
-#   else
-#       pragma comment(lib, "..\\Lib\\DuiLib_d.lib")
-#   endif
-#else
-#   ifdef _UNICODE
-#       pragma comment(lib, "..\\Lib\\DuiLib_u.lib")
-#   else
-#       pragma comment(lib, "..\\Lib\\DuiLib.lib")
-#   endif
-#endif
-
 #define MESSAGE_RICHEDIT_MAX  1024
 
 //{{AFX_INSERT_LOCATION}}
