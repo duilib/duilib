@@ -25,6 +25,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestApp1", "TestApp1\TestAp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlashDemo", "FlashDemo\FlashDemo.vcxproj", "{41B017E7-7805-40D5-9D96-AABF572F5700}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FileTree", "FileTree\FileTree.vcxproj", "{53B424A6-6FB2-44FE-83B1-963251CA58E4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -113,6 +115,14 @@ Global
 		{41B017E7-7805-40D5-9D96-AABF572F5700}.UnicodeDebug|Win32.Build.0 = UnicodeDebug|Win32
 		{41B017E7-7805-40D5-9D96-AABF572F5700}.UnicodeRelease|Win32.ActiveCfg = UnicodeRelease|Win32
 		{41B017E7-7805-40D5-9D96-AABF572F5700}.UnicodeRelease|Win32.Build.0 = UnicodeRelease|Win32
+		{53B424A6-6FB2-44FE-83B1-963251CA58E4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{53B424A6-6FB2-44FE-83B1-963251CA58E4}.Debug|Win32.Build.0 = Debug|Win32
+		{53B424A6-6FB2-44FE-83B1-963251CA58E4}.Release|Win32.ActiveCfg = Release|Win32
+		{53B424A6-6FB2-44FE-83B1-963251CA58E4}.Release|Win32.Build.0 = Release|Win32
+		{53B424A6-6FB2-44FE-83B1-963251CA58E4}.UnicodeDebug|Win32.ActiveCfg = Debug|Win32
+		{53B424A6-6FB2-44FE-83B1-963251CA58E4}.UnicodeDebug|Win32.Build.0 = Debug|Win32
+		{53B424A6-6FB2-44FE-83B1-963251CA58E4}.UnicodeRelease|Win32.ActiveCfg = Release|Win32
+		{53B424A6-6FB2-44FE-83B1-963251CA58E4}.UnicodeRelease|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -127,5 +137,6 @@ Global
 		{5EEA82DD-05C7-477F-8870-942E8758BFFF} = {5ABBC10A-DC58-4A8D-AA4D-D1CB2A58FD01}
 		{41B017E7-7805-40D5-9D96-AABF572F57D1} = {5ABBC10A-DC58-4A8D-AA4D-D1CB2A58FD01}
 		{41B017E7-7805-40D5-9D96-AABF572F5700} = {5ABBC10A-DC58-4A8D-AA4D-D1CB2A58FD01}
+		{53B424A6-6FB2-44FE-83B1-963251CA58E4} = {5ABBC10A-DC58-4A8D-AA4D-D1CB2A58FD01}
 	EndGlobalSection
 EndGlobal
