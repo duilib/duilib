@@ -28,3 +28,11 @@ FlashDemo/FlashDemo.vcproj.wengmq-PC.wengmq.user
 QQDemo/Debug/mt.dep
 *.dep
 *.map
+
+# Visual Studio
+ipch/
+Debug/
+Release/
+*.sdf
+*.suo
+*.opensdf
