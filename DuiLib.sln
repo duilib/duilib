@@ -27,6 +27,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlashDemo", "FlashDemo\Flas
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FileTree", "FileTree\FileTree.vcxproj", "{53B424A6-6FB2-44FE-83B1-963251CA58E4}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FontDemo", "demos\FontDemo\FontDemo.vcxproj", "{118215BC-59C9-4B21-BF6C-AAC32A139DC0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E106ACD7-4E53-4AEE-942B-D0DD426DB34E} = {E106ACD7-4E53-4AEE-942B-D0DD426DB34E}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -123,6 +128,14 @@ Global
 		{53B424A6-6FB2-44FE-83B1-963251CA58E4}.UnicodeDebug|Win32.Build.0 = Debug|Win32
 		{53B424A6-6FB2-44FE-83B1-963251CA58E4}.UnicodeRelease|Win32.ActiveCfg = Release|Win32
 		{53B424A6-6FB2-44FE-83B1-963251CA58E4}.UnicodeRelease|Win32.Build.0 = Release|Win32
+		{118215BC-59C9-4B21-BF6C-AAC32A139DC0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{118215BC-59C9-4B21-BF6C-AAC32A139DC0}.Debug|Win32.Build.0 = Debug|Win32
+		{118215BC-59C9-4B21-BF6C-AAC32A139DC0}.Release|Win32.ActiveCfg = Release|Win32
+		{118215BC-59C9-4B21-BF6C-AAC32A139DC0}.Release|Win32.Build.0 = Release|Win32
+		{118215BC-59C9-4B21-BF6C-AAC32A139DC0}.UnicodeDebug|Win32.ActiveCfg = Debug|Win32
+		{118215BC-59C9-4B21-BF6C-AAC32A139DC0}.UnicodeDebug|Win32.Build.0 = Debug|Win32
+		{118215BC-59C9-4B21-BF6C-AAC32A139DC0}.UnicodeRelease|Win32.ActiveCfg = Release|Win32
+		{118215BC-59C9-4B21-BF6C-AAC32A139DC0}.UnicodeRelease|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -138,5 +151,6 @@ Global
 		{41B017E7-7805-40D5-9D96-AABF572F57D1} = {5ABBC10A-DC58-4A8D-AA4D-D1CB2A58FD01}
 		{41B017E7-7805-40D5-9D96-AABF572F5700} = {5ABBC10A-DC58-4A8D-AA4D-D1CB2A58FD01}
 		{53B424A6-6FB2-44FE-83B1-963251CA58E4} = {5ABBC10A-DC58-4A8D-AA4D-D1CB2A58FD01}
+		{118215BC-59C9-4B21-BF6C-AAC32A139DC0} = {5ABBC10A-DC58-4A8D-AA4D-D1CB2A58FD01}
 	EndGlobalSection
 EndGlobal

@@ -32,7 +32,8 @@ public:
     bool IsWordWrap();
     void SetWordWrap(bool bWordWrap = true);
     int GetFont();
-    void SetFont(int index);
+    __declspec(deprecated("This method was deprecated, and it was removed in later. Instead, SetFont(LPCTSTR) should be used."))
+        void SetFont(int index);
     void SetFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic);
     LONG GetWinStyle();
     void SetWinStyle(LONG lStyle);
@@ -145,7 +146,8 @@ protected:
     bool m_bReadOnly;
     bool m_bWordWrap;
     DWORD m_dwTextColor;
-    int m_iFont;
+    __declspec(deprecated)int m_iFont;
+    TCHAR m_szFontResName[32];
     int m_iLimitText;
     LONG m_lTwhStyle;
 	bool m_bDrawCaret;

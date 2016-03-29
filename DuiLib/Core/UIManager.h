@@ -288,6 +288,7 @@ public:
     void RemoveFont(HFONT hFont, bool bShared = false);
     void RemoveFont(int id, bool bShared = false);
     void RemoveAllFonts(bool bShared = false);
+    TFontInfo* GetFontInfo(LPCTSTR pszResFontName);
     TFontInfo* GetFontInfo(int id);
     TFontInfo* GetFontInfo(HFONT hFont);
 
@@ -397,6 +398,8 @@ public:
     bool PreMessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lRes);
 	void UsedVirtualWnd(bool bUsed);
 
+    app::ResourceManager& GetResourceManager();
+
 private:
 	CDuiPtrArray* GetFoundControls();
     static CControlUI* CALLBACK __FindControlFromNameHash(CControlUI* pThis, LPVOID pData);
@@ -481,6 +484,9 @@ private:
     //
 	bool m_bForceUseSharedRes;
 	TResInfo m_ResInfo;
+
+    //
+    app::ResourceManager m_ResourceManager;
 
     //
 	static HINSTANCE m_hResourceInstance;

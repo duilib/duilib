@@ -260,7 +260,9 @@ public:
     void SetSepColor(DWORD dwSepColor);
 	void SetTextPadding(RECT rc);
 	RECT GetTextPadding() const;
-    void SetFont(int index);
+    void SetFont(LPCTSTR pszFont);
+    __declspec(deprecated("This method was deprecated, and it was removed in later. Instead, SetFont(LPCTSTR) should be used."))
+        void SetFont(int index);
     bool IsShowHtml();
     void SetShowHtml(bool bShowHtml = true);
     LPCTSTR GetNormalImage() const;
@@ -289,7 +291,7 @@ protected:
     int m_iSepWidth;
     DWORD m_dwTextColor;
     DWORD m_dwSepColor;
-    int m_iFont;
+    __declspec(deprecated) int m_iFont;
     UINT m_uTextStyle;
     bool m_bShowHtml;
 	RECT m_rcTextPadding;
@@ -298,6 +300,8 @@ protected:
     TDrawInfo m_diPushed;
     TDrawInfo m_diFocused;
     TDrawInfo m_diSep;
+    TCHAR m_szFont[32];
+
 };
 
 

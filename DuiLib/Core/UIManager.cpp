@@ -222,6 +222,12 @@ void CPaintManagerUI::Init(HWND hWnd, LPCTSTR pstrName)
 		m_hDcPaint = ::GetDC(hWnd);
 		m_aPreMessages.Add(this);
 	}
+
+    CDuiString strResFile = CPaintManagerUI::GetResourcePath();
+    if (!CPaintManagerUI::GetResourceZip().IsEmpty()) {
+        strResFile += CPaintManagerUI::GetResourceZip();
+    }
+    m_ResourceManager.Open(m_hWndPaint, strResFile);
 }
 
 HINSTANCE CPaintManagerUI::GetInstance()
@@ -2414,8 +2420,24 @@ HFONT CPaintManagerUI::GetFont(int id)
 	return pFontInfo->hFont;
 }
 
+
 HFONT CPaintManagerUI::GetFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic)
 {
+    if (!pStrFontName)
+        return GetDefaultFontInfo()->hFont;
+
+    static LPCTSTR FONT_TOKEN = _T("@font/");
+    if (_tcsncmp(pStrFontName, FONT_TOKEN, _tcslen(FONT_TOKEN)) == 0) {
+        LPCTSTR pszResFontName = pStrFontName + _tcslen(FONT_TOKEN);
+        HFONT hResult = m_ResourceManager.GetFont(pszResFontName);
+        if (hResult != NULL)
+            return hResult;
+    }
+
+    HFONT hResult = GetFont(_ttol(pStrFontName));
+    if (hResult != NULL)
+        return hResult;
+
     TFontInfo* pFontInfo = NULL;
 	for( int i = 0; i< m_ResInfo.m_CustomFonts.GetSize(); i++ ) {
 		if(LPCTSTR key = m_ResInfo.m_CustomFonts.GetAt(i)) {
@@ -2590,16 +2612,22 @@ void CPaintManagerUI::RemoveAllFonts(bool bShared)
 	}
 }
 
+TFontInfo* CPaintManagerUI::GetFontInfo(LPCTSTR pszResFontName)
+{
+    TFontInfo *pFontInfo = m_ResourceManager.GetFontInfo(pszResFontName);
+    return pFontInfo ? pFontInfo : GetFontInfo(_ttol(pszResFontName));
+}
+
+
 TFontInfo* CPaintManagerUI::GetFontInfo(int id)
 {
-	TCHAR idBuffer[16];
-	::ZeroMemory(idBuffer, sizeof(idBuffer));
-	_itot(id, idBuffer, 10);
-	TFontInfo* pFontInfo = static_cast<TFontInfo*>(m_ResInfo.m_CustomFonts.Find(idBuffer));
-	if (!pFontInfo) pFontInfo = static_cast<TFontInfo*>(m_SharedResInfo.m_CustomFonts.Find(idBuffer));
-	if (!pFontInfo) pFontInfo = GetDefaultFontInfo();
-    if (pFontInfo->tm.tmHeight == 0) 
-	{
+    TCHAR idBuffer[16];
+    ::ZeroMemory(idBuffer, sizeof(idBuffer));
+    _itot(id, idBuffer, 10);
+    TFontInfo* pFontInfo = static_cast<TFontInfo*>(m_ResInfo.m_CustomFonts.Find(idBuffer));
+    if (!pFontInfo) pFontInfo = static_cast<TFontInfo*>(m_SharedResInfo.m_CustomFonts.Find(idBuffer));
+    if (!pFontInfo) pFontInfo = GetDefaultFontInfo();
+    if (pFontInfo->tm.tmHeight == 0) {
         HFONT hOldFont = (HFONT) ::SelectObject(m_hDcPaint, pFontInfo->hFont);
         ::GetTextMetrics(m_hDcPaint, &pFontInfo->tm);
         ::SelectObject(m_hDcPaint, hOldFont);
@@ -3540,6 +3568,12 @@ bool CPaintManagerUI::RemoveTranslateAccelerator(ITranslateAccelerator *pTransla
 void CPaintManagerUI::UsedVirtualWnd(bool bUsed)
 {
 	m_bUsedVirtualWnd = bUsed;
+}
+
+
+app::ResourceManager& CPaintManagerUI::GetResourceManager()
+{
+    return m_ResourceManager;
 }
 
 } // namespace DuiLib
