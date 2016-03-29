@@ -103,6 +103,7 @@
 #include <string.h>
 #include <tchar.h>
 
+#pragma warning(push)
 #pragma warning(disable : 4996)	// disable bogus deprecation warning
 
 // THIS FILE is almost entirely based upon code by Jean-loup Gailly
@@ -4442,4 +4443,4 @@ bool IsZipHandleU(HZIP hz)
   return (han->flag==1);
 }
 
-
+#pragma warning(pop)
