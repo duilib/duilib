@@ -121,7 +121,7 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
                     if( defaultfont ) pManager->SetDefaultFont(pFontName, size, bold, underline, italic, shared);
                 }
             }
-            else if( _tcsicmp(pstrClass, _T("Default")) == 0 ) {
+            else if( _tcsicmp(pstrClass, _T("Default")) == 0 || _tcsicmp(pstrClass, _T("Style")) == 0 ) {
                 nAttributes = node.GetAttributeCount();
                 LPCTSTR pControlName = NULL;
                 LPCTSTR pControlValue = NULL;
@@ -200,8 +200,8 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
     for( CMarkupNode node = pRoot->GetChild() ; node.IsValid(); node = node.GetSibling() ) {
         LPCTSTR pstrClass = node.GetName();
         if( _tcsicmp(pstrClass, _T("Image")) == 0 || _tcsicmp(pstrClass, _T("Font")) == 0 \
-            || _tcsicmp(pstrClass, _T("Default")) == 0 
-			|| _tcsicmp(pstrClass, _T("MultiLanguage")) == 0 ) continue;
+            || _tcsicmp(pstrClass, _T("Default")) == 0 || _tcsicmp(pstrClass, _T("Style")) == 0 \
+                || _tcsicmp(pstrClass, _T("MultiLanguage")) == 0 ) continue;
 
         CControlUI* pControl = NULL;
         if( _tcsicmp(pstrClass, _T("Include")) == 0 ) {
@@ -248,12 +248,41 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
 
 			// 解析所有属性并覆盖默认属性
 			if( node.HasAttributes() ) {
-				TCHAR szValue[500] = { 0 };
-				SIZE_T cchLen = lengthof(szValue) - 1;
 				// Set ordinary attributes
 				int nAttributes = node.GetAttributeCount();
 				for( int i = 0; i < nAttributes; i++ ) {
-					pNode->SetAttribute(node.GetAttributeName(i), node.GetAttributeValue(i));
+					LPCTSTR pstrName = node.GetAttributeName(i);
+					LPCTSTR pstrValue = node.GetAttributeValue(i);
+
+					// 设置风格属性
+					if(_tcsicmp(pstrName, _T("style")) == 0 ) {
+						TCHAR szValue[500] = { 0 };
+						SIZE_T cchLen = lengthof(szValue) - 1;
+						bool hasFmt = node.GetAttributeValue(_T("styleref"), szValue, cchLen);
+
+						if( pManager ) {
+							LPCTSTR pStyleAttributes = pManager->GetDefaultAttributeList(pstrValue);
+							if (pStyleAttributes) {
+								if( hasFmt ) {
+									CDuiString sStyleFormat(pStyleAttributes);
+									CDuiString sStyleRef(szValue);
+									int iStart = 0, iPos = sStyleRef.Find(_T(','));
+									do
+									{
+										CDuiString sTemp = sStyleRef.Mid(iStart, iPos - iStart);
+										sStyleFormat.Replace(_T("%s"), sTemp, 1);
+										iStart = iPos + 1;
+										iPos = sStyleRef.Find(_T(','), iStart);
+									} while (iPos >= 0);
+									pStyleAttributes = sStyleFormat.GetData();
+								}
+								pNode->SetAttributeList(pStyleAttributes);
+							}
+						}
+					}
+					else if( _tcsicmp(pstrName, _T("styleref")) != 0 ) {
+						pNode->SetAttribute(pstrName, pstrValue);
+					}
 				}
 			}
 
@@ -417,7 +446,38 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
             // Set ordinary attributes
             int nAttributes = node.GetAttributeCount();
             for( int i = 0; i < nAttributes; i++ ) {
-                pControl->SetAttribute(node.GetAttributeName(i), node.GetAttributeValue(i));
+                LPCTSTR pstrName = node.GetAttributeName(i);
+                LPCTSTR pstrValue = node.GetAttributeValue(i);
+
+                // 设置风格属性
+                if( _tcsicmp(pstrName, _T("style")) == 0 ) {
+                    TCHAR szValue[500] = { 0 };
+                    SIZE_T cchLen = lengthof(szValue) - 1;
+                    bool hasFmt = node.GetAttributeValue(_T("styleref"), szValue, cchLen);
+
+                    if( pManager ) {
+                        LPCTSTR pStyleAttributes = pManager->GetDefaultAttributeList(pstrValue);
+                        if( pStyleAttributes ) {
+                            if( hasFmt ) {
+                                CDuiString sStyleFormat(pStyleAttributes);
+                                CDuiString sStyleRef(szValue);
+                                int iStart = 0, iPos = 0;
+                                do
+                                {
+                                    iPos = sStyleRef.Find(_T(','), iStart);
+                                    CDuiString sTemp = sStyleRef.Mid(iStart, iPos - iStart);
+                                    sStyleFormat.Replace(_T("%s"), sTemp, 1);
+                                    iStart = iPos + 1;
+                                } while (iPos >= 0);
+                                pStyleAttributes = sStyleFormat.GetData();
+                            }
+                            pControl->SetAttributeList(pStyleAttributes);
+                        }
+                    }
+                }
+                else if( _tcsicmp(pstrName, _T("styleref")) != 0 ) {
+                    pControl->SetAttribute(pstrName, pstrValue);
+                }
             }
         }
         if( pManager ) {

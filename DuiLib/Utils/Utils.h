@@ -133,7 +133,7 @@ namespace DuiLib
         int Find(TCHAR ch, int iPos = 0) const;
         int Find(LPCTSTR pstr, int iPos = 0) const;
         int ReverseFind(TCHAR ch) const;
-        int Replace(LPCTSTR pstrFrom, LPCTSTR pstrTo);
+		int Replace(LPCTSTR pstrFrom, LPCTSTR pstrTo, int count = -1);
 
         int __cdecl Format(LPCTSTR pstrFormat, ...);
         int __cdecl SmallFormat(LPCTSTR pstrFormat, ...);
