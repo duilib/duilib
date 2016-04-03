@@ -2669,6 +2669,9 @@ const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, LPCTSTR type, DWORD 
             int iIndex = _tcstol(bitmap, &pstr, 10);
             data = CRenderEngine::LoadImage(iIndex, type, mask);
         }
+        else {
+            data = CRenderEngine::LoadImage(bitmap, type, mask);
+        }
     }
     else {
         data = CRenderEngine::LoadImage(bitmap, NULL, mask);

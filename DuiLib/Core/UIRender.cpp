@@ -40,6 +40,8 @@ extern ZRESULT FindZipItemW(HZIP hz, const TCHAR *name, bool ic, int *index, ZIP
 extern ZRESULT UnzipItem(HZIP hz, int index, void *dst, unsigned int len, DWORD flags);
 ///////////////////////////////////////////////////////////////////////////////////////
 
+#define RES_TYPE_COLOR _T("*COLOR*")
+
 extern "C"
 {
     extern unsigned char *stbi_load_from_memory(unsigned char const *buffer, int len, int *x, int *y, \
@@ -380,6 +382,9 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
 				if( !CPaintManagerUI::IsCachedResourceZip() ) CloseZip(hz);
 			}
 		}
+		else if (_tcscmp(type, RES_TYPE_COLOR) == 0) {
+			pData = (PBYTE)0x1;  /* dummy pointer */
+		}
 		else {
 			HRSRC hResource = ::FindResource(CPaintManagerUI::GetResourceDll(), bitmap.m_lpstr, type);
 			if( hResource == NULL ) break;
@@ -424,14 +429,15 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
 	}
 
     LPBYTE pImage = NULL;
-    int x,y,n;
-    pImage = stbi_load_from_memory(pData, dwSize, &x, &y, &n, 4);
-    delete[] pData;
-	if( !pImage ) {
-		//::MessageBox(0, _T("½âÎöÍ¼Æ¬Ê§°Ü"), _T("×¥BUG"), MB_OK);
-		return NULL;
-	}
-
+    int x = 1, y = 1, n;
+    if (!type || _tcscmp(type, RES_TYPE_COLOR) != 0) {
+        pImage = stbi_load_from_memory(pData, dwSize, &x, &y, &n, 4);
+        delete[] pData;
+        if (!pImage) {
+            //::MessageBox(0, _T("½âÎöÍ¼Æ¬Ê§°Ü"), _T("×¥BUG"), MB_OK);
+            return NULL;
+        }
+    }
     BITMAPINFO bmi;
     ::ZeroMemory(&bmi, sizeof(BITMAPINFO));
     bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -449,6 +455,22 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
 		//::MessageBox(0, _T("CreateDIBSectionÊ§°Ü"), _T("×¥BUG"), MB_OK);
 		return NULL;
 	}
+
+    BYTE bColorBits[4] = { 0 };
+    if (type && _tcscmp(type, RES_TYPE_COLOR) == 0) {
+        LPTSTR pstr = NULL;
+        LPCTSTR pstrValue = bitmap.m_lpstr;
+        if (*pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+        DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+
+        pImage = (LPBYTE)&clrColor;
+        /* BGRA -> RGBA */
+        bColorBits[3] = pImage[3];
+        bColorBits[2] = pImage[0];
+        bColorBits[1] = pImage[1];
+        bColorBits[0] = pImage[2];
+        pImage = bColorBits;
+    }
 
     for( int i = 0; i < x * y; i++ ) 
     {
@@ -476,7 +498,9 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
         }
     }
 
-    stbi_image_free(pImage);
+    if (!type || _tcscmp(type, RES_TYPE_COLOR) != 0) {
+        stbi_image_free(pImage);
+    }
 
 	TImageInfo* data = new TImageInfo;
 	data->hBitmap = hBitmap;
@@ -1009,6 +1033,11 @@ bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc
 				}
 				else if( sItem == _T("restype") ) {
 					sImageResType = sValue;
+				}
+				else if (sItem == _T("color")) {
+					bUseRes = true;
+					sImageResType = RES_TYPE_COLOR;
+					sImageName = sValue;
 				}
 				else if( sItem == _T("dest") ) {
 					drawInfo.rcDestOffset.left = _tcstol(sValue.GetData(), &pstr, 10);  ASSERT(pstr);    
