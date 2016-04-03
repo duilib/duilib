@@ -2,6 +2,8 @@
 
 namespace DuiLib {
 
+extern int g_rectStyle;
+
 CDialogBuilder::CDialogBuilder() : m_pCallback(NULL), m_pstrtype(NULL)
 {
 
@@ -125,7 +127,8 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
                 nAttributes = node.GetAttributeCount();
                 LPCTSTR pControlName = NULL;
                 LPCTSTR pControlValue = NULL;
-				bool shared = false;
+                LPCTSTR pRectStyle = NULL;
+                bool shared = false;
                 for( int i = 0; i < nAttributes; i++ ) {
                     pstrName = node.GetAttributeName(i);
                     pstrValue = node.GetAttributeValue(i);
@@ -135,12 +138,20 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
                     else if( _tcsicmp(pstrName, _T("value")) == 0 ) {
                         pControlValue = pstrValue;
                     }
-					else if( _tcsicmp(pstrName, _T("shared")) == 0 ) {
-						shared = (_tcsicmp(pstrValue, _T("true")) == 0);
-					}
+                    else if( _tcsicmp(pstrName, _T("shared")) == 0 ) {
+                        shared = (_tcsicmp(pstrValue, _T("true")) == 0);
+                    }
+                    else if( _tcsicmp(pstrName, _T("rectstyle")) == 0 ) {
+                        pRectStyle = pstrValue;
+                    }
                 }
                 if( pControlName ) {
                     pManager->AddDefaultAttributeList(pControlName, pControlValue, shared);
+                }
+                else if( pRectStyle ) {
+                    if( _tcsicmp(pRectStyle, _T("l,t,w,h") ) == 0) {
+                        g_rectStyle = STYLE_RECT_LTWH;
+                    }
                 }
             }
 			else if( _tcsicmp(pstrClass, _T("MultiLanguage")) == 0 ) {
