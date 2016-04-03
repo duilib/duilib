@@ -53,7 +53,7 @@ extern "C"
 namespace DuiLib {
 
 static int g_iFontID = MAX_FONT_ID;
-
+int g_imageRectStyle = STYLE_RECT_LTRB;
 /////////////////////////////////////////////////////////////////////////////////////
 //
 //
@@ -1044,12 +1044,20 @@ bool CRenderEngine::DrawImage(HDC hDC, CPaintManagerUI* pManager, const RECT& rc
 					drawInfo.rcDestOffset.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);
 					drawInfo.rcDestOffset.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);
 					drawInfo.rcDestOffset.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);
+					if( g_imageRectStyle == STYLE_RECT_LTWH ) {
+						drawInfo.rcDestOffset.right += drawInfo.rcDestOffset.left;
+						drawInfo.rcDestOffset.bottom += drawInfo.rcDestOffset.top;
+					}
 				}
 				else if( sItem == _T("source") ) {
 					drawInfo.rcBmpPart.left = _tcstol(sValue.GetData(), &pstr, 10);  ASSERT(pstr);    
 					drawInfo.rcBmpPart.top = _tcstol(pstr + 1, &pstr, 10);    ASSERT(pstr);    
 					drawInfo.rcBmpPart.right = _tcstol(pstr + 1, &pstr, 10);  ASSERT(pstr);    
 					drawInfo.rcBmpPart.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);  
+					if( g_imageRectStyle == STYLE_RECT_LTWH ) {
+						drawInfo.rcBmpPart.right += drawInfo.rcBmpPart.left;
+						drawInfo.rcBmpPart.bottom += drawInfo.rcBmpPart.top;
+					}
 				}
 				else if( sItem == _T("corner") || sItem == _T("scale9")) {
 					drawInfo.rcScale9.left = _tcstol(sValue.GetData(), &pstr, 10);  ASSERT(pstr);    

@@ -536,9 +536,9 @@ namespace DuiLib
 			m_pVerticalScrollBar->SetOwner(this);
 			m_pVerticalScrollBar->SetManager(m_pManager, NULL, false);
 			if ( m_pManager ) {
-				LPCTSTR pDefaultAttributes = m_pManager->GetDefaultAttributeList(_T("VScrollBar"));
-				if( pDefaultAttributes ) {
-					m_pVerticalScrollBar->SetAttributeList(pDefaultAttributes);
+				CDuiStringPtrMap* pDefautAttrList = m_pManager->GetDefaultAttributeList(_T("VScrollBar"));
+				if( pDefautAttrList ) {
+					m_pVerticalScrollBar->SetAttributeList(pDefautAttrList);
 				}
 			}
 		}
@@ -554,9 +554,9 @@ namespace DuiLib
 			m_pHorizontalScrollBar->SetOwner(this);
 			m_pHorizontalScrollBar->SetManager(m_pManager, NULL, false);
 			if ( m_pManager ) {
-				LPCTSTR pDefaultAttributes = m_pManager->GetDefaultAttributeList(_T("HScrollBar"));
-				if( pDefaultAttributes ) {
-					m_pHorizontalScrollBar->SetAttributeList(pDefaultAttributes);
+				CDuiStringPtrMap* pDefautAttrList = m_pManager->GetDefaultAttributeList(_T("HScrollBar"));
+				if( pDefautAttrList ) {
+					m_pHorizontalScrollBar->SetAttributeList(pDefautAttrList);
 				}
 			}
 		}

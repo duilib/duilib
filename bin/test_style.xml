@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Window mininfo="200,360" size="360,600">
+	<!-- 设置图像中的source、dest定义采用left,top,width,height风格 -->
+	<!-- (原风格为left,top,right,bottom，需要额外计算，不方便应用风格定义) -->
+	<Style imagerectstyle="l,t,w,h" />
+	<!-- include的xml定义文件需要使用相同的imagerectstyle -->
+	<Include source="scrollbar_ltwh.xml" />
+	<Default shared="true" name="Button" value="textcolor=&quot;#000000&quot; hottextcolor=&quot;#FFFFFF&quot; focusedtextcolor=&quot;#000000&quot; pushedtextcolor=&quot;#77a8de&quot; normalimage=&quot;file='Button/btn.png' corner='5,11,5,11' source='0,0,96,24'&quot; hotimage=&quot;file='Button/btn.png' corner='5,11,5,11' source='0,24,96,24'&quot; pushedimage=&quot;file='Button/btn.png' corner='5,11,5,11' source='0,48,96,24'&quot; disabledimage=&quot;file='Button/btn.png' corner='5,11,5,11' source='0,72,96,24'&quot;" />
+	<Default shared="true" name="Option" value="textcolor=&quot;#FFbac0c5&quot; hottextcolor=&quot;#FF386382&quot; selectedtextcolor=&quot;#FF386382&quot; disabledtextcolor=&quot;#FFbac0c5&quot; textpadding=&quot;18,2,0,0&quot; align=&quot;left&quot; selectedimage=&quot;file='Button/RadioBtnSel.png' source='0,0,13,13' dest='0,5,14,14'&quot; normalimage=&quot;file='Button/RadioBtnNon.png' source='0,0,13,13' dest='0,5,14,14'&quot;" />
+	<Default shared="true" name="CheckBox" value="textcolor=&quot;#FFbac0c5&quot; hottextcolor=&quot;#FF386382&quot; selectedtextcolor=&quot;#FF386382&quot; disabledtextcolor=&quot;#FFbac0c5&quot; textpadding=&quot;20,2,0,0&quot; align=&quot;left&quot; selectedimage=&quot;file='Icon/checked.png' dest='0,2,16,16'&quot; normalimage=&quot;file='Icon/unchecked.png' dest='0,2,16,16'&quot;" />
+	<!-- 属性不用都放到value中，Default/Style标签可以换行定义，并可以直接定义folderattr、checkboxattr等属性 -->
+	<Default name="TreeNode" folderattr="padding=&quot;0,1,0,0&quot; width=&quot;16&quot; height=&quot;16&quot; normalimage=&quot;file='Icon/treeview_b.png' source='0,0,16,16' &quot; hotimage=&quot;file='Icon/treeview_b.png' source='16,0,16,16' &quot; selectedimage=&quot;file='Icon/treeview_a.png' source='0,0,16,16' &quot; selectedhotimage=&quot;file='Icon/treeview_a.png' source='16,0,16,16' &quot;"
+		   checkboxattr="width=&quot;16&quot; height=&quot;16&quot; normalimage=&quot;file='Icon/unchecked.png' &quot; selectedimage=&quot;file='Icon/checked.png' &quot;" />
+	<Style name="tree_node" checkboxattr="width=&quot;$1&quot; height=&quot;$1&quot; normalimage=&quot;file='Icon/unchecked.png' &quot; selectedimage=&quot;file='Icon/checked.png' &quot;" />
+
+	<!-- 简单风格定义，属性可单独定义，也可以定义到value属性中 -->
+	<Style name="horiBtn" padding="5,5,5,5" value="width=&quot;60&quot; bkcolor=&quot;#FF007ACC&quot;" />
+	<Style name="wh_50" value="width=&quot;50&quot; height=&quot;50&quot;" />
+	<!-- 风格模板定义 -->
+	<!-- Style标签中可以使用$1、$2等占位符来定义风格模板 -->
+	<Style name="horiBtn_image" padding="5,0,0,5" height="24" value="width=&quot;75&quot; bkimage=&quot;button_$1&quot;" />
+	<Style name="horiBtn1" padding="5,0,0,5" group="HoriOpt" value="width=&quot;$1&quot; hotimage=&quot;color='#FFFFFF00' dest='0,45,$1,15'&quot; selectedimage=&quot;color='$2'&quot; " />
+	<!-- 通过在属性值的开头使用”$<新占位符>“，风格模板占位符可以重新定义 -->
+	<Style name="horiBtn2"  padding="5,0,0,5" value="$%width=&quot;%1&quot; bkcolor=&quot;%2&quot;" />
+	<Style name="horiBtn3" group="HoriOpt"  padding="5,0,0,5" value="$%width=&quot;%1&quot; bkcolor=&quot;%2&quot;" />
+	<VerticalLayout>
+		<HorizontalLayout enabled="true" height="120" bkcolor="#FFF0F0F0">
+			<Option style="horiBtn" />
+			<Option style="horiBtn" />
+			<Option style="horiBtn" style="wh_50" /> <!--  可以使用多属性 -->
+			<Button style="horiBtn" style="wh_50" /> <!--  风格可应用到不同控件 -->
+			<Option style="horiBtn" />
+		</HorizontalLayout>
+		<HorizontalLayout enabled="true" height="60" bkcolor="#FFF0F0F0">
+			<!-- .bmp也可以定义到风格模板中，为了更清楚此处使用文件，及文件类型，所以保留到参数中 -->
+			<Control style="horiBtn_image:down.bmp" />
+			<Control style="horiBtn_image:nor.bmp" />
+			<Control style="horiBtn_image:over.bmp" />
+		</HorizontalLayout>
+		<HorizontalLayout enabled="true" height="60" bkcolor="#FFF0F0F0">
+			<!-- 通过在风格名后添加”:“,可以在之后定义填充参数，参数通过默认分隔符”;“分隔 -->
+			<Option style="horiBtn1:30;#FFFF0000" selected="true" />
+			<!-- 通过在参数列表的开头使用”;<新分隔符>“，参数列表的分隔符可以重新定义 -->
+			<Option style="horiBtn1:;|60|#FF00FF00" />
+			<Option style="horiBtn1:30;#FF0000FF" />
+		</HorizontalLayout>
+		<HorizontalLayout enabled="true" height="60" bkcolor="#FFF0F0F0">
+			<Option style="horiBtn2:;,30,#FFFF0000" selected="true" />
+			<!-- 第一个参数想使用空字符串时，在参数列表前添加”;;“ -->
+			<!-- 需要保留第一个参数的第一个字符是默认分隔符;时，也请在参数列表前添加”;;“ -->
+			<Option style="horiBtn2:;;;#FF00FF00" />      <!-- 宽度为空字符串，会自动调整宽度占满水平布局 -->
+			<Option style="horiBtn3:;:30:#FF0000FF" />
+		</HorizontalLayout>
+		<!-- 添加一个填充控件，让TreeView显示滚动条 -->
+		<Control height="150" />
+		<TreeView bkcolor="#ffffffff" visiblefolderbtn="true" visiblecheckbtn="true" vscrollbar="true" hscrollbar="true">
+			<TreeNode text="A1" style="tree_node:32" > <!-- 覆盖默认属性定义，拉伸按钮 -->
+			<TreeNode text="B1" >
+				<TreeNode text="C1" >
+					<TreeNode text="D1" >
+						<Button text="扩展按钮" width="100" />
+					</TreeNode>
+					<Button text="扩展按钮" width="100" />
+				</TreeNode>
+				<Edit text="扩展文本框" tipvalue="扩展文本框" width="100" />
+			</TreeNode>
+			<Edit text="扩展文本框" tipvalue="扩展文本框" width="100" />
+			</TreeNode>
+			<TreeNode text="A2" >
+			<TreeNode text="B2" >
+				<TreeNode text="C2" >
+					<TreeNode text="D2" >
+						<Option text="扩展单选框" width="100" group="RadioBoxTest" />
+					</TreeNode>
+					<Option text="扩展单选框" width="100" group="RadioBoxTest" />
+				</TreeNode>
+				<CheckBox text="扩展复选框" width="100" />
+			</TreeNode>
+			<CheckBox text="扩展复选框" width="100" />
+			</TreeNode>
+		</TreeView>
+	</VerticalLayout>
+</Window>

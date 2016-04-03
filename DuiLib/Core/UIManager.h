@@ -300,9 +300,11 @@ public:
 	static void ReloadSharedImages();
 	void ReloadImages();
 
-    void AddDefaultAttributeList(LPCTSTR pStrControlName, LPCTSTR pStrControlAttrList, bool bShared = false);
-    LPCTSTR GetDefaultAttributeList(LPCTSTR pStrControlName) const;
-    bool RemoveDefaultAttributeList(LPCTSTR pStrControlName, bool bShared = false);
+    void AddDefaultAttributeList(LPCTSTR pStrStyleName, LPCTSTR pStrAttrName, LPCTSTR pStrAttrList, bool bShared);
+    CDuiStringPtrMap* CPaintManagerUI::GetDefaultAttributeList(LPCTSTR pStrStyleName) const;
+    LPCTSTR GetDefaultAttributeList(LPCTSTR pStrStyleName, LPCTSTR pStrAttrName) const;
+    bool RemoveDefaultAttributeList(LPCTSTR pStrStyleName, bool bShared = false);
+    bool RemoveDefaultAttributeList(LPCTSTR pStrStyleName, LPCTSTR pStrAttrName, bool bShared);
     void RemoveAllDefaultAttributeList(bool bShared = false);
 
     void AddWindowCustomAttribute(LPCTSTR pstrName, LPCTSTR pstrAttr);

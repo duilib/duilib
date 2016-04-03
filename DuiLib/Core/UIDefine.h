@@ -18,6 +18,12 @@ enum DuiSig
 	DuiSig_vn,      // void (TNotifyUI)
 };
 
+enum STYLE_RECT
+{
+	STYLE_RECT_LTRB = 0,  /* left,top,right,bottom */
+	STYLE_RECT_LTWH = 1   /* left,top,width,height */
+};
+
 class CControlUI;
 
 // Structure for notifications to the outside world

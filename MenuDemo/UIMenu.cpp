@@ -233,9 +233,9 @@ LRESULT CMenuWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 			// the items back to the righfull owner/manager when the window closes.
 			m_pLayout = new CMenuUI();
 			m_pLayout->SetManager(&m_pm, NULL, true);
-			LPCTSTR pDefaultAttributes = m_pOwner->GetManager()->GetDefaultAttributeList(kMenuUIInterfaceName);
-			if( pDefaultAttributes ) {
-				m_pLayout->SetAttributeList(pDefaultAttributes);
+			CDuiStringPtrMap* pDefautAttrList = m_pOwner->GetManager()->GetDefaultAttributeList(kMenuUIInterfaceName);
+			if( pDefautAttrList ) {
+				m_pLayout->SetAttributeList(pDefautAttrList);
 			}
 			m_pLayout->SetBkColor(0xFFFFFFFF);
 			m_pLayout->SetBorderColor(0xFF85E4FF);
