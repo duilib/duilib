@@ -2669,6 +2669,9 @@ const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, LPCTSTR type, DWORD 
             int iIndex = _tcstol(bitmap, &pstr, 10);
             data = CRenderEngine::LoadImage(iIndex, type, mask);
         }
+        else {
+            data = CRenderEngine::LoadImage(bitmap, type, mask);
+        }
     }
     else {
         data = CRenderEngine::LoadImage(bitmap, NULL, mask);
@@ -2856,6 +2859,9 @@ void CPaintManagerUI::ReloadSharedImages()
 						int iIndex = _tcstol(bitmap, &pstr, 10);
 						pNewData = CRenderEngine::LoadImage(iIndex, data->sResType.GetData(), data->dwMask);
 					}
+					else {
+						pNewData = CRenderEngine::LoadImage(bitmap, data->sResType.GetData(), data->dwMask);
+					}
 				}
 				else {
 					pNewData = CRenderEngine::LoadImage(bitmap, NULL, data->dwMask);
@@ -2895,6 +2901,9 @@ void CPaintManagerUI::ReloadImages()
 						LPTSTR pstr = NULL;
 						int iIndex = _tcstol(bitmap, &pstr, 10);
 						pNewData = CRenderEngine::LoadImage(iIndex, data->sResType.GetData(), data->dwMask);
+					}
+					else {
+						pNewData = CRenderEngine::LoadImage(bitmap, data->sResType.GetData(), data->dwMask);
 					}
 				}
 				else {
