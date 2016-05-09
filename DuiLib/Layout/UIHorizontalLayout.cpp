@@ -124,6 +124,7 @@ namespace DuiLib
 			if( sz.cx == 0 ) {
 				iAdjustable++;
 				sz.cx = cxExpand;
+        cxFixedRemaining = cxFixedRemaining - (rcPadding.left + rcPadding.right);
 				// Distribute remaining to last element (usually round-off left-overs)
 				if( iAdjustable == nAdjustables ) {
 					sz.cx = MAX(0, szRemaining.cx - rcPadding.right - cxFixedRemaining);

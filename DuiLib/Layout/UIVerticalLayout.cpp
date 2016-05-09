@@ -125,6 +125,7 @@ namespace DuiLib
 			if( sz.cy == 0 ) {
 				iAdjustable++;
 				sz.cy = cyExpand;
+        cyFixedRemaining = cyFixedRemaining - (rcPadding.top + rcPadding.bottom);
 				// Distribute remaining to last element (usually round-off left-overs)
 				if( iAdjustable == nAdjustables ) {
 					sz.cy = MAX(0, szRemaining.cy - rcPadding.bottom - cyFixedRemaining);
