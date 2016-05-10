@@ -7,7 +7,7 @@ namespace DuiLib {
 
 class CTxtWinHost;
 
-class UILIB_API CRichEditUI : public CContainerUI, public IMessageFilterUI
+class DUILIB_API CRichEditUI : public CContainerUI, public IMessageFilterUI
 {
 public:
     CRichEditUI();
@@ -29,7 +29,7 @@ public:
     void SetRich(bool bRich = true);
     bool IsReadOnly();
     void SetReadOnly(bool bReadOnly = true);
-    bool GetWordWrap();
+    bool IsWordWrap();
     void SetWordWrap(bool bWordWrap = true);
     int GetFont();
     void SetFont(int index);
@@ -43,7 +43,7 @@ public:
     long GetTextLength(DWORD dwFlags = GTL_DEFAULT) const;
     CDuiString GetText() const;
     void SetText(LPCTSTR pstrText);
-    bool GetModify() const;
+    bool IsModify() const;
     void SetModify(bool bModified = true) const;
     void GetSel(CHARRANGE &cr) const;
     void GetSel(long& nStartChar, long& nEndChar) const;
@@ -94,10 +94,13 @@ public:
     long StreamIn(int nFormat, EDITSTREAM &es);
     long StreamOut(int nFormat, EDITSTREAM &es);
 
+	RECT GetTextPadding() const;
+	void SetTextPadding(RECT rc);
+
     void DoInit();
-    // 注意：TxSendMessage和SendMessage是有区别的，TxSendMessage没有multibyte和unicode自动转换的功能，
-    // 而richedit2.0内部是以unicode实现的，在multibyte程序中，必须自己处理unicode到multibyte的转换
 	bool SetDropAcceptFile(bool bAccept);
+	// 注意：TxSendMessage和SendMessage是有区别的，TxSendMessage没有multibyte和unicode自动转换的功能，
+	// 而richedit2.0内部是以unicode实现的，在multibyte程序中，必须自己处理unicode到multibyte的转换
     virtual HRESULT TxSendMessage(UINT msg, WPARAM wparam, LPARAM lparam, LRESULT *plresult) const; 
     IDropTarget* GetTxDropTarget();
     virtual bool OnTxViewChanged();
@@ -121,7 +124,7 @@ public:
 	void SetPos(RECT rc, bool bNeedInvalidate = true);
 	void Move(SIZE szOffset, bool bNeedInvalidate = true);
     void DoEvent(TEventUI& event);
-    void DoPaint(HDC hDC, const RECT& rcPaint);
+    bool DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl);
 
     void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 
@@ -147,6 +150,7 @@ protected:
     LONG m_lTwhStyle;
 	bool m_bDrawCaret;
 	bool m_bInited;
+	RECT	m_rcTextPadding;
 };
 
 } // namespace DuiLib

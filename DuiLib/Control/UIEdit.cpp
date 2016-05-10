@@ -40,6 +40,10 @@ namespace DuiLib
 		m_pOwner = pOwner;
 		RECT rcPos = CalPos();
 		UINT uStyle = WS_CHILD | ES_AUTOHSCROLL | pOwner->GetWindowStyls();
+        UINT uTextStyle = m_pOwner->GetTextStyle();
+        if(uTextStyle & DT_LEFT) uStyle |= ES_LEFT;
+        else if(uTextStyle & DT_CENTER) uStyle |= ES_CENTER;
+        else if(uTextStyle & DT_RIGHT) uStyle |= ES_RIGHT;
 		if( m_pOwner->IsPasswordMode() ) uStyle |= ES_PASSWORD;
 		Create(m_pOwner->GetManager()->GetPaintWindow(), NULL, uStyle, 0, rcPos);
 
@@ -153,13 +157,22 @@ namespace DuiLib
 			if (m_pOwner->GetManager()->IsLayered() && !m_pOwner->GetManager()->IsPainting()) {
 				m_pOwner->GetManager()->AddNativeWindow(m_pOwner, m_hWnd);
 			}
-			if( m_pOwner->GetNativeEditBkColor() == 0xFFFFFFFF ) return NULL;
+			DWORD clrColor = m_pOwner->GetNativeEditBkColor();
+			if( clrColor == 0xFFFFFFFF ) return 0;
 			::SetBkMode((HDC)wParam, TRANSPARENT);
 			DWORD dwTextColor = m_pOwner->GetTextColor();
 			::SetTextColor((HDC)wParam, RGB(GetBValue(dwTextColor),GetGValue(dwTextColor),GetRValue(dwTextColor)));
-			if( m_hBkBrush == NULL ) {
-				DWORD clrColor = m_pOwner->GetNativeEditBkColor();
-				m_hBkBrush = ::CreateSolidBrush(RGB(GetBValue(clrColor), GetGValue(clrColor), GetRValue(clrColor)));
+			if (clrColor < 0xFF000000) {
+				if (m_hBkBrush != NULL) ::DeleteObject(m_hBkBrush);
+				RECT rcWnd = m_pOwner->GetManager()->GetNativeWindowRect(m_hWnd);
+				HBITMAP hBmpEditBk = CRenderEngine::GenerateBitmap(m_pOwner->GetManager(), rcWnd, m_pOwner, clrColor);
+				m_hBkBrush = ::CreatePatternBrush(hBmpEditBk);
+				::DeleteObject(hBmpEditBk);
+			}
+			else {
+				if (m_hBkBrush == NULL) {
+					m_hBkBrush = ::CreateSolidBrush(RGB(GetBValue(clrColor), GetGValue(clrColor), GetRValue(clrColor)));
+				}
 			}
 			return (LRESULT)m_hBkBrush;
 		}
@@ -240,7 +253,7 @@ namespace DuiLib
 
 	LPCTSTR CEditUI::GetClass() const
 	{
-		return _T("EditUI");
+		return DUI_CTR_EDIT;
 	}
 
 	LPVOID CEditUI::GetInterface(LPCTSTR pstrName)
@@ -311,6 +324,7 @@ namespace DuiLib
 						POINT pt = event.ptMouse;
 						pt.x -= m_rcItem.left + m_rcTextPadding.left;
 						pt.y -= m_rcItem.top + m_rcTextPadding.top;
+						Edit_SetSel(*m_pWindow, 0, 0);
 						::SendMessage(*m_pWindow, WM_LBUTTONDOWN, event.wParam, MAKELPARAM(pt.x, pt.y));
 					}
 				}
@@ -329,22 +343,33 @@ namespace DuiLib
 		{
 			return;
 		}
-		if( event.Type == UIEVENT_MOUSEENTER )
-		{
-			if( IsEnabled() ) {
-				m_uButtonState |= UISTATE_HOT;
-				Invalidate();
-			}
-			return;
-		}
-		if( event.Type == UIEVENT_MOUSELEAVE )
-		{
-			if( IsEnabled() ) {
-				m_uButtonState &= ~UISTATE_HOT;
-				Invalidate();
-			}
-			return;
-		}
+        if( event.Type == UIEVENT_MOUSEENTER )
+        {
+            if( ::PtInRect(&m_rcItem, event.ptMouse ) ) {
+                if( IsEnabled() ) {
+                    if( (m_uButtonState & UISTATE_HOT) == 0  ) {
+                        m_uButtonState |= UISTATE_HOT;
+                        Invalidate();
+                    }
+                }
+            }
+        }
+        if( event.Type == UIEVENT_MOUSELEAVE )
+        {
+            if( !::PtInRect(&m_rcItem, event.ptMouse ) ) {
+                if( IsEnabled() ) {
+                    if( (m_uButtonState & UISTATE_HOT) != 0  ) {
+                        m_uButtonState &= ~UISTATE_HOT;
+                        Invalidate();
+                    }
+                }
+                if (m_pManager) m_pManager->RemoveMouseLeaveNeeded(this);
+            }
+            else {
+                if (m_pManager) m_pManager->AddMouseLeaveNeeded(this);
+                return;
+            }
+        }
 		CLabelUI::DoEvent(event);
 	}
 
@@ -533,8 +558,11 @@ namespace DuiLib
 		CControlUI::SetPos(rc, bNeedInvalidate);
 		if( m_pWindow != NULL ) {
 			RECT rcPos = m_pWindow->CalPos();
-			::SetWindowPos(m_pWindow->GetHWND(), NULL, rcPos.left, rcPos.top, rcPos.right - rcPos.left, 
-				rcPos.bottom - rcPos.top, SWP_NOZORDER | SWP_NOACTIVATE);        
+            if (::IsRectEmpty(&rcPos)) ::ShowWindow(m_pWindow->GetHWND(), SW_HIDE);
+            else {
+                ::SetWindowPos(m_pWindow->GetHWND(), NULL, rcPos.left, rcPos.top, rcPos.right - rcPos.left, 
+				rcPos.bottom - rcPos.top, SWP_NOZORDER | SWP_NOACTIVATE | SWP_SHOWWINDOW); 
+            }
 		}
 	}
 
@@ -542,9 +570,12 @@ namespace DuiLib
 	{
 		CControlUI::Move(szOffset, bNeedInvalidate);
 		if( m_pWindow != NULL ) {
-			RECT rcPos = m_pWindow->CalPos();
-			::SetWindowPos(m_pWindow->GetHWND(), NULL, rcPos.left, rcPos.top, rcPos.right - rcPos.left, 
-				rcPos.bottom - rcPos.top, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);        
+            RECT rcPos = m_pWindow->CalPos();
+            if (::IsRectEmpty(&rcPos)) ::ShowWindow(m_pWindow->GetHWND(), SW_HIDE);
+            else {
+                ::SetWindowPos(m_pWindow->GetHWND(), NULL, rcPos.left, rcPos.top, rcPos.right - rcPos.left, 
+                    rcPos.bottom - rcPos.top, SWP_NOZORDER | SWP_NOACTIVATE | SWP_SHOWWINDOW); 
+            }      
 		}
 	}
 
@@ -561,7 +592,7 @@ namespace DuiLib
 
 	SIZE CEditUI::EstimateSize(SIZE szAvailable)
 	{
-		if( m_cxyFixed.cy == 0 ) return CDuiSize(m_cxyFixed.cx, m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 6);
+		if( m_cxyFixed.cy == 0 ) return CDuiSize(m_cxyFixed.cx, m_pManager->GetFontInfo(GetFont())->tm.tmHeight + 8);
 		return CControlUI::EstimateSize(szAvailable);
 	}
 

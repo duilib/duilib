@@ -5,7 +5,7 @@
 
 namespace DuiLib
 {
-	class UILIB_API CButtonUI : public CLabelUI
+	class DUILIB_API CButtonUI : public CLabelUI
 	{
 	public:
 		CButtonUI();
@@ -36,7 +36,7 @@ namespace DuiLib
 		// 对应按钮的5个状态图
 		void SetFiveStatusImage(LPCTSTR pStrImage);
 		void SetFadeAlphaDelta(BYTE uDelta);
-		bool GetFadeAlphaDelta();
+		BYTE GetFadeAlphaDelta();
 
 		void SetHotBkColor(DWORD dwColor);
 		DWORD GetHotBkColor() const;

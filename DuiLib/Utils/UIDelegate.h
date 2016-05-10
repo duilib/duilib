@@ -5,7 +5,7 @@
 
 namespace DuiLib {
 
-class UILIB_API CDelegateBase	 
+class DUILIB_API CDelegateBase	 
 {
 public:
     CDelegateBase(void* pObject, void* pFn);
@@ -77,7 +77,7 @@ inline CDelegateStatic MakeDelegate(bool (*pFn)(void*))
     return CDelegateStatic(pFn); 
 }
 
-class UILIB_API CEventSource
+class DUILIB_API CEventSource
 {
     typedef bool (*FnType)(void*);
 public:
@@ -90,7 +90,7 @@ public:
     bool operator() (void* param);
 
 protected:
-    CStdPtrArray m_aDelegates;
+    CDuiPtrArray m_aDelegates;
 };
 
 } // namespace DuiLib

@@ -3,15 +3,20 @@
 
 #pragma once
 
+#define _USE_GDIPLUS 1
+
+#ifdef _USE_GDIPLUS
 #include <GdiPlus.h>
 #pragma comment( lib, "GdiPlus.lib" )
 using namespace Gdiplus;
-class UILIB_API Gdiplus::RectF;
-struct UILIB_API Gdiplus::GdiplusStartupInput;
+class DUILIB_API Gdiplus::RectF;
+struct DUILIB_API Gdiplus::GdiplusStartupInput;
+#endif
+
 
 namespace DuiLib
 {
-	class UILIB_API CLabelUI : public CControlUI
+	class DUILIB_API CLabelUI : public CControlUI
 	{
 	public:
 		CLabelUI();
@@ -20,10 +25,14 @@ namespace DuiLib
 		LPCTSTR GetClass() const;
 		LPVOID GetInterface(LPCTSTR pstrName);
 
+        void SetFixedWidth(int cx);
+        void SetFixedHeight(int cy);
 		void SetText(LPCTSTR pstrText);
 
 		void SetTextStyle(UINT uStyle);
 		UINT GetTextStyle() const;
+		bool IsMultiLine();
+		void SetMultiLine(bool bMultiLine = true);
 		void SetTextColor(DWORD dwTextColor);
 		DWORD GetTextColor() const;
 		void SetDisabledTextColor(DWORD dwTextColor);
@@ -41,6 +50,7 @@ namespace DuiLib
 
 		void PaintText(HDC hDC);
 
+#ifdef _USE_GDIPLUS
 		void		SetEnabledEffect(bool _EnabledEffect);
 		bool		GetEnabledEffect();
 		void		SetEnabledLuminous(bool bEnableLuminous);
@@ -65,7 +75,8 @@ namespace DuiLib
 		bool		GetEnabledStroke();
 		void		SetEnabledShadow(bool _EnabledShadowe);
 		bool		GetEnabledShadow();
-		
+#endif
+	
 	protected:
 		LPWSTR  m_pWideText;
 		DWORD	m_dwTextColor;
@@ -74,6 +85,9 @@ namespace DuiLib
 		UINT	m_uTextStyle;
 		RECT	m_rcTextPadding;
 		bool	m_bShowHtml;
+        SIZE    m_szAvailableLast;
+        SIZE    m_cxyFixedLast;
+        bool    m_bNeedEstimateSize;
 
 		float					m_fLuminousFuzzy;
 		int						m_GradientLength;
@@ -88,7 +102,9 @@ namespace DuiLib
 		DWORD					m_dwStrokeColor;
 		RectF					m_ShadowOffset;
 		ULONG_PTR				m_gdiplusToken;
+#ifdef _USE_GDIPLUS
 		GdiplusStartupInput		m_gdiplusStartupInput;
+#endif
 	};
 }
 

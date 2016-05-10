@@ -9,7 +9,7 @@ namespace DuiLib
 
 	LPCTSTR CTabLayoutUI::GetClass() const
 	{
-		return _T("TabLayoutUI");
+		return DUI_CTR_TABLAYOUT;
 	}
 
 	LPVOID CTabLayoutUI::GetInterface(LPCTSTR pstrName)
@@ -56,12 +56,12 @@ namespace DuiLib
 		return ret;
 	}
 
-	bool CTabLayoutUI::Remove(CControlUI* pControl)
+	bool CTabLayoutUI::Remove(CControlUI* pControl, bool bDoNotDestroy)
 	{
 		if( pControl == NULL) return false;
 
 		int index = GetItemIndex(pControl);
-		bool ret = CContainerUI::Remove(pControl);
+		bool ret = CContainerUI::Remove(pControl, bDoNotDestroy);
 		if( !ret ) return false;
 
 		if( m_iCurSel == index)

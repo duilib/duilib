@@ -16,7 +16,7 @@ class CMarkup;
 class CMarkupNode;
 
 
-class UILIB_API CMarkup
+class DUILIB_API CMarkup
 {
     friend class CMarkupNode;
 public:
@@ -68,7 +68,7 @@ private:
 };
 
 
-class UILIB_API CMarkupNode
+class DUILIB_API CMarkupNode
 {
     friend class CMarkup;
 private:

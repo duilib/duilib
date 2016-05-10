@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include "SkinSetting.h"
 #include "About.h"
 
 const TCHAR* const kSysBtnControlName = _T("SysButton");
