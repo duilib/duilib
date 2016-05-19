@@ -71,14 +71,22 @@ namespace DuiLib
 			if (iControlMaxHeight <= 0) iControlMaxHeight = pControl->GetMaxHeight();
 			if (szControlAvailable.cx > iControlMaxWidth) szControlAvailable.cx = iControlMaxWidth;
 			if (szControlAvailable.cy > iControlMaxHeight) szControlAvailable.cy = iControlMaxHeight;
-			SIZE sz = pControl->EstimateSize(szControlAvailable);
-			if( sz.cx == 0 ) {
+			SIZE sz = { 0 };
+			if (pControl->GetFixedWidth() == 0) {
 				nAdjustables++;
+				sz.cy = pControl->GetFixedHeight();
 			}
 			else {
-				if( sz.cx < pControl->GetMinWidth() ) sz.cx = pControl->GetMinWidth();
-				if( sz.cx > pControl->GetMaxWidth() ) sz.cx = pControl->GetMaxWidth();
+				sz = pControl->EstimateSize(szControlAvailable);
+				if (sz.cx == 0) {
+					nAdjustables++;
+				}
+				else {
+					if (sz.cx < pControl->GetMinWidth()) sz.cx = pControl->GetMinWidth();
+					if (sz.cx > pControl->GetMaxWidth()) sz.cx = pControl->GetMaxWidth();
+				}
 			}
+
 			cxFixed += sz.cx + pControl->GetPadding().left + pControl->GetPadding().right;
 
 			sz.cy = MAX(sz.cy, 0);
@@ -99,6 +107,7 @@ namespace DuiLib
 		if( m_pHorizontalScrollBar && m_pHorizontalScrollBar->IsVisible() ) {
 			iPosX -= m_pHorizontalScrollBar->GetScrollPos();
 		}
+		int iEstimate = 0;
 		int iAdjustable = 0;
 		int cxFixedRemaining = cxFixed;
 		for( int it2 = 0; it2 < m_items.GetSize(); it2++ ) {
@@ -108,7 +117,8 @@ namespace DuiLib
 				SetFloatPos(it2);
 				continue;
 			}
-
+			
+			iEstimate += 1;
 			RECT rcPadding = pControl->GetPadding();
 			szRemaining.cx -= rcPadding.left;
 
@@ -120,9 +130,9 @@ namespace DuiLib
 			if (iControlMaxHeight <= 0) iControlMaxHeight = pControl->GetMaxHeight();
 			if (szControlAvailable.cx > iControlMaxWidth) szControlAvailable.cx = iControlMaxWidth;
 			if (szControlAvailable.cy > iControlMaxHeight) szControlAvailable.cy = iControlMaxHeight;
-      cxFixedRemaining = cxFixedRemaining - (rcPadding.left + rcPadding.right) - (nEstimateNum - 1) * m_iChildPadding;
+			if (iEstimate > 1) cxFixedRemaining = cxFixedRemaining - (rcPadding.left + rcPadding.right) - m_iChildPadding;
 			SIZE sz = pControl->EstimateSize(szControlAvailable);
-			if( sz.cx == 0 ) {
+			if (pControl->GetFixedWidth() == 0 || sz.cx == 0) {
 				iAdjustable++;
 				sz.cx = cxExpand;
 				// Distribute remaining to last element (usually round-off left-overs)
