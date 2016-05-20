@@ -123,7 +123,8 @@ namespace DuiLib
 			if (iControlMaxHeight <= 0) iControlMaxHeight = pControl->GetMaxHeight();
 			if (szControlAvailable.cx > iControlMaxWidth) szControlAvailable.cx = iControlMaxWidth;
 			if (szControlAvailable.cy > iControlMaxHeight) szControlAvailable.cy = iControlMaxHeight;
-			if (iEstimate > 1) cyFixedRemaining = cyFixedRemaining - (rcPadding.top + rcPadding.bottom) - m_iChildPadding;
+      cyFixedRemaining = cyFixedRemaining - (rcPadding.top + rcPadding.bottom);
+			if (iEstimate > 1) cyFixedRemaining = cyFixedRemaining - m_iChildPadding;
 			SIZE sz = pControl->EstimateSize(szControlAvailable);
 			if( sz.cy == 0 ) {
 				iAdjustable++;
