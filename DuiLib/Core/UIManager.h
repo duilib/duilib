@@ -382,6 +382,7 @@ private:
     CControlUI* m_pEventHover;
     CControlUI* m_pEventClick;
     CControlUI* m_pEventKey;
+	CControlUI* m_pOldToolTip; //old tooltip ctrl
     //
     POINT m_ptLastMousePos;
     SIZE m_szMinWindow;

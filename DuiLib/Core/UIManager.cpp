@@ -110,7 +110,8 @@ m_bMouseCapture(false),
 m_bOffscreenPaint(true),
 m_bAlphaBackground(false),
 m_bUsedVirtualWnd(false),
-m_nOpacity(255)
+m_nOpacity(255),
+m_pOldToolTip(NULL)
 {
 	if (m_SharedResInfo.m_DefaultFontInfo.sFontName.IsEmpty())
 	{
@@ -179,6 +180,7 @@ CPaintManagerUI::~CPaintManagerUI()
 		::DestroyWindow(m_hwndTooltip);
 		m_hwndTooltip = NULL;
 	}
+	m_pOldToolTip = NULL;
     if( m_hDcOffscreen != NULL ) ::DeleteDC(m_hDcOffscreen);
     if( m_hDcBackground != NULL ) ::DeleteDC(m_hDcBackground);
     if( m_hbmpOffscreen != NULL ) ::DeleteObject(m_hbmpOffscreen);
@@ -848,13 +850,35 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             m_ToolTip.hinst = m_hInstance;
             m_ToolTip.lpszText = const_cast<LPTSTR>( (LPCTSTR) sToolTip );
             m_ToolTip.rect = pHover->GetPos();
-            if( m_hwndTooltip == NULL ) {
-                m_hwndTooltip = ::CreateWindowEx(0, TOOLTIPS_CLASS, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, m_hWndPaint, NULL, m_hInstance, NULL);
-                ::SendMessage(m_hwndTooltip, TTM_ADDTOOL, 0, (LPARAM) &m_ToolTip);
-            }
-			::SendMessage( m_hwndTooltip,TTM_SETMAXTIPWIDTH,0, pHover->GetToolTipWidth());
-            ::SendMessage(m_hwndTooltip, TTM_SETTOOLINFO, 0, (LPARAM) &m_ToolTip);
-            ::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, TRUE, (LPARAM) &m_ToolTip);
+			if( m_hwndTooltip == NULL ) {
+				m_hwndTooltip = ::CreateWindowEx(0, TOOLTIPS_CLASS, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, m_hWndPaint, NULL, m_hInstance, NULL);
+				::SendMessage(m_hwndTooltip, TTM_ADDTOOL, 0, (LPARAM) &m_ToolTip);
+				::SendMessage( m_hwndTooltip,TTM_SETMAXTIPWIDTH,0, pHover->GetToolTipWidth());
+				::SendMessage(m_hwndTooltip, TTM_SETTOOLINFO, 0, (LPARAM) &m_ToolTip);
+				::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, TRUE, (LPARAM) &m_ToolTip);
+			}
+			// by jiangdong 2016-8-6 修改tooltip 悬停时候 闪烁bug
+			static int nOldTooltipMaxWidth = pHover->GetToolTipWidth();
+			if (m_pOldToolTip == NULL){
+				m_pOldToolTip = pHover;
+			}
+			else{
+				if (m_pOldToolTip == pHover){
+					if(nOldTooltipMaxWidth != pHover->GetToolTipWidth()){
+						::SendMessage( m_hwndTooltip,TTM_SETMAXTIPWIDTH,0, pHover->GetToolTipWidth());
+						nOldTooltipMaxWidth = pHover->GetToolTipWidth();
+					}
+					::SendMessage(m_hwndTooltip, TTM_SETTOOLINFO, 0, (LPARAM) &m_ToolTip);
+					::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, TRUE, (LPARAM) &m_ToolTip);
+				} 
+				else{
+					::SendMessage( m_hwndTooltip,TTM_SETMAXTIPWIDTH,0, pHover->GetToolTipWidth());
+					::SendMessage(m_hwndTooltip, TTM_SETTOOLINFO, 0, (LPARAM) &m_ToolTip);
+					::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, TRUE, (LPARAM) &m_ToolTip);
+				}
+			}
+			//修改在CListElementUI 有提示 子项无提示下无法跟随移动！（按理说不应该移动的）
+			::SendMessage(m_hwndTooltip, TTM_TRACKPOSITION, 0, (LPARAM)(DWORD) MAKELONG(pt.x, pt.y));	
         }
         return true;
     case WM_MOUSELEAVE:
