@@ -2101,7 +2101,7 @@ void CPaintManagerUI::SendNotify(CControlUI* pControl, LPCTSTR pstrMessage, WPAR
     Msg.sType = pstrMessage;
     Msg.wParam = wParam;
     Msg.lParam = lParam;
-    SendNotify(Msg, bAsync);
+    SendNotify(Msg, bAsync, bEnableRepeat);
 }
 
 void CPaintManagerUI::SendNotify(TNotifyUI& Msg, bool bAsync /*= false*/, bool bEnableRepeat /*= true*/)
@@ -2127,6 +2127,8 @@ void CPaintManagerUI::SendNotify(TNotifyUI& Msg, bool bAsync /*= false*/, bool b
 			for( int i = 0; i < m_aAsyncNotify.GetSize(); i++ ) {
 				TNotifyUI* pMsg = static_cast<TNotifyUI*>(m_aAsyncNotify[i]);
 				if( pMsg->pSender == Msg.pSender && pMsg->sType == Msg.sType) {
+					if ( m_bUsedVirtualWnd )
+						pMsg->sVirtualWnd = Msg.sVirtualWnd;					
 					pMsg->wParam = Msg.wParam;
 					pMsg->lParam = Msg.lParam;
 					pMsg->ptMouse = Msg.ptMouse;
@@ -2137,6 +2139,8 @@ void CPaintManagerUI::SendNotify(TNotifyUI& Msg, bool bAsync /*= false*/, bool b
 		}
 
 		TNotifyUI *pMsg = new TNotifyUI;
+		if ( m_bUsedVirtualWnd )
+			pMsg->sVirtualWnd = Msg.sVirtualWnd;		
 		pMsg->pSender = Msg.pSender;
 		pMsg->sType = Msg.sType;
 		pMsg->wParam = Msg.wParam;
