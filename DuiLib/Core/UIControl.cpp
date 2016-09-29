@@ -55,6 +55,9 @@ CControlUI::~CControlUI()
 
 void CControlUI::Delete()
 {
+	if (m_pManager)
+		m_pManager->RemoveMouseLeaveNeeded(this);
+
     delete this;
 }
 
