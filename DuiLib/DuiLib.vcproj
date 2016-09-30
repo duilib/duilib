@@ -494,6 +494,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Utils\WndShadow.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Utils\XUnzip.cpp"
 					>
 					<FileConfiguration
@@ -700,6 +704,10 @@
 				</File>
 				<File
 					RelativePath=".\Utils\WinImplBase.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Utils\WndShadow.h"
 					>
 				</File>
 			</Filter>

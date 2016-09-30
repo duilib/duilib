@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<Window size="640,120" caption="0,0,0,120" bktrans="false" showdirty="false" layeredimage="">
+	<Font name="微软雅黑" size="14" bold="false" default="true"/>
+    <HorizontalLayout height="120" bkimage="file='WinStyle.png' fade='50'">
+		<ButtonEx bkimage="LOL.png" float="true" pos="16,16,0,0" width="48" height="48"/>
+		<ButtonEx bkimage="LOL.png" float="true" pos="96,16,0,0" width="48" height="48"/>
+		<ButtonEx bkimage="LOL.png" float="true" pos="176,16,0,0" width="48" height="48"/>
+		<ButtonEx bkimage="LOL.png" float="true" pos="256,16,0,0" width="48" height="48"/>
+		<ButtonEx bkimage="LOL.png" float="true" pos="336,16,0,0" width="48" height="48"/>
+		<ButtonEx bkimage="LOL.png" float="true" pos="416,16,0,0" width="48" height="48"/>
+		<ButtonEx bkimage="LOL.png" float="true" pos="496,16,0,0" width="48" height="48"/>
+		<ButtonEx bkimage="LOL.png" float="true" pos="576,16,0,0" width="48" height="48"/>
+    </HorizontalLayout>
+</Window>

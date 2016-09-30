@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<Window size="640,480" caption="0,0,0,20" bktrans="false" showdirty="false" layeredimage="" noactivate="true">
+	<Font shared="true" id="0" name="微软雅黑" size="14" bold="false" default="true"/>
+    <HorizontalLayout height="120" bkimage="file='WinStyle.png' fade='50'" inset="20,20,20,20">
+		<RichEdit textcolor="#FFFFFFFF" bordersize="1" bordercolor="#FF000000" textpadding="5,5,5,5"/>
+    </HorizontalLayout>
+</Window>
