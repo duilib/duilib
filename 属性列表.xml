@@ -8,14 +8,15 @@
 		<Attribute name="roundcorner" default="0,0" type="SIZE" comment="窗口圆角大小,如(4,4)"/>
 		<Attribute name="mininfo" default="0,0" type="SIZE" comment="窗口最小大小,如(320,240)"/>
 		<Attribute name="maxinfo" default="0,0" type="SIZE" comment="窗口最大大小,如(1600,1200)"/>
-		<Attribute name="alpha" default="255" type="BYTE" comment="窗口的alpha值(0-255),如(100)"/>
-		<Attribute name="bktrans" default="false" type="BOOL" comment="窗口是否使用静态透明背景,如(false)"/>
+		<Attribute name="opacity" default="255" type="BYTE" comment="窗口的alpha值(0-255),如(100)"/>
 		<Attribute name="disabledfontcolor" default="0xFFA7A6AA" type="DWORD" comment="默认的disabled字体颜色,如(0xFFA7A6AA)"/>
 		<Attribute name="defaultfontcolor" default="0xFF000000" type="DWORD" comment="默认的字体颜色,如(0xFF000000)"/>
 		<Attribute name="linkfontcolor" default="0xFF0000FF" type="DWORD" comment="默认的link字体颜色,如(0xFF0000FF)"/>
 		<Attribute name="linkhoverfontcolor" default="0xFFD3215F" type="DWORD" comment="默认的linkhoverfont字体颜色,如(0xFFD3215F)"/>
 		<Attribute name="selectedcolor" default="0xFFBAE4FF" type="DWORD" comment="默认的selected字体颜色,如(0xFFBAE4FF)"/>
 		<Attribute name="showdirty" default="false" type="BOOL" comment="绘制脏矩形(屏幕上更新的区域被称为脏矩形)"/>
+		<Attribute name="layeredimage" default="" type="STRING" comment="启用分层窗口绘制,只要有该属性,即便值为空,也会启用"/>
+		<Attribute name="noactivate" default="FALSE" type="BOOL" comment=""/>
 	</Window>
 	<ChildLayout parent="Container" >
 		<Attribute name="xmlfile" default="" type="STRING" comment="子窗体XML布局文件"/>
