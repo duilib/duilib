@@ -1106,7 +1106,7 @@ bool CActiveXUI::CreateControl(LPCTSTR pstrCLSID)
 #else
     _tcsncpy(szCLSID, pstrCLSID, lengthof(szCLSID) - 1);
 #endif
-    if( pstrCLSID[0] == '{' ) ::CLSIDFromString(szCLSID, &clsid);
+    if( pstrCLSID[0] == _T('{') ) ::CLSIDFromString(szCLSID, &clsid);
     else ::CLSIDFromProgID(szCLSID, &clsid);
     return CreateControl(clsid);
 }
