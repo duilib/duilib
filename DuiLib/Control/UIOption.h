@@ -29,7 +29,8 @@ namespace DuiLib
 		DWORD GetSelectedTextColor();
 
 		void SetSelectedBkColor(DWORD dwBkColor);
-		DWORD GetSelectBkColor();
+		DWORD GetSelectedBkColor();
+		DUI_DEPRECATED DWORD GetSelectBkColor(); // deprecated, use GetSelectedBkColor instead
 
 		LPCTSTR GetForeImage();
 		void SetForeImage(LPCTSTR pStrImage);
