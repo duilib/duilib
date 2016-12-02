@@ -48,6 +48,12 @@ public:
 
 	bool GetShowText() const;
 	void SetShowText(bool flag);
+	void SetTextColor(DWORD dwTextColor);
+	DWORD GetTextColor() const;
+	void SetDisabledTextColor(DWORD dwTextColor);
+	DWORD GetDisabledTextColor() const;
+	void SetFont(int index);
+	int GetFont() const;
     RECT GetTextPadding() const;
     void SetTextPadding(RECT rc);
     LPCTSTR GetNormalImage() const;
@@ -117,6 +123,11 @@ public:
     void PaintText(HDC hDC);
     void PaintStatusImage(HDC hDC);
 
+	LPCTSTR GetVscrollbar() const;
+	LPCTSTR GetHscrollbar() const;
+	LPCTSTR GetVscrollStyle() const;
+	LPCTSTR GetHscrollStyle() const;
+
 protected:
     CComboWnd* m_pWindow;
 
@@ -125,8 +136,16 @@ protected:
 	bool m_bSelectCloseFlag;
     RECT m_rcTextPadding;
     CDuiString m_sDropBoxAttributes;
+	CDuiString m_sVscrollbar;
+	CDuiString m_sVscrollbarStyle;
+	CDuiString m_sHscrollbar;
+	CDuiString m_sHscrollStyle;
     SIZE m_szDropBox;
     UINT m_uButtonState;
+	int		m_iFont;
+	DWORD	m_dwTextColor;
+	DWORD	m_dwDisabledTextColor;
+	UINT	m_uTextStyle;
 
 	TDrawInfo m_diNormal;
     TDrawInfo m_diHot;
