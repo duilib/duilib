@@ -118,6 +118,12 @@ STDMETHODIMP CWebBrowserUI::Invoke( DISPID dispIdMember, REFIID riid, LCID lcid,
 // 			TRACE(_T("PropertyChange(%s)\n"), pDispParams->rgvarg[0].bstrVal);
 // 		}
 // 		break;
+	case DISPID_WINDOWCLOSING:
+		WindowClosing(
+			pDispParams->rgvarg[1].boolVal,
+			pDispParams->rgvarg[0].pboolVal
+			);
+		break;
 	default:
 		return DISP_E_MEMBERNOTFOUND;
 	}
@@ -264,6 +270,14 @@ void CWebBrowserUI::CommandStateChange(long Command,VARIANT_BOOL Enable)
 	if (m_pWebBrowserEventHandler)
 	{
 		m_pWebBrowserEventHandler->CommandStateChange(Command,Enable);
+	}
+}
+
+void DuiLib::CWebBrowserUI::WindowClosing(VARIANT_BOOL IsChildWindow, VARIANT_BOOL *Cancel)
+{
+	if (m_pWebBrowserEventHandler)
+	{
+		m_pWebBrowserEventHandler->WindowClosing(IsChildWindow,Cancel);
 	}
 }
 
