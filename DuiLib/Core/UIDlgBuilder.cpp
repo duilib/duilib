@@ -13,7 +13,13 @@ CControlUI* CDialogBuilder::Create(STRINGorID xml, LPCTSTR type, IDialogBuilderC
 	//资源ID为0-65535，两个字节；字符串指针为4个字节
 	//字符串以<开头认为是XML字符串，否则认为是XML文件
 
-    if( HIWORD(xml.m_lpstr) != NULL ) {
+	// 2016/12/06 rrrfff
+	// 修复x64平台下通过 HIWORD(xml.m_lpstr) 判断类型存在的潜在bug
+	// x64平台下 xml.m_lpstr 为8字节指针, HIWORD(xml.m_lpstr)不再适用, 比如0x000001DF00000A48是一个合法XML字符串指针
+
+	#define RES_ID_THRESHOLD static_cast<ULONG_PTR>(0xFFFFu)
+	if (reinterpret_cast<ULONG_PTR>(xml.m_lpstr) > RES_ID_THRESHOLD) {
+//  if( HIWORD(xml.m_lpstr) != NULL ) {
         if( *(xml.m_lpstr) == _T('<') ) {
             if( !m_xml.Load(xml.m_lpstr) ) return NULL;
         }
