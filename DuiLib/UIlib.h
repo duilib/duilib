@@ -28,7 +28,11 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef UILIB_STATIC
-#	define DUILIB_API 
+#	define DUILIB_API
+#	pragma comment(lib,"oledlg.lib")
+#	pragma comment(lib,"winmm.lib")
+#	pragma comment(lib,"comctl32.lib")
+#	pragma comment(lib,"Riched20.lib")
 #else
 #	if defined(UILIB_EXPORTS)
 #		if	defined(_MSC_VER)
