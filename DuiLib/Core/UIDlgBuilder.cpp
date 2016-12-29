@@ -214,16 +214,20 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
                 count = _tcstol(szValue, &pstr, 10);
             cchLen = lengthof(szValue) - 1;
             if ( !node.GetAttributeValue(_T("source"), szValue, cchLen) ) continue;
-            for ( int i = 0; i < count; i++ ) {
-                CDialogBuilder builder;
-                if( m_pstrtype != NULL ) { // 使用资源dll，从资源中读取
-                    WORD id = (WORD)_tcstol(szValue, &pstr, 10); 
-                    pControl = builder.Create((UINT)id, m_pstrtype, m_pCallback, pManager, pParent);
-                }
-                else {
-                    pControl = builder.Create((LPCTSTR)szValue, (UINT)0, m_pCallback, pManager, pParent);
-                }
-            }
+			CDialogBuilder builder;
+			for ( int i = 0; i < count; i++ ) {
+				if (!builder.GetMarkup()->IsValid())
+				{
+					if( m_pstrtype != NULL ) { // 使用资源dll，从资源中读取
+						WORD id = (WORD)_tcstol(szValue, &pstr, 10); 
+						pControl = builder.Create((UINT)id, m_pstrtype, m_pCallback, pManager, pParent);
+					}
+					else 
+						pControl = builder.Create((LPCTSTR)szValue, (UINT)0, m_pCallback, pManager, pParent);
+				}
+				else
+					pControl = builder.Create(m_pCallback, pManager, pParent);
+			}
             continue;
         }
 		//树控件XML解析
