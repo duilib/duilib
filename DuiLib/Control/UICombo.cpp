@@ -224,7 +224,7 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         m_pLayout->SetBorderColor(0xFFC6C7D2);
         m_pLayout->SetBorderSize(1);
         m_pLayout->SetAutoDestroy(false);
-        m_pLayout->EnableScrollBar();
+        m_pLayout->EnableScrollBar(true, false, m_pOwner->GetVScrollBaAttributes());
         m_pLayout->SetAttributeList(m_pOwner->GetDropBoxAttributeList());
         for( int i = 0; i < m_pOwner->GetCount(); i++ ) {
             m_pLayout->Add(static_cast<CControlUI*>(m_pOwner->GetItemAt(i)));
@@ -1263,6 +1263,16 @@ void CComboUI::PaintText(HDC hDC)
             pControl->SetPos(rcOldPos, false);
         }
     }
+}
+
+void CComboUI::SetVScrollBaAttributes(CDuiString sVScrollBarAttributes)
+{
+	m_sVScrollBarAttributes = sVScrollBarAttributes;
+}
+
+DuiLib::CDuiString CComboUI::GetVScrollBaAttributes()
+{
+	return m_sVScrollBarAttributes;
 }
 
 } // namespace DuiLib

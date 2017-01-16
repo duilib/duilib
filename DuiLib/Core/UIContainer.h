@@ -106,7 +106,7 @@ public:
     virtual void PageRight();
     virtual void HomeLeft();
     virtual void EndRight();
-    virtual void EnableScrollBar(bool bEnableVertical = true, bool bEnableHorizontal = false);
+    virtual void EnableScrollBar(bool bEnableVertical = true, bool bEnableHorizontal = false, CDuiString sAttributes=CDuiString());
     virtual CScrollBarUI* GetVerticalScrollBar() const;
     virtual CScrollBarUI* GetHorizontalScrollBar() const;
 

@@ -117,6 +117,9 @@ public:
     void PaintText(HDC hDC);
     void PaintStatusImage(HDC hDC);
 
+	void SetVScrollBaAttributes(CDuiString sVScrollBarAttributes);
+	CDuiString GetVScrollBaAttributes();
+
 protected:
     CComboWnd* m_pWindow;
 
@@ -125,6 +128,7 @@ protected:
 	bool m_bSelectCloseFlag;
     RECT m_rcTextPadding;
     CDuiString m_sDropBoxAttributes;
+	CDuiString m_sVScrollBarAttributes;
     SIZE m_szDropBox;
     UINT m_uButtonState;
 
