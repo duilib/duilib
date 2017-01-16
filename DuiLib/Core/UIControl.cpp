@@ -1048,6 +1048,80 @@ void CControlUI::SetAttributeList(LPCTSTR pstrList)
     }
 }
 
+#define DEFAULT_STYLE_PLACEHOLDER            _T('$')    /* Style标签中的默认占位符 */
+#define DEFAULT_STYLE_ARGUMENTLIST_SEPARATOR _T(';')    /* 控件的style属性中的参数列表的默认分隔符 */
+
+static CDuiString* GetFilledAttributeList(CDuiString* pStyleAttribute, CDuiString* pStyleArgumentList)
+{
+    TCHAR chPlaceholder = DEFAULT_STYLE_PLACEHOLDER;
+    TCHAR chSeparator = DEFAULT_STYLE_ARGUMENTLIST_SEPARATOR;
+
+    CDuiString sStyleFilledAttribute(*pStyleAttribute);
+
+    /* 如果不存在默认占位符,返回原定义 */
+    if( sStyleFilledAttribute.Find(DEFAULT_STYLE_PLACEHOLDER) < 0 ) {
+        return pStyleAttribute;
+    }
+
+    if( sStyleFilledAttribute.GetAt(0) == DEFAULT_STYLE_PLACEHOLDER ) {
+        chPlaceholder = sStyleFilledAttribute.GetAt(1);
+        sStyleFilledAttribute = sStyleFilledAttribute.Mid(2);
+    }
+
+    /* 定义了新的占位符,但是模板中不存在新的占位符,不需要替换直接返回 */
+    if( sStyleFilledAttribute.Find(chPlaceholder) < 0 ) {
+        return new CDuiString(sStyleFilledAttribute);
+    }
+
+    CDuiString sStyleArgumentList(*pStyleArgumentList);
+    if( sStyleArgumentList.GetAt(0) == DEFAULT_STYLE_ARGUMENTLIST_SEPARATOR ) {
+        chSeparator = sStyleArgumentList.GetAt(1);
+        sStyleArgumentList = sStyleArgumentList.Mid(2);
+    }
+
+    int iStart = 0, iPos = 0, index = 0;
+    CDuiString sPlaceHolderStr(_T(""));
+    do
+    {
+        index++;
+        iPos = sStyleArgumentList.Find(chSeparator, iStart);
+        CDuiString sFillStr = sStyleArgumentList.Mid(iStart, iPos - iStart);
+        sPlaceHolderStr.Format(_T("%c%d"), chPlaceholder, index);
+        sStyleFilledAttribute.Replace(sPlaceHolderStr, sFillStr);
+        iStart = iPos + 1;
+    } while( iPos >= 0 );
+
+    return new CDuiString(sStyleFilledAttribute);
+}
+
+void CControlUI::SetAttributeList(CDuiStringPtrMap* pAttrList, CDuiString* pStyleArgumentList)
+{
+    CDuiString* pStyleFilledAttr = NULL;
+    CDuiString* pStyleAttr = NULL;
+    if( !pAttrList ) return;
+    for( int i = 0; i < pAttrList->GetSize(); i++ ) {
+        if( LPCTSTR key = pAttrList->GetAt(i) ) {
+            pStyleAttr = static_cast<CDuiString*>(pAttrList->Find(key));
+            if( !pStyleAttr ) continue;
+            pStyleFilledAttr = NULL;
+
+            /* 如果有Style风格参数则替换定义中的占位符 */
+            if( pStyleArgumentList ) {
+                pStyleFilledAttr = GetFilledAttributeList(pStyleAttr, pStyleArgumentList);
+                pStyleAttr = pStyleFilledAttr;
+            }
+
+            if( _tcsicmp(key, _T("value")) == 0 ) {
+                SetAttributeList(pStyleAttr->GetData());
+            }
+            else {
+                SetAttribute(key, pStyleAttr->GetData());
+            }
+            if( pStyleFilledAttr != pStyleAttr ) delete pStyleFilledAttr;
+        }
+    }
+}
+
 SIZE CControlUI::EstimateSize(SIZE szAvailable)
 {
     return m_cxyFixed;

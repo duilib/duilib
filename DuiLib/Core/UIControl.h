@@ -153,6 +153,7 @@ public:
     virtual void SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue);
 	virtual CDuiString GetAttributeList(bool bIgnoreDefault = true);
     virtual void SetAttributeList(LPCTSTR pstrList);
+    virtual void SetAttributeList(CDuiStringPtrMap* pAttrList, CDuiString* pStyleArgumentList = NULL);
 
     virtual SIZE EstimateSize(SIZE szAvailable);
 

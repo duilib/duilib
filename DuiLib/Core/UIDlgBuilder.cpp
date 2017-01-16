@@ -2,6 +2,8 @@
 
 namespace DuiLib {
 
+extern int g_imageRectStyle;
+
 CDialogBuilder::CDialogBuilder() : m_pCallback(NULL), m_pstrtype(NULL)
 {
 
@@ -121,27 +123,60 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
                     if( defaultfont ) pManager->SetDefaultFont(pFontName, size, bold, underline, italic, shared);
                 }
             }
-            else if( _tcsicmp(pstrClass, _T("Default")) == 0 ) {
+            else if( _tcsicmp(pstrClass, _T("Default")) == 0 || _tcsicmp(pstrClass, _T("Style")) == 0 ) {
                 nAttributes = node.GetAttributeCount();
-                LPCTSTR pControlName = NULL;
-                LPCTSTR pControlValue = NULL;
-				bool shared = false;
+                LPCTSTR pStyleName = NULL;
+                LPCTSTR pImageRectStyle = NULL;
+                bool shared = false;
+                /* 先检查是否存在name属性 */
+                for (int i = 0; i < nAttributes; i++) {
+                    pstrName = node.GetAttributeName(i);
+                    pstrValue = node.GetAttributeValue(i);
+                    if (_tcsicmp(pstrName, _T("name")) == 0) {
+                        pStyleName = pstrValue;
+                    }
+                    else if (pStyleName && _tcsicmp(pstrName, _T("shared")) == 0) {
+                        shared = (_tcsicmp(pstrValue, _T("true")) == 0);
+                    }
+                    else if (_tcsicmp(pstrName, _T("imagerectstyle")) == 0) {
+                        pImageRectStyle = pstrValue;
+                    }
+                }
+                /* imagerectstyle只有在没有name属性的,Default或Style标签内定义才有效 */
+                if (!pStyleName && pImageRectStyle && _tcsicmp(pImageRectStyle, _T("l,t,w,h")) == 0) {
+                    g_imageRectStyle = STYLE_RECT_LTWH;
+                }
+
                 for( int i = 0; i < nAttributes; i++ ) {
                     pstrName = node.GetAttributeName(i);
                     pstrValue = node.GetAttributeValue(i);
-                    if( _tcsicmp(pstrName, _T("name")) == 0 ) {
-                        pControlName = pstrValue;
+                    if( _tcsicmp(pstrName, _T("name")) == 0 || _tcsicmp(pstrName, _T("shared")) == 0 ) {
+                        /* 已经处理，跳过 */
                     }
-                    else if( _tcsicmp(pstrName, _T("value")) == 0 ) {
-                        pControlValue = pstrValue;
+                    else {
+                        /*
+                        if( _tcsicmp(pstrName, _T("value")) == 0 ||
+                              _tcsicmp(pstrName, _T("vscrollbarstyle")) == 0 ||
+                               _tcsicmp(pstrName, _T("hscrollbarstyle")) == 0 ||
+                                _tcsicmp(pstrName, _T("horizattr")) == 0 ||
+                                 _tcsicmp(pstrName, _T("dotlineattr")) == 0 ||
+                                  _tcsicmp(pstrName, _T("folderattr")) == 0 ||
+                                   _tcsicmp(pstrName, _T("checkboxattr")) == 0 ||
+                                    _tcsicmp(pstrName, _T("itemattr")) == 0 ) {
+                        */
+
+                        /* 允许width,height等全部属性不作为value属性的值,而是像folderattr一样进行单独定义
+                           (当风格定义太长时，可在单独属性定义后添加换行符来定义多行风格标签)
+                           <Style name="test" value="width=&quot;60&quot;" height="60"
+                                              folderattr="......"
+                           />
+                        */
+                        if (pStyleName) {
+                            pManager->AddDefaultAttributeList(pStyleName, pstrName, pstrValue, shared);
+                        }
                     }
-					else if( _tcsicmp(pstrName, _T("shared")) == 0 ) {
-						shared = (_tcsicmp(pstrValue, _T("true")) == 0);
-					}
                 }
-                if( pControlName ) {
-                    pManager->AddDefaultAttributeList(pControlName, pControlValue, shared);
-                }
+
             }
 			else if( _tcsicmp(pstrClass, _T("MultiLanguage")) == 0 ) {
 				nAttributes = node.GetAttributeCount();
@@ -193,6 +228,52 @@ void CDialogBuilder::GetLastErrorLocation(LPTSTR pstrSource, SIZE_T cchMax) cons
     return m_xml.GetLastErrorLocation(pstrSource, cchMax);
 }
 
+#define DEFAULT_STYLE_NAME_SEPARATOR    _T(':')    /* 控件的style属性中的风格名和参数列表的分隔符 */
+
+template<typename CControlNode>
+static void CDialogBuilder::ProcessAttributes(CPaintManagerUI* pManager, LPCTSTR pstrClass, CMarkupNode* pNode, CControlNode* pControlNode)
+{
+    // 若有控件默认配置先初始化默认属性
+    if( pManager ) {
+        pControlNode->SetManager(pManager, NULL, false);
+        CDuiStringPtrMap* pDefautAttrList = pManager->GetDefaultAttributeList(pstrClass);
+        pControlNode->SetAttributeList(pDefautAttrList);
+    }
+
+    // 解析所有属性并覆盖默认属性
+    if (pNode->HasAttributes()) {
+        // Set ordinary attributes
+        int nAttributes = pNode->GetAttributeCount();
+        for( int i = 0; i < nAttributes; i++ ) {
+            LPCTSTR pstrName = pNode->GetAttributeName(i);
+            LPCTSTR pstrValue = pNode->GetAttributeValue(i);
+
+            // 应用风格模板
+            if( _tcsicmp(pstrName, _T("style")) == 0 ) {
+                if( pManager ) {
+                    CDuiString sStyleStr(pstrValue);
+                    int iPos = sStyleStr.Find(DEFAULT_STYLE_NAME_SEPARATOR);
+                    bool styleHasFmt = (iPos >= 0);
+                    LPCTSTR pstrStyleName = sStyleStr.Mid(0, iPos).GetData();
+                    CDuiStringPtrMap* pStyleAttrList = pManager->GetDefaultAttributeList(pstrStyleName);
+                    if( pStyleAttrList ) {
+                        if( styleHasFmt ) {
+                            CDuiString sStyleArgumentList(sStyleStr.Mid(iPos + 1));
+                            pControlNode->SetAttributeList(pStyleAttrList, &sStyleArgumentList);
+                        }
+                        else {
+                            pControlNode->SetAttributeList(pStyleAttrList);
+                        }
+                    }
+                }
+            }
+            else {
+                pControlNode->SetAttribute(pstrName, pstrValue);
+            }
+        }
+    }
+}
+
 CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPaintManagerUI* pManager)
 {
     IContainerUI* pContainer = NULL;
@@ -200,8 +281,8 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
     for( CMarkupNode node = pRoot->GetChild() ; node.IsValid(); node = node.GetSibling() ) {
         LPCTSTR pstrClass = node.GetName();
         if( _tcsicmp(pstrClass, _T("Image")) == 0 || _tcsicmp(pstrClass, _T("Font")) == 0 \
-            || _tcsicmp(pstrClass, _T("Default")) == 0 
-			|| _tcsicmp(pstrClass, _T("MultiLanguage")) == 0 ) continue;
+            || _tcsicmp(pstrClass, _T("Default")) == 0 || _tcsicmp(pstrClass, _T("Style")) == 0 \
+                || _tcsicmp(pstrClass, _T("MultiLanguage")) == 0 ) continue;
 
         CControlUI* pControl = NULL;
         if( _tcsicmp(pstrClass, _T("Include")) == 0 ) {
@@ -232,53 +313,35 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
         }
 		//树控件XML解析
 		else if( _tcsicmp(pstrClass, _T("TreeNode")) == 0 ) {
-			CTreeNodeUI* pParentNode	= static_cast<CTreeNodeUI*>(pParent->GetInterface(_T("TreeNode")));
-			CTreeNodeUI* pNode			= new CTreeNodeUI();
-			if(pParentNode){
-				if(!pParentNode->Add(pNode)){
-					delete pNode;
+			CTreeNodeUI* pParentTreeNode	= static_cast<CTreeNodeUI*>(pParent->GetInterface(_T("TreeNode")));
+			CTreeNodeUI* pTreeNode			= new CTreeNodeUI();
+			if( pParentTreeNode ){
+				if( !pParentTreeNode->Add(pTreeNode) ){
+					delete pTreeNode;
 					continue;
 				}
 			}
 
-			// 若有控件默认配置先初始化默认属性
-			if( pManager ) {
-				pNode->SetManager(pManager, NULL, false);
-				LPCTSTR pDefaultAttributes = pManager->GetDefaultAttributeList(pstrClass);
-				if( pDefaultAttributes ) {
-					pNode->SetAttributeList(pDefaultAttributes);
-				}
-			}
-
-			// 解析所有属性并覆盖默认属性
-			if( node.HasAttributes() ) {
-				TCHAR szValue[500] = { 0 };
-				SIZE_T cchLen = lengthof(szValue) - 1;
-				// Set ordinary attributes
-				int nAttributes = node.GetAttributeCount();
-				for( int i = 0; i < nAttributes; i++ ) {
-					pNode->SetAttribute(node.GetAttributeName(i), node.GetAttributeValue(i));
-				}
-			}
+			ProcessAttributes(pManager, pstrClass, &node, pTreeNode);
 
 			//检索子节点及附加控件
-			if(node.HasChildren()){
-				CControlUI* pSubControl = _Parse(&node,pNode,pManager);
-				if(pSubControl && _tcsicmp(pSubControl->GetClass(),_T("TreeNodeUI")) != 0)
+			if( node.HasChildren() ){
+				CControlUI* pSubControl = _Parse(&node, pTreeNode, pManager);
+				if( pSubControl && _tcsicmp(pSubControl->GetClass(),_T("TreeNodeUI")) != 0 )
 				{
 					// 					pSubControl->SetFixedWidth(30);
-					// 					CHorizontalLayoutUI* pHorz = pNode->GetTreeNodeHoriznotal();
+					// 					CHorizontalLayoutUI* pHorz = pTreeNode->GetTreeNodeHoriznotal();
 					// 					pHorz->Add(new CEditUI());
 					// 					continue;
 				}
 			}
 
-			if(!pParentNode){
+			if( !pParentTreeNode ){
 				CTreeViewUI* pTreeView = static_cast<CTreeViewUI*>(pParent->GetInterface(_T("TreeView")));
 				ASSERT(pTreeView);
 				if( pTreeView == NULL ) return NULL;
-				if( !pTreeView->Add(pNode) ) {
-					delete pNode;
+				if( !pTreeView->Add(pTreeNode) ) {
+					delete pTreeNode;
 					continue;
 				}
 			}
@@ -387,7 +450,7 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
         int cchLen = lengthof(szValue) - 1;
         // Attach to parent
         // 因为某些属性和父窗口相关，比如selected，必须先Add到父窗口
-		if( pParent != NULL ) {
+        if( pParent != NULL ) {
             LPCTSTR lpValue = szValue;
             if( node.GetAttributeValue(_T("cover"), szValue, cchLen) && _tcscmp(lpValue, _T("true")) == 0 ) {
                 pParent->SetCover(pControl);
@@ -407,23 +470,10 @@ CControlUI* CDialogBuilder::_Parse(CMarkupNode* pRoot, CControlUI* pParent, CPai
                     }
                 }
             }
-		}
-        // Init default attributes
-        if( pManager ) {
-            pControl->SetManager(pManager, NULL, false);
-            LPCTSTR pDefaultAttributes = pManager->GetDefaultAttributeList(pstrClass);
-            if( pDefaultAttributes ) {
-                pControl->SetAttributeList(pDefaultAttributes);
-            }
         }
-        // Process attributes
-        if( node.HasAttributes() ) {
-            // Set ordinary attributes
-            int nAttributes = node.GetAttributeCount();
-            for( int i = 0; i < nAttributes; i++ ) {
-                pControl->SetAttribute(node.GetAttributeName(i), node.GetAttributeValue(i));
-            }
-        }
+
+        ProcessAttributes(pManager, pstrClass, &node, pControl);
+
         if( pManager ) {
             pControl->SetManager(NULL, NULL, false);
         }
