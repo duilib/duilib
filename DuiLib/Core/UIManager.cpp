@@ -560,7 +560,7 @@ void CPaintManagerUI::SetOpacity(BYTE nOpacity)
 	m_nOpacity = nOpacity;
 	if( m_hWndPaint != NULL ) {
 		typedef BOOL (__stdcall *PFUNCSETLAYEREDWINDOWATTR)(HWND, COLORREF, BYTE, DWORD);
-		PFUNCSETLAYEREDWINDOWATTR fSetLayeredWindowAttributes;
+		PFUNCSETLAYEREDWINDOWATTR fSetLayeredWindowAttributes = NULL;
 
 		HMODULE hUser32 = ::GetModuleHandle(_T("User32.dll"));
 		if (hUser32)
