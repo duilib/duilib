@@ -269,7 +269,7 @@ CTxtWinHost::~CTxtWinHost()
 
 BOOL CTxtWinHost::Init(CRichEditUI *re, const CREATESTRUCT *pcs)
 {
-    IUnknown *pUnk;
+	IUnknown *pUnk = NULL;
     HRESULT hr;
 
     m_re = re;
@@ -317,7 +317,7 @@ BOOL CTxtWinHost::Init(CRichEditUI *re, const CREATESTRUCT *pcs)
     //if(FAILED(CreateTextServices(NULL, this, &pUnk)))
     //    goto err;
 
-	PCreateTextServices TextServicesProc;
+	PCreateTextServices TextServicesProc = NULL;
 	HMODULE hmod = LoadLibrary(_T("msftedit.dll"));
 	if (hmod)
 	{
