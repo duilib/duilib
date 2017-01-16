@@ -528,7 +528,7 @@ namespace DuiLib
 		SetScrollPos(sz);
 	}
 
-	void CContainerUI::EnableScrollBar(bool bEnableVertical, bool bEnableHorizontal, CDuiString sAttributes)
+	void CContainerUI::EnableScrollBar(bool bEnableVertical, bool bEnableHorizontal)
 	{
 		if( bEnableVertical && !m_pVerticalScrollBar ) {
 			m_pVerticalScrollBar = new CScrollBarUI;
@@ -536,16 +536,9 @@ namespace DuiLib
 			m_pVerticalScrollBar->SetOwner(this);
 			m_pVerticalScrollBar->SetManager(m_pManager, NULL, false);
 			if ( m_pManager ) {
-				if (!sAttributes.IsEmpty())
-				{
-					m_pVerticalScrollBar->SetAttributeList(sAttributes);
-				}
-				else
-				{
-					LPCTSTR pDefaultAttributes = m_pManager->GetDefaultAttributeList(_T("VScrollBar"));
-					if (pDefaultAttributes) {
-						m_pVerticalScrollBar->SetAttributeList(pDefaultAttributes);
-					}
+				LPCTSTR pDefaultAttributes = m_pManager->GetDefaultAttributeList(_T("VScrollBar"));
+				if( pDefaultAttributes ) {
+					m_pVerticalScrollBar->SetAttributeList(pDefaultAttributes);
 				}
 			}
 		}
