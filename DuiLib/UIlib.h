@@ -28,7 +28,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef UILIB_STATIC
-#	define DUILIB_API 
+#	define DUILIB_API
 #else
 #	if defined(UILIB_EXPORTS)
 #		if	defined(_MSC_VER)
