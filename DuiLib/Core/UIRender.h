@@ -45,9 +45,14 @@ public:
     static void DrawLine(HDC hDC, const RECT& rc, int nSize, DWORD dwPenColor, int nStyle = PS_SOLID);
     static void DrawRect(HDC hDC, const RECT& rc, int nSize, DWORD dwPenColor, int nStyle = PS_SOLID);
     static void DrawRoundRect(HDC hDC, const RECT& rc, int width, int height, int nSize, DWORD dwPenColor, int nStyle = PS_SOLID);
-    static void DrawText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTSTR pstrText, \
+    __declspec(deprecated("This method was deprecated, and it was removed in later. Instead, DrawText(HDC, CPaintManagerUI *, RECT& LPCTSTR, DWORD, LPCTSTR, UINT) should be used."))
+        static void DrawText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTSTR pstrText, \
         DWORD dwTextColor, int iFont, UINT uStyle);
+    static void DrawText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTSTR pstrText, DWORD dwTextColor, LPCTSTR pszFont, UINT uStyle);
     static void DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTSTR pstrText, 
+        DWORD dwTextColor, RECT* pLinks, CDuiString* sLinks, int& nLinkRects, LPCTSTR pszResFontName, UINT uStyle);
+    __declspec(deprecated("This method was deprecated, and it was removed in later. Instead DrawHtmlText(HDC, CPaintManagerUI *, RECT&, LPCTSTR, DWORD, RECT *, CDuiString *, int& LPCTSTR, UINT) should be used."))
+        static void DrawHtmlText(HDC hDC, CPaintManagerUI* pManager, RECT& rc, LPCTSTR pstrText,
         DWORD dwTextColor, RECT* pLinks, CDuiString* sLinks, int& nLinkRects, int iDefaultFont, UINT uStyle);
 	static HBITMAP GenerateBitmap(CPaintManagerUI* pManager, RECT rc, CControlUI* pStopControl = NULL, DWORD dwFilterColor = 0);
     static HBITMAP GenerateBitmap(CPaintManagerUI* pManager, CControlUI* pControl, RECT rc, DWORD dwFilterColor = 0);

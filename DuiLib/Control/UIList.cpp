@@ -1554,6 +1554,12 @@ void CListHeaderItemUI::SetFont(int index)
     m_iFont = index;
 }
 
+void CListHeaderItemUI::SetFont(LPCTSTR pszFont)
+{
+    _tcscpy_s(m_szFont, pszFont);
+}
+
+
 bool CListHeaderItemUI::IsShowHtml()
 {
     return m_bShowHtml;
@@ -1675,8 +1681,9 @@ void CListHeaderItemUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         }
         else m_uTextStyle |= DT_SINGLELINE;
     }
-    else if( _tcscmp(pstrName, _T("font")) == 0 ) SetFont(_ttoi(pstrValue));
-    else if( _tcscmp(pstrName, _T("textcolor")) == 0 ) {
+    else if (_tcscmp(pstrName, _T("font")) == 0) {
+        SetFont(pstrValue);
+    } else if( _tcscmp(pstrName, _T("textcolor")) == 0 ) {
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
         LPTSTR pstr = NULL;
         DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
@@ -1870,10 +1877,10 @@ void CListHeaderItemUI::PaintText(HDC hDC)
     int nLinks = 0;
     if( m_bShowHtml )
         CRenderEngine::DrawHtmlText(hDC, m_pManager, rcText, m_sText, m_dwTextColor, \
-        NULL, NULL, nLinks, m_iFont, m_uTextStyle);
+        NULL, NULL, nLinks, m_szFont, m_uTextStyle);
     else
         CRenderEngine::DrawText(hDC, m_pManager, rcText, m_sText, m_dwTextColor, \
-        m_iFont, m_uTextStyle);
+        m_szFont, m_uTextStyle);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -2260,7 +2267,7 @@ SIZE CListLabelElementUI::EstimateSize(SIZE szAvailable)
                     CRenderEngine::DrawHtmlText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, NULL, NULL, nLinks, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
                 }
                 else {
-                    CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, pInfo->nFont, DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
+                    CRenderEngine::DrawText(m_pManager->GetPaintDC(), m_pManager, rcText, m_sText, 0, _T("0"), DT_CALCRECT | pInfo->uTextStyle & ~DT_RIGHT & ~DT_CENTER);
                 }
                 m_cxyFixedLast.cx = rcText.right - rcText.left + pInfo->rcTextPadding.left + pInfo->rcTextPadding.right;
             }

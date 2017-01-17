@@ -1197,7 +1197,20 @@ void CRichEditUI::SetFont(int index)
 
 void CRichEditUI::SetFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnderline, bool bItalic)
 {
+    if (_tcsncmp(pStrFontName, _T("@font/"), 6) == 0) {
+        _tcscpy_s(m_szFontResName, pStrFontName);
+    } else {
+        SetFont(_ttol(pStrFontName));
+    }
+
     if( m_pTwh ) {
+        HFONT hFont = GetManager()->GetFont(m_szFontResName, 0, 0, 0, 0);
+        if (hFont != NULL) {
+            m_pTwh->SetFont(hFont);
+            return;
+        } else if (nSize == 0) {
+            return;
+        }
         LOGFONT lf = { 0 };
         ::GetObject(::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &lf);
         _tcsncpy(lf.lfFaceName, pStrFontName, LF_FACESIZE);
@@ -1206,7 +1219,7 @@ void CRichEditUI::SetFont(LPCTSTR pStrFontName, int nSize, bool bBold, bool bUnd
         if( bBold ) lf.lfWeight += FW_BOLD;
         if( bUnderline ) lf.lfUnderline = TRUE;
         if( bItalic ) lf.lfItalic = TRUE;
-        HFONT hFont = ::CreateFontIndirect(&lf);
+        hFont = ::CreateFontIndirect(&lf);
         if( hFont == NULL ) return;
         m_pTwh->SetFont(hFont);
         ::DeleteObject(hFont);
@@ -2276,8 +2289,9 @@ void CRichEditUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
             m_lTwhStyle |= ES_RIGHT;
         }
     }
-    else if( _tcscmp(pstrName, _T("font")) == 0 ) SetFont(_ttoi(pstrValue));
-    else if( _tcscmp(pstrName, _T("textcolor")) == 0 ) {
+    else if (_tcscmp(pstrName, _T("font")) == 0) {
+        SetFont(pstrValue, 0, 0, 0, 0);
+    } else if (_tcscmp(pstrName, _T("textcolor")) == 0) {
         while( *pstrValue > _T('\0') && *pstrValue <= _T(' ') ) pstrValue = ::CharNext(pstrValue);
         if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
         LPTSTR pstr = NULL;
@@ -2361,7 +2375,9 @@ LRESULT CRichEditUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, boo
 			cpf.ptCurrentPos.y = ptCaret.y;
 			::ImmSetCompositionWindow(hMic, &cpf);
 
-			HFONT hFont = GetManager()->GetFont(m_iFont);
+			HFONT hFont = GetManager()->GetFont(m_szFontResName, 0, 0, 0, 0);
+            if (hFont == NULL)
+                hFont = GetManager()->GetFont(m_iFont);
 			LOGFONT lf;
 			::GetObject(hFont, sizeof(LOGFONT), &lf);
 			::ImmSetCompositionFont(hMic, &lf);

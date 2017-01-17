@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Window mininfo="800,360" size="360,600">
+  <Font shared="true" id="1" name="黑体" size="32" bold="true" />
+  <Font shared="true" id="2" name="Comic Sans MS" size="48" italic="true" />
+  <Font shared="true" id="3" name="Microsoft Sans Serif" size="64" italic="true" bold="true" underline="true" />
+  <VerticalLayout bkcolor="#FFEA679F">
+    <Label text="这是老功能(黑体)" font="1" />
+    <Label text="这是新功能(黑体)" font="@font/font1" />
+    <Label text="这是老功能(Comic Sans MS)" font="2" height="48" />
+    <Label text="这是新功能(Comic Sans MS)" font="@font/font2" height="48" />
+    <Label text="这是老功能(Microsoft Sans Serif)" font="3" height="64" />
+    <Label text="这是新功能(Microsoft Sans Serif)" font="@font/font3" height="64" />
+    <Text text="删除线测试" font="@font/line-through-test" />
+    <Button width="128" height="50" font="@font/button" text="This is a Button" bkcolor="#ffcc9988" />
+    <RichEdit font="@font/rich_edit" />
+  </VerticalLayout>
+</Window>

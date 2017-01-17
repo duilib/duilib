@@ -152,6 +152,15 @@ namespace DuiLib
 		Invalidate();
 	}
 
+
+    void CLabelUI::SetFont(LPCTSTR pszFont)
+    {
+        _tcscpy_s(m_szFont, pszFont);
+        m_bNeedEstimateSize = true;
+        Invalidate();
+    }
+
+
 	int CLabelUI::GetFont() const
 	{
 		return m_iFont;
@@ -283,8 +292,9 @@ namespace DuiLib
 			if( _tcscmp(pstrValue, _T("true")) == 0 ) m_uTextStyle |= DT_END_ELLIPSIS;
 			else m_uTextStyle &= ~DT_END_ELLIPSIS;
 		}    
-		else if( _tcscmp(pstrName, _T("font")) == 0 ) SetFont(_ttoi(pstrValue));
-		else if( _tcscmp(pstrName, _T("textcolor")) == 0 ) {
+        else if (_tcscmp(pstrName, _T("font")) == 0) {
+            SetFont(pstrValue);
+        }  else if (_tcscmp(pstrName, _T("textcolor")) == 0) {
 			if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
 			LPTSTR pstr = NULL;
 			DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
@@ -367,8 +377,7 @@ namespace DuiLib
 					CRenderEngine::DrawHtmlText(hDC, m_pManager, rc, m_sText, m_dwTextColor, \
 					NULL, NULL, nLinks, m_iFont, m_uTextStyle);
 				else
-					CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, m_dwTextColor, \
-					m_iFont, m_uTextStyle);
+					CRenderEngine::DrawText(hDC, m_pManager, rc, m_sText, m_dwTextColor, m_szFont, m_uTextStyle);
 			}
 			else {
 				if( m_bShowHtml )

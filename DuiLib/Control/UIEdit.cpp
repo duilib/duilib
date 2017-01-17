@@ -660,11 +660,11 @@ namespace DuiLib
 		rc.bottom -= m_rcTextPadding.bottom;
 		if( IsEnabled() ) {
 			CRenderEngine::DrawText(hDC, m_pManager, rc, sText, m_dwTextColor, \
-				m_iFont, DT_SINGLELINE | m_uTextStyle);
+				m_szFont, DT_SINGLELINE | m_uTextStyle);
 		}
 		else {
 			CRenderEngine::DrawText(hDC, m_pManager, rc, sText, m_dwDisabledTextColor, \
-				m_iFont, DT_SINGLELINE | m_uTextStyle);
+                m_szFont, DT_SINGLELINE | m_uTextStyle);
 
 		}
 	}

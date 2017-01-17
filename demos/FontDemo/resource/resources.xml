@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+  <font name="window_title" typeface="微软雅黑" size="22" />
+  <font name="font1" typeface="黑体" size="32" style="bold" />
+  <font name="font2" typeface="Comic Sans MS" size="48" style="italic" />
+  <font name="font3" typeface="Microsoft Sans Serif" size="64" style="italic|bold|underline" />
+  <font name="line-through-test" typeface="Lucida Console" style="line-through" />
+  <font name="button" typeface="Courier New" size="12" style="line-through" />
+  <font name="rich_edit" typeface="Courier New" size="16" style="italic|line-through" />
+</resources>

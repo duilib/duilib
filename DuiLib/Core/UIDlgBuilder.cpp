@@ -79,6 +79,14 @@ CControlUI* CDialogBuilder::Create(IDialogBuilderCallback* pCallback, CPaintMana
                 if( pImageName ) pManager->AddImage(pImageName, pImageResType, mask, shared);
             }
             else if( _tcsicmp(pstrClass, _T("Font")) == 0 ) {
+                static bool bShowWarning = true;
+                DUI__Trace(_T("!! please move the font-defintion to resource.xml, also can see the FontDemo **"));
+                if (bShowWarning) {
+                    MessageBox(NULL, _T("已启用新版字体设置方式，旧版将在日后被移除，新版使用方式参考FontDemo文件夹下的resource.xml文件。")
+                        , _T("正在使用旧的配置文件"), MB_ICONWARNING | MB_OK);
+                    bShowWarning = false;
+                }
+
                 nAttributes = node.GetAttributeCount();
 				int id = -1;
                 LPCTSTR pFontName = NULL;

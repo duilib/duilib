@@ -37,7 +37,9 @@ namespace DuiLib
 		DWORD GetTextColor() const;
 		void SetDisabledTextColor(DWORD dwTextColor);
 		DWORD GetDisabledTextColor() const;
-		void SetFont(int index);
+        __declspec(deprecated("This method was deprecated, and it was removed in later. Instead, SetFont(LPCTSTR) should be used."))
+            void SetFont(int index);
+        void SetFont(LPCTSTR pszFont);
 		int GetFont() const;
 		RECT GetTextPadding() const;
 		void SetTextPadding(RECT rc);
@@ -81,7 +83,8 @@ namespace DuiLib
 		LPWSTR  m_pWideText;
 		DWORD	m_dwTextColor;
 		DWORD	m_dwDisabledTextColor;
-		int		m_iFont;
+        int m_iFont;
+        TCHAR m_szFont[32];
 		UINT	m_uTextStyle;
 		RECT	m_rcTextPadding;
 		bool	m_bShowHtml;
