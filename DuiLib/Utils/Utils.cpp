@@ -749,7 +749,7 @@ namespace DuiLib
 		return (int)(p - m_pstr);
 	}
 
-	int CDuiString::Replace(LPCTSTR pstrFrom, LPCTSTR pstrTo)
+	int CDuiString::Replace(LPCTSTR pstrFrom, LPCTSTR pstrTo, int count)
 	{
 		CDuiString sTemp;
 		int nCount = 0;
@@ -764,6 +764,7 @@ namespace DuiLib
 			Assign(sTemp);
 			iPos = Find(pstrFrom, iPos + cchTo);
 			nCount++;
+			if( nCount == count ) return nCount;
 		}
 		return nCount;
 	}
