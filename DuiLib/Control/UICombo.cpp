@@ -118,7 +118,7 @@ bool CComboBodyUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopContro
 //
 //
 
-class CComboWnd : public CWindowWnd
+class CComboWnd : public CWindowWnd ,public INotifyUI
 {
 public:
     void Init(CComboUI* pOwner);
@@ -126,6 +126,7 @@ public:
     void OnFinalMessage(HWND hWnd);
 
     LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	void Notify(TNotifyUI& msg);
 
     void EnsureVisible(int iIndex);
     void Scroll(int dx, int dy);
@@ -192,6 +193,13 @@ void CComboWnd::Init(CComboUI* pOwner)
     //::SendMessage(hWndParent, WM_NCACTIVATE, TRUE, 0L);
 }
 
+void CComboWnd::Notify(TNotifyUI& msg)
+{
+	if (msg.sType == DUI_MSGTYPE_ITEMCLICK || msg.sType == DUI_MSGTYPE_ITEMACTIVATE || msg.sType == DUI_MSGTYPE_LINK ||		//ListElement的一些事件
+		msg.sType == DUI_MSGTYPE_CLICK)																						//Button的一些事件,其他一些控件一般不会用作combo的item,因此一些事件也没有进行转发,可根据需要增删
+		m_pOwner->GetManager()->SendNotify(msg.pSender,msg.sType,msg.wParam,msg.lParam,true);	
+}
+
 LPCTSTR CComboWnd::GetWindowClassName() const
 {
     return _T("ComboWnd");
@@ -230,7 +238,28 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             m_pLayout->Add(static_cast<CControlUI*>(m_pOwner->GetItemAt(i)));
         }
         m_pm.AttachDialog(m_pLayout);
-        
+		m_pm.AddNotifier(this);
+		
+		m_pLayout->SetAttribute(_T("vscrollbar"),m_pOwner->GetVscrollbar());
+		m_pLayout->SetAttribute(_T("hscrollbar"),m_pOwner->GetHscrollbar());
+		m_pLayout->SetAttribute(_T("vscrollbarstyle"),m_pOwner->GetVscrollStyle());
+		m_pLayout->SetAttribute(_T("hscrollbarstyle"),m_pOwner->GetHscrollStyle());
+		CScrollBarUI* pVerticalScrollBar = m_pLayout->GetVerticalScrollBar();
+		if (pVerticalScrollBar)
+		{
+			LPCTSTR pDefaultAttributes = m_pOwner->GetManager()->GetDefaultAttributeList(_T("VScrollBar"));
+			if( pDefaultAttributes )
+				pVerticalScrollBar->SetAttributeList(pDefaultAttributes);
+		}
+
+		CScrollBarUI* pHorizontalScrollBar = m_pLayout->GetHorizontalScrollBar();
+		if (pHorizontalScrollBar)
+		{
+			LPCTSTR pDefaultAttributes = m_pOwner->GetManager()->GetDefaultAttributeList(_T("HScrollBar"));
+			if( pDefaultAttributes )
+				pHorizontalScrollBar->SetAttributeList(pDefaultAttributes);
+		}
+      
         return 0;
     }
     else if( uMsg == WM_CLOSE ) {
@@ -345,7 +374,7 @@ UINT CComboWnd::GetClassStyle() const
 ////////////////////////////////////////////////////////
 
 
-CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0)
+CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0),m_dwTextColor(0),m_dwDisabledTextColor(0),m_iFont(-1),m_uTextStyle(DT_VCENTER|DT_SINGLELINE|DT_LEFT)
 {
     m_szDropBox = CDuiSize(0, 150);
     ::ZeroMemory(&m_rcTextPadding, sizeof(m_rcTextPadding));
@@ -755,6 +784,38 @@ void CComboUI::SetShowText(bool flag)
 	m_bShowText = flag;
 	Invalidate();
 }
+void CComboUI::SetTextColor(DWORD dwTextColor)
+{
+	m_dwTextColor = dwTextColor;
+	Invalidate();
+}
+
+DWORD CComboUI::GetTextColor() const
+{
+	return m_dwTextColor;
+}
+
+void CComboUI::SetFont(int index)
+{
+	m_iFont = index;
+	Invalidate();
+}
+
+int CComboUI::GetFont() const
+{
+	return m_iFont;
+}
+
+void CComboUI::SetDisabledTextColor(DWORD dwTextColor)
+{
+	m_dwDisabledTextColor = dwTextColor;
+	Invalidate();
+}
+
+DWORD CComboUI::GetDisabledTextColor() const
+{
+	return m_dwDisabledTextColor;
+}
 
 RECT CComboUI::GetTextPadding() const
 {
@@ -1097,7 +1158,35 @@ void CComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         rcTextPadding.bottom = _tcstol(pstr + 1, &pstr, 10); ASSERT(pstr);    
         SetTextPadding(rcTextPadding);
     }
+	else if( _tcscmp(pstrName, _T("align")) == 0 ) {
+		if( _tcsstr(pstrValue, _T("left")) != NULL ) {
+			m_uTextStyle &= ~(DT_CENTER | DT_RIGHT);
+			m_uTextStyle |= DT_LEFT;
+		}
+		if( _tcsstr(pstrValue, _T("center")) != NULL ) {
+			m_uTextStyle &= ~(DT_LEFT | DT_RIGHT);
+			m_uTextStyle |= DT_CENTER;
+		}
+		if( _tcsstr(pstrValue, _T("right")) != NULL ) {
+			m_uTextStyle &= ~(DT_LEFT | DT_CENTER);
+			m_uTextStyle |= DT_RIGHT;
+		}
+	}
+	else if( _tcscmp(pstrName, _T("font")) == 0 ) SetFont(_ttoi(pstrValue));
+	else if( _tcscmp(pstrName, _T("textcolor")) == 0 ) {
+		if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+		LPTSTR pstr = NULL;
+		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+		SetTextColor(clrColor);
+	}
+	else if( _tcscmp(pstrName, _T("disabledtextcolor")) == 0 ) {
+		if( *pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
+		LPTSTR pstr = NULL;
+		DWORD clrColor = _tcstoul(pstrValue, &pstr, 16);
+		SetDisabledTextColor(clrColor);
+	}
 	else if( _tcscmp(pstrName, _T("showtext")) == 0 ) SetShowText(_tcscmp(pstrValue, _T("true")) == 0);
+	else if( _tcscmp(pstrName, _T("selectedid")) == 0 ) SelectItem(_ttoi(pstrValue));
     else if( _tcscmp(pstrName, _T("normalimage")) == 0 ) SetNormalImage(pstrValue);
     else if( _tcscmp(pstrName, _T("hotimage")) == 0 ) SetHotImage(pstrValue);
     else if( _tcscmp(pstrName, _T("pushedimage")) == 0 ) SetPushedImage(pstrValue);
@@ -1209,6 +1298,10 @@ void CComboUI::SetAttribute(LPCTSTR pstrName, LPCTSTR pstrValue)
         SetItemHLineColor(clrColor);
     }
     else if( _tcscmp(pstrName, _T("itemshowhtml")) == 0 ) SetItemShowHtml(_tcscmp(pstrValue, _T("true")) == 0);
+	else if (_tcscmp(pstrName, _T("vscrollbar")) == 0)	m_sVscrollbar = pstrValue;
+	else if (_tcscmp(pstrName, _T("hscrollbar")) == 0)	m_sHscrollbar = pstrValue;
+	else if( _tcscmp(pstrName, _T("vscrollbarstyle")) == 0 )	m_sVscrollbarStyle = pstrValue;
+	else if( _tcscmp(pstrName, _T("hscrollbarstyle")) == 0 )	m_sHscrollStyle = pstrValue;
     else CContainerUI::SetAttribute(pstrName, pstrValue);
 }
 
@@ -1254,7 +1347,11 @@ void CComboUI::PaintText(HDC hDC)
         CControlUI* pControl = static_cast<CControlUI*>(m_items[m_iCurSel]);
         IListItemUI* pElement = static_cast<IListItemUI*>(pControl->GetInterface(DUI_CTR_ILISTITEM));
         if( pElement != NULL ) {
-            pElement->DrawItemText(hDC, rcText);
+            //pElement->DrawItemText(hDC, rcText);
+			if (IsEnabled())
+				CRenderEngine::DrawText(hDC,m_pManager,rcText,pControl->GetText(),m_dwTextColor,m_iFont,m_uTextStyle);
+			else
+				CRenderEngine::DrawText(hDC,m_pManager,rcText,pControl->GetText(),m_dwDisabledTextColor,m_iFont,m_uTextStyle);
         }
         else {
             RECT rcOldPos = pControl->GetPos();
@@ -1263,6 +1360,26 @@ void CComboUI::PaintText(HDC hDC)
             pControl->SetPos(rcOldPos, false);
         }
     }
+}
+
+LPCTSTR CComboUI::GetVscrollbar() const
+{
+	return m_sVscrollbar;
+}
+
+LPCTSTR CComboUI::GetHscrollbar() const
+{
+	return m_sHscrollbar;
+}
+
+LPCTSTR CComboUI::GetVscrollStyle() const
+{
+	return m_sVscrollbarStyle;
+}
+
+LPCTSTR CComboUI::GetHscrollStyle() const
+{
+	return m_sHscrollStyle;
 }
 
 } // namespace DuiLib

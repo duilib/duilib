@@ -857,7 +857,7 @@ void CScrollBarUI::DoEvent(TEventUI& event)
 	}
 	if( event.Type == UIEVENT_MOUSELEAVE )
 	{
-        if( ::PtInRect(&m_rcItem, event.ptMouse ) ) {
+        if( !::PtInRect(&m_rcItem, event.ptMouse ) ) {
             if( IsEnabled() ) {
                 m_uButton1State &= ~UISTATE_HOT;
                 m_uButton2State &= ~UISTATE_HOT;

@@ -63,7 +63,8 @@ namespace DuiLib
 		void ProgressChange(LONG nProgress, LONG nProgressMax);
 		void NewWindow3(IDispatch **pDisp, VARIANT_BOOL *&Cancel, DWORD dwFlags, BSTR bstrUrlContext, BSTR bstrUrl);
 		void CommandStateChange(long Command,VARIANT_BOOL Enable);
-
+		void WindowClosing(VARIANT_BOOL IsChildWindow, VARIANT_BOOL *Cancel);
+		
 	public:
 		virtual LPCTSTR GetClass() const;
 		virtual LPVOID GetInterface( LPCTSTR pstrName );

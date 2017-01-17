@@ -18,6 +18,7 @@ namespace DuiLib
 		virtual void ProgressChange(LONG nProgress, LONG nProgressMax){}
 		virtual void NewWindow3(IDispatch **pDisp, VARIANT_BOOL *&Cancel, DWORD dwFlags, BSTR bstrUrlContext, BSTR bstrUrl){}
 		virtual void CommandStateChange(long Command,VARIANT_BOOL Enable){};
+		virtual void WindowClosing(VARIANT_BOOL IsChildWindow, VARIANT_BOOL *Cancel){};
 
 		// interface IDocHostUIHandler
 		virtual HRESULT STDMETHODCALLTYPE ShowContextMenu(
