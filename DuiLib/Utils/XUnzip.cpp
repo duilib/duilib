@@ -2848,6 +2848,10 @@ LUFILE *lufopen(void *z,unsigned int len,DWORD flags,ZRESULT *err)
 int lufclose(LUFILE *stream)
 { if (stream==NULL) return EOF;
   if (stream->is_handle) CloseHandle(stream->h);
+  if (stream->buf)
+  {
+	delete[] stream->buf;
+  }
   delete stream;
   return 0;
 }
