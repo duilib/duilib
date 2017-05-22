@@ -290,6 +290,7 @@ public:
     void RemoveAllFonts(bool bShared = false);
     TFontInfo* GetFontInfo(int id);
     TFontInfo* GetFontInfo(HFONT hFont);
+	void CopyAllFonts(CPaintManagerUI* pm);
 
     const TImageInfo* GetImage(LPCTSTR bitmap);
     const TImageInfo* GetImageEx(LPCTSTR bitmap, LPCTSTR type = NULL, DWORD mask = 0, bool bUseHSL = false);

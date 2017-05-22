@@ -2664,6 +2664,22 @@ TFontInfo* CPaintManagerUI::GetFontInfo(HFONT hFont)
 	return pFontInfo;
 }
 
+void CPaintManagerUI::CopyAllFonts(CPaintManagerUI* pm)
+{
+	RemoveAllFonts();
+	ASSERT(pm);
+	if (NULL == pm) return;
+	for (int nI = 0; nI < pm->GetCustomFontCount(); nI++)
+	{
+		TFontInfo* pFont = pm->GetFontInfo(nI);
+		ASSERT(pFont);
+		if (pFont)
+		{
+			AddFont(pFont->sFontName.GetData(), pFont->iSize, pFont->bBold, pFont->bUnderline, pFont->bItalic);
+		}
+	}
+}
+
 const TImageInfo* CPaintManagerUI::GetImage(LPCTSTR bitmap)
 {
     TImageInfo* data = static_cast<TImageInfo*>(m_ResInfo.m_ImageHash.Find(bitmap));
