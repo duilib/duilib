@@ -1,6 +1,6 @@
 
 
-# 以下内容原汁原味来自 https://github.com/duilib/duilib 与本人无关.
+# 以下文字内容原汁原味来自 https://github.com/duilib/duilib 与本人无关.
 
 
 # Duilib
