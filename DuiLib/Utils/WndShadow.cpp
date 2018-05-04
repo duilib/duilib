@@ -403,7 +403,7 @@ void CWndShadow::MakeShadow(UINT32 *pShadBits, HWND hParent, RECT *rcParent)
 	// The algorithm is optimized by assuming parent window is just "one piece" and without "wholes" on it
 
 	// Get the region of parent window,
-	HRGN hParentRgn = CreateRectRgn(0, 0, 0, 0);
+	HRGN hParentRgn = CreateRectRgn(0, 0, rcParent->right - rcParent->left, rcParent->bottom - rcParent->top);
 	GetWindowRgn(hParent, hParentRgn);
 
 	// Determine the Start and end point of each horizontal scan line
