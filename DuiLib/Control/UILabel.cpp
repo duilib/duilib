@@ -1,6 +1,11 @@
 #include "StdAfx.h"
 #include "UILabel.h"
 
+// UMU: DO NOT use "using namespace" in .h file
+#ifdef _USE_GDIPLUS
+using namespace Gdiplus;
+#endif
+
 namespace DuiLib
 {
 	Color ARGB2Color(DWORD dwColor)
