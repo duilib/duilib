@@ -1732,7 +1732,7 @@ void CPaintManagerUI::RemoveAllOptionGroups()
 	m_mOptionGroup.RemoveAll();
 }
 
-void CPaintManagerUI::MessageLoop()
+int CPaintManagerUI::MessageLoop()
 {
     MSG msg = { 0 };
     while( ::GetMessage(&msg, NULL, 0, 0) ) {
@@ -1749,6 +1749,7 @@ void CPaintManagerUI::MessageLoop()
 			//}
         }
     }
+    return msg.wParam;
 }
 
 void CPaintManagerUI::Term()
