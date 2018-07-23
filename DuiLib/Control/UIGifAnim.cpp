@@ -366,5 +366,4 @@ namespace DuiLib
 		return pImg;
 	}
 
-
 }
