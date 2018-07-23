@@ -50,7 +50,7 @@ namespace DuiLib
 		bool			m_bIsAutoPlay;				// 是否自动播放gif
 		bool			m_bIsAutoSize;				// 是否自动根据图片设置大小
 		bool			m_bIsPlaying;
-
+		IStream*	m_pStream;
 	};
 }
 
