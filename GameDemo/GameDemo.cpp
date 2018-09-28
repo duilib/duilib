@@ -532,15 +532,20 @@ public:
 
     LRESULT OnGetMinMaxInfo(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     {
+        int primaryMonitorWidth = ::GetSystemMetrics(SM_CXSCREEN);
+        int primaryMonitorHeight = ::GetSystemMetrics(SM_CYSCREEN);
         MONITORINFO oMonitor = {};
         oMonitor.cbSize = sizeof(oMonitor);
         ::GetMonitorInfo(::MonitorFromWindow(*this, MONITOR_DEFAULTTOPRIMARY), &oMonitor);
         CDuiRect rcWork = oMonitor.rcWork;
+        rcWork.Offset(-oMonitor.rcMonitor.left, -oMonitor.rcMonitor.top);
+        if (rcWork.right > primaryMonitorWidth) rcWork.right = primaryMonitorWidth;
+        if (rcWork.bottom > primaryMonitorHeight) rcWork.right = primaryMonitorHeight;
         LPMINMAXINFO lpMMI = (LPMINMAXINFO) lParam;
         lpMMI->ptMaxPosition.x = rcWork.left;
         lpMMI->ptMaxPosition.y = rcWork.top;
-        lpMMI->ptMaxSize.x = rcWork.right - rcWork.left;
-        lpMMI->ptMaxSize.y = rcWork.bottom - rcWork.top;
+        lpMMI->ptMaxSize.x = rcWork.right;
+        lpMMI->ptMaxSize.y = rcWork.bottom;
         bHandled = FALSE;
         return 0;
     }

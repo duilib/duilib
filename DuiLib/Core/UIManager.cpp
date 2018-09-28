@@ -100,6 +100,7 @@ m_pOffscreenBits(NULL),
 m_hbmpBackground(NULL),
 m_pBackgroundBits(NULL),
 m_iTooltipWidth(-1),
+m_iLastTooltipWidth(-1),
 m_hwndTooltip(NULL),
 m_iHoverTime(1000),
 m_bNoActivate(false),
@@ -110,6 +111,7 @@ m_pFocus(NULL),
 m_pEventHover(NULL),
 m_pEventClick(NULL),
 m_pEventKey(NULL),
+m_pLastToolTip(NULL),
 m_bFirstLayout(true),
 m_bFocusNeeded(false),
 m_bUpdateNeeded(false),
@@ -194,6 +196,7 @@ CPaintManagerUI::~CPaintManagerUI()
 		::DestroyWindow(m_hwndTooltip);
 		m_hwndTooltip = NULL;
 	}
+    m_pLastToolTip = NULL;
     if( m_hDcOffscreen != NULL ) ::DeleteDC(m_hDcOffscreen);
     if( m_hDcBackground != NULL ) ::DeleteDC(m_hDcBackground);
     if( m_hbmpOffscreen != NULL ) ::DeleteObject(m_hbmpOffscreen);
@@ -557,7 +560,7 @@ void CPaintManagerUI::SetOpacity(BYTE nOpacity)
 	m_nOpacity = nOpacity;
 	if( m_hWndPaint != NULL ) {
 		typedef BOOL (__stdcall *PFUNCSETLAYEREDWINDOWATTR)(HWND, COLORREF, BYTE, DWORD);
-		PFUNCSETLAYEREDWINDOWATTR fSetLayeredWindowAttributes;
+		PFUNCSETLAYEREDWINDOWATTR fSetLayeredWindowAttributes = NULL;
 
 		HMODULE hUser32 = ::GetModuleHandle(_T("User32.dll"));
 		if (hUser32)
@@ -1160,13 +1163,13 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
         break;
     case WM_MOUSEHOVER:
         {
-            if( m_pRoot == NULL ) break;
+            if (m_pRoot == NULL) break;
             m_bMouseTracking = false;
             POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
             CControlUI* pHover = FindControl(pt);
-            if( pHover == NULL ) break;
+            if (pHover == NULL) break;
             // Generate mouse hover event
-            if( m_pEventHover != NULL ) {
+            if (m_pEventHover != NULL) {
                 TEventUI event = { 0 };
                 event.Type = UIEVENT_MOUSEHOVER;
                 event.pSender = m_pEventHover;
@@ -1179,27 +1182,47 @@ bool CPaintManagerUI::MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
             }
             // Create tooltip information
             CDuiString sToolTip = pHover->GetToolTip();
-            if( sToolTip.IsEmpty() ) return true;
-			ProcessMultiLanguageTokens(sToolTip);
+            if (sToolTip.IsEmpty()) return true;
+            ProcessMultiLanguageTokens(sToolTip);
             ::ZeroMemory(&m_ToolTip, sizeof(TOOLINFO));
             m_ToolTip.cbSize = sizeof(TOOLINFO);
             m_ToolTip.uFlags = TTF_IDISHWND;
             m_ToolTip.hwnd = m_hWndPaint;
-            m_ToolTip.uId = (UINT_PTR) m_hWndPaint;
+            m_ToolTip.uId = (UINT_PTR)m_hWndPaint;
             m_ToolTip.hinst = m_hInstance;
-            m_ToolTip.lpszText = const_cast<LPTSTR>( (LPCTSTR) sToolTip );
+            m_ToolTip.lpszText = const_cast<LPTSTR>((LPCTSTR)sToolTip);
             m_ToolTip.rect = pHover->GetPos();
-            if( m_hwndTooltip == NULL ) {
+            if (m_hwndTooltip == NULL) {
                 m_hwndTooltip = ::CreateWindowEx(0, TOOLTIPS_CLASS, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, m_hWndPaint, NULL, m_hInstance, NULL);
-				if( m_hwndTooltip != NULL && m_iTooltipWidth >= 0  ) {
-					m_iTooltipWidth = (int)::SendMessage(m_hwndTooltip, TTM_SETMAXTIPWIDTH, 0, m_iTooltipWidth);
-				}
-				::SendMessage(m_hwndTooltip, TTM_ADDTOOL, 0, (LPARAM) &m_ToolTip);
+                ::SendMessage(m_hwndTooltip, TTM_ADDTOOL, 0, (LPARAM)&m_ToolTip);
+                ::SendMessage(m_hwndTooltip, TTM_SETMAXTIPWIDTH, 0, pHover->GetToolTipWidth());
+                ::SendMessage(m_hwndTooltip, TTM_SETTOOLINFO, 0, (LPARAM)&m_ToolTip);
+                ::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, TRUE, (LPARAM)&m_ToolTip);
+
             }
-			::SendMessage( m_hwndTooltip,TTM_SETMAXTIPWIDTH,0, pHover->GetToolTipWidth());
-            ::SendMessage(m_hwndTooltip, TTM_SETTOOLINFO, 0, (LPARAM) &m_ToolTip);
-            ::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, TRUE, (LPARAM) &m_ToolTip);
-        }
+            // by jiangdong 2016-8-6 修改tooltip 悬停时候 闪烁bug
+            if (m_pLastToolTip == NULL) {
+                m_pLastToolTip = pHover;
+            }
+            else{
+                if (m_pLastToolTip == pHover){
+                    if (m_iLastTooltipWidth != pHover->GetToolTipWidth()){
+                        ::SendMessage(m_hwndTooltip, TTM_SETMAXTIPWIDTH, 0, pHover->GetToolTipWidth());
+                        m_iLastTooltipWidth = pHover->GetToolTipWidth();
+
+                    }
+                    ::SendMessage(m_hwndTooltip, TTM_SETTOOLINFO, 0, (LPARAM)&m_ToolTip);
+                    ::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, TRUE, (LPARAM)&m_ToolTip);
+                }
+                else{
+                    ::SendMessage(m_hwndTooltip, TTM_SETMAXTIPWIDTH, 0, pHover->GetToolTipWidth());
+                    ::SendMessage(m_hwndTooltip, TTM_SETTOOLINFO, 0, (LPARAM)&m_ToolTip);
+                    ::SendMessage(m_hwndTooltip, TTM_TRACKACTIVATE, TRUE, (LPARAM)&m_ToolTip);
+                }
+            }
+            //修改在CListElementUI 有提示 子项无提示下无法跟随移动！（按理说不应该移动的）
+            ::SendMessage(m_hwndTooltip, TTM_TRACKPOSITION, 0, (LPARAM)(DWORD)MAKELONG(pt.x, pt.y));
+    }
         return true;
     case WM_MOUSELEAVE:
         {
@@ -1586,6 +1609,7 @@ bool CPaintManagerUI::AttachDialog(CControlUI* pControl)
     m_pEventKey = NULL;
     m_pEventHover = NULL;
     m_pEventClick = NULL;
+    m_pLastToolTip = NULL;
     // Remove the existing control-tree. We might have gotten inside this function as
     // a result of an event fired or similar, so we cannot just delete the objects and
     // pull the internal memory of the calling code. We'll delay the cleanup.
@@ -1708,7 +1732,7 @@ void CPaintManagerUI::RemoveAllOptionGroups()
 	m_mOptionGroup.RemoveAll();
 }
 
-void CPaintManagerUI::MessageLoop()
+int CPaintManagerUI::MessageLoop()
 {
     MSG msg = { 0 };
     while( ::GetMessage(&msg, NULL, 0, 0) ) {
@@ -1725,6 +1749,7 @@ void CPaintManagerUI::MessageLoop()
 			//}
         }
     }
+    return msg.wParam;
 }
 
 void CPaintManagerUI::Term()
@@ -2101,7 +2126,7 @@ void CPaintManagerUI::SendNotify(CControlUI* pControl, LPCTSTR pstrMessage, WPAR
     Msg.sType = pstrMessage;
     Msg.wParam = wParam;
     Msg.lParam = lParam;
-    SendNotify(Msg, bAsync);
+    SendNotify(Msg, bAsync, bEnableRepeat);
 }
 
 void CPaintManagerUI::SendNotify(TNotifyUI& Msg, bool bAsync /*= false*/, bool bEnableRepeat /*= true*/)
@@ -2127,6 +2152,7 @@ void CPaintManagerUI::SendNotify(TNotifyUI& Msg, bool bAsync /*= false*/, bool b
 			for( int i = 0; i < m_aAsyncNotify.GetSize(); i++ ) {
 				TNotifyUI* pMsg = static_cast<TNotifyUI*>(m_aAsyncNotify[i]);
 				if( pMsg->pSender == Msg.pSender && pMsg->sType == Msg.sType) {
+                    if (m_bUsedVirtualWnd) pMsg->sVirtualWnd = Msg.sVirtualWnd;
 					pMsg->wParam = Msg.wParam;
 					pMsg->lParam = Msg.lParam;
 					pMsg->ptMouse = Msg.ptMouse;
@@ -2137,6 +2163,7 @@ void CPaintManagerUI::SendNotify(TNotifyUI& Msg, bool bAsync /*= false*/, bool b
 		}
 
 		TNotifyUI *pMsg = new TNotifyUI;
+        if (m_bUsedVirtualWnd) pMsg->sVirtualWnd = Msg.sVirtualWnd;
 		pMsg->pSender = Msg.pSender;
 		pMsg->sType = Msg.sType;
 		pMsg->wParam = Msg.wParam;

@@ -151,9 +151,14 @@ namespace DuiLib
 		m_dwSelectedBkColor = dwBkColor;
 	}
 
-	DWORD COptionUI::GetSelectBkColor()
+	DWORD COptionUI::GetSelectedBkColor()
 	{
 		return m_dwSelectedBkColor;
+	}
+
+	DUI_DEPRECATED DWORD COptionUI::GetSelectBkColor()
+	{
+		return this->GetSelectedBkColor();
 	}
 
 	LPCTSTR COptionUI::GetForeImage()

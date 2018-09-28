@@ -389,7 +389,7 @@ public:
     CControlUI* FindSubControlByClass(CControlUI* pParent, LPCTSTR pstrClass, int iIndex = 0);
     CDuiPtrArray* FindSubControlsByClass(CControlUI* pParent, LPCTSTR pstrClass);
 
-    static void MessageLoop();
+    static int MessageLoop();
     static bool TranslateMessage(const LPMSG pMsg);
 	static void Term();
 
@@ -424,6 +424,7 @@ private:
     HBITMAP m_hbmpBackground;
 	COLORREF* m_pBackgroundBits;
 	int m_iTooltipWidth;
+    int m_iLastTooltipWidth;
 	HWND m_hwndTooltip;
 	TOOLINFO m_ToolTip;
 	int m_iHoverTime;
@@ -435,6 +436,7 @@ private:
     CControlUI* m_pEventHover;
     CControlUI* m_pEventClick;
     CControlUI* m_pEventKey;
+    CControlUI* m_pLastToolTip;
     //
     POINT m_ptLastMousePos;
     SIZE m_szMinWindow;
