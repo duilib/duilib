@@ -1093,7 +1093,7 @@ bool CListBodyUI::SortItems(PULVCompareFunc pfnCompare, UINT_PTR dwData, int& iC
 	IListItemUI *pItem = NULL;
 	for (int i = 0; i < m_items.GetSize(); ++i)
 	{
-		pItem = (IListItemUI*)(static_cast<CControlUI*>(m_items[i])->GetInterface(TEXT("ListItem")));
+		pItem = (IListItemUI*)(static_cast<CControlUI*>(m_items[i])->GetInterface(DUI_CTR_ILISTITEM));
 		if (pItem)
 		{
 			pItem->SetIndex(i);
@@ -2020,7 +2020,7 @@ bool CListElementUI::Select(bool bSelect, bool bTriggerEvent)
     if( !IsEnabled() ) return false;
     if( bSelect == m_bSelected ) return true;
     m_bSelected = bSelect;
-    if( bSelect && m_pOwner != NULL ) m_pOwner->SelectItem(m_iIndex, bTriggerEvent);
+    if( bSelect && m_pOwner != NULL ) m_pOwner->SelectItem(m_iIndex, bSelect, bTriggerEvent);
     Invalidate();
 
     return true;
@@ -2766,7 +2766,7 @@ bool CListContainerElementUI::Select(bool bSelect, bool bTriggerEvent)
     if( !IsEnabled() ) return false;
     if( bSelect == m_bSelected ) return true;
     m_bSelected = bSelect;
-    if( bSelect && m_pOwner != NULL ) m_pOwner->SelectItem(m_iIndex, bTriggerEvent);
+    if( bSelect && m_pOwner != NULL ) m_pOwner->SelectItem(m_iIndex, bSelect, bTriggerEvent);
     Invalidate();
 
     return true;
