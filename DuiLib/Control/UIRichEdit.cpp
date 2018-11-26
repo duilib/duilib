@@ -523,8 +523,8 @@ BOOL CTxtWinHost::TxCreateCaret(HBITMAP hbmp, INT xWidth, INT yHeight)
 
 BOOL CTxtWinHost::TxShowCaret(BOOL fShow)
 {
-	fShowCaret = fShow && !fNoCaret;
-    if(fShowCaret)
+	fShowCaret = fShow;
+    if(fShow && !fNoCaret)
         return ::ShowCaret(m_re->GetManager()->GetPaintWindow());
     else
         return ::HideCaret(m_re->GetManager()->GetPaintWindow());
