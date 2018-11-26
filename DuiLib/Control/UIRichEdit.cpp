@@ -552,10 +552,9 @@ BOOL CTxtWinHost::TxSetCaretPos(INT x, INT y)
     if (m_re && m_re->GetManager())
     {
         POINT ptNew = { x, y };
-        POINT ptNew2 = { x, y + GetCaretHeight() };
-        CControlUI *pTop = m_re->GetManager()->FindControl(ptNew);
-        CControlUI *pTop2 = m_re->GetManager()->FindControl(ptNew2);
-        if ( pTop != m_re || pTop2 != m_re)
+        POINT ptNew2 = { x + GetCaretWidth(), y + GetCaretHeight() };
+        if (m_re->GetManager()->FindControl(ptNew) != m_re 
+            || m_re->GetManager()->FindControl(ptNew2) != m_re)
             fNoCaret = TRUE;
         else
             fNoCaret = FALSE;
