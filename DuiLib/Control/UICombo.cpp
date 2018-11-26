@@ -285,9 +285,15 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         event.wParam = MAKELPARAM(zDelta < 0 ? SB_LINEDOWN : SB_LINEUP, 0);
         event.lParam = lParam;
         event.dwTimestamp = ::GetTickCount();
-        m_pOwner->DoEvent(event);
-        EnsureVisible(m_pOwner->GetCurSel());
-        return 0;
+		if (m_pOwner->GetScrollSelect()) {
+			m_pOwner->DoEvent(event);
+			EnsureVisible(m_pOwner->GetCurSel());
+			return 0;
+		}
+		else {
+			m_pLayout->DoEvent(event);
+			return 0;
+		}
     }
     else if( uMsg == WM_KILLFOCUS ) {
         if( m_hWnd != (HWND) wParam ) {
@@ -346,6 +352,7 @@ UINT CComboWnd::GetClassStyle() const
 
 
 CComboUI::CComboUI() : m_pWindow(NULL), m_iCurSel(-1), m_uButtonState(0)
+, m_bScrollSelect(false)
 {
     m_szDropBox = CDuiSize(0, 150);
     ::ZeroMemory(&m_rcTextPadding, sizeof(m_rcTextPadding));
@@ -653,11 +660,13 @@ void CComboUI::DoEvent(TEventUI& event)
     if( event.Type == UIEVENT_SCROLLWHEEL )
     {
         if (IsEnabled()) {
-            bool bDownward = LOWORD(event.wParam) == SB_LINEDOWN;
-            SetSelectCloseFlag(false);
-            SelectItem(FindSelectable(m_iCurSel + (bDownward ? 1 : -1), bDownward));
-            SetSelectCloseFlag(true);
-            return;
+			if (GetScrollSelect()) {
+				bool bDownward = LOWORD(event.wParam) == SB_LINEDOWN;
+				SetSelectCloseFlag(false);
+				SelectItem(FindSelectable(m_iCurSel + (bDownward ? 1 : -1), bDownward));
+				SetSelectCloseFlag(true);
+				return;
+			}
         }
     }
     if( event.Type == UIEVENT_CONTEXTMENU )
@@ -830,6 +839,16 @@ void CComboUI::SetDisabledImage(LPCTSTR pStrImage)
 	m_diDisabled.Clear();
 	m_diDisabled.sDrawString = pStrImage;
 	Invalidate();
+}
+
+bool CComboUI::GetScrollSelect()
+{
+	return m_bScrollSelect;
+}
+
+void CComboUI::SetScrollSelect(bool bScrollSelect)
+{
+	m_bScrollSelect = bScrollSelect;
 }
 
 TListInfoUI* CComboUI::GetListInfo()

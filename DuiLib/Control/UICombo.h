@@ -61,6 +61,9 @@ public:
     LPCTSTR GetDisabledImage() const;
     void SetDisabledImage(LPCTSTR pStrImage);
 
+	bool GetScrollSelect();
+	void SetScrollSelect(bool bScrollSelect);
+
     TListInfoUI* GetListInfo();
     UINT GetItemFixedHeight();
     void SetItemFixedHeight(UINT nHeight);
@@ -134,6 +137,7 @@ protected:
     TDrawInfo m_diFocused;
     TDrawInfo m_diDisabled;
 
+	bool m_bScrollSelect;
     TListInfoUI m_ListInfo;
 };
 
