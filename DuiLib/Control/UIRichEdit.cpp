@@ -153,6 +153,7 @@ private:
     unsigned    fCaptured           :1;
 	unsigned    fShowCaret          :1;
 	unsigned    fNeedFreshCaret     :1; // 修正改变大小后点击其他位置原来光标不能消除的问题
+    unsigned    fNoCaret            :1; // 不能再显示光标了
 
 	INT         iCaretWidth;
 	INT         iCaretHeight;
@@ -522,8 +523,8 @@ BOOL CTxtWinHost::TxCreateCaret(HBITMAP hbmp, INT xWidth, INT yHeight)
 
 BOOL CTxtWinHost::TxShowCaret(BOOL fShow)
 {
-	fShowCaret = fShow;
-    if(fShow)
+	fShowCaret = fShow && !fNoCaret;
+    if(fShowCaret)
         return ::ShowCaret(m_re->GetManager()->GetPaintWindow());
     else
         return ::HideCaret(m_re->GetManager()->GetPaintWindow());
@@ -546,6 +547,20 @@ BOOL CTxtWinHost::TxSetCaretPos(INT x, INT y)
 	if( m_re->GetManager()->IsLayered() ) m_re->GetManager()->Invalidate(rcCaret);
 	iCaretLastWidth = iCaretWidth;
 	iCaretLastHeight = iCaretHeight;
+
+    //fixed bug 父容器滚动后，如果光标超出父容器显示范围，也会一直blingbling闪的bug
+    if (m_re && m_re->GetManager())
+    {
+        POINT ptNew = { x, y };
+        POINT ptNew2 = { x, y + GetCaretHeight() };
+        CControlUI *pTop = m_re->GetManager()->FindControl(ptNew);
+        CControlUI *pTop2 = m_re->GetManager()->FindControl(ptNew2);
+        if ( pTop != m_re || pTop2 != m_re)
+            fNoCaret = TRUE;
+        else
+            fNoCaret = FALSE;
+    }
+
 	return ::SetCaretPos(x, y);
 }
 
