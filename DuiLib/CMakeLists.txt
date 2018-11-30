@@ -29,11 +29,17 @@ install(TARGETS duilib
     LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
     )
 install(DIRECTORY
-            ${CMAKE_CURRENT_SOURCE_DIR}/Control
-			${CMAKE_CURRENT_SOURCE_DIR}/Core
-			${CMAKE_CURRENT_SOURCE_DIR}/Layout
-			${CMAKE_CURRENT_SOURCE_DIR}/Utils
+			${CMAKE_CURRENT_SOURCE_DIR}/.
         DESTINATION
             "${CMAKE_INSTALL_INCLUDEDIR}"
 	    FILES_MATCHING PATTERN "*.h"
     )
+
+# Install cmake files
+configure_file(${CMAKE_SOURCE_DIR}/CMake/DuilibConfig.cmake.in ${CMAKE_BINARY_DIR}/DuilibConfig.cmake @ONLY)
+install(FILES ${CMAKE_BINARY_DIR}/DuilibConfig.cmake DESTINATION "${CMAKE_INSTALL_LIBDIR}/CMake")
+write_basic_package_version_file(
+    "${CMAKE_BINARY_DIR}/DuilibConfigConfigVersion.cmake"
+    VERSION ${BUILD_VERSION}
+    COMPATIBILITY AnyNewerVersion)
+install(FILES ${CMAKE_BINARY_DIR}/DuilibConfigConfigVersion.cmake DESTINATION "${CMAKE_INSTALL_LIBDIR}/CMake")
