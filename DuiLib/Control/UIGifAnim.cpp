@@ -319,7 +319,7 @@ namespace DuiLib
 
 		while (!pData)
 		{
-			//è¯»ä¸åˆ°å›¾ç‰‡, åˆ™ç›´æ¥å»è¯»å–bitmap.m_lpstræŒ‡å‘çš„è·¯å¾„
+			//¶Á²»µ½Í¼Æ¬, ÔòÖ±½ÓÈ¥¶ÁÈ¡bitmap.m_lpstrÖ¸ÏòµÄÂ·¾¶  
 			HANDLE hFile = ::CreateFile(pstrGifPath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, \
 				FILE_ATTRIBUTE_NORMAL, NULL);
 			if( hFile == INVALID_HANDLE_VALUE ) break;
