@@ -20,6 +20,7 @@ add_definitions(-DUILIB_EXPORTS)
 target_link_libraries(duilib comctl32)
 set_target_properties(duilib PROPERTIES OUTPUT_NAME "duilib")
 set_target_properties(duilib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set_target_properties(duilib PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Install library
 install(TARGETS duilib

@@ -14,17 +14,16 @@ environment:
   matrix:
   - GENERATORS: "Visual Studio 15 2017"
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-
-  - GENERATORS: "Visual Studio 14 2015" 
     BUILD_DEMO: OFF
 
+  - GENERATORS: "Visual Studio 14 2015" 
+
   - GENERATORS: "Visual Studio 12 2013"
-  
+    BUILD_SHARED_LIBS: OFF
+    
   - GENERATORS: "Visual Studio 11 2012"
    
   - GENERATORS: "Visual Studio 10 2010"
-
-  - GENERATORS: "MSYS Makefiles"
 
 init:
   
@@ -32,10 +31,7 @@ install:
   - for /f "delims=" %%i in ('git describe --tags') do (set BUILD_VERSION=%%i)
   - if "%BUILD_VERSION%" == "" for /f "delims=" %%i in ('git rev-parse HEAD') do (set BUILD_VERSION=%%i) 
   - echo BUILD_VERSION=%BUILD_VERSION%
-  
-  - if "%GENERATORS%"=="MSYS Makefiles" if "%PLATFORM%"=="32" SET PATH=C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32\bin;C:\msys64\usr\bin;%PATH%
-  - if "%GENERATORS%"=="MSYS Makefiles" if "%PLATFORM%"=="64" SET PATH=C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin;C:\msys64\usr\bin;%PATH%
-  - if NOT "%GENERATORS%"=="MSYS Makefiles" if "%PLATFORM%"=="64" set GENERATORS=%GENERATORS% Win64
+  - if "%PLATFORM%"=="64" set GENERATORS=%GENERATORS% Win64
   
 before_build:
   - if "%BUILD_DEMO%"=="" set BUILD_DEMO=ON
@@ -50,7 +46,7 @@ build_script:
 
 artifacts:
   - path: install
-    name: duilib_$(GENERATORS)_$(platform)_$(CONFIGURATION)_$(BUILD_VERSION)
+    name: duilib_$(GENERATORS)_$(CONFIGURATION)_$(BUILD_VERSION)
     type: zip
 
 branches:
@@ -65,3 +61,4 @@ deploy:
   on:
     appveyor_repo_tag: true        # deploy on tag push only
     configuration: Release
+    BUILD_DEMO: OFF

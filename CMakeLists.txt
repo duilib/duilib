@@ -12,6 +12,8 @@ project(dui)
 
 message(STATUS," CMake project files for duilib")
 
+SET(BUILD_SHARED_LIBS ON CACHED)
+
 include(GNUInstallDirs OPTIONAL)
 
 # this line is for UNICODE release,which is required by DuiDesigner 
