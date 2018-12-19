@@ -951,6 +951,8 @@ namespace DuiLib
 				*ppItem = (*ppItem)->pNext;
 				if (*ppItem)
 					(*ppItem)->pPrev = pKill->pPrev;
+				if (pKill->pPrev)
+					pKill->pPrev->pNext = *ppItem;
 				delete pKill;
 				m_nCount--;
 				return true;
