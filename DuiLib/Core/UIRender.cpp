@@ -388,7 +388,7 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
 				if( !CPaintManagerUI::IsCachedResourceZip() ) CloseZip(hz);
 			}
 		}
-		else if (_tcscmp(type, RES_TYPE_COLOR) == 0) {
+		else if (!IS_INTRESOURCE(type) && _tcscmp(type, RES_TYPE_COLOR) == 0) {
 			pData = (PBYTE)0x1;  /* dummy pointer */
 		}
 		else {
@@ -440,7 +440,7 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
 
     LPBYTE pImage = NULL;
     int x = 1, y = 1, n;
-    if (!type || _tcscmp(type, RES_TYPE_COLOR) != 0) {
+	if (!type || IS_INTRESOURCE(type) || (!IS_INTRESOURCE(type) && _tcscmp(type, RES_TYPE_COLOR) != 0)) {
         pImage = stbi_load_from_memory(pData, dwSize, &x, &y, &n, 4);
         delete[] pData;
         if( !pImage ) {
@@ -467,7 +467,7 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
 	}
 
     BYTE bColorBits[4] = { 0 };
-    if (type && _tcscmp(type, RES_TYPE_COLOR) == 0) {
+	if (type && (!IS_INTRESOURCE(type) && _tcscmp(type, RES_TYPE_COLOR) == 0)) {
         LPTSTR pstr = NULL;
         LPCTSTR pstrValue = bitmap.m_lpstr;
         if (*pstrValue == _T('#')) pstrValue = ::CharNext(pstrValue);
@@ -508,7 +508,7 @@ TImageInfo* CRenderEngine::LoadImage(STRINGorID bitmap, LPCTSTR type, DWORD mask
         }
     }
 
-    if (!type || _tcscmp(type, RES_TYPE_COLOR) != 0) {
+	if (!type || IS_INTRESOURCE(type) || (!IS_INTRESOURCE(type) && _tcscmp(type, RES_TYPE_COLOR) != 0)) {
         stbi_image_free(pImage);
     }
 
