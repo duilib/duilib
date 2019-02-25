@@ -500,11 +500,12 @@ BOOL CTxtWinHost::TxSetScrollPos (INT fnBar, INT nPos, BOOL fRedraw)
 
 void CTxtWinHost::TxInvalidateRect(LPCRECT prc, BOOL fMode)
 {
-    if( prc == NULL ) {
-        m_re->GetManager()->Invalidate(rcClient);
-        return;
-    }
-    RECT rc = *prc;
+    //Fixed Issue In Win 7，不能让Invalidate修改rcClient，否则文字可能会被缩小
+    RECT rc = {};
+    if (prc == NULL)
+        rc = rcClient;
+    else
+        rc = *prc;
     m_re->GetManager()->Invalidate(rc);
 }
 
