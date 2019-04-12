@@ -21,3 +21,10 @@ Duilib是一个Windows下免费开源的DirectUI界面库，由于简约易扩�
 Duilib自2010年8月21日发布以来，获得了众多开发者和大公司的信赖，在各行各业的软件中得到了广泛应用，以下是一个作者知道不完全列表，欢迎大家补充指正
 https://github.com/duilib/duilib/wiki/%E5%9F%BA%E4%BA%8EDuilib%E7%9A%84%E8%BD%AF%E4%BB%B6%E4%B8%8D%E5%AE%8C%E5%85%A8%E5%88%97%E8%A1%A8
 
+下面两个修改版本大家可以参考一下
+
+# 腾讯使用的的duilib修改版
+https://github.com/tencentyun/TIMSDK/tree/master/cross-platform/Windows/IMApp/Basic/duilib
+
+# 网易使用的duilib修改版
+https://github.com/netease-im/NIM_Duilib_Framework/tree/master/tool_kits/duilib
