@@ -396,18 +396,28 @@ void CListUI::DoEvent(TEventUI& event)
             switch( event.chKey ) {
             case VK_UP:
                 SelectItem(FindSelectable(m_iCurSel - 1, false), true);
+				break;
             case VK_DOWN:
                 SelectItem(FindSelectable(m_iCurSel + 1, true), true);
+				break;
             case VK_PRIOR:
                 PageUp();
+				break;
             case VK_NEXT:
                 PageDown();
+				break;
             case VK_HOME:
                 SelectItem(FindSelectable(0, false), true);
+				break;
             case VK_END:
                 SelectItem(FindSelectable(GetCount() - 1, true), true);
+				break;
             case VK_RETURN:
-                if( m_iCurSel != -1 ) GetItemAt(m_iCurSel)->Activate();
+				{
+					if (m_iCurSel != -1)
+						GetItemAt(m_iCurSel)->Activate();
+				}
+				break;
             }
             return;
         }
