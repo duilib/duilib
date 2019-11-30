@@ -14,4 +14,4 @@ https://github.com/duilib/duilib/wiki/%E5%9F%BA%E4%BA%8EDuilib%E7%9A%84%E8%BD%AF
 https://github.com/tencentyun/TIMSDK/tree/master/cross-platform/Windows/IMApp/Basic/duilib
 
 # 网易使用的duilib修改版
-https://github.com/netease-im/NIM_Duilib_Framework/tree/master/tool_kits/duilib
+https://github.com/netease-im/NIM_Duilib_Framework/tree/master/duilib
