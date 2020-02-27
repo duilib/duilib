@@ -1,0 +1,40 @@
+# Author: KangLin(kl222@126.com)
+
+#.rst:
+# Duilib
+# --------
+#
+# Find Duilib
+#
+# Find the Duilib libraries (asound)
+#
+# ::
+#
+#   This module defines the following variables:
+#      Duilib_FOUND          - True if Duilib libraries are found
+#      Duilib_LIBRARIES      - Set when Duilib libraries is found
+#      Duilib_INCLUDE_DIRS   - where to find Duilib heard directory.
+#      Duilib_DEFINITIONS    - Set definitions
+#      Duilib_VERSION_STRING - the version of Duilib found (since CMake 2.8.8)
+
+# Compute and install package configuration and version files
+get_filename_component(_dir "${CMAKE_CURRENT_LIST_FILE}" PATH)
+get_filename_component(_prefix "${_dir}/../.." ABSOLUTE)
+
+find_path(Duilib_INCLUDE_DIR UIlib.h
+	HINTS ${_prefix}/include)
+find_library(Duilib_LIBRARY duilib
+	HINTS ${_prefix}/lib)
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(Duilib
+    REQUIRED_VARS Duilib_INCLUDE_DIR
+                  Duilib_LIBRARY
+    VERSION_VAR   Duilib_VERSION_STRING)
+
+if(Duilib_FOUND)
+	SET(Duilib_INCLUDE_DIRS ${Duilib_INCLUDE_DIR})
+	SET(Duilib_LIBRARIES ${Duilib_LIBRARY})
+endif()
+
+MARK_AS_ADVANCED(Duilib_INCLUDE_DIR Duilib_LIBRARY)
