@@ -323,7 +323,7 @@ namespace DuiLib
 
 		while (!pData)
 		{
-			//读不到图片, 则直接去读取bitmap.m_lpstr指向的路径
+			//读不到图片, 则直接去读取bitmap.m_lpstr指向的路径 
 			HANDLE hFile = ::CreateFile(pstrGifPath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, \
 				FILE_ATTRIBUTE_NORMAL, NULL);
 			if( hFile == INVALID_HANDLE_VALUE ) break;
