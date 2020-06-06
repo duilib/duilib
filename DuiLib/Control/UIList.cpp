@@ -396,18 +396,28 @@ void CListUI::DoEvent(TEventUI& event)
             switch( event.chKey ) {
             case VK_UP:
                 SelectItem(FindSelectable(m_iCurSel - 1, false), true);
+				break;
             case VK_DOWN:
                 SelectItem(FindSelectable(m_iCurSel + 1, true), true);
+				break;
             case VK_PRIOR:
                 PageUp();
+				break;
             case VK_NEXT:
                 PageDown();
+				break;
             case VK_HOME:
                 SelectItem(FindSelectable(0, false), true);
+				break;
             case VK_END:
                 SelectItem(FindSelectable(GetCount() - 1, true), true);
+				break;
             case VK_RETURN:
-                if( m_iCurSel != -1 ) GetItemAt(m_iCurSel)->Activate();
+				{
+					if (m_iCurSel != -1)
+						GetItemAt(m_iCurSel)->Activate();
+				}
+				break;
             }
             return;
         }
@@ -1093,7 +1103,7 @@ bool CListBodyUI::SortItems(PULVCompareFunc pfnCompare, UINT_PTR dwData, int& iC
 	IListItemUI *pItem = NULL;
 	for (int i = 0; i < m_items.GetSize(); ++i)
 	{
-		pItem = (IListItemUI*)(static_cast<CControlUI*>(m_items[i])->GetInterface(TEXT("ListItem")));
+		pItem = (IListItemUI*)(static_cast<CControlUI*>(m_items[i])->GetInterface(DUI_CTR_ILISTITEM));
 		if (pItem)
 		{
 			pItem->SetIndex(i);
@@ -2020,7 +2030,7 @@ bool CListElementUI::Select(bool bSelect, bool bTriggerEvent)
     if( !IsEnabled() ) return false;
     if( bSelect == m_bSelected ) return true;
     m_bSelected = bSelect;
-    if( bSelect && m_pOwner != NULL ) m_pOwner->SelectItem(m_iIndex, bTriggerEvent);
+    if( bSelect && m_pOwner != NULL ) m_pOwner->SelectItem(m_iIndex, bSelect, bTriggerEvent);
     Invalidate();
 
     return true;
@@ -2766,7 +2776,7 @@ bool CListContainerElementUI::Select(bool bSelect, bool bTriggerEvent)
     if( !IsEnabled() ) return false;
     if( bSelect == m_bSelected ) return true;
     m_bSelected = bSelect;
-    if( bSelect && m_pOwner != NULL ) m_pOwner->SelectItem(m_iIndex, bTriggerEvent);
+    if( bSelect && m_pOwner != NULL ) m_pOwner->SelectItem(m_iIndex, bSelect, bTriggerEvent);
     Invalidate();
 
     return true;
