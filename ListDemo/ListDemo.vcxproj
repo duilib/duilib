@@ -79,6 +79,7 @@
     <OutDir>$(SolutionDir)\bin\</OutDir>
     <IntDir>.\Debug\</IntDir>
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>$(ProjectName)_d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnicodeDebug|Win32'">
     <OutDir>$(SolutionDir)\bin\</OutDir>
