@@ -278,7 +278,7 @@ void CListUI::RemoveAll()
 
 void CListUI::SetPos(RECT rc, bool bNeedInvalidate)
 {
-	if( m_pHeader != NULL ) { // ÉèÖÃheader¸÷×ÓÔªËØx×ø±ê,ÒòÎªÓÐÐ©listitemµÄsetposÐèÒªÓÃµ½(ÁÙÊ±ÐÞ¸´)
+	if( m_pHeader != NULL ) { // è®¾ç½®headerå„å­å…ƒç´ xåæ ‡,å› ä¸ºæœ‰äº›listitemçš„setposéœ€è¦ç”¨åˆ°(ä¸´æ—¶ä¿®å¤)
 		int iLeft = rc.left + m_rcInset.left;
 		int iRight = rc.right - m_rcInset.right;
 
@@ -395,19 +395,19 @@ void CListUI::DoEvent(TEventUI& event)
         if (IsKeyboardEnabled() && IsEnabled()) {
             switch( event.chKey ) {
             case VK_UP:
-                SelectItem(FindSelectable(m_iCurSel - 1, false), true);
+                SelectItem(FindSelectable(m_iCurSel - 1, false), true); break;
             case VK_DOWN:
-                SelectItem(FindSelectable(m_iCurSel + 1, true), true);
+                SelectItem(FindSelectable(m_iCurSel + 1, true), true); break;
             case VK_PRIOR:
-                PageUp();
+                PageUp(); break;
             case VK_NEXT:
-                PageDown();
+                PageDown(); break;
             case VK_HOME:
-                SelectItem(FindSelectable(0, false), true);
+                SelectItem(FindSelectable(0, false), true); break;
             case VK_END:
-                SelectItem(FindSelectable(GetCount() - 1, true), true);
+                SelectItem(FindSelectable(GetCount() - 1, true), true); break;
             case VK_RETURN:
-                if( m_iCurSel != -1 ) GetItemAt(m_iCurSel)->Activate();
+                if( m_iCurSel != -1 ) GetItemAt(m_iCurSel)->Activate(); break;
             }
             return;
         }
@@ -1363,7 +1363,7 @@ bool CListBodyUI::DoPaint(HDC hDC, const RECT& rcPaint, CControlUI* pStopControl
                         iDrawIndex += 1;
                     }
                     if (pListInfo && pListInfo->iHLineSize > 0) {
-                        // ÒòÎªÃ»ÓÐÎª×îºóÒ»¸öÔ¤Áô·Ö¸îÌõ³¤¶È£¬Èç¹ûlistÆÌÂú£¬×îºóÒ»Ìõ²»»áÏÔÊ¾
+                        // å› ä¸ºæ²¡æœ‰ä¸ºæœ€åŽä¸€ä¸ªé¢„ç•™åˆ†å‰²æ¡é•¿åº¦ï¼Œå¦‚æžœlisté“ºæ»¡ï¼Œæœ€åŽä¸€æ¡ä¸ä¼šæ˜¾ç¤º
                         RECT rcPadding = pControl->GetPadding();
                         const RECT& rcPos = pControl->GetPos();
                         RECT rcBottomLine = { rcPos.left, rcPos.bottom + rcPadding.bottom, rcPos.right, rcPos.bottom + rcPadding.bottom + pListInfo->iHLineSize };
@@ -2579,7 +2579,7 @@ void CListTextElementUI::DrawItemText(HDC hDC, const RECT& rcItem)
             rcItem.top += pInfo->rcTextPadding.top;
             rcItem.bottom -= pInfo->rcTextPadding.bottom;
 
-            CDuiString strText;//²»Ê¹ÓÃLPCTSTR£¬·ñÔòÏÞÖÆÌ«¶à by cddjr 2011/10/20
+            CDuiString strText;//ä¸ä½¿ç”¨LPCTSTRï¼Œå¦åˆ™é™åˆ¶å¤ªå¤š by cddjr 2011/10/20
             if( pCallback ) strText = pCallback->GetItemText(this, m_iIndex, i);
             else strText.Assign(GetText(i));
             if( pInfo->bShowHtml )
