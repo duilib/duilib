@@ -45,6 +45,6 @@ install(
 
 # Install cmake configure files
 install(EXPORT duilib-config
-    NAMESPACE dui:::
+    NAMESPACE dui::
     DESTINATION share/duilib
 )
