@@ -10,6 +10,10 @@ add_executable(360safedemo ${source_files})
 set_target_properties(360safedemo PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")
 add_dependencies(360safedemo duilib)
 target_link_libraries(360safedemo duilib)
-add_custom_command(TARGET 360safedemo POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  ${PROJECT_BINARY_DIR}/bin/360safedemo.exe ${PROJECT_SOURCE_DIR}/bin/360safedemo.exe)
+
+install(
+  TARGETS 360safedemo
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+)
