@@ -20,6 +20,7 @@ add_library(duilib SHARED ${Control_src} ${Core_src} ${Layout_src} ${Utils_src} 
 add_definitions(-DUILIB_EXPORTS)
 target_link_libraries(duilib comctl32)
 target_include_directories(duilib PUBLIC $<INSTALL_INTERFACE:include>)
+target_compile_definitions(duilib PRIVATE UILIB_EXPORTS)
 set_target_properties(duilib PROPERTIES OUTPUT_NAME "duilib")
 
 # Install headers
