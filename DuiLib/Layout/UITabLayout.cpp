@@ -104,12 +104,16 @@ namespace DuiLib
 		m_iCurSel = iIndex;
 		for( int it = 0; it < m_items.GetSize(); it++ )
 		{
-			if( it == iIndex ) {
-				GetItemAt(it)->SetVisible(true);
-				GetItemAt(it)->SetFocus();
-			}
-			else GetItemAt(it)->SetVisible(false);
+			GetItemAt(it)->SetVisible(false);
 		}
+        for (int it = 0; it < m_items.GetSize(); it++)
+        {
+            if (it == iIndex) {
+                GetItemAt(it)->SetVisible(true);
+                GetItemAt(it)->SetFocus();
+                break;
+            }
+        }
 		NeedParentUpdate();
 
 		if( m_pManager != NULL ) {
