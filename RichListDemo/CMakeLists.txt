@@ -12,6 +12,9 @@ add_executable(RichListDemo ${SRC_LIST} RichListDemo.rc)
 set_target_properties(RichListDemo PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")
 target_link_libraries(RichListDemo duilib)
 
-add_custom_command(TARGET RichListDemo POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  ${PROJECT_BINARY_DIR}/bin/RichListDemo.exe ${PROJECT_SOURCE_DIR}/bin/RichListDemo.exe)
+install(
+  TARGETS RichListDemo
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+)

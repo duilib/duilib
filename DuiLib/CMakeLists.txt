@@ -19,7 +19,34 @@ add_library(duilib SHARED ${Control_src} ${Core_src} ${Layout_src} ${Utils_src} 
 
 add_definitions(-DUILIB_EXPORTS)
 target_link_libraries(duilib comctl32)
+target_include_directories(duilib PUBLIC $<INSTALL_INTERFACE:include>)
+target_compile_definitions(duilib PRIVATE UILIB_EXPORTS)
 set_target_properties(duilib PROPERTIES OUTPUT_NAME "duilib")
-add_custom_command(TARGET duilib POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  ${PROJECT_BINARY_DIR}/lib/duilib.dll ${PROJECT_SOURCE_DIR}/bin/duilib.dll)
+
+# Install headers
+file(GLOB DUILIB_PUBLIC_HDRS "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+file(GLOB DUILIB_CORE_HDRS "${CMAKE_CURRENT_SOURCE_DIR}/Core/*.h")
+file(GLOB DUILIB_UTILS_HDRS "${CMAKE_CURRENT_SOURCE_DIR}/Utils/*.h")
+file(GLOB DUILIB_CONTROL_HDRS "${CMAKE_CURRENT_SOURCE_DIR}/Control/*.h")
+file(GLOB DUILIB_LAYOUT_HDRS "${CMAKE_CURRENT_SOURCE_DIR}/Layout/*.h")
+
+install(FILES ${DUILIB_PUBLIC_HDRS}     DESTINATION include)
+install(FILES ${DUILIB_CORE_HDRS}       DESTINATION include/Core)
+install(FILES ${DUILIB_UTILS_HDRS}      DESTINATION include/Utils)
+install(FILES ${DUILIB_CONTROL_HDRS}    DESTINATION include/Control)
+install(FILES ${DUILIB_LAYOUT_HDRS}     DESTINATION include/Layout)
+
+# Install binaries
+install(
+  TARGETS duilib
+  EXPORT  duilib-config
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+)
+
+# Install cmake configure files
+install(EXPORT duilib-config
+    NAMESPACE dui::
+    DESTINATION share/duilib
+)
