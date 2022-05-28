@@ -2775,7 +2775,7 @@ const TImageInfo* CPaintManagerUI::AddImage(LPCTSTR bitmap, HBITMAP hBitmap, int
 	}
 	else
 	{
-		if( !m_SharedResInfo.m_ImageHash.Insert(bitmap, data) ) {
+		if( !m_ResInfo.m_ImageHash.Insert(bitmap, data) ) {
 			CRenderEngine::FreeImage(data);
 			data = NULL;
 		}
