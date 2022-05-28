@@ -13,7 +13,7 @@ class CControlUI;
 /////////////////////////////////////////////////////////////////////////////////////
 //
 
-typedef enum EVENTTYPE_UI
+enum EVENTTYPE_UI
 {
     UIEVENT__FIRST = 1,
     UIEVENT__KEYBEGIN,
