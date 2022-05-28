@@ -216,6 +216,16 @@ LRESULT CComboWnd::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         m_pLayout = new CComboBodyUI(m_pOwner);
         m_pLayout->SetManager(&m_pm, NULL, true);
         LPCTSTR pDefaultAttributes = m_pOwner->GetManager()->GetDefaultAttributeList(_T("VerticalLayout"));
+
+        LPCTSTR scroll_bar_value = m_pOwner->GetManager()->GetDefaultAttributeList(_T("HScrollBar"));
+        if (scroll_bar_value) {
+            m_pm.AddDefaultAttributeList(_T("HScrollBar"), scroll_bar_value);
+        }
+        scroll_bar_value = m_pOwner->GetManager()->GetDefaultAttributeList(_T("VScrollBar"));
+        if (scroll_bar_value) {
+            m_pm.AddDefaultAttributeList(_T("VScrollBar"), scroll_bar_value);
+        }
+
         if( pDefaultAttributes ) {
             m_pLayout->SetAttributeList(pDefaultAttributes);
         }
