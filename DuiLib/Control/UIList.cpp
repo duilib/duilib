@@ -1093,7 +1093,7 @@ bool CListBodyUI::SortItems(PULVCompareFunc pfnCompare, UINT_PTR dwData, int& iC
 	IListItemUI *pItem = NULL;
 	for (int i = 0; i < m_items.GetSize(); ++i)
 	{
-		pItem = (IListItemUI*)(static_cast<CControlUI*>(m_items[i])->GetInterface(TEXT("ListItem")));
+		pItem = (IListItemUI*)(static_cast<CControlUI*>(m_items[i])->GetInterface(DUI_CTR_ILISTITEM));
 		if (pItem)
 		{
 			pItem->SetIndex(i);
