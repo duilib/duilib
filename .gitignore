@@ -28,3 +28,5 @@ FlashDemo/FlashDemo.vcproj.wengmq-PC.wengmq.user
 QQDemo/Debug/mt.dep
 *.dep
 *.map
+/.vs
+/DuiLib/Build/Release_u
