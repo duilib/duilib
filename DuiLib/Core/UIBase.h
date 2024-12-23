@@ -62,6 +62,7 @@ class DUILIB_API CWindowWnd
 {
 public:
     CWindowWnd();
+	virtual ~CWindowWnd();
 
     HWND GetHWND() const;
     operator HWND() const;
