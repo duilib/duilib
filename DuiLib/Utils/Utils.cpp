@@ -790,7 +790,8 @@ namespace DuiLib
 		TCHAR szBuffer[64] = { 0 };
 		va_list argList;
 		va_start(argList, pstrFormat);
-		int iRet = ::wvsprintf(szBuffer, sFormat, argList);
+		int iRet = _vsntprintf(szBuffer, lengthof(szBuffer) - 1, sFormat, argList);
+		szBuffer[lengthof(szBuffer) - 1] = _T('\0');
 		va_end(argList);
 		Assign(szBuffer);
 		return iRet;

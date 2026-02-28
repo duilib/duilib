@@ -17,7 +17,7 @@ void DUILIB_API DUI__Trace(LPCTSTR pstrFormat, ...)
     TCHAR szBuffer[300] = { 0 };
     va_list args;
     va_start(args, pstrFormat);
-    ::wvnsprintf(szBuffer, lengthof(szBuffer) - 2, pstrFormat, args);
+    _vsntprintf(szBuffer, lengthof(szBuffer) - 2, pstrFormat, args);
     _tcscat(szBuffer, _T("\n"));
     va_end(args);
     ::OutputDebugString(szBuffer);
@@ -82,7 +82,8 @@ LPCTSTR DUI__TraceMsg(UINT uMsg)
     MSGDEF(WM_GETTEXT);
     MSGDEF(WM_GETTEXTLENGTH);   
     static TCHAR szMsg[10];
-    ::wsprintf(szMsg, _T("0x%04X"), uMsg);
+    _sntprintf(szMsg, lengthof(szMsg) - 1, _T("0x%04X"), uMsg);
+	szMsg[lengthof(szMsg) - 1] = _T('\0');
     return szMsg;
 }
 

@@ -1,0 +1,4 @@
+## 2024-05-24 - Buffer overflow vulnerabilities in string formatting
+**Vulnerability:** Found uses of `wvsprintf`, `wvnsprintf`, and `wsprintf` in `CDuiString::SmallFormat` and UI tracing functions, which write formatted strings into small, fixed-size buffers (`64` or `300` bytes) without proper bounds checking or potentially truncating without null-terminating safely.
+**Learning:** These Win32 API string formatting functions can easily cause buffer overflows if the resulting formatted string exceeds the buffer size, or lead to unsafe states if they don't null-terminate on truncation. The codebase uses these natively with `TCHAR` buffers.
+**Prevention:** Use safer alternatives like `_vsntprintf` and `_sntprintf` which allow specifying the maximum number of characters to write. Additionally, always explicitly null-terminate the buffer at the last index `szBuffer[lengthof(szBuffer) - 1] = _T('\0');` to ensure the string is safely terminated even if truncated.
