@@ -1,0 +1,4 @@
+## 2026-03-01 - [Buffer Overflow] Replaced strcpy with lstrcpynA in XUnzip.cpp
+**Vulnerability:** Unbounded string copies using strcpy were found in DuiLib/Utils/XUnzip.cpp when populating zip entry filenames and temporary buffers. This could lead to stack buffer overflow if a maliciously crafted zip file contains oversized filenames.
+**Learning:** The zip extraction utility relies on standard C string functions mixed with Win32 APIs. While TCHAR is used generally, some internal structures explicitly use ANSI char arrays where strcpy was incorrectly used without length checks.
+**Prevention:** Always use bounds-checked string manipulation functions like lstrcpynA for explicit ANSI buffers, or StringCchCopy/StringCbCopy when dealing with Win32 APIs to ensure proper null-termination and prevent buffer overflows.
