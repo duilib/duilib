@@ -176,14 +176,14 @@ void *zmalloc(unsigned int len)
     buf[len+31-i]=i;
   }
   *((unsigned int*)buf) = len;
-  char c[1000]; wsprintf(c,"malloc 0x%lx  - %lu",buf+16,len);
-  OutputDebugString(c);
+  char c[1000]; _snprintf(c,1000,"malloc %p  - %u",buf+16,len);
+  OutputDebugStringA(c);
   return buf+16;
 }
 
 void zfree(void *buf)
-{ char c[1000]; wsprintf(c,"free   0x%lx",buf);
-  OutputDebugString(c);
+{ char c[1000]; _snprintf(c,1000,"free   %p",buf);
+  OutputDebugStringA(c);
   char *p = ((char*)buf)-16;
   unsigned int len = *((unsigned int*)p);
   bool blown=false;
@@ -3451,7 +3451,7 @@ int unzLocateFile (unzFile file, const TCHAR *szFileName, int iCaseSensitivity)
 #ifdef _UNICODE
 	GetAnsiFileName(szFileName, szFileNameA, MAX_PATH-1);
 #else
-	strcpy(szFileNameA, szFileName);
+	lstrcpynA(szFileNameA, szFileName, MAX_PATH);
 #endif
 
 	// support Windows subdirectory by:daviyang35
@@ -3994,7 +3994,7 @@ ZRESULT TUnzip::Get(int index,ZIPENTRY *ze)
   if (lufread(extra,1,(uInt)extralen,uf->file)!=extralen) {delete[] extra; return ZR_READ;}
   //
   ze->index=uf->num_file;
-  strcpy(ze->name,fn);
+  lstrcpynA(ze->name, fn, MAX_PATH);
   // zip has an 'attribute' 32bit value. Its lower half is windows stuff
   // its upper half is standard unix attr.
   unsigned long a = ufi.external_fa;
@@ -4348,7 +4348,7 @@ ZRESULT GetZipItemW(HZIP hz, int index, ZIPENTRYW *zew)
 #ifdef _UNICODE
 		GetUnicodeFileName(ze.name, zew->name, MAX_PATH-1);
 #else
-		strcpy(zew->name, ze.name);
+		lstrcpynA(zew->name, ze.name, MAX_PATH);
 #endif
 	}
 	return lasterrorU;
@@ -4400,7 +4400,7 @@ ZRESULT FindZipItemW(HZIP hz, const TCHAR *name, bool ic, int *index, ZIPENTRYW 
 #ifdef _UNICODE
 		GetUnicodeFileName(ze.name, zew->name, MAX_PATH-1);
 #else
-		strcpy(zew->name, ze.name);
+		lstrcpynA(zew->name, ze.name, MAX_PATH);
 #endif
 	}
 
