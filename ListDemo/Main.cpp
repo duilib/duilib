@@ -144,7 +144,7 @@ public:
         switch (iSubItem)
         {
         case 0:
-            _stprintf(szBuf, _T("%d"), iIndex);
+            _sntprintf(szBuf, MAX_PATH - 1, _T("%d"), iIndex);
             break;
         case 1:
             {
@@ -153,10 +153,10 @@ public:
             LPWSTR lpText = new WCHAR[iLen + 1];
             ::ZeroMemory(lpText, (iLen + 1) * sizeof(WCHAR));
             ::MultiByteToWideChar(CP_ACP, 0, domain[iIndex].c_str(), -1, (LPWSTR)lpText, iLen) ;
-            _stprintf(szBuf, lpText);
+            _sntprintf(szBuf, MAX_PATH - 1, _T("%s"), lpText);
             delete[] lpText;
 #else
-            _stprintf(szBuf, domain[iIndex].c_str());
+            _sntprintf(szBuf, MAX_PATH - 1, _T("%s"), domain[iIndex].c_str());
 #endif
             }
             break;
@@ -167,10 +167,10 @@ public:
             LPWSTR lpText = new WCHAR[iLen + 1];
             ::ZeroMemory(lpText, (iLen + 1) * sizeof(WCHAR));
             ::MultiByteToWideChar(CP_ACP, 0, desc[iIndex].c_str(), -1, (LPWSTR)lpText, iLen) ;
-            _stprintf(szBuf, lpText);
+            _sntprintf(szBuf, MAX_PATH - 1, _T("%s"), lpText);
             delete[] lpText;
 #else
-            _stprintf(szBuf, desc[iIndex].c_str());
+            _sntprintf(szBuf, MAX_PATH - 1, _T("%s"), desc[iIndex].c_str());
 #endif
             }
             break;

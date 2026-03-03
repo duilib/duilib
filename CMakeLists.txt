@@ -18,7 +18,7 @@ message(STATUS," CMake project files for duilib")
 add_definitions(-DUNICODE -D_UNICODE)
 
 # add each CMake file
-add_subdirectory(duilib)
+add_subdirectory(DuiLib)
 
 if (DUILIB_BUILD_EXAMPLES)
     add_subdirectory(360SafeDemo)

@@ -1,0 +1,4 @@
+## 2024-05-20 - Unbounded C-string Functions & Format String Bugs
+**Vulnerability:** Found uses of `strcpy` in `DuiLib/Utils/XUnzip.cpp` when compiled without `_UNICODE`. Found severe format string vulnerabilities and buffer overflows in `ListDemo/Main.cpp` using `_stprintf(szBuf, ...)` with unvalidated data formats.
+**Learning:** Legacy C/C++ string functions (`strcpy`, `sprintf`) are prone to buffer overflows, especially with untrusted data inputs or unbounded size structures. Passing untrusted strings as the format specifier to formatting functions allows arbitrary memory reads/writes.
+**Prevention:** Always use bounds-checked equivalents like `lstrcpynA` for explicit ANSI buffers. Use explicitly bounded `_sntprintf` and properly inject dynamic strings using `%s` formatting variables instead of directly into the format string template.
