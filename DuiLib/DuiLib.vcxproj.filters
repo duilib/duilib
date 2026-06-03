@@ -117,6 +117,9 @@
     <ClCompile Include="Control\UIList.cpp">
       <Filter>Source Files\Control</Filter>
     </ClCompile>
+    <ClCompile Include="Control\UIVirtualList.cpp">
+      <Filter>Source Files\Control</Filter>
+    </ClCompile>
     <ClCompile Include="Control\UIOption.cpp">
       <Filter>Source Files\Control</Filter>
     </ClCompile>
@@ -240,6 +243,9 @@
       <Filter>Header Files\Control</Filter>
     </ClInclude>
     <ClInclude Include="Control\UIList.h">
+      <Filter>Header Files\Control</Filter>
+    </ClInclude>
+    <ClInclude Include="Control\UIVirtualList.h">
       <Filter>Header Files\Control</Filter>
     </ClInclude>
     <ClInclude Include="Control\UIOption.h">

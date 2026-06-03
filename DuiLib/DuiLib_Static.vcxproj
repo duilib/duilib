@@ -317,6 +317,7 @@
     <ClCompile Include="Control\UIGifAnim.cpp" />
     <ClCompile Include="Control\UILabel.cpp" />
     <ClCompile Include="Control\UIList.cpp" />
+    <ClCompile Include="Control\UIVirtualList.cpp" />
     <ClCompile Include="Control\UIOption.cpp" />
     <ClCompile Include="Control\UIProgress.cpp" />
     <ClCompile Include="Control\UIRichEdit.cpp" />
@@ -358,6 +359,7 @@
     <ClInclude Include="Control\UIGifAnim.h" />
     <ClInclude Include="Control\UILabel.h" />
     <ClInclude Include="Control\UIList.h" />
+    <ClInclude Include="Control\UIVirtualList.h" />
     <ClInclude Include="Control\UIOption.h" />
     <ClInclude Include="Control\UIProgress.h" />
     <ClInclude Include="Control\UIRichEdit.h" />

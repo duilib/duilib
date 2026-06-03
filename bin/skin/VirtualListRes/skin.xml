@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window caption="0,0,0,30" roundcorner="5,5,5,5" sizebox="4,4,4,4" mininfo="640,420" >
+ <Font id="0" name="宋体" size="13" bold="false"/>
+ <Font id="1" name="宋体" size="12"/>
+ <Default shared="true" name="VScrollBar" value="button1normalimage=&quot;file='scrollbar.bmp' source='0,90,16,106' mask='#FFFF00FF'&quot; button1hotimage=&quot;file='scrollbar.bmp' source='18,90,34,106' mask='#FFFF00FF'&quot; button1pushedimage=&quot;file='scrollbar.bmp' source='36,90,52,106' mask='#FFFF00FF'&quot; button1disabledimage=&quot;file='scrollbar.bmp' source='54,90,70,106' mask='#FFFF00FF'&quot; button2normalimage=&quot;file='scrollbar.bmp' source='0,108,16,124' mask='#FFFF00FF'&quot; button2hotimage=&quot;file='scrollbar.bmp' source='18,108,34,124' mask='#FFFF00FF'&quot; button2pushedimage=&quot;file='scrollbar.bmp' source='36,108,52,124' mask='#FFFF00FF'&quot; button2disabledimage=&quot;file='scrollbar.bmp' source='54,108,70,124' mask='#FFFF00FF'&quot; thumbnormalimage=&quot;file='scrollbar.bmp' source='0,126,16,142' corner='2,2,2,2' mask='#FFFF00FF'&quot; thumbhotimage=&quot;file='scrollbar.bmp' source='18,126,34,142' corner='2,2,2,2' mask='#FFFF00FF'&quot; thumbpushedimage=&quot;file='scrollbar.bmp' source='36,126,52,142' corner='2,2,2,2' mask='#FFFF00FF'&quot; thumbdisabledimage=&quot;file='scrollbar.bmp' source='54,126,70,142' corner='2,2,2,2' mask='#FFFF00FF'&quot; railnormalimage=&quot;file='scrollbar.bmp' source='0,144,16,160' corner='2,2,2,2' mask='#FFFF00FF'&quot; railhotimage=&quot;file='scrollbar.bmp' source='18,144,34,160' corner='2,2,2,2' mask='#FFFF00FF'&quot; railpushedimage=&quot;file='scrollbar.bmp' source='36,144,52,160' corner='2,2,2,2' mask='#FFFF00FF'&quot; raildisabledimage=&quot;file='scrollbar.bmp' source='54,144,70,160' corner='2,2,2,2' mask='#FFFF00FF'&quot; bknormalimage=&quot;file='scrollbar.bmp' source='0,162,16,178' corner='2,2,2,2' mask='#FFFF00FF'&quot; bkhotimage=&quot;file='scrollbar.bmp' source='18,162,34,178' corner='2,2,2,2' mask='#FFFF00FF'&quot; bkpushedimage=&quot;file='scrollbar.bmp' source='36,162,52,178' corner='2,2,2,2' mask='#FFFF00FF'&quot; bkdisabledimage=&quot;file='scrollbar.bmp' source='54,162,70,178' corner='2,2,2,2' mask='#FFFF00FF'&quot; " />
+ <Default shared="true" name="HScrollBar" value="button1normalimage=&quot;file='scrollbar.bmp' source='0,0,16,16' mask='#FFFF00FF'&quot; button1hotimage=&quot;file='scrollbar.bmp' source='18,0,34,16' mask='#FFFF00FF'&quot; button1pushedimage=&quot;file='scrollbar.bmp' source='36,0,52,16' mask='#FFFF00FF'&quot; button1disabledimage=&quot;file='scrollbar.bmp' source='54,0,70,16' mask='#FFFF00FF'&quot; button2normalimage=&quot;file='scrollbar.bmp' source='0,18,16,34' mask='#FFFF00FF'&quot; button2hotimage=&quot;file='scrollbar.bmp' source='18,18,34,34' mask='#FFFF00FF'&quot; button2pushedimage=&quot;file='scrollbar.bmp' source='36,18,52,34' mask='#FFFF00FF'&quot; button2disabledimage=&quot;file='scrollbar.bmp' source='54,18,70,34' mask='#FFFF00FF'&quot; thumbnormalimage=&quot;file='scrollbar.bmp' source='0,36,16,52' corner='2,2,2,2' mask='#FFFF00FF'&quot; thumbhotimage=&quot;file='scrollbar.bmp' source='18,36,34,52' corner='2,2,2,2' mask='#FFFF00FF'&quot; thumbpushedimage=&quot;file='scrollbar.bmp' source='36,36,52,52' corner='2,2,2,2' mask='#FFFF00FF'&quot; thumbdisabledimage=&quot;file='scrollbar.bmp' source='54,36,70,52' corner='2,2,2,2' mask='#FFFF00FF'&quot; railnormalimage=&quot;file='scrollbar.bmp' source='0,54,16,70' corner='2,2,2,2' mask='#FFFF00FF'&quot; railhotimage=&quot;file='scrollbar.bmp' source='18,54,34,70' corner='2,2,2,2' mask='#FFFF00FF'&quot; railpushedimage=&quot;file='scrollbar.bmp' source='36,54,52,70' corner='2,2,2,2' mask='#FFFF00FF'&quot; raildisabledimage=&quot;file='scrollbar.bmp' source='54,54,70,70' corner='2,2,2,2' mask='#FFFF00FF'&quot; bknormalimage=&quot;file='scrollbar.bmp' source='0,72,16,88' corner='2,2,2,2' mask='#FFFF00FF'&quot; bkhotimage=&quot;file='scrollbar.bmp' source='18,72,34,88' corner='2,2,2,2' mask='#FFFF00FF'&quot; bkpushedimage=&quot;file='scrollbar.bmp' source='36,72,52,88' corner='2,2,2,2' mask='#FFFF00FF'&quot; bkdisabledimage=&quot;file='scrollbar.bmp' source='54,72,70,88' corner='2,2,2,2' mask='#FFFF00FF'&quot; " />
+
+<VerticalLayout bkimage="file='bg.png' corner='10,100,10,10' hole='true'" bkcolor="#FF313C00">
+    <HorizontalLayout height="37" inset="0,2,0,0">
+        <Text text="VirtualListDemo - 虚表控件演示" textcolor="#FFFFFFFF" font="1" float="true" pos="27,10,360,30"/>
+        <VerticalLayout />
+        <VerticalLayout width="70">
+            <Button float="true" pos="0,0,28,17" name="minbtn" maxwidth="28" maxheight="17" normalimage="file='max_min.png' source='0,0,28,17'" hotimage="file='max_min_h.png' source='0,0,28,17'" pushedimage="file='max_min_h.png' source='0,0,28,17'"/>
+            <Button float="true" pos="28,0,56,17" name="closebtn" maxwidth="28" maxheight="17" normalimage="file='max_min.png' source='28,0,56,17'" hotimage="file='max_min_h.png' source='28,0,56,17'" pushedimage="file='max_min_h.png' source='28,0,56,17'"/>
+        </VerticalLayout>
+    </HorizontalLayout>
+
+    <HorizontalLayout height="36" inset="6,4,6,4">
+        <Button name="btn_load_100k"   text="加载10万行" font="0" width="110" maxheight="26" normalimage="file='button.png' source='0,0,63,23'" hotimage="file='button.png' source='0,23,63,46'" pushedimage="file='button.png' source='0,23,63,46'"/>
+        <Control width="6"/>
+        <Button name="btn_load_50"     text="加载50行(测试边界)" font="0" width="160" maxheight="26" normalimage="file='button.png' source='0,0,63,23'" hotimage="file='button.png' source='0,23,63,46'" pushedimage="file='button.png' source='0,23,63,46'"/>
+        <Control width="6"/>
+        <Button name="btn_clear"       text="清空" font="0" width="80" maxheight="26" normalimage="file='button.png' source='0,0,63,23'" hotimage="file='button.png' source='0,23,63,46'" pushedimage="file='button.png' source='0,23,63,46'"/>
+        <Control width="6"/>
+        <Button name="btn_jump_top"    text="跳到第一行" font="0" width="100" maxheight="26" normalimage="file='button.png' source='0,0,63,23'" hotimage="file='button.png' source='0,23,63,46'" pushedimage="file='button.png' source='0,23,63,46'"/>
+        <Control width="6"/>
+        <Button name="btn_jump_88888"  text="跳到88888行" font="0" width="110" maxheight="26" normalimage="file='button.png' source='0,0,63,23'" hotimage="file='button.png' source='0,23,63,46'" pushedimage="file='button.png' source='0,23,63,46'"/>
+        <Control width="6"/>
+        <Text   name="info" text="" textcolor="#FF383838" font="1"/>
+    </HorizontalLayout>
+
+    <HorizontalLayout inset="3,0,3,3">
+        <!--
+            VirtualList 控件：
+              - itemheight 必填：每行高度
+              - vscrollbar/hscrollbar：开启滚动条（实际是否显示由内容自动决定）
+              - 子项使用 ListHBoxElement，按 Header 列布局；列数和顺序与 Header 完全一致
+        -->
+        <VirtualList name="bigtable" bkcolor="#FFFFFFFF" inset="0,0,0,0"
+                     itemheight="34"
+                     itemshowhtml="false"
+                     itemalign="center"
+                     itemvalign="vcenter"
+                     itembkcolor="#FFFFFFFF"
+                     itemaltbk="true"
+                     itemtextcolor="#FF333333"
+                     itemselectedbkcolor="#FFC1E3FF"
+                     itemhotbkcolor="#FFE9F5FF"
+                     itemhlinesize="1"
+                     itemhlinecolor="#FFE5E5E5"
+                     itemvlinesize="1"
+                     itemvlinecolor="#FFE5E5E5"
+                     vscrollbar="true" hscrollbar="true"
+                     headerbkimage="file='list_header_bg.png'">
+            <ListHeader height="26">
+              <ListHeaderItem text="序号"   font="1" width="80"  hotimage="file='list_header_hot.png'" pushedimage="file='list_header_pushed.png'" sepimage="file='list_header_sep.png'" sepwidth="1"/>
+              <ListHeaderItem text="姓名"   font="1" width="120" hotimage="file='list_header_hot.png'" pushedimage="file='list_header_pushed.png'" sepimage="file='list_header_sep.png'" sepwidth="1"/>
+              <ListHeaderItem text="年龄"   font="1" width="80"  hotimage="file='list_header_hot.png'" pushedimage="file='list_header_pushed.png'" sepimage="file='list_header_sep.png'" sepwidth="1"/>
+              <ListHeaderItem text="部门"   font="1" width="160" hotimage="file='list_header_hot.png'" pushedimage="file='list_header_pushed.png'" sepimage="file='list_header_sep.png'" sepwidth="1"/>
+              <ListHeaderItem text="入职日期" font="1" width="120" hotimage="file='list_header_hot.png'" pushedimage="file='list_header_pushed.png'" sepimage="file='list_header_sep.png'" sepwidth="1"/>
+              <ListHeaderItem text="备注" font="1" width="260" hotimage="file='list_header_hot.png'" pushedimage="file='list_header_pushed.png'" sepimage="file='list_header_sep.png'" sepwidth="1"/>
+            </ListHeader>
+        </VirtualList>
+    </HorizontalLayout>
+</VerticalLayout>
+</Window>

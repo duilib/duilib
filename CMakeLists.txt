@@ -25,6 +25,7 @@ if (DUILIB_BUILD_EXAMPLES)
     add_subdirectory(FlashDemo)
     add_subdirectory(GameDemo)
     add_subdirectory(ListDemo)
+    add_subdirectory(VirtualListDemo)
     # add_subdirectory(MenuDemo) the sources in this project has error
     add_subdirectory(QQDemo)
     add_subdirectory(RichListDemo)
